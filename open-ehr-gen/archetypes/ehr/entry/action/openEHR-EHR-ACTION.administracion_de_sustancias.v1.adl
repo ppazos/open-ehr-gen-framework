@@ -1,0 +1,119 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-ACTION.administracion_de_sustancias.v1
+
+concept
+	[at0000]	-- administracion de sustancias
+language
+	original_language = <[ISO_639-1::es]>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"administracion de sustancias">
+			use = <"administracion de sustancias">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["references"] = <"">
+		["MD5-CAM-1.0.1"] = <"6FEC04A2CAC461383A35A3521523AA98">
+	>
+
+definition
+	ACTION[at0000] matches {	-- administracion de sustancias
+		description matches {
+			ITEM_TREE[at0001] matches {	-- Arbol
+				items cardinality matches {0..*; unordered} matches {
+					CLUSTER[at0002] occurrences matches {0..*} matches {	-- Administracion de sustancia
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0005] occurrences matches {0..1} matches {	-- via
+								value matches {
+									DV_CODED_TEXT matches {
+										defining_code matches {
+											[local::
+											at0006, 	-- Intravenosa
+											at0007]	-- Intramuscular
+										}
+									}
+								}
+							}
+							ELEMENT[at0004] occurrences matches {0..1} matches {	-- dosis
+								value matches {
+									C_DV_QUANTITY <
+										property = <[openehr::129]>
+										list = <
+											["1"] = <
+												units = <"cc">
+											>
+											["2"] = <
+												units = <"ml">
+											>
+										>
+									>
+								}
+							}
+							ELEMENT[at0003] occurrences matches {0..1} matches {	-- Sustancia
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+						}
+					}
+					ELEMENT[at0009] occurrences matches {0..1} matches {	-- fecha
+						value matches {
+							DV_DATE_TIME matches {*}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"administracion de sustancias">
+					description = <"unknown">
+				>
+				["at0001"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Administracion de sustancia">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Sustancia">
+					description = <"*">
+				>
+				["at0004"] = <
+					text = <"dosis">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"via">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"Intravenosa">
+					description = <"Intravenosa">
+				>
+				["at0007"] = <
+					text = <"Intramuscular">
+					description = <"Intramuscular">
+				>
+				["at0009"] = <
+					text = <"fecha">
+					description = <"*">
+				>
+			>
+		>
+	>

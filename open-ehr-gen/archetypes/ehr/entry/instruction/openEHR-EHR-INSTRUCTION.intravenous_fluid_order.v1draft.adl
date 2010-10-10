@@ -1,0 +1,86 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-INSTRUCTION.intravenous_fluid_order.v1draft
+
+concept
+	[at0000]	-- Intravenous fluid order
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			author = <
+				["name"] = <"Jasmin Buck">
+				["organisation"] = <"University of Heidelberg">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["date"] = <"10/04/2007">
+		["email"] = <"heather.leslie@oceaninformatics.biz">
+	>
+	details = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			purpose = <"Zur Dokumentation einer Verordnung einer intravenösen Gabe einer Flüssigkeit.">
+			use = <"">
+			keywords = <"intravenös", "Flüssigkeit", "Verschreibung", "IV">
+			misuse = <"">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"Record an order for intravenous fluids to be administered">
+			use = <"">
+			keywords = <"intravenous", "fluid ", "order", "IV">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+
+definition
+	INSTRUCTION[at0000] matches {	-- Intravenous fluid order
+		activities cardinality matches {0..*; unordered} matches {
+			ACTIVITY[at0001] occurrences matches {0..1} matches {	-- new activity
+				action_archetype_id matches {/intravenous_fluid_administration\.v1draft/}
+				description matches {
+					allow_archetype ITEM_TREE occurrences matches {0..1} matches {
+						include
+							archetype_id/value matches {/intravenous_fluids\.v1draft/}
+						exclude
+							archetype_id/value matches {/.*/}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["de"] = <
+			items = <
+				["at0000"] = <
+					description = <"Dokumentation der Verschreibung einer intravenösen Flüssigkeit">
+					text = <"Verschreibung intravenöser Flüssigkeit">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"neue Handlung">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record of intravenous fluid order">
+					text = <"Intravenous fluid order">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"new activity">
+				>
+			>
+		>
+	>

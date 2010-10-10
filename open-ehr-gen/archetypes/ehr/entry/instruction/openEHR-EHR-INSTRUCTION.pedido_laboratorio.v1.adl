@@ -1,0 +1,143 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-INSTRUCTION.pedido_laboratorio.v1
+
+concept
+	[at0000]	-- Pedido de estudios de laboratorio
+language
+	original_language = <[ISO_639-1::es]>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Pedido de estudios de laboratorio">
+			use = <"Pedido de estudios de laboratorio">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["references"] = <"">
+		["MD5-CAM-1.0.1"] = <"730BAACB32C4ACA55762C8EEA1C27E23">
+	>
+
+definition
+	INSTRUCTION[at0000] matches {	-- Pedido de estudios de laboratorio
+		activities cardinality matches {0..*; unordered} matches {
+			ACTIVITY[at0001] occurrences matches {0..1} matches {	-- Current Activity
+				description matches {
+					ITEM_TREE[at0002] matches {	-- Arbol
+						items cardinality matches {0..*; unordered} matches {
+							CLUSTER[at0003] occurrences matches {0..1} matches {	-- Rutinas de laboratorio
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Clasificación de grupo sanguíneo
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- Hemograma
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0006] occurrences matches {0..1} matches {	-- Glicemia
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0007] occurrences matches {0..1} matches {	-- Azoemia
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0008] occurrences matches {0..1} matches {	-- Creatininemia
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+								}
+							}
+							ELEMENT[at0009] occurrences matches {0..1} matches {	-- Gasometría en sangre
+								value matches {
+									DV_BOOLEAN matches {
+										value matches {True, False}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		narrative matches {   -- Otros detalles
+            DV_TEXT matches {*}
+        }
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Pedido de estudios de laboratorio">
+					description = <"unknown">
+				>
+				["at0001"] = <
+					text = <"Current Activity">
+					description = <"Current Activity">
+				>
+				["at0002"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0003"] = <
+					text = <"Rutinas de laboratorio">
+					description = <"*">
+				>
+				["at0004"] = <
+					text = <"Clasificación de grupo sanguíneo">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Hemograma">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"Glicemia">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"Azoemia">
+					description = <"*">
+				>
+				["at0008"] = <
+					text = <"Creatininemia">
+					description = <"*">
+				>
+				["at0009"] = <
+					text = <"Gasometría en sangre">
+					description = <"*">
+				>
+			>
+		>
+	>
+	term_bindings = <
+        ["trauma"] = <
+            items = <
+                ["/narrative"] = <[pedido_laboratorio::instruction_narrative]>
+            >
+        >
+    >
