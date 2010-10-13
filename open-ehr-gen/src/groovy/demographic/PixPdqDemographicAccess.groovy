@@ -17,7 +17,7 @@ import converters.DateConverter
 
 // Para hacer requests SOAP
 //import groovyx.net.soap.SoapClient
-import groovyx.net.ws.WSClient
+//import groovyx.net.ws.WSClient
 
 // ws proxies generado con cxf
 import org.opensih.webservices.*
