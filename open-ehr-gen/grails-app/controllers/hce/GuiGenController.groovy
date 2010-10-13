@@ -614,10 +614,6 @@ println ""
         def sections = this.getSections()
         def subsections = this.getSubsections(rmNode.archetypeDetails.templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
         
-        println '=================='
-        println sections
-        println '=================='
-        
         /* Prueba de generar el HTML de una entrada y guardarlo en una variable.
         // IDEA PARA METER los datos en formato HTML en el CDA...
         def a = g.render(template:'generarShow', model:
