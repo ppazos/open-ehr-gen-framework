@@ -493,7 +493,7 @@ response.setHeader("Expires", "0")
                 }
                 */
                 def sections = this.getSections()
-                def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
+                def subsections = this.getSubsections(params.templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
                 
                 
                 
