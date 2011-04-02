@@ -42,12 +42,18 @@ class GuiGenController {
      */
     private Map getDomainTemplates()
     {
-        def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
-        def domainTemplates = grailsApplication.config.templates
-        routes.each{
-            
-            domainTemplates = domainTemplates[it]
-        }
+        //def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
+        //def domainTemplates = grailsApplication.config.templates
+        //routes.each{
+        //    domainTemplates = domainTemplates[it]
+        //}
+        
+        // =============================================================
+        // Nuevo: para devolver los templates del dominio seleccionado
+        def domain = session.traumaContext.domainPath
+        def domainTemplates = grailsApplication.config.templates2."$domain"
+        
+        // =============================================================
         
         return domainTemplates
     }
@@ -116,14 +122,14 @@ class GuiGenController {
        
        EventManager.getInstance().handle("pre_gui_gen", params)
 
-/*
-//NO HACE NADA....
-// Test para prevenir cacheo
-response.setHeader("Cache-Control", "no-cache, must-revalidate")
-//response.setHeader("Cache-Control", "no-Store")
-response.setHeader("Pragma", "no-cache")
-response.setHeader("Expires", "0")
-*/
+       /*
+       // Test para prevenir cacheo
+       //NO HACE NADA....
+       response.setHeader("Cache-Control", "no-cache, must-revalidate")
+       //response.setHeader("Cache-Control", "no-Store")
+       response.setHeader("Pragma", "no-cache")
+       response.setHeader("Expires", "0")
+       */
 
         // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
         if (!session.traumaContext?.episodioId)
@@ -137,42 +143,25 @@ response.setHeader("Expires", "0")
     
         def templateId = params.templateId // es el nombre del archivo
 
-    
         // Model: Paciente del episodio seleccionado
         def composition = Composition.get( session.traumaContext.episodioId )
 
         // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
         def patient = hceService.getPatientFromComposition( composition )
 
-
-		// FIXME: verificar si ya se hizo registro para este template, y si se hizo ir a show.
-		// def item = hceService.getCompositionContentItemForTemplate(composition, attrs.templateId)
-		// def ContentItem getCompositionContentItemForTemplate( Composition composition, String templateId )
-		
-		def item = hceService.getCompositionContentItemForTemplate(composition, templateId)
-		if (item)
-		{
-		    //flash.message = 'trauma.list.error.registryAlreadyDone'
-		    redirect( controller:'guiGen', action:'generarShow', id: item.id,
+        // FIXME: verificar si ya se hizo registro para este template, y si se hizo ir a show.
+        // def item = hceService.getCompositionContentItemForTemplate(composition, attrs.templateId)
+        // def ContentItem getCompositionContentItemForTemplate( Composition composition, String templateId )
+        
+        def item = hceService.getCompositionContentItemForTemplate(composition, templateId)
+        if (item)
+        {
+            //flash.message = 'trauma.list.error.registryAlreadyDone'
+            redirect( controller:'guiGen', action:'generarShow', id: item.id,
                       params: ['flash.message': 'trauma.list.error.registryAlreadyDone'] )
-		    return
-		}
-
-
-        // Secciones predefinidas para seleccionar registro clinico
-        /*
-        def sections = []
-        grailsApplication.config.hce.emergencia.sections.trauma.keySet().each { sectionPrefix ->
-            sections << sectionPrefix
+            return
         }
 
-        // Subsections de la section seleccionada
-        def subsections = []
-        def subSectionPrefix = templateId.split("-")[0]
-        grailsApplication.config.hce.emergencia.sections.trauma."$subSectionPrefix".each { subsection ->
-           subsections << subSectionPrefix + "-" + subsection
-        }
-        */
         def sections = this.getSections()
         def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
         
@@ -205,7 +194,6 @@ response.setHeader("Expires", "0")
                                episodeId: session.traumaContext?.episodioId,
                                userId: session.traumaContext.userId,
                                allSubsections: this.getDomainTemplates()
-                               //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
                               ] )
                return
             }
@@ -230,14 +218,13 @@ response.setHeader("Expires", "0")
                        episodeId: session.traumaContext?.episodioId,
                        userId: session.traumaContext.userId,
                        allSubsections:  this.getDomainTemplates()
-                       //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
                       ]
             }
         }
         else
         {
             flash.message = "registroClinico.warning.noHayRegistroParaLaSeccion"
-            redirect( controller:'records', action: 'show', id: session.traumaContext?.episodioId)
+            redirect( controller: 'records', action: 'show', id: session.traumaContext?.episodioId)
             return
         }
         
@@ -275,6 +262,7 @@ response.setHeader("Expires", "0")
      * Prueba para poder ver los arquetipos que estan cargados en cache.
      */
     def loadedArchetypes = {
+       
        def manager = ArchetypeManager.getInstance()
        render( manager.toString() )
     }
@@ -336,26 +324,26 @@ response.setHeader("Expires", "0")
             // Si es el save de un edit, borra el registro anterior y sustituye por el nuevo.
             if (params.mode == 'edit')
             {
-	            println "Esta seccion o entrada ya estaba registrada, se procede a eliminar el registro actual y sustituirlo por el nuevo ingreso..."
-	            
-	            //XStream xstream = new XStream()
-	            //println "COMPONENT ANTES"
-	            //println xstream.toXML(comp)
-	            
-	            comp.removeFromContent(item)
-	
-	            // FIXME: borra la raiz pero no borra los subitems, por ejemplo si es section, la borra pero no sus entries.
-	            // Se podria hacer que las entries pertenezcan a las sections, asi se elimina en cascada.
-	            // Tambien hay que ver que se eliminen los objetos mas bajo nivel.
-	            /**
-	             * http://grails.org/doc/latest/ref/Domain%20Classes/delete.html
-	             * By default Grails will use transactional write behind to perform the delete,
-	             * if you want to perform the delete in place then you can use the 'flush' argument.
-	             */
-	            item.delete(flush:true) // FIXME: delete no es en cascada si no se pone belongsTo en las clases hijas.
-	
-	            //println "COMPONENT DESPUES"
-	            //println xstream.toXML(comp)
+                println "Esta seccion o entrada ya estaba registrada, se procede a eliminar el registro actual y sustituirlo por el nuevo ingreso..."
+                
+                //XStream xstream = new XStream()
+                //println "COMPONENT ANTES"
+                //println xstream.toXML(comp)
+                
+                comp.removeFromContent(item)
+    
+                // FIXME: borra la raiz pero no borra los subitems, por ejemplo si es section, la borra pero no sus entries.
+                // Se podria hacer que las entries pertenezcan a las sections, asi se elimina en cascada.
+                // Tambien hay que ver que se eliminen los objetos mas bajo nivel.
+                /**
+                 * http://grails.org/doc/latest/ref/Domain%20Classes/delete.html
+                 * By default Grails will use transactional write behind to perform the delete,
+                 * if you want to perform the delete in place then you can use the 'flush' argument.
+                 */
+                item.delete(flush:true) // FIXME: delete no es en cascada si no se pone belongsTo en las clases hijas.
+    
+                //println "COMPONENT DESPUES"
+                //println xstream.toXML(comp)
             }
             else // Si no es save de edit, esta tratando de salvar de nuevo algo que ya habia salvado.
             {
@@ -464,8 +452,6 @@ response.setHeader("Expires", "0")
     
        XStream xstream = new XStream()
        //println xstream.toXML(rmobj)
-       println "Errores: " + bindingAOMRM.getErrores() + "\n"
-       println "TheErrors: " + bindingAOMRM.getErrors() + "\n\n"
     
        if (rmobj)
        {
@@ -657,7 +643,6 @@ println ""
                     mode: params.mode,
                     userId: session.traumaContext.userId,
                     allSubsections: this.getDomainTemplates()
-                    //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
                     ] )
             return
         }
@@ -684,7 +669,6 @@ println ""
               sections: sections,
               subsections: subsections,
               allSubsections: this.getDomainTemplates()
-              //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
             ]
         }
     }
@@ -723,7 +707,6 @@ println ""
                 episodeId: session.traumaContext?.episodioId,
                 sections: sections, // necesario para el menu
                 allSubsections: this.getDomainTemplates()
-                //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
-                ]
+               ]
     }
 }
