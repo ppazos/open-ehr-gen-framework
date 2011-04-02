@@ -25,7 +25,6 @@ class AjaxApiController {
 
     def hceService
     
-    
     // FIXME: tambien esta implementadas en GuiGenController
     
     /**
@@ -37,12 +36,18 @@ class AjaxApiController {
      */
     private Map getDomainTemplates()
     {
-        def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
-        def domainTemplates = grailsApplication.config.templates
-        routes.each{
-            domainTemplates = domainTemplates[it]
-        }
+        //def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
+        //def domainTemplates = grailsApplication.config.templates
+        //routes.each{
+        //    domainTemplates = domainTemplates[it]
+        //}
         //println domainTemplates
+        
+        // =============================================================
+        // Nuevo: para devolver los templates del dominio seleccionado
+        def domain = session.traumaContext.domainPath
+        def domainTemplates = grailsApplication.config.templates2."$domain"
+        // =============================================================
         
         return domainTemplates
     }
@@ -174,7 +179,6 @@ class AjaxApiController {
           }
         }
         
-        
         //render _codigos as JSON // manda class, deleted y demas
 
     } // findCIE10
@@ -229,9 +233,7 @@ class AjaxApiController {
         def template = TemplateManager.getInstance().getTemplate( templateId )
         
         // FIXME: hacer flujo de guardar y volver al registro clinico.
-        println pathValor.toString()
-        println "ERRORES: " + bindingAOMRM.getErrores() + "\n"
-        
+        //println pathValor.toString()
         //println xstream.toXML(rmobj)
         
         Composition comp = Composition.get(session.traumaContext.episodioId)
@@ -295,22 +297,22 @@ class AjaxApiController {
                 def subsections = this.getSubsections(rmobj.archetypeDetails.templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
                 
 
-				render( view: '../hce/DIAGNOSTICO-diagnosticos',
-				        model: [
-    				        patient: patient,
-    				        template: template,
-    				        sections: sections,
-    				        subsections: subsections,
-    				        episodeId: session.traumaContext?.episodioId,
-                            userId: session.traumaContext.userId,
-                            // Params para edit
-                            rmNode: rmobj, // si no pudo guardar no puedo hacer get a la base...
-                            index: bindingAOMRM.getRMRootsIndex(),
-                            errors: bindingAOMRM.getErrors(),
-                            allSubsections: this.getDomainTemplates()
-                            //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
-				        ] )
-				return
+                render( view: '../hce/DIAGNOSTICO-diagnosticos',
+                       model: [
+                           patient: patient,
+                           template: template,
+                           sections: sections,
+                           subsections: subsections,
+                           episodeId: session.traumaContext?.episodioId,
+                               userId: session.traumaContext.userId,
+                               // Params para edit
+                               rmNode: rmobj, // si no pudo guardar no puedo hacer get a la base...
+                               index: bindingAOMRM.getRMRootsIndex(),
+                               errors: bindingAOMRM.getErrors(),
+                               allSubsections: this.getDomainTemplates()
+                               //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
+                       ] )
+                return
             }
             else
             {
