@@ -18,7 +18,8 @@ class AuthorizationController {
                 // Pone al usuario en session
                 session.traumaContext = new HCESession( userId: login.id )
                 
-                redirect(controller:'records', action:'list')
+                //redirect(controller:'records', action:'list')
+                redirect(controller:'domain', action:'list')
                 return
             }
             else
