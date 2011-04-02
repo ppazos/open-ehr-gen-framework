@@ -11,9 +11,19 @@ import hce.HceService
 import tablasMaestras.*
 import hce.core.data_types.quantity.date_time.*
 
+// TEST Folder
+import hce.core.common.directory.Folder
+import hce.core.data_types.text.*
+import hce.core.common.archetyped.Archetyped
+import org.springframework.web.context.support.WebApplicationContextUtils
+//import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib // Para usar g.message
+
 class BootStrap {
 
     def hceService
+    
+    // Reference to Grails application. Lo inyecta.
+    def grailsApplication
     
     def init = { servletContext ->
      
@@ -22,6 +32,39 @@ class BootStrap {
         println "======= Bootstrap ======="
         println "======= +++++++++ ======="
         println ""
+        
+        // TEST Folder
+        //def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
+        def appContext = WebApplicationContextUtils.getWebApplicationContext( servletContext )
+        def messageSource = appContext.getBean( 'messageSource' )
+        
+        def folder
+        def domains = grailsApplication.config.domains
+        domains.each { domain ->
+           
+           folder = new Folder(
+              //name: new DvText(value: g.message(code: domain)),
+              name: new DvText(value: messageSource.getMessage(domain, new Object[2], new Locale('es'))),
+              path: domain,
+              archetypeNodeId: "at0001",         // Inventado
+              archetypeDetails: new Archetyped(  // Inventado
+                archetypeId: 'ehr.domain',
+                templateId: 'ehr.domain',
+                rmVersion: '1.0.2'
+              )
+           )
+           
+           // FIXME: no esta salvando...
+           // TODO: setear atributos de Locatable
+           
+           if (!folder.save())
+           {
+              println folder.errors
+              println folder.name.errors
+              println folder.archetypeDetails.errors
+           }
+        }
+        // /TEST Folder
         
         // Correccion de reloj segun uso horario
         // http://groovy.codehaus.org/JN0545-Dates

@@ -8,9 +8,62 @@ langs = ['es','en','pt'] // ISO 639-1 Code
 // TODO: el framework podria soportar multiples dominios ofreciendo una pantalla
 //       con todos los dominios disponibles al usuario (segun su perfil) luedo de
 //       que se loguea.
-domain = 'hce/trauma'
+
+// Nuevo para organizar los registros por domain
+// ver http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=12
+domains = [
+           '/domain.prehospitalario_same_uy',
+           '/domain.prehospitalario',
+           '/domain.emergencia',
+           '/domain.trauma',
+           '/domain.ambulatorio',
+           '/domain.internacion_domiciliaria',
+           '/domain.internacion_sala',
+           '/domain.internacion_ci',
+           '/domain.internacion_cti'
+           ]
+
+// FIXME: no deberia ir a buscar los templates a distintos directorios,
+//        distintos dominios pueden compartir templates.
+//domain = 'hce/trauma'
 //domain = 'hce/emergencia'
 
+// Configuracion nueva, para usar con dominios
+templates2 {
+   path = 'hce' // Path en disco de los templates, no debe empezar ni terminar en / porque TemplateManager poner las /
+   
+   // Configuracion de templates por dominio,
+   // cada dominio tiene un registro distinto
+   // formado por multiples templates
+   '/domain.prehospitalario_same_uy' {
+      PREHOSPITALARIO = ['same_uy', 'same_uy_ubicacion']
+   }
+   '/domain.trauma' {
+      // en la composition se listan las sections y subsections, si tiene una sola es que no hay subsecciones.
+      // con estos nombres se arman los nombres de los templates a pedir para cada registro.
+      INGRESO = ['triage'] //,'test_body_weight'] //, 'test_a1_a2', 'test_cluster', 'test_dates']
+      ADMISION = ['prehospitalario', 'contexto_del_evento']
+      ANAMNESIS = ['resumen_clinico']
+      EVALUACION_PRIMARIA = [
+                             'via_aerea',
+                             'columna_vertebral',
+                             'ventilacion',
+                             'estado_circulatorio',
+                             'disfuncion_neurologica'
+                            ]
+      PARACLINICA = ['pedido_imagenes', 'pedido_laboratorio']
+      EVALUACION_SECUNDARIA = ['exposicion_corporal_total']
+      DIAGNOSTICO = ['diagnosticos']
+      // decisiones terapeuticas evolutivas, ISS
+      COMUNES = ['movimiento_paciente']
+   }
+   '/domain.emergencia'  {
+      ACCIONES = ['adm_sust']
+      DIAGNOSTICO = ['diagnosticos']
+   }
+}
+
+/* templates2 es el nuevo
 templates {
     hce {
         trauma {
@@ -44,6 +97,7 @@ templates {
         }
     }
 }
+*/
 
 hce {
     patient_administration {
@@ -51,6 +105,7 @@ hce {
             local = true // busqueda de pacientes es local a no ser que diga lo contrario
         }
     }
+    close_record_job_on = false
 }
 
 openEHR.RMVersion = '1.0.2'
@@ -112,6 +167,9 @@ log4j = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
+//   appenders {
+//      file name:'file', file:'hibernate.log'
+//   }
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
 	       'org.codehaus.groovy.grails.web.pages', //  GSP
@@ -125,6 +183,9 @@ log4j = {
 	       'org.hibernate'
 
     warn   'org.mortbay.log'
+    
+    //info   'org.hibernate'
+    //debug   file:'org.hibernate'
 }
 
 
