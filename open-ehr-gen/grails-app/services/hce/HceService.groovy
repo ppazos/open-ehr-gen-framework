@@ -4,6 +4,8 @@
  */
 package hce
 
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+
 import hce.core.composition.* // Composition y EventContext
 import hce.core.data_types.text.* // DvText, DvCodedText, ...
 import hce.core.support.identification.TerminologyID
@@ -66,20 +68,12 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
         // Sacado de openehr terms en codeset languages
         compo.language = new CodePhrase(
                 codeString: 'es-uy',
-                terminologyId:
-                  new TerminologyID(
-                        name: 'ISO_639-1'
-                        // versionId // no parece haber versiones para el ISO 639-1
-                  )
+                terminologyId: TerminologyID.create('ISO_639-1', null)
           )
         // sacado de openehr terms en codeset countries
         compo.territory = new CodePhrase(
                 codeString: 'UY',
-                terminologyId:
-                  new TerminologyID(
-                        name: 'ISO_3166-1'
-                        // versionId // no parece haber versiones para el ISO_3166-1
-                  )
+                terminologyId: TerminologyID.create('ISO_3166-1', null)
           )
         
         // el registro de trauma es de tipo eventual, definido en el grupo
@@ -88,11 +82,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
                 value: "event",
                 definingCode: new CodePhrase(
                      codeString: '433',
-                     terminologyId:
-                       new TerminologyID(
-                            name: 'openehr'
-                            // versionId // no parece haber versiones
-                       )
+                     terminologyId: TerminologyID.create('openehr', null)
                 )
            )
         
@@ -113,10 +103,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
             value: "emergency care", // TODO: traducir
             definingCode: new CodePhrase(
               codeString: '227',
-              terminologyId: new TerminologyID(
-                name: 'openehr'
-                // versionId // no parece haber versiones
-              )
+              terminologyId: TerminologyID.create('openehr', null)
             ) // code phrase
           ), // setting
              
@@ -130,11 +117,11 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
                 value: _otherContext,
                 language: new CodePhrase(
                   codeString: 'es-uy',
-                  terminologyId: new TerminologyID( name: 'ISO_639-1' )
+                  terminologyId: TerminologyID.create('ISO_639-1', null)
                 ),
                 encoding: new CodePhrase(
                   codeString: 'UTF-8',
-                  terminologyId: new TerminologyID( name: 'IANA_character-sets' )
+                  terminologyId: TerminologyID.create('IANA_character-sets', null)
                 )
               ), // dvtext
               archetypeNodeId: "trauma.composition.otherContext.item",
@@ -312,7 +299,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
             value: 'physically present',
             definingCode: new CodePhrase(
               codeString: '219',
-              terminologyId: new TerminologyID( name: 'openehr' )
+              terminologyId: TerminologyID.create('openehr', null)
             )
           )
         )
@@ -324,7 +311,8 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
     /**
      * Obtiene el paciente PartySelf de una participacion en la composition si es que lo tiene.
      * Como las referencias a los pacientes son TODAS externas mediante PartyRef, sirve para 
-     * obtener el ID de referencia al paciente en el IMP, ese ID es el que esta guardado en la composition. 
+     * obtener el ID de referencia al paciente en el IMP, ese ID es el que esta guardado en la composition.
+     * pre: composition != null 
      */
     def PartySelf getPartySelfFromComposition( Composition composition )
     {
@@ -335,15 +323,27 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
         def patientParticipation = null
         if ( participations.size() > 0 )
         {
+           //println "hceService.getPartySelfFromComposition participations.size(): " + participations.size()
            patientParticipation = participations.find{ it.function.value == 'subject of care' } // FIXME: no usar 'subject of care', usar algo tipo el rol...
         }
         
         if (patientParticipation)
         {
-           if (patientParticipation.performer instanceof PartySelf) return patientParticipation.performer
+           //println "hceService.getPartySelfFromComposition patientParticipation: " + patientParticipation
+           //println "hceService.getPartySelfFromComposition patientParticipation.performer: " + patientParticipation.performer
+           //println "hceService.getPartySelfFromComposition patientParticipation.performer.getClass(): " + patientParticipation.performer.getClass()
+           //if (patientParticipation.performer instanceof PartySelf) // Dice que la clase es: hce.core.common.generic.PartyProxy_$$_javassist_49
+           if (patientParticipation.performer.getClassName() == 'PartySelf')
+           {
+              //println "hceService.getPartySelfFromComposition return PartySelf"
+              //return patientParticipation.performer // Error por javassist en lugar de PartySelf
+              return PartySelf.get(patientParticipation.performer.id)
+           }
         }
         
-        // No se encuentrael PartySelf de la composition
+        //println "hceService.getPartySelfFromComposition null"
+        
+        // No se encuentra el PartySelf de la composition
         return null
     }
     
@@ -358,6 +358,8 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
         
         def patientProxy = this.getPartySelfFromComposition( composition ) // usa operacion local
 
+        //println "hceService.getPatientFromComposition patientProxy: " + patientProxy
+        
 /** FIXME: me dio error al buscar un paciente teniendo la conf del IMP remoto del Maciel...
  * Caused by: java.lang.reflect.UndeclaredThrowableException
 at hce.HceService$$EnhancerByCGLIB$$a9b08e53.getPatientFromComposition(<generated>)
@@ -398,6 +400,7 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
                throw new Exception('Se encuentran: ' + patients.size() + ' pacientes a partir del ID: '+ patientProxy.externalRef.objectId )
            }
            
+           // TODO: verificar que patientProxy.externalRef.objectId no tiene clase javassist
            if (!patientProxy.externalRef.objectId instanceof UIDBasedID)
               throw new Exception('Se espera un UIDBasedID y el tipo del id es: ' + patientProxy.externalRef.objectId.getClass())
            
@@ -499,6 +502,8 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
         // si quisieramos soporte para indexar una estructura completa deberiamos
         // llegar a los ELEMENTS. Con este codigo recorre todas las sections y sus
         // hijos directos, pero no recorre mas abajo.
+           
+        // TODO: verificar que la clase de rmNode no es javassist
         if ( rmNode instanceof Section )
         {
             def iter = rmNode.items.iterator()
@@ -543,8 +548,12 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
         return null
     }
 
-    //--------------------------------------------------------------------------
 
+    
+    // FIXME:
+    // Esto no es mas necesario en la reapertura, porque cerrar el registro ya
+    // no implica que se movio al paciente.
+    /*
     def eliminarMovimientoComposition(Composition composition){
 
         def listaEntry = composition.content
@@ -566,9 +575,19 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
         println "==============================================================>>>>>>>>>>>>>>>>>>>>>>>>"
         println "==============================================================222"
     }
-
-    //-----------------------------------------------------
-
+    */
+    
+    
+    /**
+     * Sirve para saber si un determinado dominio tiene templates definidos,
+     * o sea si se puede registrar informacion clinica para ese dominio.
+     */
+    boolean domainHasTemplates( String domainPath )
+    {
+       return (ApplicationHolder.application.config.templates2."${domainPath}".size() > 0)
+    }
+    
+    
     void imprimirObjetoXML(Object o){
         println "-----------------"
         XStream xstream = new XStream();
