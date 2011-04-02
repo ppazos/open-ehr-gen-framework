@@ -85,14 +85,6 @@ class DemographicController{
         def id = null
         if (params.identificador)
             id = new UIDBasedID(value:params.root+'::'+params.identificador)
-            
-        /*
-        def candidatos1 = []
-        if (params.identificador)
-            candidatos1 = demographicService.findPersonById( new UIDBasedID(value:'::'+params.identificador) )
-            
-        println "CANDIDATOS 1: " + candidatos1
-        */
         
         // TODO: usar rango de fechas... si viene solo una se usa esa como bd.
         
@@ -288,8 +280,10 @@ class DemographicController{
                 return
             }
             
+            // Crea un PartyRef desde la composition hacia la persona usando una copia del id de la persona,
+            // esto crea otra instancia de ObjectID con el valor igual al id de la persona.
             def ids = persona.ids.toArray()
-            def partySelf = hceService.createPatientPartysSelf( ids[0].root, ids[0].extension)
+            def partySelf = hceService.createPatientPartysSelf( ids[0].root, ids[0].extension )
             def participation = hceService.createParticipationToPerformer( partySelf )
 
             // TODO: agregar un participation a la composition deberia hacerse tambien en HceService.
@@ -302,8 +296,10 @@ class DemographicController{
                 println "ERROR compo: " + composition.errors
             }
             
-            // Verifica si puede cerrar el registro, ver handler registrado para este evento.
-            EventManager.getInstance().handle("post_seleccionar_paciente_ok", [composition:composition])
+            
+            // Ejecuta eventos cuando el paciente seleccionado con exito.
+            EventManager.getInstance().handle("post_seleccionar_paciente_ok", [composition:composition, persona:persona])
+            
             
             //println "ERROR participation: " + participation.errors
             //println "ERROR partySelf: " + partySelf.errors
@@ -341,7 +337,7 @@ class DemographicController{
         // FIXME: si viene el id, verificar que no hay otro paciente con ese id, si lo hay, no dejar dar de alta, decirle que ya existe.
         
         // FIXME:  <%-- Solo se puede agregar un nuevo paciente si el repositorio es local --%>
-	    //  <g:if test="${ApplicationHolder.application.config.hce.patient_administration.serviceType.local}">
+        //  <g:if test="${ApplicationHolder.application.config.hce.patient_administration.serviceType.local}">
         
         if (params.doit)
         {
@@ -381,13 +377,18 @@ class DemographicController{
                     id = UIDBasedID.create(params.root, params.extension) // TODO: if !hasExtension => error
                     
                     // FIXME: verificar que no hay otro paciente con el mismo id
-					def existId = UIDBasedID.findByValue(id.value)
-					if (existId)
+                    println "===================================================="
+                    println "Busco por id para ver si existe: " + id.value
+                    def existId = UIDBasedID.findByValue(id.value)
+                    if (existId)
                     {
+                        println "Ya existe!"
                         flash.message = "Ya existe la persona con id: " + id.value + ", verifique el id ingresado o vuelva a buscar la persona"
                         def tiposIds = TipoIdentificador.list()
                         return [tiposIds: tiposIds]
                     }
+                    else
+                       println "No existe!"
                 }
                 else
                 {
@@ -398,19 +399,18 @@ class DemographicController{
                 }
             }
             
-            def name = new PersonName(params)
-            
             def person = new Person( params ) // sexo, fechaNac (no mas)
             
             def bd = DateConverter.dateFromParams( params, 'fechaNacimiento_' )
             person.setFechaNacimiento( bd )
 
             person.addToIds( id )
+            
+            def name = new PersonName(params)
             person.addToIdentities( name )
             
-            //person.fechaNacimiento = new Date(183, 11, 26)
-
             if (!person.save()) println person.errors
+            
             
             def role = new Role(timeValidityFrom: new Date(), type: "paciente", performer: person)
             if (!role.save()) println role.errors
