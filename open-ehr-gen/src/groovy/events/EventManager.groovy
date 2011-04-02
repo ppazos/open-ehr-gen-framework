@@ -55,7 +55,7 @@ class EventManager
          }
       }
       else
-         println "   - no se encontraron handlers registrados: " + handlers
+         println "   - no se encontraron handlers registrados: " + event
       // Si no hay handlers para el evento no pasa nada.
    }
    

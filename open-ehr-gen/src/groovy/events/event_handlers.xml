@@ -14,9 +14,13 @@
     <handler name="SeleccionarPacienteEventHandler" />
   </event>
   <event name="post_save_ok">
-    <handler name="VerificarCondicionCierreEventHandler" />
+    <!-- Pablo: Ahora el cierre es manual.
+      <handler name="VerificarCondicionCierreEventHandler" />
+    -->
   </event>
   <event name="post_seleccionar_paciente_ok">
-    <handler name="VerificarCondicionCierreEventHandler" />
+    <!-- Pablo: Ahora el cierre es manual.
+      <handler name="VerificarCondicionCierreEventHandler" />
+    -->
   </event>
 </event_handlers>
