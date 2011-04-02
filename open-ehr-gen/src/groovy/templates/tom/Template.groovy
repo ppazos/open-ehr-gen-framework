@@ -54,6 +54,7 @@ class Template {
         
         //return archRef?.fields.find{ it.path == path }
         def alternatives = archRef?.fields.findAll{ path.startsWith(it.path) }
+        
         return alternatives.max{ it.path.length() }
     }
     

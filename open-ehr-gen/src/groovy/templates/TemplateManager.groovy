@@ -14,10 +14,6 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
  *
  */
 class TemplateManager {
-
-    // FIXME: configuracion de la aplicacion
-    //static String templateRepositoryPath = "templates/hce/trauma"
-    
     
     // FIXME> puede ser necesario sincronizar las estructuras porque son compartidas...
     // Cache: templateId => template
@@ -244,8 +240,12 @@ class TemplateManager {
             //def templateFile = new File( this.templateRepositoryPath+"/"+templateId+".xml" )
             
             //ApplicationHolder.application.config.domain // "templates/hce/trauma"
-            println "  Carga desde: "+ "templates/" + ApplicationHolder.application.config.domain +"/"+ templateId +".xml"
-            def templateFile = new File( "templates/" + ApplicationHolder.application.config.domain +"/"+ templateId +".xml" )
+            //println "  Carga desde: "+ "templates/" + ApplicationHolder.application.config.domain +"/"+ templateId +".xml"
+            //def templateFile = new File( "templates/" + ApplicationHolder.application.config.domain +"/"+ templateId +".xml" )
+            
+            // Nuevo!
+            println "  Carga desde: "+ "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml"
+            def templateFile = new File( "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml" )
             
             // PARSEAR template
             Template template = parseTemplate( templateFile )

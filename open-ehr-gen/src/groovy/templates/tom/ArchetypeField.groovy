@@ -1,6 +1,3 @@
-/**
- * 
- */
 package templates.tom
 
 import templates.tom.constraints.*
@@ -8,7 +5,6 @@ import templates.tom.controls.*
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
- *
  */
 class ArchetypeField {
 
