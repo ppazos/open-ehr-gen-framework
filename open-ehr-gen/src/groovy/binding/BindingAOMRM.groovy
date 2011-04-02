@@ -22,7 +22,7 @@ import hce.core.data_types.quantity.date_time.*
 import hce.core.data_types.quantity.*
 import hce.core.data_types.basic.*
 import hce.core.data_types.text.*
-import hce.core.RMObject
+//import hce.core.RMObject
 import hce.core.common.archetyped.*
 import hce.core.support.identification.*
 
@@ -38,14 +38,10 @@ class BindingAOMRM {
     //LinkedHashMap<String, Locatable> mapaRMO = new LinkedHashMap<String, Locatable>()
     def mapaRMO = [:]
     
-    
     // Estructura que mapea, nombre de arquetipo, con objeto Locatable
     // en donde se instancia el bindeo para ese arquetipo
     // Inicializo lista de referencias a ArchetypeSlot
     // LinkedHashMap<String, Locatable> mapaRefArchSlot = new LinkedHashMap<String, Locatable>() 
-    
-    // SOLUCION INICIAL DE SLOT
-    //def mapaRefArchSlot = [:]
     
     // Todas estas tienen la misma clave
     def tempSlotRefs = [:] // slotNodePath => arquetipo referenciado
@@ -54,35 +50,30 @@ class BindingAOMRM {
     
     // Resultado final del procesamiento de los 3 mappings anteriores.
     def slotRefs = []
-	
-	
-	
-	// Prueba para usar como indice de las estructuras del RM mapeadas con cada arquetipo referenciado.
-	def idx = [:]
-	
-	def getRMRootsIndex()
+    
+    
+    // Prueba para usar como indice de las estructuras del RM mapeadas con cada arquetipo referenciado.
+    def idx = [:]
+    
+    def getRMRootsIndex()
     {
-		this.slotRefs.each { slotRef ->
-			
-			def bindedRef = this.mapaRMO[slotRef.getRefArqId()]
-			idx[slotRef.getRefArqId()] = bindedRef
-		}
-		
-		// FIXME: el raiz tambien hay que meterlo.
-		// ESto lo pone bind con la estructura final, yo no tengo el nombre del arquetipo aca.
-		//idx[] = resultBindeo // OJO! ya tiene los demas objetos enganchados!
-		
-		return this.idx
-	}
-	
+        this.slotRefs.each { slotRef ->
+            
+            def bindedRef = this.mapaRMO[slotRef.getRefArqId()]
+            idx[slotRef.getRefArqId()] = bindedRef
+        }
+        
+        // FIXME: el raiz tambien hay que meterlo.
+        // ESto lo pone bind con la estructura final, yo no tengo el nombre del arquetipo aca.
+        //idx[] = resultBindeo // OJO! ya tiene los demas objetos enganchados!
+        
+        return this.idx
+    }
+    
     // Almacena el resultado del bindeo
-    // PAB:
     // FIXME: no se si es necesaria, el resultado se retorna del metodo bind.
     Locatable resultBindeo
     
-    
-    // Lista de errores surgidos en el bindeo por chequeo de ocurrencias de los nodos.
-    List<String> listaErrores = []
 
     // Lista definitiva de errores de bindeo.
     // FIXME: este campo no se usa, ahora se usa solo hasErrors como bandera de que
@@ -91,7 +82,7 @@ class BindingAOMRM {
     def errors = new Errors()
     def getErrors()
     {
-    	return errors
+        return errors
     }
     
     // Si la validacion en el save del GORM no detecta errores, aunque yo haya metido un reject
@@ -108,6 +99,7 @@ class BindingAOMRM {
     // PAB: me quedo con la instancia global de FactoryObjectRM para no pedirla cada vez.
     // TODO: que no sea singleton y que le pueda pasar un locale para obtener los textos de las ontologias de los coded_text.
     def rmFactory // = FactoryObjectRM.getInstance()
+    
     
     /**
      * Constructor al que se le pasa la session para acceder al locale seleccionado.
@@ -140,16 +132,6 @@ class BindingAOMRM {
     Locatable getResultBindeo()
     {
         return resultBindeo
-    }
-
-    /**
-     * Retorna los errores surgidos en el ultimo bindeo realizado con el objeto
-     *
-     * @return Ultimo bindeo
-     */
-    List<String> getErrores()
-    {
-        return listaErrores
     }
     
     /**
@@ -286,6 +268,9 @@ class BindingAOMRM {
             // PAB: poda previa, si no tengo pathValor para el arq, ni siquiera llamo al bindArq
             // Si hago esta poda me quedo sin los arquetipos de SECTION que tienen solo SLOTS
             // y no tienen ningun pathValor
+            
+            //println "========================================="
+            //println "bind Entry: " + entry
 
             // PAB: (***) rmObject puede ser null si no vienen valores para bindear...
             def rmObject = bindArquetipo(entry.value, pathValorSinIdArq, templateId)
@@ -502,32 +487,32 @@ class BindingAOMRM {
         //println "==== Setear las paths a los objetos del RM bindeados ..."
 
         if (bindedObjs instanceof List)
-		{
-		    //println "==== bindCObject######## ES UNA LIsTA @@@@@@@@@@"
-			bindedObjs.each {
-				if (it) // no deberia haber nulos...
-				{
-					if (it instanceof Locatable)
-					    it.path = co.path()
-					else
+        {
+            //println "==== bindCObject######## ES UNA LIsTA @@@@@@@@@@"
+            bindedObjs.each {
+                if (it) // no deberia haber nulos...
+                {
+                    if (it instanceof Locatable)
+                        it.path = co.path()
+                    else
                     {
-						//println "==== bindCObject######## NO ES LOCATABLE! es: "+ it.getClass() +" @@@@@@@@@@"
+                        //println "==== bindCObject######## NO ES LOCATABLE! es: "+ it.getClass() +" @@@@@@@@@@"
                     }
-				}
-			}
-		}
-		else
-		{
-			//println "==== bindCObject######## ES UN OBJETO SIMPLE @@@@@@@@@@"
-			if (bindedObjs instanceof Locatable)
-				bindedObjs.path = co.path()
-			else
-            {
-			    //println "==== bindCObject######## NO ES LOCATABLE! es: "+ bindedObjs.getClass() +" @@@@@@@@@@"
+                }
             }
-		}
-		
-		return bindedObjs
+        }
+        else
+        {
+            //println "==== bindCObject######## ES UN OBJETO SIMPLE @@@@@@@@@@"
+            if (bindedObjs instanceof Locatable)
+                bindedObjs.path = co.path()
+            else
+            {
+                //println "==== bindCObject######## NO ES LOCATABLE! es: "+ bindedObjs.getClass() +" @@@@@@@@@@"
+            }
+        }
+        
+        return bindedObjs
     }
 
     /**
@@ -590,10 +575,10 @@ class BindingAOMRM {
      */
     def bindCComplexObject(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
-        // println "==== bindCComplexObject"
+         println "==== bindCComplexObject"
         //println "   = pathValor: " + pathValor
         //println "   = attributes: " + cco.getAttributes()
-        // println "   = typeName: " + cco.rmTypeName
+         println "   = typeName: " + cco.rmTypeName
         // println "======================================================="
         
         def rmTypeName = cco.rmTypeName
@@ -677,6 +662,12 @@ class BindingAOMRM {
             // atributo es uno solo: value.
             if (cco.rmTypeName == "ELEMENT" )
             {
+                println 'rmTypeName=ELEMENT'
+                println 'bindedValues: '+ listaListRMO
+               
+                /*
+                // OJO: nunca entra aca porque si no hay valores lo que viene es una lista con una lista
+                // vacia adentro. O sea que la lista externa tiene 1 elemento siempre.
                 // FIXME: verificar errores por ocurrencias
                 if (listaListRMO.size()==0) // No pudo bindear el attr 'value'
                 {
@@ -684,25 +675,18 @@ class BindingAOMRM {
                     //println "~~~~~ No pudo bindear el attr 'value'"
                     //println "~~~~~ No pudo bindear el attr 'value'"
                     
+                    println 'No se bindearon valores para el element, y si la occurrence del Element es 1..1, deberia marcar el error en su padre' 
+                   
                     // TODO: verificar si hay un caso que caiga aca, me parece que siempre
                     //       que siempre mete una lista en la lista, aunque puede ser vacia.
-                    /* FIXME:
-                     * El error de ocurrencia se debe verificar en el ELEMENT, pero deben ponerse
-                     * las paths dependiendo del tipo de su value. Por ejemplo si es unQuantity,
-                     * hay que ver si se ponen errores para las 2 paths, y el element debe saber
-                     * los nombres de los atributos sabiendo el tipo del value.
-                     * Esto se resolveria llamando a un metodo que se encargue de averiguar
-                     * los nombres de lo atributos, asi aqui veo so el element tiene
-                     * las ocurrencias correctas y se que  es porque faltan valores para
-                     * paths de sus atributos
-                     */
 
                     // Quiero que esté el elemento aunque no tenga value, así valido con GORM
                     //return null // null element
                 }
+                */
                 if (listaListRMO.size()==1) // Ha bindeado el 'value'
                 {
-                    def rmObjectsForValue = listaListRMO[0] // Puede ser una lista de objetos
+                    def rmObjectsForValue = listaListRMO[0] // Puede ser una lista de objetos (puede ser vacia)
                     
                     /* FIXME:
                      * El error de ocurrencia se debe verificar en el ELEMENT, pero deben ponerse
@@ -710,9 +694,8 @@ class BindingAOMRM {
                      * hay que ver si se ponen errores para las 2 paths, y el element debe saber
                      * los nombres de los atributos sabiendo el tipo del value.
                      * Esto se resolveria llamando a un metodo que se encargue de averiguar
-                     * los nombres de lo atributos, asi aqui veo so el element tiene
-                     * las ocurrencias correctas y se que  es porque faltan valores para
-                     * paths de sus atributos
+                     * los nombres de lo atributos, asi aqui veo so el element tiene las ocurrencias
+                     * correctas y se que  es porque faltan valores para paths de sus atributos
                      */
                     /**
                      * LA CONDICION CORRECTA SERIA, SI LA CANTIDAD DE LOS VALORES QUE
@@ -850,6 +833,8 @@ class BindingAOMRM {
             } // caso ELEMENT
             else
             {
+                println "No es Element es " + cco.rmTypeName
+                
                 // FIXME: todo este codigo lo dejo para otros casos, no se si para CLUSTERS hay que hacer algo
                 //        parecido que para ELEMENT, DV_COUNT o DV_BOOLEAN que se hace arriba.
                 
@@ -884,17 +869,17 @@ class BindingAOMRM {
                 rmObject = rmFactory."$factoryRMMethod"(listaListRMO, arquetipo, arquetipo.node(cco.path()).nodeID, tempId)
 
 
-				// Ticket #17: http://code.google.com/p/open-ehr-sa/issues/detail?id=17
-				// Ver si el rmTypeName es de un tipo que tiene un atributo multiples,
-				// por ahora con ITEM_LIST, ITEM_TREE e ITEM_TABLE. luego vemos otros.
-				// Validar la cardinalidad de esos atributos multiples.
+                // Ticket #17: http://code.google.com/p/open-ehr-sa/issues/detail?id=17
+                // Ver si el rmTypeName es de un tipo que tiene un atributo multiples,
+                // por ahora con ITEM_LIST, ITEM_TREE e ITEM_TABLE. luego vemos otros.
+                // Validar la cardinalidad de esos atributos multiples.
                 // FIXME: Para ejecutar todo este codigo, rmObject deberia ser Pathable,
                 //        si es una lista sonamos. El tema es que cuando cco.rmTypeName
                 //        es ITEM_STRUCTURE,rmObject siempre será pathable.
 
-                //println "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-				if (cco.rmTypeName == "ITEM_LIST")
-				{
+                println "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+                if (cco.rmTypeName == "ITEM_LIST")
+                {
                     def multipleAttr = cco.attributes.find{ it.rmAttributeName == "items" }
                     if (multipleAttr.cardinality.interval.lower > rmObject.items.size())
                     {
@@ -902,7 +887,7 @@ class BindingAOMRM {
                         this.hasErrors = true
                         rmObject.errors.rejectValue("items","ITEM_LIST.error.cardinality")
                     }
-				}
+                }
                 else if (cco.rmTypeName == "ITEM_TREE")
                 {
                     def multipleAttr = cco.attributes.find{ it.rmAttributeName == "items" }
@@ -924,6 +909,25 @@ class BindingAOMRM {
                         this.hasErrors = true
                         rmObject.errors.rejectValue("items","ITEM_TABLE.error.cardinality")
                     }
+                }
+                else if (cco.rmTypeName == "ITEM_SINGLE")
+                {
+                   //println "chequeo nuevo item single"
+                   // cco.attributes[0] CSingleAttribute
+                   // cco.attributes[0].getChildren() List<CObject>
+                   // cco.attributes[0].getChildren()[0].occurrences Interval
+                   //println "cco attributes: " + cco.attributes[0].getChildren()[0].occurrences.lower // Ocurrencia del element hijo
+                   //println "rmObject: " + rmObject // ItemSingle
+                   
+                   // Si no bindea el element, pero era obligatorio, deberia poner el error en el ItemSingle padre.
+                   // No es solo para occ.lower = 1, es para todo occ.lower > 0
+                   // Igual aca viene un solo valor, y dentro de un ItemSingle, el Element no puede tener * ocurrencias.
+                   if ( cco.attributes[0].getChildren()[0].occurrences.lower == 1 && !rmObject.item )
+                   {
+                      this.hasErrors = true
+                      rmObject.errors.rejectValue("item","ITEM_SINGLE.error.occurrences")
+                   }
+                   
                 }
                 //println "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 
@@ -988,9 +992,9 @@ class BindingAOMRM {
                     /*
                     if ( countValues(valuesList)<min) // hay menos elementos de los que se esperaban.
                     {
-						errors.add(arquetipo.archetypeId.value,
-								cco, //cco.path(),
-								Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
+                        errors.add(arquetipo.archetypeId.value,
+                                cco, //cco.path(),
+                                Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
                     }
                     */
                     
@@ -1019,11 +1023,11 @@ class BindingAOMRM {
                         //println "@@@@ FIXME @@@@"
                         //println "@@@@ @@@@@ @@@@"
 //                      if (min > 0)
-//						{
-//							errors.add(arquetipo.archetypeId.value,
-//									cco, //cco.path(),
-//									Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
-//						}
+//                        {
+//                            errors.add(arquetipo.archetypeId.value,
+//                                    cco, //cco.path(),
+//                                    Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
+//                        }
                     }
                     else
                     {
@@ -1175,11 +1179,11 @@ class BindingAOMRM {
             //println "@@@@ FIXME @@@@"
             //println "@@@@ @@@@@ @@@@"
 //            if (min>0)
-//			{
-//				errors.add(arquetipo.archetypeId.value,
-//						cpo, //cpo.path(),
-//						Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
-//			}
+//            {
+//                errors.add(arquetipo.archetypeId.value,
+//                        cpo, //cpo.path(),
+//                        Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
+//            }
             
             // FIXME: deberia tirar igual el objeto con valor null y dejar que valide el GORM.
             return null
@@ -1209,17 +1213,12 @@ class BindingAOMRM {
                 // FIXED: countValues cuenta los valores no nulos.
                 // (AAA) verificacion de errores de ocurrencias para cuando hay multiples valores
                 
-                //println "@@@@ @@@@@ @@@@"
-                //println "@@@@ FIXME @@@@"
-                ///println "     VERIFICACION DE ERRORES DE OCURRENCIAS PARA EL PrimitiveObject CASO ''Valores multiples''"
-                //println "@@@@ FIXME @@@@"
-                //println "@@@@ @@@@@ @@@@"
+                // VERIFICACION DE ERRORES DE OCURRENCIAS PARA EL PrimitiveObject CASO ''Valores multiples''
 //                if ( countValues(valuesList)<min) // hay menos elementos de los que se esperaban.
 //                {
-//                    //listaErrores.add( fullPath(arquetipo,cpo) )
-//					errors.add(arquetipo.archetypeId.value,
-//							cpo, //cpo.path(),
-//							Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
+//                    errors.add(arquetipo.archetypeId.value,
+//                            cpo, //cpo.path(),
+//                            Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
 //                }
                 
                 valuesList.each { value ->
@@ -1243,11 +1242,11 @@ class BindingAOMRM {
                     //println "@@@@ FIXME @@@@"
                     //println "@@@@ @@@@@ @@@@"
 //                    if (min > 0)
-//					{
-//						errors.add(arquetipo.archetypeId.value,
-//								cpo, //cpo.path(),
-//								Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
-//					}
+//                    {
+//                        errors.add(arquetipo.archetypeId.value,
+//                                cpo, //cpo.path(),
+//                                Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
+//                    }
                 }
                 else
                 {
@@ -1564,10 +1563,10 @@ class BindingAOMRM {
                 // ERROR: no se pudo parsear el valor
                 // TODO: podria preguntar por el tipo de la except... igual se que la except es por el mal parseo... java.lang.NumberFormatException
                 
-				errors.add(arquetipo.archetypeId.value,
-							ci, //ci.path(),
-							Errors.ERROR_BAD_FORMAT) // TODO: error por tipo rm
-				
+                errors.add(arquetipo.archetypeId.value,
+                            ci, //ci.path(),
+                            Errors.ERROR_BAD_FORMAT) // TODO: error por tipo rm
+                
                 return null
             }
         }
@@ -1650,7 +1649,6 @@ class BindingAOMRM {
         if (pathValorCDvOrdinal.size() == 0)
         {
             // La verificacion de ocurrencias la debe hacer el element.
-            //if (min > 0) listaErrores.add( fullPath(arquetipo,cdvo) )
             
             // FIXME:
             // Los CDvQuantity no tienen nodeID, llegan hasta el ELEMENT que los contiene.
@@ -1660,7 +1658,6 @@ class BindingAOMRM {
             //println cdvo.nodeID
             //println arquetipo.node(cdvo.path()).nodeID
             //println "yyyyyyyyyy"
-            
             
             // FIX: para qe valide el triage, que si no meto valor, no muestra error
             //      esto es analogo a lo que se hace en bindDV_TEXT
@@ -1705,12 +1702,12 @@ class BindingAOMRM {
                         //        asi si vienen 5 valores y 2 son vacios, registro que el 2 y el 4 son los que estan vacios.
                         /* El ERROR DE OCURRENCIAS LO DEBERIA VERIFICAR EL ELEMENT donde se meten los valores bindeados aca.
                         if (min > 0)
-						{
-							errors.add(arquetipo.archetypeId.value,
-									cdvo, //cdvo.path(),
-									Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
-						}
-						*/
+                        {
+                            errors.add(arquetipo.archetypeId.value,
+                                    cdvo, //cdvo.path(),
+                                    Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
+                        }
+                        */
                     }
                     else
                         result << rmFactory.createDvOrdinal(cdvo, value, arquetipo, arquetipo.node(cdvo.path()).nodeID, tempId)
@@ -1724,12 +1721,12 @@ class BindingAOMRM {
                 {
                     /* TODO: Los errores de ocurrencias los deberia validar el ELEMENT
                     if (min > 0)
-					{
-						errors.add(arquetipo.archetypeId.value,
-								cdvo, //cdvo.path(),
-								Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
-					}
-					*/
+                    {
+                        errors.add(arquetipo.archetypeId.value,
+                                cdvo, //cdvo.path(),
+                                Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
+                    }
+                    */
                 }
                 else
                     result << rmFactory.createDvOrdinal(cdvo, values, arquetipo, arquetipo.node(cdvo.path()).nodeID, tempId)
@@ -1779,24 +1776,24 @@ class BindingAOMRM {
                 // Si vienen magnitudes, tengo que sacar las unidades del arquetipo.
                 if (magnitudes)
                 {
-	                List<CDvQuantityItem> listQI = cdvc.list // Saca las unidades del arquetipo, solo sirve si hay una unica unidad...
-	                
-	                // LEA: Un quantity siempre debe tener unidad, pero se puede definir un quantity sin unidad.
-	                // PAB: Tomamos como convencion que siempre definimos en el arquetipo la unidad.
-	                //
-	                if (listQI)
-	                { 
-	                    if (listQI.size()==1) // Obtengo la unica unidad del arquetipo
-	                        unidades = listQI[0].units
-	                    else
-	                        throw new Exception("No viene la unidad de la web y el arquetipo "+ arquetipo.archetypeId.value +" define muchas unidades para CDvQuantity: "+ cdvc.path())
-	                }
-	                else
-	                {
-	                    // FIXME: siempre debe haber unidad
-	                    //unidad = ""
-	                    throw new Exception("No se definio la unidad de CDvQuantity "+ cdvc.path() +" en arquetipo: " + arquetipo.archetypeId.value)
-	                }
+                    List<CDvQuantityItem> listQI = cdvc.list // Saca las unidades del arquetipo, solo sirve si hay una unica unidad...
+                    
+                    // LEA: Un quantity siempre debe tener unidad, pero se puede definir un quantity sin unidad.
+                    // PAB: Tomamos como convencion que siempre definimos en el arquetipo la unidad.
+                    //
+                    if (listQI)
+                    { 
+                        if (listQI.size()==1) // Obtengo la unica unidad del arquetipo
+                            unidades = listQI[0].units
+                        else
+                            throw new Exception("No viene la unidad de la web y el arquetipo "+ arquetipo.archetypeId.value +" define muchas unidades para CDvQuantity: "+ cdvc.path())
+                    }
+                    else
+                    {
+                        // FIXME: siempre debe haber unidad
+                        //unidad = ""
+                        throw new Exception("No se definio la unidad de CDvQuantity "+ cdvc.path() +" en arquetipo: " + arquetipo.archetypeId.value)
+                    }
                 }
             }
             else if (pathValor.size() == 2)
@@ -1847,21 +1844,21 @@ class BindingAOMRM {
                             // de chequear y reportar el error, si es que hay.
                             def rmObj = rmFactory.createDvQuantity(magnitud, unidad, arquetipo, cdvc.nodeID, tempId)
 
-							// ABC*
-							// prueba para retornar null de createDvQuantity
-							if (rmObj)
-							{
-								// VERIFICACION DE ERRORES DE RANGO.
-								// Si el objeto se crea correctamente, verifico la restriccion de rango del arquetipo, si es que la hay.
-								if (!rmObj.errors.hasErrors())
-								{
-								    this.verifyDvQuantityRange(cdvc, rmObj) // Si hay error, lo agrega al rmObj, pone hasErrors en true si hay error.
-								}
-	                            else
-	                               this.hasErrors = true
-								
-								result << rmObj
-							}
+                            // ABC*
+                            // prueba para retornar null de createDvQuantity
+                            if (rmObj)
+                            {
+                                // VERIFICACION DE ERRORES DE RANGO.
+                                // Si el objeto se crea correctamente, verifico la restriccion de rango del arquetipo, si es que la hay.
+                                if (!rmObj.errors.hasErrors())
+                                {
+                                    this.verifyDvQuantityRange(cdvc, rmObj) // Si hay error, lo agrega al rmObj, pone hasErrors en true si hay error.
+                                }
+                                else
+                                   this.hasErrors = true
+                                
+                                result << rmObj
+                            }
 
                             index++
                         }
@@ -1880,21 +1877,21 @@ class BindingAOMRM {
                         // de chequear y reportar el error, si es que hay.
                         def rmObj = rmFactory.createDvQuantity(magnitud, unidad, arquetipo, cdvc.nodeID, tempId)
                         
-						// ABC*
-						// prueba para retornar null de createDvQuantity
-						if (rmObj)
-						{
-		                    // VERIFICACION DE ERRORES DE RANGO.
-							// Si el objeto se crea correctamente, verifico la restriccion de rango del arquetipo, si es que la hay.
-							if (!rmObj.errors.hasErrors())
-							{
-							    this.verifyDvQuantityRange(cdvc, rmObj) // Si hay error, lo agrega al rmObj, pone hasErrors en true si hay error.
-							}
-	                        else
-	                            this.hasErrors = true
-	                        
-	                        result << rmObj
-						}
+                        // ABC*
+                        // prueba para retornar null de createDvQuantity
+                        if (rmObj)
+                        {
+                            // VERIFICACION DE ERRORES DE RANGO.
+                            // Si el objeto se crea correctamente, verifico la restriccion de rango del arquetipo, si es que la hay.
+                            if (!rmObj.errors.hasErrors())
+                            {
+                                this.verifyDvQuantityRange(cdvc, rmObj) // Si hay error, lo agrega al rmObj, pone hasErrors en true si hay error.
+                            }
+                            else
+                                this.hasErrors = true
+                            
+                            result << rmObj
+                        }
                     }
                 }
                 else if (magnitudes instanceof String && unidades instanceof String) // Si ambos son simples
@@ -1908,21 +1905,21 @@ class BindingAOMRM {
                     // de chequear y reportar el error, si es que hay.
                     def rmObj = rmFactory.createDvQuantity(magnitud, unidad, arquetipo, cdvc.nodeID, tempId)
 
-					// ABC*
-					// prueba para retornar null de createDvQuantity
-					if (rmObj)
-					{
-	                    // VERIFICACION DE ERRORES DE RANGO.
-	                    // Si el objeto se crea correctamente, verifico la restriccion de rango del arquetipo, si es que la hay.
-	                    if (!rmObj.errors.hasErrors())
-	                    {
-	                        this.verifyDvQuantityRange(cdvc, rmObj) // Si hay error, lo agrega al rmObj, pone hasErrors en true si hay error.
-	                    }
-	                    else
-	                        this.hasErrors = true
-	                    
-	                    result << rmObj
-					}
+                    // ABC*
+                    // prueba para retornar null de createDvQuantity
+                    if (rmObj)
+                    {
+                        // VERIFICACION DE ERRORES DE RANGO.
+                        // Si el objeto se crea correctamente, verifico la restriccion de rango del arquetipo, si es que la hay.
+                        if (!rmObj.errors.hasErrors())
+                        {
+                            this.verifyDvQuantityRange(cdvc, rmObj) // Si hay error, lo agrega al rmObj, pone hasErrors en true si hay error.
+                        }
+                        else
+                            this.hasErrors = true
+                        
+                        result << rmObj
+                    }
                 }
                 // No hay otro caso posible
             }
@@ -1934,7 +1931,7 @@ class BindingAOMRM {
         }
         else
         {
-			// FIXME: no tirar excepcion, devolver null y hacer un log a disco o mandar por mail.
+            // FIXME: no tirar excepcion, devolver null y hacer un log a disco o mandar por mail.
             throw new Exception("Error en bindCDvQuantity, hay mas de 2 paths para este nodo... hay: " + pathValor.size())
         }
         
@@ -1997,12 +1994,12 @@ class BindingAOMRM {
         {
             /* Los errores de ocurrencias los deberia validar el element
             if (min > 0)
-			{
-				errors.add(arquetipo.archetypeId.value,
-							ccp, //ccp.path(),
-							Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
-			}
-			*/
+            {
+                errors.add(arquetipo.archetypeId.value,
+                            ccp, //ccp.path(),
+                            Errors.ERROR_OCCURRENCES) // TODO: error por tipo rm
+            }
+            */
             // FIXME: creo que deberia tirar el objeto con valor null para que valide el
             //        GORM y luego el ELEMENT.
             return null
@@ -2380,8 +2377,8 @@ class BindingAOMRM {
 
                 if (rmObj.errors.hasErrors())
                 {
-				    // Marco que hubo error para que el controller mande a edit
-				    //this.hasErrors = true   
+                    // Marco que hubo error para que el controller mande a edit
+                    //this.hasErrors = true   
                 }
                 
                 result << rmObj
@@ -2412,19 +2409,19 @@ class BindingAOMRM {
             //println "==== DICE QUE NO HAY VALORES"
             def rmObj = rmFactory.createDV_COUNT(null, arquetipo, cco.nodeID, tempId)
 
-			// ABC*
-			// prueba para retornar null de createDV_COUNT
-			if (rmObj)
-			{
-	            if (rmObj.errors.hasErrors())
-	            {
-	                this.hasErrors = true
-	                //println "==== EL ERROR QUE DA ES: " + rmObj.errors
-	            }
-	            
-	            result << rmObj
-			}
-			
+            // ABC*
+            // prueba para retornar null de createDV_COUNT
+            if (rmObj)
+            {
+                if (rmObj.errors.hasErrors())
+                {
+                    this.hasErrors = true
+                    //println "==== EL ERROR QUE DA ES: " + rmObj.errors
+                }
+                
+                result << rmObj
+            }
+            
             return result
         }
         else if (pathValor.size()==1) // Si viene una path
@@ -2443,23 +2440,23 @@ class BindingAOMRM {
                     // Pruebo crear el obj aunque el valor sea incorrecto, asi pongo el error adentro.
                     def rmObj = rmFactory.createDV_COUNT( value, arquetipo, cco.nodeID, tempId)
 
-					// ABC*
-					// prueba para retornar null de createDV_COUNT
-					if (rmObj)
-					{
-	                    // Veo error de rangos
-						if (!rmObj.errors.hasErrors())
-	                    {
-	                        this.verifyDvCountRange( cco, rmObj )
-	                    }
-	                    else
-						{
-	                        //println "==== EL ERROR QUE DA ES: " + rmObj.errors
-	                        this.hasErrors = true
-	                    }
-	
-	                    result << rmObj
-					}
+                    // ABC*
+                    // prueba para retornar null de createDV_COUNT
+                    if (rmObj)
+                    {
+                        // Veo error de rangos
+                        if (!rmObj.errors.hasErrors())
+                        {
+                            this.verifyDvCountRange( cco, rmObj )
+                        }
+                        else
+                        {
+                            //println "==== EL ERROR QUE DA ES: " + rmObj.errors
+                            this.hasErrors = true
+                        }
+    
+                        result << rmObj
+                    }
                 }
             }
             else // hay un solo valor
@@ -2475,15 +2472,15 @@ if (rmObj)
 {
 
                 // Verifico error de rangos
-				if (!rmObj.errors.hasErrors())
+                if (!rmObj.errors.hasErrors())
                 {
                     this.verifyDvCountRange( cco, rmObj )
                 }
                 else
-				{
+                {
                     //println "==== EL ERROR QUE DA ES: " + rmObj.errors
                     this.hasErrors = true
-				}
+                }
 
                 result << rmObj
 }
@@ -2491,8 +2488,8 @@ if (rmObj)
             
             return result // puede ser vacia
         }
-		
-		// FIXME: no tirar excepcion, devolver null y hacer un log a disco o mandar por mail.
+        
+        // FIXME: no tirar excepcion, devolver null y hacer un log a disco o mandar por mail.
         // por ahora no hay un caso donde venga el valor y otro dato.
         throw new Exception("Hay mas de una path para bindDV_COUNT, hay: " + pathValor.size())
 
@@ -2500,26 +2497,26 @@ if (rmObj)
     
     def verifyDvCountRange( CComplexObject constraint, DvCount rmObj )
     {
-    	def cattr = constraint.attributes.find{it.rmAttributeName=='magnitude'}
+        def cattr = constraint.attributes.find{it.rmAttributeName=='magnitude'}
         if ( cattr )
         {
             def interval = cattr.children[0].item.interval
             if ( interval )
             {
-	            if (interval.lower != null &&
-	                rmObj.magnitude < interval.lower)
-	            {
-	                rmObj.errors.rejectValue('magnitude', 'error.range.min')
+                if (interval.lower != null &&
+                    rmObj.magnitude < interval.lower)
+                {
+                    rmObj.errors.rejectValue('magnitude', 'error.range.min')
                     
                     this.hasErrors = true
-	            }
-	            if (interval.upper != null &&
-	                rmObj.magnitude > interval.upper)
-	            {
-	                rmObj.errors.rejectValue('magnitude', 'error.range.max')
+                }
+                if (interval.upper != null &&
+                    rmObj.magnitude > interval.upper)
+                {
+                    rmObj.errors.rejectValue('magnitude', 'error.range.max')
                     
                     this.hasErrors = true
-	            }
+                }
             }
         }
     } // verifyDvCountRange
