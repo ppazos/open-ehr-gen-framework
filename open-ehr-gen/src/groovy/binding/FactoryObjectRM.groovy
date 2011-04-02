@@ -116,13 +116,12 @@ class FactoryObjectRM {
             }
             else
             {
-                nameN = term.getItems().text
+                nameN = term.getItems().text // TODO: verificar si getItems da un solo texto!
             }
         }
         else
         {
             // FIXME
-            //nameN = "XXX"
             nameN = 'Termino no encontrado en el arquetipo ['+archetypeId+'], '+
                     'para el nodo ['+archNodeId+']'
         }
@@ -141,9 +140,10 @@ class FactoryObjectRM {
     * del los Objetos del Entry creados.
     *
     */
-    def completarEntry(Entry e){
-        TerminologyID tidE = new TerminologyID(name: "TODO_E", versionId: "") // TODO, Obtenerlo de algún lado
-        TerminologyID tidL = new TerminologyID(name: "TODO_L", versionId: "") // TODO, Obtenerlo de algún lado
+    def completarEntry (Entry e)
+    {
+        TerminologyID tidE = TerminologyID.create("TODO_E", null) // TODO, Obtenerlo de algún lado
+        TerminologyID tidL = TerminologyID.create("TODO_L", null) // TODO, Obtenerlo de algún lado
 
         e.encoding = new CodePhrase(codeString: "TODO", terminologyId: tidE)
         e.language = new CodePhrase(codeString: "TODO", terminologyId: tidL)
@@ -329,7 +329,9 @@ class FactoryObjectRM {
         ItemTree itemT = new ItemTree()
         List<Object> listaItems = listaListRMO[0]
     
-        //println "---------- ITEM TREE items: " + listaListRMO
+        println "--------------------------------------------------------"
+        println "---------- ITEM TREE items: " + listaListRMO
+        println "--------------------------------------------------------"
         
         // Dejo bindear para mostrar errores del GORM
         // Si no tengo items, no tengo arbol
@@ -384,7 +386,8 @@ class FactoryObjectRM {
                             itemL.addToItems(subItem)
                     }
                 }
-                else{
+                else
+                {
                     itemL.addToItems(item)
                 }
             }
@@ -595,15 +598,18 @@ class FactoryObjectRM {
     {
         //println "== createACTION"
         //println "==== listaListRMO: "+ listaListRMO
-        //println "==============================================="
+        
         Action a = new Action()
         List<Object> listaItems = listaListRMO[0]
         
         //if (listaItems.size()==0) return null
         
+        //println listaItems + " sz:"+listaItems.size() + " class:"+listaItems.getClass().getSimpleName()
+        //println "==============================================="
+        
         if (listaItems.size() == 1)
         {
-            a.description = listaItems[0]
+            a.description = listaItems[0] // Se sabe que description es oblig.
             
             // FIXME: mal fecha
             //a.time = new DvDateTime(value: "20091121")
@@ -716,9 +722,7 @@ class FactoryObjectRM {
         // FIXME: ver los tipos en la terminologia openehr...
         mm.mediaType = new CodePhrase(
                          codeString: file.contentType,
-                         terminologyId: new TerminologyID(
-                           name: 'openehr'
-                         )
+                         terminologyId: TerminologyID.create('openehr', null)
                        )
         
         // FIXME: ver si el alternate text esta bien usado
@@ -843,23 +847,24 @@ class FactoryObjectRM {
     // Se usa createDvOrdinal
 
     // DV_PROPORTION
-    def createDV_PROPORTION(pathValor, Archetype arquetipo, String archNodeId, String tempId){
+    def createDV_PROPORTION(pathValor, Archetype arquetipo, String archNodeId, String tempId)
+    {
         // TODO
-        DvProportion p = new DvProportion()
-        return p
+        return new DvProportion() // Da error en versiones > Grails 1.1.1
     }
 
     //DV_QUANTIFIED
     // TODO: ?
 
     // PROPORTION_KIND
-    def createPROPORTION_KIND(pathValor, Archetype arquetipo, String archNodeId, String tempId){
-        // TODO
-        return new ProportionKind()
+    def createPROPORTION_KIND(pathValor, Archetype arquetipo, String archNodeId, String tempId)
+    {
+        return ProportionKind.RATIO
     }
 
     // REFERENCE_RANGE
-    def createREFERENCE_RANGE(pathValor, Archetype arquetipo, String archNodeId, String tempId){
+    def createREFERENCE_RANGE(pathValor, Archetype arquetipo, String archNodeId, String tempId)
+    {
         // TODO
         ReferenceRange rr = new ReferenceRange(range: new DvInterval())
         return rr
@@ -1083,11 +1088,11 @@ class FactoryObjectRM {
             // TODO: sacar language de config
             ctext.language = new CodePhrase(
                     codeString: 'es-UY',
-                    terminologyId: new TerminologyID( name: 'ISO_639-1' )
+                    terminologyId: TerminologyID.create('ISO_639-1', null)
             )
             ctext.encoding = new CodePhrase(
                     codeString: 'UTF-8',
-                    terminologyId: new TerminologyID( name: 'IANA_character-sets' )
+                    terminologyId: TerminologyID.create('IANA_character-sets', null)
             )
             
             listaDvCodedText << ctext
@@ -1115,11 +1120,11 @@ class FactoryObjectRM {
         // TODO: sacar language de config
         text.language = new CodePhrase(
             codeString: 'es-UY',
-            terminologyId: new TerminologyID( name: 'ISO_639-1' )
+            terminologyId: TerminologyID.create('ISO_639-1', null)
         )
         text.encoding = new CodePhrase(
             codeString: 'UTF-8',
-            terminologyId: new TerminologyID( name: 'IANA_character-sets' )
+            terminologyId: TerminologyID.create('IANA_character-sets', null)
         )
         
         text.validate()
@@ -1130,7 +1135,7 @@ class FactoryObjectRM {
     //TERM_MAPPING
     def createTERM_MAPPING(pathValor, Archetype arquetipo, String archNodeId, String tempId){
         // TODO
-        TerminologyID tid = new TerminologyID(name: "TODO", versionId: "") // Obtenerlo de algún lado
+        TerminologyID tid = TerminologyID.create("TODO", null) // Obtenerlo de algún lado
         CodePhrase cph =  new CodePhrase(codeString: "TODO", terminologyId: tid)
 
         return new TermMapping(match: TermMapping.UNKNOWN, target: cph)
@@ -1177,7 +1182,7 @@ class FactoryObjectRM {
         Locale locale = this.session.locale
         
         // Obtengo terminologiId del objeto CCodePhrase que viene por parametro
-        TerminologyID tid = new TerminologyID(name: ccp.getTerminologyId().name(), versionId: ccp.getTerminologyId().versionID()) //new TerminologyID(name: "local", versionId: "1.0")
+        TerminologyID tid = TerminologyID.create(ccp.getTerminologyId().name(), ccp.getTerminologyId().versionID()) //new TerminologyID(name: "local", versionId: "1.0")
         return new CodePhrase(codeString: cs, terminologyId: tid)
     }
 
@@ -1250,7 +1255,7 @@ class FactoryObjectRM {
             //Ordinal ordin = setOrdinal.find{it.getSymbol().codeString.endsWith(s)}
             Ordinal ordin = setOrdinal.find{it.getSymbol().codeString == s} // la condicion es que sea el mismo codigo.
     
-            TerminologyID ti = new TerminologyID(name: ordin.getSymbol().terminologyId.name, versionId: "")
+            TerminologyID ti = TerminologyID.create(ordin.getSymbol().terminologyId.name, null)
             CodePhrase cp = new CodePhrase(codeString: s, terminologyId: ti)
             
             Locale locale = this.session.locale
