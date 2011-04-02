@@ -27,7 +27,7 @@ description
 definition
 	ACTION[at0000] matches {	-- Resumen de actuación
 		description matches {
-			ITEM_TREE[at0001] matches {	-- Unico(a)
+			ITEM_TREE[at0001] matches {	-- Arbol
 				items cardinality matches {2..*; unordered} matches {
 					ELEMENT[at0002] matches {	-- Diagnóstico / Actuación
 						value matches {
@@ -55,7 +55,7 @@ ontology
 					description = <"Resumen de actuación">
 				>
 				["at0001"] = <
-					text = <"Unico(a)">
+					text = <"Arbol">
 					description = <"@ internal @">
 				>
 				["at0002"] = <

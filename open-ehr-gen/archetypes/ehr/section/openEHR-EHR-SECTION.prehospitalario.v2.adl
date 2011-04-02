@@ -1,5 +1,5 @@
 ﻿archetype (adl_version=1.4)
-	openEHR-EHR-SECTION.prehospitalario.v1
+	openEHR-EHR-SECTION.prehospitalario.v2
 
 concept
 	[at0000]	-- Prehospitalario
@@ -29,15 +29,19 @@ definition
 		items cardinality matches {0..*; unordered} matches {
 			allow_archetype ACTION[at0001] occurrences matches {0..*} matches {	-- Acciones en el prehospitalario
 				include
-					archetype_id/value matches {/openEHR-EHR-ACTION\.prehospitalario\.v1/}
+					archetype_id/value matches {/openEHR-EHR-ACTION\.prehospitalario\.v2/}
+			}
+			allow_archetype ACTION[at0002] occurrences matches {0..*} matches {	-- Otras acciones
+				include
+					archetype_id/value matches {/openEHR-EHR-ACTION\.resumen_actuacion\.v1/}
 			}
 			allow_archetype ACTION[at0003] occurrences matches {0..*} matches {	-- Reposicion prehospitalaria
 				include
 					archetype_id/value matches {/openEHR-EHR-ACTION\.reposicion_prehospitalaria\.v1/}
 			}
-			allow_archetype ACTION[at0002] occurrences matches {0..*} matches {	-- Otras acciones
+			allow_archetype ACTION[at0004] occurrences matches {0..*} matches {	-- Vias venosas prehospitalario
 				include
-					archetype_id/value matches {/openEHR-EHR-ACTION\.resumen_actuacion\.v1/}
+					archetype_id/value matches {/openEHR-EHR-ACTION\.vias_venosas_prehospitalario\.v1/}
 			}
 		}
 	}
@@ -60,6 +64,10 @@ ontology
 				>
 				["at0003"] = <
 					text = <"Reposicion prehospitalaria">
+					description = <"*">
+				>
+				["at0004"] = <
+					text = <"Vias venosas prehospitalario">
 					description = <"*">
 				>
 			>

@@ -30,7 +30,7 @@ description
 	>
 	lifecycle_state = <"Initial">
 	other_contributors = <
-	        ["name"] = <"Pablo Pazos Guti�rrez">
+	        ["name"] = <"Pablo Pazos Gutiérrez">
 		["date"] = <"24/10/2009">
 		["email"] = <"pablo.swp@gmail.com">
         >
@@ -74,7 +74,7 @@ definition
 									ELEMENT[at0026] occurrences matches {0..1} matches {	-- Score
 										value matches {
 											DV_COUNT matches {
-												magnitude matches {|>=0|}
+												magnitude matches {|3..15|}
 											}
 										}
 									}
