@@ -240,6 +240,8 @@ class TraumaTagLib {
      * para la composition. Dicha condicion es verificada desde el
      * event handler VerificarCondicionCierre.
      */
+    /* Desde que el cerrado y firmado del registro lo hace explicitamente el medico,
+     * esta tag no tiene sentido. Ver: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=9
     def canSignRecord = { attrs, body ->
         
         def composition = Composition.get( attrs.episodeId )
@@ -248,6 +250,13 @@ class TraumaTagLib {
         //if (item)
         if (version.lifecycleState == Version.STATE_COMPLETE)
             out << body()
+    }
+    */
+    def isNotSignedRecord = { attrs, body ->
+       
+       def composition = Composition.get( attrs.episodeId )
+       if (!composition.composer)
+           out << body()
     }
     
     def isSignedRecord = { attrs, body ->
@@ -269,6 +278,10 @@ class TraumaTagLib {
         
         def composition = Composition.get( attrs.episodeId )
         def version = Version.findByData( composition )
+        
+        //println "=========================================================="
+        //println "Lifecycle state: " + version.lifecycleState.getClass()
+        // BUG de Grails 1.2: aunque retorno string, a la vista llega org.codehaus.groovy.grails.web.util.StreamCharBuffer
         out << version.lifecycleState
     }
     
