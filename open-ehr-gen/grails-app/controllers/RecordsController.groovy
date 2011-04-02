@@ -1,4 +1,3 @@
-
 import hce.core.common.change_control.Version
 import hce.core.composition.* // Composition y EventContext
 import hce.core.data_types.quantity.date_time.*
@@ -9,9 +8,12 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 import cda.*
 import util.*
 
+import hce.core.common.directory.Folder
+import hce.core.support.identification.ObjectID
+import hce.core.support.identification.ObjectRef
+
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
- *
  */
 class RecordsController {
 
@@ -30,13 +32,19 @@ class RecordsController {
      */
     private Map getDomainTemplates()
     {
-        def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
-        def domainTemplates = grailsApplication.config.templates
-        routes.each{
-            domainTemplates = domainTemplates[it]
-        }
+        //def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
+        //def domainTemplates = grailsApplication.config.templates
+        //routes.each{
+        //    domainTemplates = domainTemplates[it]
+        //}
         //println domainTemplates
         
+        // =============================================================
+        // Nuevo: para devolver los templates del dominio seleccionado
+        def domain = session.traumaContext.domainPath
+        def domainTemplates = grailsApplication.config.templates2."$domain"
+        // =============================================================
+
         return domainTemplates
     }
     
@@ -84,23 +92,73 @@ class RecordsController {
     // Pantalla 2.1- Escritorio Medico-Administrativo
     def list = {
         
-        // TODO: poner el usuario en sesion cuando halla login.
-        // FIXME: esto deberia hacerse con filters
-        if (!session.traumaContext)
-        {
-        /* ahora debe pasar por login primero!
-           session.traumaContext = new HCESession(
-                                 userId: 1234 // FIXME: depende del login
-                               )
-        */
-        }
-        else { // deselecciona el episodio que este seleccionado
-            session.traumaContext.episodioId = null
-        }
-    
-        def compos = Composition.list()
-        return [compositions: compos,
-                userId: session.traumaContext.userId ]
+       def compos = []
+       
+       // FIXME: esto deberia hacerse con filters?
+       if (!session.traumaContext || !session.traumaContext.domainPath) // puede pasar si caduca la session
+       {
+          // TODO: flash.message
+          redirect(controller:'domain', action:'list')
+          return
+       }
+         
+       // ==========================================================================
+       // TODO: filtrar registros por dominio (session.traumaContext.domainPath)
+       println "dominio: " + session.traumaContext.domainPath
+       Folder domain = Folder.findByPath( session.traumaContext.domainPath )
+         
+       println "domain items objectId: " + domain.items.objectId.value
+         
+       // FIXME: si no coincide ningun criterio, devuelve todas las compos.
+       // esto se resuelve teniendo la referencia inversa desde las compos
+       // al parent Folder.
+       compos = Composition.withCriteria {
+            
+            // La lista de items podria ser larguisima,
+            // una solucion mas performante es que cada
+            // composition tenga como parent al folder
+            // domain. 'parent' es un atributo de Locatable (creo)
+            
+            // Inlist implementado mas o menos
+            /*
+            or {
+               domain.items.each{ objref ->
+                  // Supongo que objref.type == 'COMPOSITION', y que objref.namespace=='local'
+                  // podria agregar un chequeo por las dudas.
+                  eq('id', Long.parseLong(objref.objectId.value))
+                  
+                  println "ref compo id: " + objref.objectId.value
+               }
+            }
+            */
+            
+            // Uso la referencia desde los hijos al padre, asi me ahorro el loop
+            eq('rmParentId', domain.id)
+            
+            // TODO: paginacion
+            // TODO: orden por fecha descendente
+            // TODO: poner cantidad en config
+            maxResults(15)
+            
+            if (params.offset)
+              firstResult( Integer.parseInt(params.offset) )
+            
+            order("id", "desc") // 
+            //order("context.startTime.value", "desc") // no funca
+       }
+         
+       // ==========================================================================
+         
+       // TODO: filtrar registros por paciente, si hay un paciente en session.traumaContext.patientId
+       
+       // deselecciona el episodio que este seleccionado
+       session.traumaContext.episodioId = null
+         
+         
+       // Antes se devolvian todas las compositions, ahora se filtra por dominio.
+       return [compositions: compos,
+               userId: session.traumaContext.userId,
+               domain: domain ]
     }
     
     
@@ -116,7 +174,6 @@ class RecordsController {
             println "Startdate: " + startDate
             
             def composition = hceService.createComposition( startDate, params.otherContext )
-            //def composition = hceService.createComposition( params.startDate, params.otherContext )
            
             // TODO: verificar si se crea para un paciente:
             // - buscarlo por id en el servicio demografico
@@ -133,13 +190,41 @@ class RecordsController {
                 composition.context.addToParticipations( participation )
             }
             
+            
+            // Set parent
+            Folder domain = Folder.findByPath( session.traumaContext.domainPath )
+            composition.padre = domain
+            
+            
             //XStream xstream = new XStream()
             //render( text: xstream.toXML(composition), contentType:'text/xml' )
             if (!composition.save())
             {
+                // FIXME: haldlear el error si ocurre!, darle un mensaje lindo al usuario, etc.
                 println "Error: " + composition.errors
             }
             
+            // ------------------------------------------------------------------
+            //
+            // TODO: poner la composition dentro del folder del dominio actual
+            //
+            /*
+            ObjectRef ref = new ObjectRef(
+               namespace: 'local', // porque se usa el id local en la base para la composition
+               type: 'COMPOSITION',
+               objectId: new ObjectID( // FIXME: ObjectID en el RM es abstracta, ver si otra subclase encaja mejor o pedir que se relaje el modelo para usar directamente ObjectID.
+                  value: composition.id.toString() // El value es de tipo string
+               )
+            )
+            
+            domain.addToItems( ref )
+            if (!domain.save())
+            {
+               // TODO: handlear el error
+               println "Error al guardar domain folder: " + domain.errors
+            }
+            */
+            // ------------------------------------------------------------------
             
             // Crea la version inicial
             def version = new Version(
@@ -154,7 +239,9 @@ class RecordsController {
                 println "ERROR: " + version.errors
             }
             
-            redirect(action:'list')
+            // Pablo: antes volvia al listado.
+            // Queda mas agil que vaya derecho al show luego de crear, asi empieza a registrar.
+            redirect(action:'show', id:composition.id)
             return
         }
     }
@@ -185,6 +272,7 @@ class RecordsController {
        // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
        def patient = hceService.getPatientFromComposition( composition )
 
+       println "Patient from composition: " + patient
 
        // NECESARIO PARA EL MENU
        def sections = this.getSections()
@@ -199,7 +287,6 @@ class RecordsController {
                userId: session.traumaContext.userId,
                sections: sections, // necesario para el menu
                allSubsections: this.getDomainTemplates() 
-               //grailsApplication.config.hce.emergencia.sections.trauma // necesario para el menu
               ]
     }
     
@@ -207,32 +294,16 @@ class RecordsController {
     // TODO: vista listando links a templates segun config.
     // Pantalla 5.1- Registro Clinico
     def registroClinico = {
-            
-       //println grailsApplication.config.hce.emergencia.sections.getClass() // ConfigObject extends LinkedHashMap
         
        // FIXME: desde que esta el filter del login esto no es necesario.
        // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
        if (!session.traumaContext?.episodioId)
        {
            flash.message = 'trauma.list.error.noEpisodeSelected'
-           redirect(controller:'trauma', action:'list')
+           redirect(action:'list')
            return
        }
        
-       /*
-       def sections = [:]
-       grailsApplication.config.hce.emergencia.sections.trauma.keySet().each { sectionPrefix ->
-           grailsApplication.config.hce.emergencia.sections.trauma."$sectionPrefix".each { section ->
-            
-               if (!sections[sectionPrefix]) sections[sectionPrefix] = []
-             
-               // Tiro la lista de esto para cada "section prefix" que son los templates
-               // de las subsecciones de la seccion principal.
-               //println sectionPrefix + "-" + section
-               sections[sectionPrefix] << sectionPrefix + "-" + section
-           }
-       }
-       */
        def domainTemplates = this.getDomainTemplates()
        
        def sections = [:]
@@ -248,83 +319,81 @@ class RecordsController {
            }
        }
        
-       //def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
-       
-       
        def composition = Composition.get( session.traumaContext?.episodioId )
-
-// FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
+       
+       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
        def patient = hceService.getPatientFromComposition( composition )
          
        return [sections: sections,
                composition: composition,
                episodeId: session.traumaContext?.episodioId,
-               patient:patient,
+               patient: patient,
                userId: session.traumaContext.userId]
     }
     
+    
     def registroClinico2 = {
     
-        def section = params.section
-        //def firstSubSection = grailsApplication.config.hce.emergencia.sections.trauma."$section"[0]
+       if (!session.traumaContext?.episodioId)
+       {
+           flash.message = 'trauma.list.error.noEpisodeSelected'
+           redirect(action:'list')
+           return
+       }
+       
+       def section = params.section
+       def subsections = this.getSubsections(section) // this.getSubsections('EVALUACION_PRIMARIA')
+       def firstSubSection = subsections[0]
         
-        def subsections = this.getSubsections(section) // this.getSubsections('EVALUACION_PRIMARIA')
-        def firstSubSection = subsections[0]
+       //println "section: " + section
+       //println "firstSubSection: " + firstSubSection
         
-        //println "section: " + section
-        //println "firstSubSection: " + firstSubSection
-        
-        def composition = Composition.get( session.traumaContext?.episodioId )
+       def composition = Composition.get( session.traumaContext?.episodioId )
 
-// FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
-        def patient = hceService.getPatientFromComposition( composition )
+       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
+       //def patient = hceService.getPatientFromComposition( composition )
 
-        // FIXME: mismo codigo que en GuiGen generarTemplate
-        if ( hceService.isIncompleteComposition( composition ) )
-        {
-	        //g.hasContentItemForTemplate( episodeId: session.traumaContext?.episodioId, templateId: section+'-'+firstSubSection)
-            def item = hceService.getCompositionContentItemForTemplate(composition, section+'-'+firstSubSection)
-            //if (item)
-            //{
-	            //println "==========-------------============"
-	            //println "aha: " + it
-	            //println "==========-------------============"
-                
-                // FIXME:
-                // Esto ya se chequea en la vista, es mas simple chequearlo aca y que
-                // la vista si tiene que generar how o generar template siempre llame
-                // a registoClinico2.
-                // Se fija si el episodio tiene o no registro para el template dado.
-	            //if (it.hasItem)
-                if (item)
-	            {
-	                redirect(controller: 'guiGen',
-	                         action: 'generarShow',
-	                         params: [templateId: firstSubSection, //section+'-'+firstSubSection,
-	                                  episodeId: session.traumaContext?.episodioId,
-                                      patient:patient,
-	                                  userId: session.traumaContext.userId,
-                                      id: item.id])
-                    return
-	            }
-	            else
-	            {
-	                redirect(controller: 'guiGen',
-    		                 action: 'generarTemplate',
-    		                 params: [templateId: firstSubSection, //section+'-'+firstSubSection,
-            		                  episodeId: session.traumaContext?.episodioId,
-                                      patient:patient,
-            		                  userId: session.traumaContext.userId])
-                    return
-	            }
-            //}
-        }
-        else
-        {
-            flash.message = "registroClinico.warning.noHayRegistroParaLaSeccion"
-            redirect( action: 'show', id: session.traumaContext?.episodioId)
-            return
-        }
+       // FIXME: mismo codigo que en GuiGen generarTemplate
+       if ( hceService.isIncompleteComposition( composition ) )
+       {
+           //g.hasContentItemForTemplate( episodeId: session.traumaContext?.episodioId, templateId: section+'-'+firstSubSection)
+           def item = hceService.getCompositionContentItemForTemplate(composition, section+'-'+firstSubSection)
+            
+           // FIXME:
+           // Esto ya se chequea en la vista, es mas simple chequearlo aca y que
+           // la vista si tiene que generar how o generar template siempre llame
+           // a registoClinico2.
+           // Se fija si el episodio tiene o no registro para el template dado.
+           //if (it.hasItem)
+           if (item)
+           {
+               redirect(controller: 'guiGen',
+                        action: 'generarShow',
+                        params: [templateId: firstSubSection, //section+'-'+firstSubSection,
+                                 //episodeId: session.traumaContext?.episodioId,
+                                 //patient:patient,
+                                 //userId: session.traumaContext.userId,
+                                 id: item.id])
+               return
+           }
+           else
+           {
+               redirect(controller: 'guiGen',
+                        action: 'generarTemplate',
+                        params: [templateId: firstSubSection, //section+'-'+firstSubSection,
+                                 //episodeId: session.traumaContext?.episodioId,
+                                 //patient:patient,
+                                 //userId: session.traumaContext.userId
+                                ])
+               return
+           }
+       }
+       else
+       {
+           flash.message = "registroClinico.warning.noHayRegistroParaLaSeccion"
+           redirect( action: 'show', id: session.traumaContext?.episodioId)
+           return
+       }
     }
     
     /**
@@ -351,23 +420,26 @@ class RecordsController {
     }
     
     /**
+     * Firma y cierra el registro (antes firmar y cerrar eran procesos separados: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=9).
      * in: id episode id
      */
     def signRecord = {
         
+        // FIXME: se tiene el id en session.traumaContext?.episodioId
         def composition = Composition.get( params.id )
 
         if (!composition)
         {
+            flash.message = 'trauma.list.error.noEpisodeSelected'
             redirect(action:'list')
             return
         }
         
-// FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
+        // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
         def patient = hceService.getPatientFromComposition( composition )
 
 
-		// Es necesario para mostrar el menu
+        // Es necesario para mostrar el menu
         def sections = this.getSections()
         def subsections = [] // No hay porque estoy firmando el registro
 
@@ -375,36 +447,38 @@ class RecordsController {
         flash.message = null
         flash.error = null
         
+        // Para retornarle a la vista
+        def model = [episodeId: session.traumaContext?.episodioId,
+                     userId: session.traumaContext.userId,
+                     composition: composition,
+                     patient: patient,
+                     sections: sections,
+                     subsections: subsections,
+                     allSubsections: this.getDomainTemplates()
+                    ]
+        
+        
+        // FIXME: cerrar y firmar deberian estar dentro de la misma transaccion y asegurar de que si fallo algo, el registro
+        //        NO quede cerrado y no firmado, o abierto y firmado.
         if (params.doit)
         {
+            if (!patient)
+            {
+               flash.error = "trauma.sign.noPatientSelected"
+               return model
+            }
+           
             if (composition.composer)
             {
                 flash.error = "trauma.sign.registryAlreadySigned"
-                return [episodeId: session.traumaContext?.episodioId,
-                        userId: session.traumaContext.userId,
-                        composition: composition,
-                        patient: patient,
-		                sections: sections,
-		                subsections: subsections,
-		                allSubsections: this.getDomainTemplates()
-                        //grailsApplication.config.hce.emergencia.sections.trauma
-                        ]
+                return model
             }
             
             def auth = authorizationService.getLogin(params.user, params.pass)
             if (!auth)
             {
-                // TODO: i18n
-                flash.error = "Firma erronea, verifique sus datos"
-                return [episodeId: session.traumaContext?.episodioId,
-                        userId: session.traumaContext.userId,
-                        composition: composition,
-                        patient: patient,
-		                sections: sections,
-		                subsections: subsections,
-		                allSubsections: this.getDomainTemplates() 
-                        //grailsApplication.config.hce.emergencia.sections.trauma
-                        ]
+                flash.error = "trauma.sign.wrongSignature"
+                return model
             }
             
             // Verificacion del rol, debe ser medico
@@ -418,35 +492,33 @@ class RecordsController {
             def roleKeys = roles.type
             if ( !roleKeys.contains(Role.MEDICO) )
             {
-                flash.error = "Firma erronea, la persona firmante no es medico"
-                return [episodeId: session.traumaContext?.episodioId,
-                        userId: session.traumaContext.userId,
-                        composition: composition,
-                        patient: patient,
-		                sections: sections,
-		                subsections: subsections,
-		                allSubsections: this.getDomainTemplates()
-                        //grailsApplication.config.hce.emergencia.sections.trauma
-                        ]
+                flash.error = "trauma.sign.wrongSigningRole"
+                return model
             }
                 
             
             def person = auth.person
             def id = person.ids[0] // FIXME: ver si tiene ID, DEBERIA TENER UN ID SIEMPRE, es un medico!
 
+            
+            // Cierra el registro
+            if ( !hceService.closeComposition(composition, DateConverter.toIso8601ExtendedDateTimeFormat(new Date())) )
+            {
+               flash.error = "trauma.sign.closeInternalError"
+               return model
+            }
+           
+            // TODO:
+            // Guardar digesto del registro para detectar alteraciones posteriores
+            // Usar clave privada del medico para encriptar el digesto, y asi firmar el registro.
+            //   Luego con su clave publica se podra decifrar el digesto y compararlo con el digesto original.
+            //   Con esto se garantiza autoria, pero se necesita algun tipo de gestor de claves para mantener la publica y permitir que el medico ingrese la privada (que no se puede mantener en el sistema).
+            
+            // Firma el registro 
             if (!hceService.setCompositionComposer(composition, id.root, id.extension))
             {
-                // TODO: i18n
-                flash.error = "Ocurrio un error al intentar firmar el registro clinico, intente de nuevo"
-                return [episodeId: session.traumaContext?.episodioId,
-                        userId: session.traumaContext.userId,
-                        composition: composition,
-                        patient: patient,
-		                sections: sections,
-		                subsections: subsections,
-		                allSubsections: this.getDomainTemplates()
-                        //grailsApplication.config.hce.emergencia.sections.trauma
-                        ]
+                flash.error = "trauma.sign.signInternalError"
+                return model
             }
 
             // Cambia el estado del regsitro en su VERSION
@@ -454,32 +526,14 @@ class RecordsController {
             version.lifecycleState = Version.STATE_SIGNED
             version.save()
 
-            flash.message = "Registro firmado correctamente"
-            return [episodeId: session.traumaContext?.episodioId,
-                    userId: session.traumaContext.userId,
-                    composition: composition,
-                    patient: patient,
-		            sections: sections,
-		            subsections: subsections,
-		            allSubsections: this.getDomainTemplates()
-                    //grailsApplication.config.hce.emergencia.sections.trauma
-                    ]
+            flash.message = "trauma.sign.recordCorrectlySigned"
+            return model
         }
         
-        return [episodeId: session.traumaContext?.episodioId,
-                userId: session.traumaContext.userId,
-                composition: composition,
-                patient: patient,
-		        sections: sections,
-		        subsections: subsections,
-		        allSubsections: this.getDomainTemplates() 
-                //grailsApplication.config.hce.emergencia.sections.trauma
-                ]
+        return model
     }
 
     //-------------------------------------------------------------------------------------------------------------
-    //-------------------------------------------------------------------------------------------------------------
-
     // Pantalla - Reapertura de registro
     def reopenRecord = {
 
@@ -528,9 +582,8 @@ class RecordsController {
                             patient: patient,
                             sections: sections,
                             subsections: subsections,
-                            allSubsections: this.getDomainTemplates() 
-                            //grailsApplication.config.hce.emergencia.sections.trauma
-                            ]
+                            allSubsections: this.getDomainTemplates()
+                           ]
                 }
 
                 // Verificacion del rol, debe ser medico
@@ -551,9 +604,8 @@ class RecordsController {
                             patient: patient,
                             sections: sections,
                             subsections: subsections,
-                            allSubsections: this.getDomainTemplates() 
-                            //grailsApplication.config.hce.emergencia.sections.trauma
-                            ]
+                            allSubsections: this.getDomainTemplates()
+                           ]
                 }
 
 
@@ -570,9 +622,8 @@ class RecordsController {
                             patient: patient,
                             sections: sections,
                             subsections: subsections,
-                            allSubsections: this.getDomainTemplates() 
-                            //grailsApplication.config.hce.emergencia.sections.trauma
-                            ]
+                            allSubsections: this.getDomainTemplates()
+                           ]
                 }
 
                 // Cambia el estado del regsitro en su VERSION
@@ -609,8 +660,12 @@ class RecordsController {
                 def composerAux = composition.composer
                 def contentAux = composition.content
                 composition.composer = null
-                hceService.eliminarMovimientoComposition(composition)
+                
+                // Esto no es mas necesario en la reapertura, porque cerrar el registro ya
+                // no implica que se movio al paciente.
+                //hceService.eliminarMovimientoComposition(composition)
 
+                
                 //composition.save()
 
                 // Creo nueva versión (con motivo, firma, nombre Arch CDA, composition)
@@ -630,7 +685,7 @@ class RecordsController {
                 println "XXXXXXXXXXXXXX------>>>> V0:" + version.getNumVersion()
                 println "XXXXXXXXXXXXXX------>>>> V1:" + new_version.getNumVersion()
 
-                if(new_version.save())
+                if (new_version.save())
                 {
                    version.data = null
                    if (version.save())
@@ -657,7 +712,6 @@ class RecordsController {
                         sections: sections,
                         subsections: subsections,
                         allSubsections: this.getDomainTemplates()
-                        //grailsApplication.config.hce.emergencia.sections.trauma
                         ]
             }
 
@@ -668,7 +722,6 @@ class RecordsController {
                     sections: sections, // necesario para el menu
                     subsections: subsections, // necesario para el menu
                     allSubsections: this.getDomainTemplates()
-                    //grailsApplication.config.hce.emergencia.sections.trauma // necesario para el menu
                    ]
         }
         else
