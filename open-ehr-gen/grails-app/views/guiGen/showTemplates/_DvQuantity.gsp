@@ -9,23 +9,15 @@ in: dataValue (DvQuantity)
 <%--
 ${pathFromOwner}
 --%>
-
-
 <g:if test="${mode && mode=='edit'}">
-  
+
   <g:set var="aomNode" value="${archetype.node(pathFromOwner)}" />
   
   <%-- cDvQuantity: ${aomNode.getClass()}<br/> --%>
-  
   <g:set var="selectedValueMagnitude" value="${dataValue.magnitude}" />
   <g:set var="selectedValueUnits" value="${dataValue.units}" />
   
   <g:hasErrors bean="${dataValue}">
-  
-    <%
-    //print dataValue.errors
-    %>
-  
     <div class="error">
       <g:renderErrors bean="${dataValue}" as="list" />
     </div>
@@ -89,10 +81,12 @@ ${pathFromOwner}
                 value="${selectedValueUnits}" />
     </g:else>
   </g:if>
-
 </g:if>
 <g:else>
   ${dataValue.magnitude}
+  
+  <%-- parent es ELEMENT --%>
+  <g:set var="aomNode" value="${archetype.node(parent.path+'/value')}" />
   
   <%-- Si la unidad esta sobreescrita, muestro su transformacion --%>
   <%-- FIXME: deberia encontrar la sobreescrita correspondiente a la unidad
@@ -113,5 +107,4 @@ ${pathFromOwner}
   <g:else>
     ${dataValue.units}
   </g:else>
-  
 </g:else>

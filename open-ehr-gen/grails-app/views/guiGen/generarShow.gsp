@@ -20,9 +20,8 @@
     .OBSERVATION .label, .EVALUATION .label, .INSTRUCTION .label, .ACTION .label {
       font-size: 14px;
       font-weight: bold;
-      background-color: #e0e0e0;
       padding: 3px;
-      /* padding-left: 6px; */ /* Ahora todo alineado a la izq sin identacion */
+      margin-bottom: 2px;
     }
 
 <%--
@@ -50,56 +49,81 @@
     }
 
     .CLUSTER {
-      /*margin-left: 10px;*/ /* Ahora todo alineado a la izq sin identacion */
       margin-bottom: 3px;
       font-weight: bold;
-      background-color: #bbeeff;
-      /*padding: 3px;*/
-      border: 1px solid #9fcfff;
+      border: 1px solid #6B90DA;
     }    
     .CLUSTER .label {
       padding: 3px;
-      /*padding-left: 6px;*/ /* Ahora todo alineado a la izq sin identacion */
-      background-color: #9fcfff;
+      background-color: #BDCDF5;
       font-size: 13px;
+      margin: 0px;
     }
     .CLUSTER .content {
       padding: 3px;
       display: block;
+      background-color: #EBEFF9;
     }
     
     .ELEMENT {
-      /*margin-left: 10px;*/  /* Ahora todo alineado a la izq sin identacion */
       font-weight: normal;
       margin-bottom: 3px;
-      /*padding: 3px;*/
-      /*background-color: #ffaa99;
-      border: 1px solid #ff3333;*/
       background-color: #ffff99;
-      border: 1px solid #cccc00;
+      border: 1px solid #6B90DA;
     }
     .ELEMENT .label {
-      padding: 3px;
-      /*padding-left: 6px;*/
-      /*margin-right: 5px;*/
-      background-color: #eeee99;
+      padding: 4px;
       font-size: 12px;
+      margin-bottom: 0px;
+      background-color: #BDCDF5;
     }
     .ELEMENT .content {
       padding: 3px;
       display: block;
       overflow: auto;
+      background-color: transparent;
+    }
+
+
+    /* mejor aprovechamiento del espacio para DvOrdinal poniendo el titulo del ELEMENT a la izquierda del contenido */
+    .ELEMENT_DvOrdinal .label, .ELEMENT_DV_CODED_TEXT .label, .ELEMENT_DV_COUNT .label, .ELEMENT_DvQuantity .label, .ELEMENT_DV_BOOLEAN .label {
+      padding: 10px;
+      padding-left: 6px;
+      padding-right: 3px;
+      display: inline-block;
+      position: relative;
+      vertical-align: middle;
+      margin-bottom: 0px;
+      font-weight: normal;
+      width: 140px;
+    }
+    /* Si pongo .ELEMENT_DvOrdinal .content se ve mal el triage */
+    .ELEMENT_DV_CODED_TEXT .content, .ELEMENT_DV_COUNT .content, .ELEMENT_DvQuantity .content, .ELEMENT_DV_BOOLEAN .content {
+      display: inline-block;
+      position: relative;
+      vertical-align: middle;
+    }
+    .ELEMENT_DvQuantity input { /* que el input donde se pone el numero sea chico */
+      width: 60px;
+    }
+
+    .ELEMENT .content label {
+      display: inline-block;
+      margin-right: 3px;
+      padding-top: 3px;
+      padding-bottom: 3px;
     }
     .ELEMENT img {
       max-width: 385px;
     }
 
     .label {
-      /*font-weight: bold;*/
       display: block;
-      margin-bottom: 2px;
     }
 
+    select {
+      width: auto;
+    }
     
     /*******************************************************/
     /* Para los boolean que el SI NO tenga el mismo largo. */
@@ -113,9 +137,11 @@
       text-align: right;
       display: inline-block;
     }
+    /*
     label:hover {
       background-color: #ddddff;
     }
+    */
     /* / Para los boolean que el SI NO tenga el mismo largo. */
     /*********************************************************/
 
@@ -234,6 +260,8 @@
           <td colspan="2" id="content">
             <g:each in="${template.getArchetypesByZone('content')}" var="archRef">
               <g:if test="${index[archRef.id]}">
+                <!-- FIXME: habria que arrancar del nodo que diga el template (p.e. esto es correcto si 
+                            arranca de la raiz pero no si tiene un field con path distinta a / -->
                 <!-- RM -->
                 <g:render template="../guiGen/showTemplates/Locatable"
                           model="[rmNode: index[archRef.id],
@@ -312,13 +340,15 @@
       <br/>
     
       <div class="bottom_actions">
-        <g:if test="${mode=='edit'}">
-          <g:submitButton name="doit" value="Guardar" />
-        </g:if>
-        <g:else>
-          <g:link action="generarShow" id="${rmNode.id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link>
-        </g:else>
-        | 
+        <g:isNotSignedRecord episodeId="${episodeId}">
+	      <g:if test="${mode=='edit'}">
+	        <g:submitButton name="doit" value="Guardar" />
+	      </g:if>
+	      <g:else>
+	        <g:link action="generarShow" id="${rmNode.id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link>
+	      </g:else>
+	      |
+        </g:isNotSignedRecord>
         <g:link controller="records" action="registroClinico"><g:message code="trauma.show.action.back" /></g:link>
       </div>
 

@@ -33,6 +33,6 @@ estaria bueno luego hacer la comparacion para ver los tiempos...
 
   <g:each in="${rmNode.items}" var="element">
     <g:render template="../guiGen/showTemplates/Element"
-              model="[rmNode: element, archetype: archetype, template: template]" />
+              model="[rmNode: element, pathFromParent: rmNode.path+'/items', archetype: archetype, template: template]" />
   </g:each>
 </g:else>

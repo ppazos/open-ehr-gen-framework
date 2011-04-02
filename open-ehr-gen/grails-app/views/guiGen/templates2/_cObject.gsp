@@ -16,9 +16,7 @@ def _refPath = ''
 if (refPath) _refPath = refPath
 
 %>
-
-<%-- TODO: se puede simplificar a una sola llamada en funcion de la clase halla el nombre del template --%>
-
+  <%-- TODO: se puede simplificar a una sola llamada en funcion de la clase halla el nombre del template --%>
   <g:if test="${cObject instanceof CComplexObject}">
       <g:render template="../guiGen/templates2/cComplexObject"
                 model="[cComplexObject: cObject,

@@ -1,16 +1,12 @@
 <%@ page import="util.UniqueIdIssuer" %>
-
 <%--
 in: cComplexObject (${cComplexObject.rmTypeName})<br/>
 in: refPath path del internal ref a este nodo si es que hay.
 
 <b>${cComplexObject.path()}</b>
---%>
 
-<%--
 Complex: ${cComplexObject.rmTypeName}<br/><br/>
 --%>
-
 <%
 // refPath es nulo si no viene de un arch internal ref
 
@@ -18,10 +14,19 @@ def _refPath = ''
 if (refPath) _refPath = refPath
 
 %>
+<%-- Por si el elemento tiene varias ocurencias, ojo puede ser * --%>
+<%
+  // Si no es null, es eso, si no es 1.
+  def max = ((cComplexObject.occurrences.upper) ? cComplexObject.occurrences.upper : 1)
+  for (i in 1..max) {
+%>
 
 <g:if test="${ ! ['ACTIVITY','HISTORY','EVENT','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE'].contains( cComplexObject.rmTypeName )}">
-  <div class="${cComplexObject.rmTypeName}"><%-- FIXME: no quiero mostrar esto para campos simples, solo para sections, clusters y elements --%>
-  
+  <%-- Si es ELEMENT, quiero el tipo de su value para poder ponerlo en el class de la div, y asi poder ajustar la vista con CSS --%>
+  <g:if test="${cComplexObject.rmTypeName == 'ELEMENT'}">
+    <g:set var="elementValueRmType" value="ELEMENT_${cComplexObject.attributes[0].children[0].rmTypeName}" />
+  </g:if>
+  <div class="${cComplexObject.rmTypeName} ${elementValueRmType}"><%-- FIXME: no quiero mostrar esto para campos simples, solo para sections, clusters y elements --%>
     <g:if test="${cComplexObject.nodeID}">
       <!-- Si es item structure no pone el titulo -->
       <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, cComplexObject.nodeID)}" />
@@ -83,13 +88,6 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
 }
 %>
 
-
-  <%-- Por si el elemento tiene varias ocurencias, ojo puede ser * --%>
-  <%
-  // Si no es null, es eso, si no es 1.
-  def max = ((cComplexObject.occurrences.upper) ? cComplexObject.occurrences.upper : 1)
-  for (i in 1..max) {
-  %>
     <g:if test="${cComplexObject.rmTypeName.startsWith('DV_INTERVAL')}"><%-- DV_INTERVAL<DV_COUNT> --%>
       <%-- TODO?? ver lower y upper 
       
@@ -109,7 +107,6 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
       <input type="file" name="${archetype.archetypeId.value +_refPath+ cComplexObject.path()}" />
     </g:if>
     <g:else>
-    
       <%-- Verifico que no sea null porque puede serlo. --%>
       <g:if test="${cComplexObject.attributes}">
           <%-- ${cComplexObject.attributes.size()} --%>
@@ -120,13 +117,19 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
                             archetypeService: archetypeService,
                             refPath: refPath,
                             params: params]" />
-    
       </g:if>
       <g:else><%-- muestra nodos sin restriccion, solo si no tiene atributos para seguir navegando --%>
       
+        <g:set var="control" value="${template.getField( archetype.archetypeId.value, cComplexObject.path() )?.getControlByPath(cComplexObject.path())}" />
+        
         <g:if test="${cComplexObject.rmTypeName == 'DV_TEXT'}">
-          <%-- Si text se muestra desde CComplexObject, es un texto libre --%>
-          <textarea name="${archetype.archetypeId.value +_refPath+ cComplexObject.path()}">${params[archetype.archetypeId.value +_refPath+ cComplexObject.path()]}</textarea>
+          <g:if test="${control && control.type=='smallText'}">
+            <input type="text" name="${archetype.archetypeId.value +_refPath+ cComplexObject.path()}" value="${params[archetype.archetypeId.value +_refPath+ cComplexObject.path()]}" />
+          </g:if>
+          <g:else>
+            <%-- Si text se muestra desde CComplexObject, es un texto libre --%>
+            <textarea name="${archetype.archetypeId.value +_refPath+ cComplexObject.path()}">${params[archetype.archetypeId.value +_refPath+ cComplexObject.path()]}</textarea>
+          </g:else>
         </g:if>
         
         <g:if test="${cComplexObject.rmTypeName == 'DV_DATE_TIME'}">
@@ -149,8 +152,6 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
         </g:if>
       </g:else>
     </g:else>
-  <% } %>
-
 
 <g:if test="${ ! ['ACTIVITY','HISTORY','EVENT','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE'].contains( cComplexObject.rmTypeName )}">
 
@@ -170,3 +171,5 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
     
   </div>
 </g:if>
+
+<% } // si occurrences.upper >1 y no es * repito el nodo %>

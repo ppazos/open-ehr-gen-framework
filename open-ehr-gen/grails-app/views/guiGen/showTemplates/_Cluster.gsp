@@ -25,57 +25,66 @@ modo = show? (si el modo no es edit es show)
 }
 
 --%>
-
 <div class="CLUSTER">
-
   <%--
   arhcID: ${rmNode.archetypeDetails.archetypeId},
   nodeID: ${rmNode.archetypeNodeId},
   id: ${rmNode.id}<br/><br/>
   --%>
   
-  <g:if test="${mode && mode=='edit'}">  
-    
-    <%--
-    Tengo que ver si para cara item del cluster definido por el AOM
-    tengo un valor en el RM, si no tengo, para ese nodo uso el AOM
-    para generar. Si no uso el RM con sus valores. Similar a ItemTree.
-    --%>
-    <%
-    def aomNode = archetype.node(rmNode.path) // Restriccion sobre el cluster
-    %>
-    <%--
-    Recorro los CObject de attributes[0].
-    Attributes[0] es la restriccion sobre el atributo cluster.items
-    --%>
-    <g:each in="${aomNode.attributes[0].children}" var="children">
-      <%
-      //println "Children: "+children.getClass() + "<br/>"
-      // El cluster del RM tiene algun item con la path del AOM?
-      def rmItems = rmNode.items.findAll{ it.path == children.path() }
-      if (rmItems.size()==0) // No hay items RM para esa path, genero usando el AOM
-      {
-        // USO AOM
-        //print "AOM"
-        print render(template:"../guiGen/templates2/cObject",
-                     model:[cObject: children,
-                            archetype: archetype,
-                            template: template])
-      }
-      else
-      {
-        // USO RM
-        //print "RM<br/>"
-        rmItems.each { item ->
-          //print item.path + "<br/>"
-          def templateName = item.getClassName()
-          print render(template:"../guiGen/showTemplates/${templateName}",
-                       model:[rmNode: item, archetype: archetype, template: template])
-        }
-      }
-      %>
-    </g:each>
-  
+  <g:if test="${mode && mode=='edit'}">
+    <span class="label">
+      ${rmNode.name.value}
+    </span>
+    <span class="content">
+	    <g:set var="aomNode" value="${archetype.node(rmNode.path)}" />
+	    
+	    <%--
+	    FIXME: solo con esto podria mostrar el lugar para editar, el problema es que no 
+	    muestra valores ingresados ni errores en los nodos del RM creados en el bindeo,
+	    pero la logica de GUI ya esta implementada.
+	    <g:render template="../guiGen/templates2/cObject"
+	              model="[cObject: aomNode,
+	                      archetype: archetype,
+	                      params: params]" />
+	    --%>
+	    <%--
+	    Tengo que ver si para cara item del cluster definido por el AOM
+	    tengo un valor en el RM, si no tengo, para ese nodo uso el AOM
+	    para generar. Si no uso el RM con sus valores. Similar a ItemTree.
+	    --%>
+	    <%--
+	    Recorro los CObject de attributes[0].
+	    Attributes[0] es la restriccion sobre el atributo cluster.items
+	    --%>
+	    <g:each in="${aomNode.attributes[0].children}" var="children">
+	      <%
+	      //println "Children: "+children.getClass() + "<br/>"
+	      // El cluster del RM tiene algun item con la path del AOM?
+	      def rmItems = rmNode.items.findAll{ it.path == children.path() }
+	      if (rmItems.size()==0) // No hay items RM para esa path, genero usando el AOM
+	      {
+	        // USO AOM
+	        //print "AOM"
+	        print render(template:"../guiGen/templates2/cObject",
+	                     model:[cObject: children,
+	                            archetype: archetype,
+	                            template: template])
+	      }
+	      else
+	      {
+	        // USO RM
+	        //print "RM<br/>"
+	        rmItems.each { item ->
+	          //print item.path + "<br/>"
+	          def templateName = item.getClassName()
+	          print render(template:"../guiGen/showTemplates/${templateName}",
+	                       model:[rmNode: item, archetype: archetype, template: template])
+	        }
+	      }
+	      %>
+	    </g:each>
+    </span>
   </g:if>
   <g:else>
     <span class="label">

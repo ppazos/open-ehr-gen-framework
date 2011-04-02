@@ -91,6 +91,12 @@
       display: block;
       overflow: auto;
     }
+    .ELEMENT .content label {
+      display: inline-block;
+      margin-right: 3px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
     .ELEMENT img {
       max-width: 600px;
     }
@@ -113,9 +119,11 @@
       text-align: right;
       display: inline-block;
     }
+    /*
     label:hover {
       background-color: #ddddff;
     }
+    */
     /* / Para los boolean que el SI NO tenga el mismo largo. */
     /*********************************************************/
 

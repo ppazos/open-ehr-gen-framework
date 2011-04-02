@@ -16,9 +16,8 @@
     .OBSERVATION .label, .EVALUATION .label, .INSTRUCTION .label, .ACTION .label {
       font-size: 14px;
       font-weight: bold;
-      background-color: #e0e0e0;
       padding: 3px;
-      /* padding-left: 6px; */ /* Ahora todo alineado a la izq sin identacion */
+      margin-bottom: 2px;
     }
 
 <%--
@@ -36,46 +35,78 @@
     }
 --%>
 
+    .INSTRUCTION_narrative{
+      padding: 3px;
+      display: block;
+      font-weight: normal;
+      margin-bottom: 3px;
+      background-color: #aaff99;
+      border: 1px solid #33ff33;
+    }
+
     .CLUSTER {
-      /*margin-left: 10px;*/ /* Ahora todo alineado a la izq sin identacion */
       margin-bottom: 3px;
       font-weight: bold;
-      background-color: #bbeeff;
-      /*padding: 3px;*/
-      border: 1px solid #9fcfff;
+      border: 1px solid #6B90DA;
     }    
     .CLUSTER .label {
       padding: 3px;
-      /*padding-left: 6px;*/ /* Ahora todo alineado a la izq sin identacion */
-      background-color: #9fcfff;
+      background-color: #BDCDF5;
       font-size: 13px;
+      margin: 0px;
     }
     .CLUSTER .content {
       padding: 3px;
       display: block;
+      background-color: #EBEFF9;
     }
     
     .ELEMENT {
-      /*margin-left: 10px;*/  /* Ahora todo alineado a la izq sin identacion */
       font-weight: normal;
       margin-bottom: 3px;
-      /*padding: 3px;*/
-      /*background-color: #ffaa99;
-      border: 1px solid #ff3333;*/
       background-color: #ffff99;
-      border: 1px solid #cccc00;
+      border: 1px solid #6B90DA;
     }
     .ELEMENT .label {
-      padding: 3px;
-      /*padding-left: 6px;*/
-      /*margin-right: 5px;*/
-      background-color: #eeee99;
+      padding: 4px;
       font-size: 12px;
+      margin-bottom: 0px;
+      background-color: #BDCDF5;
     }
     .ELEMENT .content {
       padding: 3px;
       display: block;
       overflow: auto;
+      background-color: transparent;
+    }
+
+    /* mejor aprovechamiento del espacio para DvOrdinal poniendo el titulo del ELEMENT a la izquierda del contenido */
+    .ELEMENT_DvOrdinal .label, .ELEMENT_DV_CODED_TEXT .label, .ELEMENT_DV_COUNT .label, .ELEMENT_DvQuantity .label, .ELEMENT_DV_BOOLEAN .label {
+      padding: 10px;
+      padding-left: 6px;
+      padding-right: 3px;
+      display: inline-block;
+      position: relative;
+      vertical-align: middle;
+      margin-bottom: 0px;
+      font-weight: normal;
+      width: 150px;
+    }
+    /* Si pongo .ELEMENT_DvOrdinal .content se ve mal el triage */
+    .ELEMENT_DV_CODED_TEXT .content, .ELEMENT_DV_COUNT .content, .ELEMENT_DvQuantity .content, .ELEMENT_DV_BOOLEAN .content {
+      display: inline-block;
+      position: relative;
+      vertical-align: middle;
+    }
+    .ELEMENT_DvQuantity input { /* que el input donde se pone el numero sea chico */
+      width: 60px;
+    }
+
+    .ELEMENT .content label {
+      display: inline-block;
+      margin-right: 3px;
+      padding-top: 3px;
+      padding-bottom: 3px;
     }
     .ELEMENT img {
       max-width: 385px;
@@ -83,7 +114,14 @@
 
     .label {
       display: block;
-      margin-bottom: 2px;
+    }
+
+    
+    select {
+      width: 120px;
+    }
+    .DV_DATE_TIME select, .DV_BOOLEAN select, .ELEMENT_DvQuantity select {
+      width: auto;
     }
 
     /*******************************************************/
@@ -92,14 +130,10 @@
       vertical-align: middle;
     }
     label span {
-      /*background-color: #00ff00;*/ /* Para distinguir a que se aplica, lo muestra verde. */
       width: 30px;
       height: 22px;
       text-align: right;
       display: inline-block;
-    }
-    label:hover {
-      background-color: #ddddff;
     }
     /* / Para los boolean que el SI NO tenga el mismo largo. */
     /*********************************************************/
@@ -124,7 +158,6 @@
       padding: 10px;
       border: 1px solid #80dddd;
     }
-    
     
     /* --- NAVBAR ----------------------------- */ 
   #navbar
@@ -196,7 +229,6 @@
         </ul>
       </div>
     </g:if>
-    
     <g:form action="save" class="ehrform" method="post" enctype="multipart/form-data">
     
       <input type="hidden" name="templateId" value="${template.id}" />
@@ -207,13 +239,19 @@
           <td colspan="2" id="content">
             <g:each in="${template.getArchetypesByZone('content')}" var="archRef">
               <g:each in="${archRef.getReferencedConstraints()}" var="node">
-                <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
-                <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                <g:render template="templates2/${templateName}"
-                          model="[(templateName): node,
-                                  archetype: archRef.getReferencedArchetype(),
-                                  archetypeService: archetypeService,
-                                  params: params]" />
+                <g:if test="${node}">
+                  <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
+                  <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
+                  <g:render template="templates2/${templateName}"
+                            model="[(templateName): node,
+                                    archetype: archRef.getReferencedArchetype(),
+                                    archetypeService: archetypeService,
+                                    params: params]" />
+                </g:if>
+                <g:else>
+                  Dice que el node es nulo<br/>
+                  ArchRef: ${archRef.id}<br/>
+                </g:else>
               </g:each>
             </g:each>
           </td>
@@ -222,26 +260,38 @@
           <td id="left">
             <g:each in="${template.getArchetypesByZone('left')}" var="archRef">
               <g:each in="${archRef.getReferencedConstraints()}" var="node">
-                <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
-                <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                <g:render template="templates2/${templateName}"
-                          model="[(templateName): node,
-                                  archetype: archRef.getReferencedArchetype(),
-                                  archetypeService: archetypeService,
-                                  params: params]" />
+                <g:if test="${node}">
+                  <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
+                  <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
+                  <g:render template="templates2/${templateName}"
+                            model="[(templateName): node,
+                                    archetype: archRef.getReferencedArchetype(),
+                                    archetypeService: archetypeService,
+                                    params: params]" />
+                </g:if>
+                <g:else>
+                  Dice que el node es nulo<br/>
+                  ArchRef: ${archRef.id}<br/>
+                </g:else>
               </g:each>
             </g:each>
           </td>
           <td id="right">
             <g:each in="${template.getArchetypesByZone('right')}" var="archRef">
               <g:each in="${archRef.getReferencedConstraints()}" var="node">
-                <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
-                <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                <g:render template="templates2/${templateName}"
-                          model="[(templateName): node,
-                                  archetype: archRef.getReferencedArchetype(),
-                                  archetypeService: archetypeService,
-                                  params: params]" />
+                <g:if test="${node}">
+                  <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
+                  <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
+                  <g:render template="templates2/${templateName}"
+                            model="[(templateName): node,
+                                    archetype: archRef.getReferencedArchetype(),
+                                    archetypeService: archetypeService,
+                                    params: params]" />
+                </g:if>
+                <g:else>
+                  Dice que el node es nulo<br/>
+                  ArchRef: ${archRef.id}<br/>
+                </g:else>
               </g:each>
             </g:each>
           </td>
@@ -262,7 +312,6 @@
           </td>
         </tr>
       </table>
-      
       <br/>
       
       <div class="bottom_actions">

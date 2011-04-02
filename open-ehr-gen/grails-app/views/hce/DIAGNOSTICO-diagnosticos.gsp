@@ -192,14 +192,12 @@
             ${rmNode.data.events.data.items.class}<br/>
             --%>
             <g:each in="${rmNode.data.events[0].data.items}" var="element">
-             <%-- x: ${element.value}<br/> --%>
-              <g:if test="${element.value instanceof DvCodedText}">
-              
+              <%--x: ${element.value}<br/>--%>
+              <g:if test="${element.value.getClassName() == 'DvCodedText'}">
                 <%--
                 ${element.value.value}
                 ${element.value.definingCode.codeString}<br/>
                 --%>
-                
                 <g:set var="code" value="${Cie10Trauma.findByCodigo(element.value.definingCode.codeString)}" />
                 <g:if test="${!code}">
                   <g:set var="code" value="${Cie10Trauma.findBySubgrupo(element.value.definingCode.codeString)}" />

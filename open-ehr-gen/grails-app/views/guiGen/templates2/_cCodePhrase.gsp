@@ -11,6 +11,8 @@ CCodePhrase<br/>
 <textarea style="width: 700px; height: 200px;">${new XStream().toXML(cCodePhrase)}</textarea>
 --%>
 
+<g:set var="control" value="${template.getField( archetype.archetypeId.value, cCodePhrase.path() )?.getControlByPath(cCodePhrase.path())}" />
+
 <%
 // refPath es nulo si no viene de un arch internal ref
 
@@ -64,12 +66,29 @@ VALS: ${values}<br/>
 CODES: ${codes}<br/>
 --%>
 
-<g:select from="${values}"
-          keys="${codes}"
-          name="${archetype.archetypeId.value +_refPath+ cCodePhrase.path()}"
-          noSelection="${['':'']}"
-		  value="${selectedValue}"/>
+<g:if test="${control && control.type=='radioGroup'}">
 
+  <g:set var="i" value="${0}" />
+  <g:each in="${values}" var="value">
+    <label class="id_${value}"><!-- necesita id por el CSS -->
+      <input type="radio" value="${codes[i]}" name="${archetype.archetypeId.value +_refPath+ cCodePhrase.path()}" />
+      ${value}
+    </label>
+    <% i++ %>
+  </g:each>
+  <label class="id_nr"><!-- necesita id por el CSS -->
+    <input type="radio" checked="true" value="" name="${archetype.archetypeId.value +_refPath+ cCodePhrase.path()}" />
+    NR
+  </label>
+  
+</g:if>
+<g:else>
+	<g:select from="${values}"
+	          keys="${codes}"
+	          name="${archetype.archetypeId.value +_refPath+ cCodePhrase.path()}"
+	          noSelection="${['':'']}"
+			  value="${selectedValue}"/>
+</g:else>
 
 <%--
 <br/><br/>

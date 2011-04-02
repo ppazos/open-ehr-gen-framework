@@ -49,14 +49,21 @@ if (refPath) _refPath = refPath
   <%-- units: ${item.units} --%>
 </g:each>
 
+<%-- muestra (min..max) para la magnitude, si hay restriccion --%>
 <g:if test="${interval != null}">
-(
-  <g:if test="${interval.lower != null}">${interval.lower}</g:if>
-  <g:else>*</g:else>
-..
-  <g:if test="${interval.upper != null}">${interval.upper}</g:if>
-  <g:else>*</g:else>
-)
+  <g:if test="${interval.lower != null}">
+    <g:set var="lower" value="${interval.lower}" />
+  </g:if>
+  <g:else>
+    <g:set var="lower" value="*" />
+  </g:else>
+  <g:if test="${interval.upper != null}">
+    <g:set var="upper" value="${interval.upper}" />
+  </g:if>
+  <g:else>
+    <g:set var="upper" value="*" /> 
+  </g:else>
+  (${lower}..${upper})
 </g:if>
 <g:else>(*..*)</g:else>
 

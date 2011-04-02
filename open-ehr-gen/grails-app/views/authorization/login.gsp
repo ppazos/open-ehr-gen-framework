@@ -64,7 +64,7 @@
         position: relative;
         text-align: center;
         left: -50%;
-        background-color: #aaaaff;
+        /*background-color: #aaaaff;*/
       }
       p {margin:1em 0}
       input {
@@ -84,6 +84,9 @@
         list-style:none;
         margin:0;
         padding:0;
+      }
+      img {
+        border: 0px;
       }
     </style>
     <!--[if lt IE 8]>
@@ -129,7 +132,7 @@
           </ul>
         
           <g:form url="[action:'login']" method="post" id="form1">
-            <h2 align="center"><g:message code="auth.login.welcome" /></h2>
+            <a href="http://code.google.com/p/open-ehr-gen-framework/" target="_blank"><img src="${resource(dir:'images', file:'ehr-gen_logo.png')}" alt="Open EHR-Gen Framework" /></a>
             <h3 align="center"><g:message code="auth.login.welcome2" /></h3>
             <g:if test="${flash.message}">
               <div class="error"><g:message code="${flash.message}" /></div>

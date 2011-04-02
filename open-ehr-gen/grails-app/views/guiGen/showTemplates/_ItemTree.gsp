@@ -49,12 +49,9 @@ Si no está, genero los campos usando AOM.
   }
   %>
   </g:each>
-
 </g:if>
 <g:else>
-
-  <g:each in="${rmNode.getItems()}" var="item">
-    <%-- element o cluster --%>
+  <g:each in="${rmNode.getItems()}" var="item"><%-- element o cluster --%>
     
     <%-- esto tira Item_$$_javassist_165, no se porque, asi que lo hago con instanceof --%>
     <%-- <g:set var="templateName" value="${item.getClass().getSimpleName()}" /> --%>
@@ -70,7 +67,6 @@ Si no está, genero los campos usando AOM.
     --%>
   
     <g:render template="../guiGen/showTemplates/${templateName}"
-              model="[rmNode: item, archetype: archetype, template: template]" />
-    
+              model="[rmNode: item, pathFromParent: rmNode.path+'/items', archetype: archetype, template: template]" />
   </g:each>
 </g:else>

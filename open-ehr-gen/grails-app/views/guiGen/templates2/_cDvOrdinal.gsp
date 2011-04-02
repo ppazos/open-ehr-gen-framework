@@ -33,7 +33,7 @@ if (refPath) _refPath = refPath
   <g:set var="values" value="${cDvOrdinal.list.sort{ it.value }.symbol.codeString}" />
   <g:set var="i" value="${0}" />
   <g:each in="${values}" var="value">
-    <label id="id_${value}">
+    <label id="id_${value}"><!-- necesita id por el CSS -->
       <input type="radio" value="${value}" name="${archetype.archetypeId.value +_refPath+ cDvOrdinal.path()}" />
       ${labels[i]}
     </label>
