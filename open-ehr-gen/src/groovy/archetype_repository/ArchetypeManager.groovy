@@ -54,12 +54,11 @@ class ArchetypeManager {
    {
       def path = this.archetypeRepositoryPath
       loadAllRecursive( path )
-        
-   } // loadAll
+   }
     
    private loadAllRecursive( String path )
    {
-      println "loadALL: " + path
+      println "loadAllRecursive: " + path
       def root = new File( path )
 
       // FIXME: deberia filtrar solo archivos adl
@@ -69,15 +68,22 @@ class ArchetypeManager {
 
          // PARSEAR ARQUETIPO
          ADLParser parser = null;
-         try {
-            parser = new ADLParser( f );
-         } catch (IOException e) {
+         try
+         {
+            parser = new ADLParser( f )
+         }
+         catch (IOException e)
+         {
             println "PROBLEMA AL CREAR EL PARSER: " + e.message
-         }        
-         Archetype archetype = null;
-         try {
-            archetype = parser.archetype();
-         } catch (Exception e) {
+         }
+         
+         Archetype archetype = null
+         try
+         {
+            archetype = parser.archetype()
+         }
+         catch (Exception e)
+         {
             println e.message
          }
          // /PARSEAR ARQUETIPO
@@ -100,10 +106,14 @@ class ArchetypeManager {
       }
    }
    
+   /**
+    * Carga el arquetipo con id archetypeId
+    * @param archetypeId
+    * @return el arquetipo cargado o null si no lo encuentra
+    */
    public Archetype getArchetype( String archetypeId )
    {
-       // PROBLEMAS DE CARGAR EL ARQUETIPO: openEHR-EHR-COMPOSITION.prescription.v1
-       
+       // FIXME: PROBLEMAS DE CARGAR EL ARQUETIPO: openEHR-EHR-COMPOSITION.prescription.v1
        
        // Si no esta cargado, lo intenta cargar
        if (!this.cache[archetypeId])
@@ -180,7 +190,8 @@ class ArchetypeManager {
    }
    
    /**
-    * ojo, type puede venir en mayusculas o en minusculas, y lo necesito en minusculas.
+    * Obtiene un arquetipo por si tipo y expresion regular.
+    * FIXME: type puede venir en mayusculas o en minusculas, y lo necesito en minusculas.
     * FIXME: el resultado de esta operacion deberia ser una lista de arquetipos!
     */
    public Archetype getArchetype( String type, String idMatchingKey )
@@ -191,7 +202,6 @@ class ArchetypeManager {
        // FIXME: no uso el type porque para guardar los arquetipos no lo uso,
        //        seria una optimizacion para buscar.
        Archetype archetype = null
-       //def p = Pattern.compile( ".*"+type+".*"+idMatchingKey+".*" )
        def p = Pattern.compile( ".*"+idMatchingKey+".*" )
        
        // Busca en los arquetipos cargados:
@@ -273,7 +283,7 @@ class ArchetypeManager {
    
    public void unloadAll()
    {
-     // FIXME: debe estar sincronizada
+       // FIXME: debe estar sincronizada
        this.cache.clear()
        this.timestamps.clear()
    }
