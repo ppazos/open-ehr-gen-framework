@@ -20,7 +20,7 @@ import hce.core.datastructure.itemstructure.representation.Item
  * @version 1.0
  */
 
-class Archetyped extends RMObject{
+class Archetyped { //extends RMObject{
 
     String archetypeId;
     String templateId;

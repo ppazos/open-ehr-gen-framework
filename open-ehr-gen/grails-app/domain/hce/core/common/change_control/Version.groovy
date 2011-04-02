@@ -69,6 +69,7 @@ class Version {
         commit_audit cascade: "save-update"
         data cascade: "save-update"
         committer cascade: "save-update"
+        data column: "version_data"
     }
 
     def getNumVersion(){

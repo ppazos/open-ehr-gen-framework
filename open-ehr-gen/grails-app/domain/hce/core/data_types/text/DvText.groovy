@@ -2,7 +2,7 @@ package hce.core.data_types.text
 
 import hce.core.data_types.basic.DataValue;
 import hce.core.data_types.uri.DvURI;
-import hce.core.support.definition.BasicDefinitions;
+//import hce.core.support.definition.BasicDefinitions;
 import hce.core.datastructure.itemstructure.representation.Item
 
 class DvText extends DataValue{

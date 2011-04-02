@@ -22,6 +22,7 @@ class ObjectRef {
     
     static mapping = {
         objectId cascade: "save-update"
+        //table 'object_ref'
     }
     
     public String toString()

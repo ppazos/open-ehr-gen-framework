@@ -8,6 +8,7 @@ class AdminEntry extends Entry {
 
     static mapping = {
         data cascade: "save-update"
+        data column: "admin_entry_data_id"
     }
 
     static constraints = {

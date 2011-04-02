@@ -6,4 +6,8 @@ class DataStructure extends Locatable{
 
     static constraints = {
     }
+    
+    static mapping = {
+       //table 'data_structure'
+    }
 }

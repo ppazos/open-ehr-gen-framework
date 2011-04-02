@@ -24,6 +24,7 @@ class UIDBasedID extends ObjectID { // Abstracta
     // Fabrica a partir de valores simples
     static UIDBasedID create(String root, String extension)
     {
+        // FIXME: ambos son obligatorios!
         return new UIDBasedID(
                      value: ((root)?root:'')+'::'+((extension)?extension:'') 
                    )

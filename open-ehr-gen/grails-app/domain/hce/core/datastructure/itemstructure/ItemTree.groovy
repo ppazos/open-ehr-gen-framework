@@ -6,7 +6,7 @@ import hce.core.datastructure.itemstructure.representation.Item
 
 class ItemTree extends ItemStructure{
 	
-	List items = [] // Para que guarden en orden
+	 List items = [] // Para que guarden en orden
     static hasMany = [items:Item]
 
     static mapping = {

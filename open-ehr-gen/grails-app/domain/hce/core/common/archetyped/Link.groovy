@@ -2,9 +2,9 @@ package hce.core.common.archetyped
 
 import hce.core.data_types.text.*;
 import hce.core.data_types.uri.*;
-import hce.core.RMObject;
+//import hce.core.RMObject;
 
-class Link extends RMObject {
+class Link { //extends RMObject {
 
     private DvText meaning;
     private DvText type;

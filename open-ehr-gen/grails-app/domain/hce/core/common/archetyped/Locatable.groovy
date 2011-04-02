@@ -14,40 +14,36 @@ import java.util.*;
  * @author Leandro Carrasco
  * @version 1.0
  */
-
-class Locatable { // extends Pathable { // Abstracta
-
-    /**
-     * Separator used to delimit segments in the path
-     */
-    static final String PATH_SEPARATOR = "/";
-    static final String ROOT = PATH_SEPARATOR;
+// Pablo: prueba para agregar el atributo Pathable.parent a los nodos del RM
+class Locatable extends Pathable {
 
     /* fields */
     //UIDBasedID uid;
     String archetypeNodeId // Id del nodo (ej. at0001) -->  arquetipo.node(path).nodeID
     DvText name // Termino asociado al archetypeNodeId --> termino pedido a la ontologia en base a archetypeNodeId
-	
-	// Es != null para las raices de estructuras del rm. 
-	Archetyped archetypeDetails // Tiene ArqchetypeId, TemplateId y VersionID
-	
-	// Cumple el rol de Pathable, guarda la path al nodo del AOM que restringe este 
-	//locatable, el cual se usó para crearlo. 
-	String path
-	
+    
+    // Es != null para las raices de estructuras del rm. 
+    Archetyped archetypeDetails // Tiene ArqchetypeId, TemplateId y VersionID
+    
+    // Cumple el rol de Pathable, guarda la path al nodo del AOM que restringe este 
+    //locatable, el cual se usó para crearlo.
+    // Pablo: Lo paso para Pathable 
+    //String path
+    
     //FeederAudit feederAudit;
     //Set<Link> links;
 
     static mapping = {
         name cascade: "save-update"
         archetypeDetails cascade: "save-update"
+        //table 'locatable' // pab
     }
 
     static constraints = {
         //archetypeNodeId (nullable: false)
         //name (nullable: false)
         //links (nullable: false, minSize: 1)
-		archetypeDetails(nullable:true)
+        archetypeDetails(nullable:true)
     }
 
     // Solucion a http://old.nabble.com/Getting-Item_%24%24_javassist_165-from-ins.getClass%28%29.getSimpleName%28%29-td27317238.html
@@ -84,12 +80,12 @@ class Locatable { // extends Pathable { // Abstracta
      */
     /*
     private List<String> dividePathIntoSegments(String path) { // Para "a/b/c/d" Retorna una lista con los strings "a", "b", "c" y "d"
-    	List<String> segments = new ArrayList<String>();
-    	StringTokenizer tokens = new StringTokenizer(path, "/");
-    	while(tokens.hasMoreTokens()) {
-    		segments.add(tokens.nextToken());
-    	}
-    	return segments;
+        List<String> segments = new ArrayList<String>();
+        StringTokenizer tokens = new StringTokenizer(path, "/");
+        while(tokens.hasMoreTokens()) {
+            segments.add(tokens.nextToken());
+        }
+        return segments;
     }
     */
 
@@ -97,47 +93,47 @@ class Locatable { // extends Pathable { // Abstracta
      * generic path evaluation covers all rmClass
      */
     /*private Object genericPathEvaluator(String path, Object object) { // Dada una ruta y un objeto, retorna la evaluacion de la ruta sobre el objeto
-    	if(path == null || object == null) {
-    		return null;
-    	}
-    	List<String> segments = dividePathIntoSegments(path);
-    	return evaluatePathSegment(segments, object);
+        if(path == null || object == null) {
+            return null;
+        }
+        List<String> segments = dividePathIntoSegments(path);
+        return evaluatePathSegment(segments, object);
     }*/
 
     /*
      * Evaluate recursively the path segments
      */
     /*private Object evaluatePathSegment(List<String> pathSegments, Object object) {
-    	if(pathSegments.isEmpty()) {
-    		return object;
-    	}
-    	String pathSegment = pathSegments.remove(0);
-    	Object value =  null;
+        if(pathSegments.isEmpty()) {
+            return object;
+        }
+        String pathSegment = pathSegments.remove(0);
+        Object value =  null;
 
-    	int index = pathSegment.indexOf("[");
-    	String expression = null;
-    	String attributeName = null;
+        int index = pathSegment.indexOf("[");
+        String expression = null;
+        String attributeName = null;
 
-    	// has [....] predicate expression
-    	if(index > 0) {
+        // has [....] predicate expression
+        if(index > 0) {
             assert(pathSegment.indexOf("]") > index);
 
             // Obtengo el nombre del atributo (esta desde el inicio hasta el "[")
             attributeName = pathSegment.substring(0, index);
             // Obtengo la expresion que esta luego del atributo (esta desde el "[" y el "]")
             expression = pathSegment.substring(index + 1, pathSegment.indexOf("]"));
-    	} else {
-    		attributeName = pathSegment;
-    	}
+        } else {
+            attributeName = pathSegment;
+        }
 
-    	value = retrieveAttributeValue(object, attributeName);
-    	if(expression != null && value != null ) {
+        value = retrieveAttributeValue(object, attributeName);
+        if(expression != null && value != null ) {
             value = processPredicate(expression, value);
-    	}
-    	if(value != null) {
+        }
+        if(value != null) {
             return evaluatePathSegment(pathSegments, value); // Lamada recursiva
-    	}
-    	return null;
+        }
+        return null;
     }*/
 
     /**
@@ -153,59 +149,59 @@ class Locatable { // extends Pathable { // Abstracta
      * @return null if there is no match
      */
     /*Object processPredicate(String expression, Object object) {
-    	String name = null;
-    	String archetypeNodeId = null;
-    	expression = expression.trim();
-    	int index;
+        String name = null;
+        String archetypeNodeId = null;
+        expression = expression.trim();
+        int index;
 
-    	// [at0001, 'standing']
-    	if(expression.contains(",")) {
-    		index = expression.indexOf(",");
-    		archetypeNodeId = expression.substring(0, index).trim();
-    		name = expression.substring(expression.indexOf("'") + 1,
-    				expression.lastIndexOf("'"));
+        // [at0001, 'standing']
+        if(expression.contains(",")) {
+            index = expression.indexOf(",");
+            archetypeNodeId = expression.substring(0, index).trim();
+            name = expression.substring(expression.indexOf("'") + 1,
+                    expression.lastIndexOf("'"));
 
-    	// [at0006 and name/value='any event']
-    	} else if(expression.contains(" AND ")) {
-    		index = expression.indexOf("AND");
-    		archetypeNodeId = expression.substring(0, index).trim();
-    		name = expression.substring(expression.indexOf("'") + 1,
-    				expression.lastIndexOf("'"));
+        // [at0006 and name/value='any event']
+        } else if(expression.contains(" AND ")) {
+            index = expression.indexOf("AND");
+            archetypeNodeId = expression.substring(0, index).trim();
+            name = expression.substring(expression.indexOf("'") + 1,
+                    expression.lastIndexOf("'"));
 
-    	// [at0006]
-    	} else if (expression.startsWith("at")) {
-    		archetypeNodeId = expression;
+        // [at0006]
+        } else if (expression.startsWith("at")) {
+            archetypeNodeId = expression;
 
-    	// ['standing']
-    	} else if (expression.startsWith("'") && expression.endsWith("'")) {
-    		name = expression.substring(1, expression.length() - 1);
-    	}
+        // ['standing']
+        } else if (expression.startsWith("'") && expression.endsWith("'")) {
+            name = expression.substring(1, expression.length() - 1);
+        }
 
-    	Iterable collection = null;
-    	if(object instanceof Iterable) {
-    		collection = (Iterable) object;
-    	} else {
-    		List list = new ArrayList();
-    		list.add(object);
-    		collection = list;
-    	}
+        Iterable collection = null;
+        if(object instanceof Iterable) {
+            collection = (Iterable) object;
+        } else {
+            List list = new ArrayList();
+            list.add(object);
+            collection = list;
+        }
 
-    	for(Object item : collection) {
-    		if(item instanceof Locatable) {
-    			Locatable locatable = (Locatable) item;
-        		if(archetypeNodeId != null
-        				&& !locatable.archetypeNodeId.equals(archetypeNodeId)) {
-        			continue;
-        		}
-        		if(name != null && !locatable.name.getValue().equals(name)) {
-        			continue;
-        		}
-    		}
-    		// TODO other non-locatable predicates!!
-    		// e.g. time > 10:20:15
-    		return item; // found a match!
-    	}
-    	return null;
+        for(Object item : collection) {
+            if(item instanceof Locatable) {
+                Locatable locatable = (Locatable) item;
+                if(archetypeNodeId != null
+                        && !locatable.archetypeNodeId.equals(archetypeNodeId)) {
+                    continue;
+                }
+                if(name != null && !locatable.name.getValue().equals(name)) {
+                    continue;
+                }
+            }
+            // TODO other non-locatable predicates!!
+            // e.g. time > 10:20:15
+            return item; // found a match!
+        }
+        return null;
     }*/
 
     /**
@@ -216,7 +212,7 @@ class Locatable { // extends Pathable { // Abstracta
      * @throws IllegalArgumentException if path invalid
      */
     /*public Object itemAtPath(String path) {
-    	if (path == null) {
+        if (path == null) {
             throw new IllegalArgumentException("invalid path: " + path);
         }
         if (Locatable.ROOT.equals(path) || path.equals(whole())) {
@@ -229,19 +225,19 @@ class Locatable { // extends Pathable { // Abstracta
      * Retrieves the value of named attribute of given object
      */
     /*private Object retrieveAttributeValue(Object obj, String attributeName) {
-    	Class rmClass = obj.getClass();
-    	Object value = null;
-    	Method getter;
+        Class rmClass = obj.getClass();
+        Object value = null;
+        Method getter;
 
-    	String getterName = "get" + attributeName.substring(0, 1).toUpperCase()
-						+ attributeName.substring(1);
-    	try {
+        String getterName = "get" + attributeName.substring(0, 1).toUpperCase()
+                        + attributeName.substring(1);
+        try {
             getter = rmClass.getMethod(getterName, null);
             value = getter.invoke(obj, null);
-	} catch(Exception ignore) {
+        } catch(Exception ignore) {
             // TODO log as kernel warning
-	}
-	return value;
+        }
+        return value;
     }*/
 
     /**
@@ -265,7 +261,8 @@ class Locatable { // extends Pathable { // Abstracta
      */
     String toString()
     {
-        return this.getClass().getSimpleName() +"-> "+ ( (archetypeNodeId.equals(name)) ? archetypeNodeId.toString() : archetypeNodeId + "-> " + name)
+        //return this.getClass().getSimpleName() +"-> "+ ( (archetypeNodeId.equals(name)) ? archetypeNodeId.toString() : archetypeNodeId + "-> " + name)
+       return this.getClass().getSimpleName() +"-> ["+ archetypeNodeId + "] name: " + name.value
     }
 
     /**
@@ -292,6 +289,7 @@ class Locatable { // extends Pathable { // Abstracta
     /**
      * Return path of current whole node
      */
+    /*
     String whole() {
         return ROOT;// + "[" + getName().getValue() + "]";
     }
@@ -303,5 +301,6 @@ class Locatable { // extends Pathable { // Abstracta
     String atNode() {
         return ROOT + "[" + archetypeNodeId + "]";
     }
+    */
 
 }

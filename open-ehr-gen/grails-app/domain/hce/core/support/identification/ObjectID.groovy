@@ -2,7 +2,7 @@ package hce.core.support.identification
 
 import hce.core.*;
 
-class ObjectID extends RMObject{
+class ObjectID { //extends RMObject{
 
     /**
      * Clase ancestra para identificadores de objetos de informacion. Ids may be

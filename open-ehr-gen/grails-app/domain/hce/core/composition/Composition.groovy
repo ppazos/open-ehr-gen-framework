@@ -30,6 +30,8 @@ class Composition extends Locatable {
         territory cascade: "save-update"
         language cascade: "save-update"
         content cascade: "save-update"
+        content column:'composition_content'
+        //table 'composition'
     }
 
     static constraints = {

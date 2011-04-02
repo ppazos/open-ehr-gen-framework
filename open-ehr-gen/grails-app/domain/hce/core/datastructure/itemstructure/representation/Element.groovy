@@ -1,5 +1,6 @@
 package hce.core.datastructure.itemstructure.representation
 
+import hce.core.common.archetyped.Pathable;
 import hce.core.data_types.basic.*;
 import hce.core.data_types.text.*;
 
@@ -17,4 +18,12 @@ class Element extends Item{
         value (nullable: true)
     }
     
+    /*
+    static transients = ['padre']
+    Pathable getPadre()
+    {
+       if (!this.rmParentId) return null
+       return Pathable.get(this.rmParentId)
+    }
+    */
 }
