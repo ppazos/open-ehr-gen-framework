@@ -1,5 +1,5 @@
 <%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %>
-<%@ page import="hce.core.common.change_control.Version" %>
+<%@ page import="hce.core.common.change_control.Version" %><%@ page import="hce.core.composition.Composition" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <html>
   <head>
@@ -17,6 +17,16 @@
         }
         #list td {
           text-align: center;
+        }
+    
+        /* paginacion */
+        .step, .currentStep, .nextLink, .prevLink {
+          padding-right: 5px;
+          padding-top: 7px;
+          display: inline-block;
+        }
+        .currentStep {
+          font-weight: bold;
         }
       </style>
   </head>
@@ -48,8 +58,16 @@
             ${composition.context.otherContext.item.value.value}
           </td>
           <td>
-            <g:message code="${g.stateForComposition(episodeId:composition.id)}" />
-             </td>
+            <%--
+            // El .toString es por esto:
+	        // Exception Message: No signature of method:
+	        // org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource.getMessage()
+	        // is applicable for argument types: (org.codehaus.groovy.grails.web.util.StreamCharBuffer, null,
+	        // org.codehaus.groovy.grails.web.util.StreamCharBuffer, java.util.Locale) values:
+	        // [ehr.lifecycle.incomplete, null, ehr.lifecycle.incomplete, es]
+            --%>
+            <g:message code="${g.stateForComposition(episodeId:composition.id).toString()}" />
+          </td>
           <td>
             <g:link action="show" id="${composition.id}"><g:message code="trauma.list.action.show" /></g:link>
             <br />
@@ -75,6 +93,12 @@
       </g:each>
     </ul>
     --%>
+    
+    <g:paginate next="Siguiente" prev="Previo"
+                maxsteps="5"
+                controller="records" action="list"
+                max="15"
+                total="${Composition.countByRmParentId(domain.id)}" />
     
   </body>
 </html>

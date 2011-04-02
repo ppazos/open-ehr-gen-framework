@@ -39,7 +39,7 @@
       <div class="message"><g:message code="${flash.message}" /></div>
     </g:if>
 
-  <%--
+  <%-- TEST:
   <textarea>
   <%
     composition.context.participations.each{ it ->
@@ -49,6 +49,7 @@
   %>
   </textarea>
   --%>
+  
     <div id="show_body">
       <div id="demographic">
         <h2>REGISTRO DEMOGRAFICO</h2>
@@ -75,9 +76,11 @@
     <br/>
       
     <div class="bottom_actions">
+      <%-- Ahora cierre y firma es uno solo: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=9
       <g:canSignRecord episodeId="${episodeId}">
         <g:link controller="records" action="signRecord" id="${composition.id}"><g:message code="trauma.show.action.sign" /></g:link>
       </g:canSignRecord>
+      --%>
       <g:isSignedRecord episodeId="${episodeId}"><g:message code="trauma.sign.registryAlreadySigned" /></g:isSignedRecord>
       <g:reabrirEpisodio  episodeId="${episodeId}">
         <g:link controller="records" action="reopenRecord" id="${composition.id}"><g:message code="trauma.show.action.reopenRecord" /></g:link>

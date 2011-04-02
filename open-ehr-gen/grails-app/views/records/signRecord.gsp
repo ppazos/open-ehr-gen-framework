@@ -68,13 +68,16 @@
     <g:if test="${flash.message}">
       <div class="message"><g:message code="${flash.message}" /></div>
     </g:if>
+    <g:if test="${!patient && !flash.error}">
+      <div class="message"><g:message code="trauma.sign.noPatientSelected" /></div>
+    </g:if>
       
     <g:form url="[action:'signRecord', id:params.id]" method="post" id="form1" class="ehrform">
       
       <table id="sign_table" align="center">
         <g:isSignedRecord episodeId="${episodeId}">
           <tr>
-            <td colspan="2"><g:message code="trauma.sign.registryAlreadySigned" /></td>
+            <td colspan="2" class="message"><g:message code="trauma.sign.registryAlreadySigned" /></td>
           </tr>
         </g:isSignedRecord>
         <tr>
@@ -86,9 +89,11 @@
           <td><input type="password" name="pass" size="24" /></td>
         </tr>
       </table>
-      <br/>
       
-      <input type="submit" name="doit" value="${message(code:'trauma.sign.action.sign')}" />
+      <g:isNotSignedRecord episodeId="${episodeId}">
+        <br/>
+        <input type="submit" name="doit" value="${message(code:'trauma.sign.action.sign')}" />
+      </g:isNotSignedRecord>
       
       <%-- TODO: recordar clave
       <div align="center">
