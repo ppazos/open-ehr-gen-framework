@@ -65,21 +65,26 @@ modo = show? (si el modo no es edit es show)
 	      if (rmItems.size()==0) // No hay items RM para esa path, genero usando el AOM
 	      {
 	        // USO AOM
-	        //print "AOM"
+	        //print "_Cluster usa AOM"
 	        print render(template:"../guiGen/templates2/cObject",
 	                     model:[cObject: children,
 	                            archetype: archetype,
-	                            template: template])
+	                            template: template,
+	                            pathFromParent: children.path()])
 	      }
 	      else
 	      {
 	        // USO RM
-	        //print "RM<br/>"
+	        //print "_Cluster usa RM<br/>"
 	        rmItems.each { item ->
 	          //print item.path + "<br/>"
 	          def templateName = item.getClassName()
-	          print render(template:"../guiGen/showTemplates/${templateName}",
-	                       model:[rmNode: item, archetype: archetype, template: template])
+	          print templateName + "<br/>"
+	          print render(template: "../guiGen/showTemplates/${templateName}",
+	                       model: [rmNode: item,
+	                               archetype: archetype,
+	                               template: template,
+	                               pathFromParent: item.path])
 	        }
 	      }
 	      %>
@@ -98,7 +103,7 @@ modo = show? (si el modo no es edit es show)
         <g:set var="templateName" value="${item.getClassName()}" />
         <%-- Item: ${templateName}<br/> --%>
         <g:render template="../guiGen/showTemplates/${templateName}"
-                  model="[rmNode: item, archetype: archetype, template: template]" />
+                  model="[rmNode: item, archetype: archetype, template: template, pathFromParent: item.path]" />
       </g:each>
     </span>
   </g:else>

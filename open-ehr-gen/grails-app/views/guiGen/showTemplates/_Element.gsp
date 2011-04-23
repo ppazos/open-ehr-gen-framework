@@ -21,17 +21,14 @@ in: archetype
   <%-- Puede ser internal ref --%>
   <%-- Esto es valido solo si viene rmNode --%>
   <g:set var="aomNode" value="${archetype.node(rmNode.path)}" />
-  <g:set var="elementValueRmType" value="ELEMENT_${aomNode.attributes[0].children[0].rmTypeName}" />
-  <div class="ELEMENT ${elementValueRmType}">
   <%--
-    arhcID: ${rmNode.archetypeDetails.archetypeId},
-    nodeID: ${rmNode.archetypeNodeId},
-    id: ${rmNode.id}<br/><br/>
-    ${rmNode.path}<br/>
+  Archetype: ${archetype.archetypeId.value}<br/>
+  RM Node Path ${rmNode.path}</br>
   --%>
+  <g:set var="elementValueRmType" value="ELEMENT_${aomNode?.attributes[0].children[0].rmTypeName}" />
+  <div class="ELEMENT ${elementValueRmType}">
   <g:set var="isInternalRef" value="${false}" />
   <g:if test="${aomNode instanceof ArchetypeInternalRef}">
-    <%-- ---- ArchInternalRef ----<br/> --%>
     <g:set var="isInternalRef" value="${true}" />
     <g:set var="aomChildNode" value="${archetype.node( aomNode.targetPath+'/value' )}" /><%-- aomNode ahora es el nodo referenciado --%>
   </g:if>
@@ -39,17 +36,20 @@ in: archetype
     <%-- Si no es arch_internal_ref voy a buscar un nivel mas el aomNode para mandarselo al template del element.value --%>
     <g:set var="aomChildNode" value="${archetype.node( pathFromParent+'/value' )}" />
   </g:else>
-    
+  <%--
+  pathFromParent: ${pathFromParent}<br/>
+  aomChildnode: ${aomChildNode}<br/>
+  --%>
   <span class="label">
     ${rmNode.name.value}
   </span>
   <span class="content">
     <g:set var="templateName" value="${rmNode.value.getClassName()}" />
-   
     <%--
       ELEMENT REF PATH: ${((isInternalRef) ? "internal:"+aomNode.path() : 'no internal ref')}<br/>
       TemplateName: ${templateName}<br/>
     --%>
+    <%-- TODO: ver si no es mas facil si le pongo path a los primitives --%>
     <g:render template="../guiGen/showTemplates/${templateName}"
               model="[dataValue: rmNode.value,
                       parent: rmNode,
@@ -57,7 +57,7 @@ in: archetype
                       refPath: ((isInternalRef) ? aomNode.path() : ''),
                       aomNode: aomChildNode,
                       pathFromOwner: rmNode.path+'/value',
-                      template: template]" /> <%-- TODO: ver si no es mas facil si le pongo path a los primitives --%>
+                      template: template]" />
     </span>
   </div>
 </g:else>
