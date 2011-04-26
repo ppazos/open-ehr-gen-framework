@@ -12,7 +12,6 @@
     #right {
       width: 50%;
     }
-    
     .OBSERVATION .label, .EVALUATION .label, .INSTRUCTION .label, .ACTION .label {
       font-size: 14px;
       font-weight: bold;
@@ -43,7 +42,6 @@
       background-color: #aaff99;
       border: 1px solid #33ff33;
     }
-
     .CLUSTER {
       margin-bottom: 3px;
       font-weight: bold;
@@ -60,7 +58,6 @@
       display: block;
       background-color: #EBEFF9;
     }
-    
     .ELEMENT {
       font-weight: normal;
       margin-bottom: 3px;
@@ -101,7 +98,6 @@
     .ELEMENT_DvQuantity input { /* que el input donde se pone el numero sea chico */
       width: 60px;
     }
-
     .ELEMENT .content label {
       display: inline-block;
       margin-right: 3px;
@@ -111,12 +107,9 @@
     .ELEMENT img {
       max-width: 385px;
     }
-
     .label {
       display: block;
     }
-
-    
     select {
       width: 120px;
     }

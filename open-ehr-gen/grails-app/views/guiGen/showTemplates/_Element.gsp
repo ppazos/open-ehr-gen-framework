@@ -14,19 +14,16 @@ in: archetype
 <g:if test="${!rmNode}">
   <%-- EDIT, llamo al template de cObject --%>
   <g:set var="aomNode" value="${archetype.node(pathFromParent)}" />
-  <g:render template="../guiGen/templates2/cObject"
-            model="[cObject: aomNode, archetype: archetype]" />
+  <g:render template="../guiGen/templates2/cObject" model="[cObject: aomNode, archetype: archetype]" />
 </g:if>
 <g:else>
   <%-- Puede ser internal ref --%>
   <%-- Esto es valido solo si viene rmNode --%>
   <g:set var="aomNode" value="${archetype.node(rmNode.path)}" />
-  <%--
-  Archetype: ${archetype.archetypeId.value}<br/>
-  RM Node Path ${rmNode.path}</br>
-  --%>
-  <g:set var="elementValueRmType" value="ELEMENT_${aomNode?.attributes[0].children[0].rmTypeName}" />
-  <div class="ELEMENT ${elementValueRmType}">
+  <g:if test="${aomNode instanceof CComplexObject}">
+    <g:set var="elementValueRmType" value=" ELEMENT_${aomNode?.attributes[0].children[0].rmTypeName}" />
+  </g:if>
+  <div class="ELEMENT${elementValueRmType}">
   <g:set var="isInternalRef" value="${false}" />
   <g:if test="${aomNode instanceof ArchetypeInternalRef}">
     <g:set var="isInternalRef" value="${true}" />
@@ -36,10 +33,6 @@ in: archetype
     <%-- Si no es arch_internal_ref voy a buscar un nivel mas el aomNode para mandarselo al template del element.value --%>
     <g:set var="aomChildNode" value="${archetype.node( pathFromParent+'/value' )}" />
   </g:else>
-  <%--
-  pathFromParent: ${pathFromParent}<br/>
-  aomChildnode: ${aomChildNode}<br/>
-  --%>
   <span class="label">
     ${rmNode.name.value}
   </span>

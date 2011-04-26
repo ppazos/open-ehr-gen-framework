@@ -10,6 +10,7 @@ in: template que define toda la estructura que cuelga de este rmNode. FIXME: no 
   id: ${rmNode.id}<br/><br/>
 --%>
 <%--<g:set var="templateName" value="${rmNode.getClass().getSimpleName()}" />--%>
+
 <g:set var="templateName" value="${rmNode.getClassName()}" />
 <g:render template="../guiGen/showTemplates/${templateName}"
-          model="[rmNode: rmNode, archetype: archetype, template: template]" />
+          model="[rmNode: rmNode, archetype: archetype, template: template, fieldPaths: fieldPaths]" />

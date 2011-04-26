@@ -47,7 +47,6 @@
       background-color: #aaff99;
       border: 1px solid #33ff33;
     }
-
     .CLUSTER {
       margin-bottom: 3px;
       font-weight: bold;
@@ -64,7 +63,6 @@
       display: block;
       background-color: #EBEFF9;
     }
-    
     .ELEMENT {
       font-weight: normal;
       margin-bottom: 3px;
@@ -83,7 +81,6 @@
       overflow: auto;
       background-color: transparent;
     }
-
 
     /* mejor aprovechamiento del espacio para DvOrdinal poniendo el titulo del ELEMENT a la izquierda del contenido */
     .ELEMENT_DvOrdinal .label, .ELEMENT_DV_CODED_TEXT .label, .ELEMENT_DV_COUNT .label, .ELEMENT_DvQuantity .label, .ELEMENT_DV_BOOLEAN .label {
@@ -106,7 +103,6 @@
     .ELEMENT_DvQuantity input { /* que el input donde se pone el numero sea chico */
       width: 60px;
     }
-
     .ELEMENT .content label {
       display: inline-block;
       margin-right: 3px;
@@ -116,11 +112,9 @@
     .ELEMENT img {
       max-width: 385px;
     }
-
     .label {
       display: block;
     }
-
     select {
       width: auto;
     }
@@ -167,49 +161,45 @@
     }
     
     /* --- NAVBAR ----------------------------- */ 
-	  #navbar
-	  {          
-	    width: 100%;
-	    /*padding-top: 5px;*/
-	    line-height: normal;
-	    font-size: 12px;
-	    margin-top: 0px;
-	    clear: both;
-	    /*background: #e0e0e0;*/
-	    text-align: left;
-	  }
-	  
-	  #navbar a {
-	     padding: 0px;
-	     text-decoration: none;
-	     color: #000;
-	     padding: 4px 10px 2px 10px;
-	     width: 100%;
-	  }
-	  
-	  #navbar ul {
-	     margin: 0;
-	     padding: 5px 0px 2px 20px;
-	     list-style: none;
-	     /*border-bottom: solid 1px #bbb;*/
-	  }
-	  
-	  #navbar li {
-	     margin-right: 1px;
-	     padding: 4px 0px 2px 0px;
-	     display: inline;
-	     color: #666;
-	     border: solid 1px #000000;
-	     border-bottom: 1px solid #000000;
-	     background-color: #efefef;
-	  }
-	  
-	  #navbar li.active {
-	      border: 1px solid #000000;
-	      border-bottom: 1px solid #ffffdd;
-	      /*font-weight: bold;*/
-	      background-color: #ffffdd;
-	  }
+    #navbar
+    {          
+      width: 100%;
+      /*padding-top: 5px;*/
+      line-height: normal;
+      font-size: 12px;
+      margin-top: 0px;
+      clear: both;
+      /*background: #e0e0e0;*/
+      text-align: left;
+    }
+    #navbar a {
+       padding: 0px;
+       text-decoration: none;
+       color: #000;
+       padding: 4px 10px 2px 10px;
+       width: 100%;
+    }
+    #navbar ul {
+       margin: 0;
+       padding: 5px 0px 2px 20px;
+       list-style: none;
+       /*border-bottom: solid 1px #bbb;*/
+    }
+    #navbar li {
+       margin-right: 1px;
+       padding: 4px 0px 2px 0px;
+       display: inline;
+       color: #666;
+       border: solid 1px #000000;
+       border-bottom: 1px solid #000000;
+       background-color: #efefef;
+    }
+    #navbar li.active {
+       border: 1px solid #000000;
+       border-bottom: 1px solid #ffffdd;
+       /*font-weight: bold;*/
+       background-color: #ffffdd;
+    }
     </style>
   </head>
   <body>
@@ -220,7 +210,6 @@
     <%--
     <textarea style="width: 700px; height: 200px;">${new XStream().toXML(rmNode)}</textarea>
     --%>
-    
     <%--
     TODO: el menu deberia ir a show no al registro, a no ser que aun no se
     haya registrado nada...
@@ -249,7 +238,6 @@
         </ul>
       </div>
     </g:if>
-    
     <g:form action="save" class="ehrform" method="post" enctype="multipart/form-data">
     
       <input type="hidden" name="templateId" value="${template.id}" />
@@ -261,10 +249,20 @@
             <g:each in="${template.getArchetypesByZone('content')}" var="archRef">
               <g:if test="${index[archRef.id]}">
                 <!-- FIXME: habria que arrancar del nodo que diga el template (p.e. esto es correcto si 
-                            arranca de la raiz pero no si tiene un field con path distinta a / -->
+                            arranca de la raiz pero no si tiene un field con path distinta a "/"
+                            http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=19
+                -->
+                <%-- Paths de los fields del archRef para los que se debe mostrar GUI
+                 El cequeo podria ser una taglib
+                 el chequeo para saber si mostrar el nodo se hace con: fieldPaths.find{ rmNode.path.startsWith(it.path)} != null
+                --%>
+                <g:set var="fieldPaths" value="${['/']}" />
+                <g:if test="${archRef.fields?.size()>0}">
+                  <g:set var="fieldPaths" value="${archRef.getFieldPaths()}" />
+                </g:if>
                 <!-- RM -->
                 <g:render template="../guiGen/showTemplates/Locatable"
-                          model="[rmNode: index[archRef.id],
+                          model="[rmNode: index[archRef.id], fieldPaths: fieldPaths,
                                   archetype: archRef.getReferencedArchetype()]" />
               </g:if>
               <g:else><%-- No hay estructura del RM, voy por el AOM --%>
@@ -272,7 +270,7 @@
                 <g:each in="${archRef.getReferencedConstraints()}" var="node">
                   <g:render template="../guiGen/templates2/cComplexObject"
                             model="[cComplexObject: node, params: params,
-                                    archetype: archRef.getReferencedArchetype()]" />
+                                   archetype: archRef.getReferencedArchetype()]" />
                 </g:each>
               </g:else>
             </g:each>
@@ -283,16 +281,24 @@
             <g:each in="${template.getArchetypesByZone('left')}" var="archRef">
               <g:if test="${index[archRef.id]}">
                 <!-- RM -->
+                <%-- Paths de los fields del archRef para los que se debe mostrar GUI
+                 El cequeo podria ser una taglib
+                 el chequeo para saber si mostrar el nodo se hace con: fieldPaths.find{ rmNode.path.startsWith(it.path)} != null
+                --%>
+                <g:set var="fieldPaths" value="${['/']}" />
+                <g:if test="${archRef.fields?.size()>0}">
+                  <g:set var="fieldPaths" value="${archRef.getFieldPaths()}" />
+                </g:if>
                 <g:render template="../guiGen/showTemplates/Locatable"
-                          model="[rmNode: index[archRef.id],
-                                archetype: archRef.getReferencedArchetype()]" />
+                          model="[rmNode: index[archRef.id], fieldPaths: fieldPaths,
+                                 archetype: archRef.getReferencedArchetype()]" />
               </g:if>
               <g:else><%-- No hay estructura del RM, voy por el AOM --%>
                 <!-- AOM -->
                 <g:each in="${archRef.getReferencedConstraints()}" var="node">
                    <g:render template="../guiGen/templates2/cComplexObject"
                              model="[cComplexObject: node, params: params,
-                                     archetype: archRef.getReferencedArchetype()]" />
+                                    archetype: archRef.getReferencedArchetype()]" />
                 </g:each>
               </g:else>
             </g:each>
@@ -301,16 +307,24 @@
             <g:each in="${template.getArchetypesByZone('right')}" var="archRef">
               <g:if test="${index[archRef.id]}">
                 <!-- RM -->
+                <%-- Paths de los fields del archRef para los que se debe mostrar GUI
+                 El cequeo podria ser una taglib
+                 el chequeo para saber si mostrar el nodo se hace con: fieldPaths.find{ rmNode.path.startsWith(it.path)} != null
+                --%>
+                <g:set var="fieldPaths" value="${['/']}" />
+                <g:if test="${archRef.fields?.size()>0}">
+                  <g:set var="fieldPaths" value="${archRef.getFieldPaths()}" />
+                </g:if>
                 <g:render template="../guiGen/showTemplates/Locatable"
-                          model="[rmNode: index[archRef.id],
-                                archetype: archRef.getReferencedArchetype()]" />
+                          model="[rmNode: index[archRef.id], fieldPaths: fieldPaths,
+                                 archetype: archRef.getReferencedArchetype()]" />
               </g:if>
               <g:else><%-- No hay estructura del RM, voy por el AOM --%>
               <!-- AOM -->
                 <g:each in="${archRef.getReferencedConstraints()}" var="node">
                    <g:render template="../guiGen/templates2/cComplexObject"
                              model="[cComplexObject: node, params: params,
-                                     archetype: archRef.getReferencedArchetype()]" />
+                                    archetype: archRef.getReferencedArchetype()]" />
                 </g:each>
               </g:else>
             </g:each>
@@ -321,16 +335,24 @@
             <g:each in="${template.getArchetypesByZone('bottom')}" var="archRef">
               <g:if test="${index[archRef.id]}">
                 <!-- RM -->
+                <%-- Paths de los fields del archRef para los que se debe mostrar GUI
+                 El cequeo podria ser una taglib
+                 el chequeo para saber si mostrar el nodo se hace con: fieldPaths.find{ rmNode.path.startsWith(it.path)} != null
+                --%>
+                <g:set var="fieldPaths" value="${['/']}" />
+                <g:if test="${archRef.fields?.size()>0}">
+                  <g:set var="fieldPaths" value="${archRef.getFieldPaths()}" />
+                </g:if>
                 <g:render template="../guiGen/showTemplates/Locatable"
-                          model="[rmNode: index[archRef.id],
-                                archetype: archRef.getReferencedArchetype()]" />
+                          model="[rmNode: index[archRef.id], fieldPaths: fieldPaths,
+                                 archetype: archRef.getReferencedArchetype()]" />
               </g:if>
               <g:else><%-- No hay estructura del RM, voy por el AOM --%>
               <!-- AOM -->
                 <g:each in="${archRef.getReferencedConstraints()}" var="node">
                   <g:render template="../guiGen/templates2/cComplexObject"
                              model="[cComplexObject: node, params: params,
-                                     archetype: archRef.getReferencedArchetype()]" />
+                                    archetype: archRef.getReferencedArchetype()]" />
                 </g:each>
               </g:else>
             </g:each>
@@ -338,16 +360,15 @@
         </tr>
       </table>
       <br/>
-    
       <div class="bottom_actions">
         <g:isNotSignedRecord episodeId="${episodeId}">
-	      <g:if test="${mode=='edit'}">
-	        <g:submitButton name="doit" value="Guardar" />
-	      </g:if>
-	      <g:else>
-	        <g:link action="generarShow" id="${rmNode.id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link>
-	      </g:else>
-	      |
+        <g:if test="${mode=='edit'}">
+          <g:submitButton name="doit" value="Guardar" />
+        </g:if>
+        <g:else>
+          <g:link action="generarShow" id="${rmNode.id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link>
+        </g:else>
+        |
         </g:isNotSignedRecord>
         <g:link controller="records" action="registroClinico"><g:message code="trauma.show.action.back" /></g:link>
       </div>
