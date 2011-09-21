@@ -25,7 +25,7 @@
       window.history.go(1);
     </g:javascript>
     
-    <title><g:layoutTitle/> | Open EHR-Gen Framework | v${ApplicationHolder.application.metadata['app.version']}</title>
+    <title><g:layoutTitle/> | Open EHR-Gen | v${ApplicationHolder.application.metadata['app.version']}</title>
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'ehr.css')}" />
     <g:layoutHead />
     
@@ -45,8 +45,8 @@
   </head>
   <body>
     <div id="user_bar">
-      <b>Open EHR-Gen Framework</b> v${ApplicationHolder.application.metadata['app.version']} | 
-      <g:datosUsuario userId="${session.traumaContext.userId}" />
+      <b>Open EHR-Gen</b> v${ApplicationHolder.application.metadata['app.version']} | 
+      <g:datosUsuario />
       <span class="user_actions">
       
         <%-- FECHA ACTUAL --%>

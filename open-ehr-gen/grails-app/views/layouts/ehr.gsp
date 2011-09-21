@@ -25,12 +25,11 @@
       window.history.go(1);
     </g:javascript>
     
+    <%--
     <g:javascript library="prototype/prototype" />
     <g:javascript>
       Event.observe(window, 'load', function () {
  
-        //alert( $$('a.clone') );
-      
         $$('a.clone').each( function(item) {
         
           // item es cada link con class=clone
@@ -70,8 +69,9 @@
         });
       });
     </g:javascript>
+    --%>
     
-    <title><g:layoutTitle/> | Open EHR-Gen Framework | v${ApplicationHolder.application.metadata['app.version']}</title>
+    <title><g:layoutTitle/> | Open EHR-Gen | v${ApplicationHolder.application.metadata['app.version']}</title>
     <%--
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'ehr.css')}" />
     --%>
@@ -80,8 +80,8 @@
   </head>
   <body>
     <div id="user_bar">
-      <b>Open EHR-Gen Framework</b> v${ApplicationHolder.application.metadata['app.version']} | 
-      <g:datosUsuario userId="${userId}" />
+      <b>Open EHR-Gen</b> v${ApplicationHolder.application.metadata['app.version']} | 
+      <g:datosUsuario />
       <span class="user_actions">
         
         <%-- FECHA ACTUAL --%>
@@ -104,7 +104,6 @@
             </li>
           </g:langSelector>
         </ul>
-
         <ul class="userBar">
           <li ${(['domain'].contains(controllerName))?'class="active"':''}>
             <g:link controller="domain" action="list"><g:message code="domain.action.list" /></g:link>
@@ -120,14 +119,10 @@
             <g:link controller="demographic" action="admisionPaciente"><g:message code="demographic.action.admisionPaciente" /></g:link>
           </li>
         </ul>
-        
         <g:link controller="authorization" action="logout"><g:message code="authorization.action.logout" /></g:link>
-        
       </span>
     </div>
-  
     <div id="body">
-    
       <%-- El registro clinico ya tiene un flash para mostrar mensajes, saco este para que no muestre doble.
       <g:if test="${flash.message}">
         <div id="message" class="error">
@@ -135,7 +130,6 @@
         </div>
       </g:if>
       --%>
-      
       <table cellpadding="0" cellspacing="0">
         <tr>
           <td id="body_table" rowspan="2">
@@ -148,7 +142,6 @@
               <%-- A patient lo manda como modelo guiGenController.generarTemplate --%>
               <g:if test="${patient}">
                 <g:render template="../demographic/Person" model="[person:patient]" />
-                
                 <g:canEditPatient patient="${patient}">
                   <g:link controller="demographic" action="edit" id="${patient.id}">Completar datos</g:link>
                 </g:canEditPatient>
@@ -174,18 +167,11 @@
                 </li>
                 
                 <g:canFillClinicalRecord>
-                
-                  <li ${((controllerName=='records'&&['registroClinico'].contains(actionName)) ? 'class="active"' : '')}>
-                    <g:link controller="records" action="registroClinico" id="${episodeId}">
-                      <g:message code="trauma.menu.registroClinico" />
-                    </g:link>
-                  </li>
                   
                   <%--
                   TODO: desde lo estudios img hasta el registro clinico no puede ser
                         visto por un administrativo.
                   --%>
-                  
                   <g:if test="${( ['guiGen','records','ajaxApi'].contains(controllerName) && ['generarShow','generarTemplate','show','saveDiagnostico','showRecord'].contains(actionName) )}">
                     
                     <g:each in="${sections}" var="section">
@@ -214,7 +200,6 @@
                       </li>
                     </g:each>
                   </g:if>
-                  
                   <li ${((controllerName=='records'&&['signRecord'].contains(actionName)) ? 'class="active"' : '')}>
                     <g:link controller="records" action="signRecord" id="${episodeId}">
                       <g:message code="registro.menu.close" />
@@ -223,11 +208,9 @@
                       </g:isSignedRecord>
                     </g:link>
                   </li>
-                  
                 </g:canFillClinicalRecord>
               </ul>
             </div>
-            
           </td>
         </tr>
       </table>
