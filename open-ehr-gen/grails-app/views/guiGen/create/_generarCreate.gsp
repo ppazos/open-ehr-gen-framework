@@ -1,36 +1,10 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<html>
-  <head>
-    <meta name="layout" content="ehr" />
-    <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'generarTemplate.css')}" />
-  </head>
-  <body>    
-    <%-- ${archetypeList} --%>
-    
-    <%-- SUBMENU DE SECCIONES SI EXISTEn --%>
-    <g:if test="${subsections.size()>1}">
-      <div id="navbar">
-        <ul>
-          <g:each in="${subsections}" var="subsection">
-            <li ${((template.id==subsection)?'class="active"':'')}>
-	          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
-	            <g:if test="${it.hasItem}">
-	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
-	            </g:if>
-	            <g:else>
-		          <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
-		            <g:message code="${'section.'+subsection}" />
-		          </g:link>
-		        </g:else>
-	          </g:hasContentItemForTemplate>
-	        </li>
-          </g:each>
-        </ul>
-      </div>
-    </g:if>
-    <g:form action="save" class="ehrform" method="post" enctype="multipart/form-data">
-    
-      <input type="hidden" name="templateId" value="${template.id}" />
+<%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %><%--
+
+Igual a la vista generarTemplate pero solo para el form del registro.
+
+in: template
+
+--%>
 	  <!-- TODO: sacar, es solo para test -->
       <%-- TemplateId: ${template.id}<br/> --%>
       <table class="container" cellpadding="0" cellspacing="3">
@@ -41,11 +15,11 @@
                 <g:if test="${node}">
                   <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
                   <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                  <g:render template="templates2/${templateName}"
+                  <g:render template="guiGen/create/${templateName}"
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
-                                    params: params]" />
+                                    params: params, lang:lang, template: template]" />
                 </g:if>
                 <g:else>
                   Dice que el node es nulo<br/>
@@ -62,11 +36,11 @@
                 <g:if test="${node}">
                   <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
                   <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                  <g:render template="templates2/${templateName}"
+                  <g:render template="guiGen/create/${templateName}"
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
-                                    params: params]" />
+                                    params: params, lang:lang, template: template]" />
                 </g:if>
                 <g:else>
                   Dice que el node es nulo<br/>
@@ -81,11 +55,12 @@
                 <g:if test="${node}">
                   <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
                   <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                  <g:render template="templates2/${templateName}"
+                  <g:render template="guiGen/create/${templateName}"
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
-                                    params: params]" />
+                                    params: params,
+                                    lang:lang, template: template]" />
                 </g:if>
                 <g:else>
                   Dice que el node es nulo<br/>
@@ -101,21 +76,14 @@
               <g:each in="${archRef.getReferencedConstraints()}" var="node">
                 <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
                 <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                <g:render template="templates2/${templateName}"
+                <g:render template="guiGen/create/${templateName}"
                           model="[(templateName): node,
                                   archetype: archRef.getReferencedArchetype(),
                                   archetypeService: archetypeService,
-                                  params: params]" />
+                                  params: params,
+                                  lang: lang, template: template]" />
               </g:each>
             </g:each>
           </td>
         </tr>
       </table>
-      <br/>
-      
-      <div class="bottom_actions">
-        <g:submitButton name="doit" value="Guardar" />
-      </div>
-    </g:form>
-  </body>
-</html>

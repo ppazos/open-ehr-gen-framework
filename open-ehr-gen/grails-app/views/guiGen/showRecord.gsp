@@ -1,5 +1,4 @@
-<%@ page import="archetype_repository.ArchetypeManager" %>
-<%@ page import="templates.TemplateManager" %>
+<%@ page import="archetype_repository.ArchetypeManager" %><%@ page import="templates.TemplateManager" %>
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <html>
   <head>
@@ -206,7 +205,6 @@
     <%--
     <h1>Template: ${rmNode.archetypeDetails.templateId}</h1>
     --%>
-    
     <div class="ehrform">
 
       <table class="container" cellpadding="0" cellspacing="3">

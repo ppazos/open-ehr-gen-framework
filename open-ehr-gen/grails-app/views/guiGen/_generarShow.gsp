@@ -1,45 +1,12 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<html>
-  <head>
-    <meta name="layout" content="ehr" />
-    <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'generarShow.css')}" />
-  </head>
-  <body>
-    <g:if test="${flash.message}">
-      <div class="message"><g:message code="${flash.message}" /></div>
-    </g:if>
-    <%--
-    TODO: el menu deberia ir a show no al registro, a no ser que aun no se
-    haya registrado nada...
+<%--
 
-    <h1>Template: ${rmNode.archetypeDetails.templateId}</h1>
-    --%>
-    <%-- SUBMENU DE SECCIONES SI EXISTEn --%>
-    <g:if test="${subsections.size()>1}">
-      <div id="navbar">
-        <ul>
-          <g:each in="${subsections}" var="subsection">
-            <li ${((template.id==subsection)?'class="active"':'')}>
-              <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
-                <g:if test="${it.hasItem}">
-                  <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
-                </g:if>
-                <g:else>
-                  <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
-                    <g:message code="${'section.'+subsection}" />
-                  </g:link>
-                </g:else>
-              </g:hasContentItemForTemplate>
-            </li>
-          </g:each>
-        </ul>
-      </div>
-    </g:if>
-    <g:form action="save" class="ehrform" method="post" enctype="multipart/form-data">
-    
-      <input type="hidden" name="templateId" value="${template.id}" />
-      <input type="hidden" name="mode" value="${mode}" />
-      
+Igual a la vista generarShow pero solo para la estructura del registro.
+
+in: template
+in: rmNode // este no se va a pasar porque se inyectan los valores por JS. TODO!!!
+
+--%>
+
       <table class="container" cellpadding="0" cellspacing="3">
         <tr>
           <td colspan="2" id="content">
@@ -124,14 +91,3 @@
           </td>
         </tr>
       </table>
-      <br/>
-      <div class="bottom_actions">
-        <g:isNotSignedRecord episodeId="${episodeId}">
-          <%-- show --%>
-          <g:link action="generarShow" id="${rmNode.id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link> |
-        </g:isNotSignedRecord>
-        <g:link controller="records" action="registroClinico"><g:message code="trauma.show.action.back" /></g:link>
-      </div>
-    </g:form>
-  </body>
-</html>

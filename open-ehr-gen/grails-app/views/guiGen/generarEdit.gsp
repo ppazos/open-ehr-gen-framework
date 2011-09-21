@@ -1,3 +1,4 @@
+<%@ page import="com.thoughtworks.xstream.XStream" %>
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <html>
   <head>
@@ -8,6 +9,9 @@
     <g:if test="${flash.message}">
       <div class="message"><g:message code="${flash.message}" /></div>
     </g:if>
+    <%--
+    <textarea style="width: 700px; height: 200px;">${new XStream().toXML(rmNode)}</textarea>
+    --%>
     <%--
     TODO: el menu deberia ir a show no al registro, a no ser que aun no se
     haya registrado nada...
@@ -57,11 +61,19 @@
                 <g:if test="${archRef.fields?.size()>0}">
                   <g:set var="fieldPaths" value="${archRef.getFieldPaths()}" />
                 </g:if>
+                <!-- RM -->
                 <g:set var="rmNode" value="${index[archRef.id]}" />
                 <g:set var="templateName" value="${rmNode.getClassName()}" />
-                <g:render template="../guiGen/showTemplates/${templateName}"
+                <g:render template="../guiGen/editTemplates/${templateName}"
                           model="[rmNode:rmNode, fieldPaths:fieldPaths, archetype:archRef.getReferencedArchetype()]" />
               </g:if>
+              <g:else><%-- No hay estructura del RM, voy por el AOM --%>
+                <!-- AOM -->
+                <g:each in="${archRef.getReferencedConstraints()}" var="node">
+                  <g:render template="../guiGen/templates2/cComplexObject"
+                            model="[cComplexObject: node, params: params, archetype: archRef.getReferencedArchetype()]" />
+                </g:each>
+              </g:else>
             </g:each>
           </td>
         </tr>
@@ -69,6 +81,7 @@
           <td id="left">
             <g:each in="${template.getArchetypesByZone('left')}" var="archRef">
               <g:if test="${index[archRef.id]}">
+                <!-- RM -->
                 <%-- Paths de los fields del archRef para los que se debe mostrar GUI
                  El cequeo podria ser una taglib
                  el chequeo para saber si mostrar el nodo se hace con: fieldPaths.find{ rmNode.path.startsWith(it.path)} != null
@@ -79,14 +92,22 @@
                 </g:if>
                 <g:set var="rmNode" value="${index[archRef.id]}" />
                 <g:set var="templateName" value="${rmNode.getClassName()}" />
-                <g:render template="../guiGen/showTemplates/${templateName}"
+                <g:render template="../guiGen/editTemplates/${templateName}"
                           model="[rmNode:rmNode, fieldPaths:fieldPaths, archetype:archRef.getReferencedArchetype()]" />
               </g:if>
+              <g:else><%-- No hay estructura del RM, voy por el AOM --%>
+                <!-- AOM -->
+                <g:each in="${archRef.getReferencedConstraints()}" var="node">
+                   <g:render template="../guiGen/templates2/cComplexObject"
+                             model="[cComplexObject: node, params: params, archetype: archRef.getReferencedArchetype()]" />
+                </g:each>
+              </g:else>
             </g:each>
           </td>
           <td id="right">
             <g:each in="${template.getArchetypesByZone('right')}" var="archRef">
               <g:if test="${index[archRef.id]}">
+                <!-- RM -->
                 <%-- Paths de los fields del archRef para los que se debe mostrar GUI
                  El cequeo podria ser una taglib
                  el chequeo para saber si mostrar el nodo se hace con: fieldPaths.find{ rmNode.path.startsWith(it.path)} != null
@@ -97,9 +118,16 @@
                 </g:if>
                 <g:set var="rmNode" value="${index[archRef.id]}" />
                 <g:set var="templateName" value="${rmNode.getClassName()}" />
-                <g:render template="../guiGen/showTemplates/${templateName}"
+                <g:render template="../guiGen/editTemplates/${templateName}"
                           model="[rmNode:rmNode, fieldPaths:fieldPaths, archetype:archRef.getReferencedArchetype()]" />
               </g:if>
+              <g:else><%-- No hay estructura del RM, voy por el AOM --%>
+              <!-- AOM -->
+                <g:each in="${archRef.getReferencedConstraints()}" var="node">
+                   <g:render template="../guiGen/templates2/cComplexObject"
+                             model="[cComplexObject: node, params: params, archetype: archRef.getReferencedArchetype()]" />
+                </g:each>
+              </g:else>
             </g:each>
           </td>
         </tr>
@@ -107,19 +135,27 @@
           <td colspan="2" id="bottom">
             <g:each in="${template.getArchetypesByZone('bottom')}" var="archRef">
               <g:if test="${index[archRef.id]}">
-                <% /* Paths de los fields del archRef para los que se debe mostrar GUI
+                <!-- RM -->
+                <%-- Paths de los fields del archRef para los que se debe mostrar GUI
                  El cequeo podria ser una taglib
                  el chequeo para saber si mostrar el nodo se hace con: fieldPaths.find{ rmNode.path.startsWith(it.path)} != null
-                */ %>
+                --%>
                 <g:set var="fieldPaths" value="${['/']}" />
                 <g:if test="${archRef.fields?.size()>0}">
                   <g:set var="fieldPaths" value="${archRef.getFieldPaths()}" />
                 </g:if>
                 <g:set var="rmNode" value="${index[archRef.id]}" />
                 <g:set var="templateName" value="${rmNode.getClassName()}" />
-                <g:render template="../guiGen/showTemplates/${templateName}"
+                <g:render template="../guiGen/editTemplates/${templateName}"
                           model="[rmNode:rmNode, fieldPaths:fieldPaths, archetype:archRef.getReferencedArchetype()]" />
               </g:if>
+              <g:else><%-- No hay estructura del RM, voy por el AOM --%>
+              <!-- AOM -->
+                <g:each in="${archRef.getReferencedConstraints()}" var="node">
+                  <g:render template="../guiGen/templates2/cComplexObject"
+                             model="[cComplexObject: node, params: params, archetype: archRef.getReferencedArchetype()]" />
+                </g:each>
+              </g:else>
             </g:each>
           </td>
         </tr>
@@ -127,8 +163,8 @@
       <br/>
       <div class="bottom_actions">
         <g:isNotSignedRecord episodeId="${episodeId}">
-          <%-- show --%>
-          <g:link action="generarShow" id="${rmNode.id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link> |
+          <%-- edit --%>
+          <g:submitButton name="doit" value="Guardar" /> |
         </g:isNotSignedRecord>
         <g:link controller="records" action="registroClinico"><g:message code="trauma.show.action.back" /></g:link>
       </div>
