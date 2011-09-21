@@ -3,8 +3,6 @@
  */
 package converters
 
-
-
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
  *
