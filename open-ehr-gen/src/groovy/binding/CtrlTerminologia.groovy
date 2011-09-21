@@ -5,7 +5,7 @@
 
 package binding
 
-import hce.core.support.identification.*
+import support.identification.*
 import org.openehr.am.archetype.Archetype
 
 import tablasMaestras.* 
