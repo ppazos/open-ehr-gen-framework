@@ -187,11 +187,11 @@ ontology
 					description = <"*">
 				>
 				["at0013"] = <
-					text = <"< 2 seg (normal)">
+					text = <"&lt; 2 seg (normal)">
 					description = <"Relleno capilar normal">
 				>
 				["at0014"] = <
-					text = <">= 2 seg (lento)">
+					text = <"&gt;= 2 seg (lento)">
 					description = <"Relleno capilar lento">
 				>
 				["at0015"] = <
