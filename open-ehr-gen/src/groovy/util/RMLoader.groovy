@@ -1,14 +1,14 @@
 package util
 
 import hce.core.datastructure.itemstructure.representation.*
-import hce.core.data_types.basic.*
-import hce.core.data_types.encapsulated.*
-import hce.core.data_types.quantity.*
-import hce.core.data_types.quantity.date_time.*
-import hce.core.data_types.text.*
-import hce.core.data_types.uri.*
-import hce.core.support.basic.*
-import hce.core.support.identification.*
+import data_types.basic.*
+import data_types.encapsulated.*
+import data_types.quantity.*
+import data_types.quantity.date_time.*
+import data_types.text.*
+import data_types.uri.*
+import support.basic.*
+import support.identification.*
 import hce.core.datastructure.itemstructure.*
 import hce.core.datastructure.history.*
 import hce.core.datastructure.*
@@ -32,7 +32,8 @@ import com.thoughtworks.xstream.XStream
  */
 class RMLoader {
 
-    static void imprimirObjetoXML(Object o){
+    static void imprimirObjetoXML(Object o)
+    {
         println "-----------------"
         XStream xstream = new XStream();
         String xml = xstream.toXML(o);
@@ -40,9 +41,8 @@ class RMLoader {
         println "-----------------"
     }
 
-    //--------------------------------------------------------------------------
-
-    static Composition loadComposition(int id){
+    static Composition loadComposition(int id)
+    {
         def composition = Composition.get(id)
         imprimirObjetoXML(composition) // FIXME
         Composition new_composition = new Composition()
@@ -55,10 +55,9 @@ class RMLoader {
         }
     }
 
-    //--------------------------------------------------------------------------
-
     // COMPOSITION
-    static def recorrerComposition(c, Composition new_c){
+    static def recorrerComposition(c, Composition new_c)
+    {
         if (c != null){
             if (c.composer != null){
                 def metodoRecorrerPartyProxy = 'recorrer' + c.composer.getClass().getSimpleName()
@@ -1024,7 +1023,8 @@ class RMLoader {
         }
     }
 
-    static def getInstanceInterv(){
+    static def getInstanceInterv()
+    {
         return new Interv()
     }
 
@@ -1039,7 +1039,8 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // ARCHETYPE_ID
-    static def recorrerArchetypeID(ai, ArchetypeID new_ai){
+    static def recorrerArchetypeID(ai, ArchetypeID new_ai)
+    {
         if (ai != null){
             new_ai.qualifiedRmEntity = (ai.qualifiedRmEntity)   // calculated
             new_ai.rmOriginator = (ai.rmOriginator)
@@ -1060,7 +1061,8 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // OBJECT_ID
-    static def recorrerObjectID(oi, ObjectID new_oi){
+    static def recorrerObjectID(oi, ObjectID new_oi)
+    {
         if (oi != null){
             new_oi.value = (oi.value)
             //recorrerRMObject(oi, new_oi)
@@ -1070,8 +1072,6 @@ class RMLoader {
     static def getInstanceObjectID(){
         return new ObjectID()
     }
-
-    //--------------------------------------------------------------------------
 
     // OBJECT_REF
     static def recorrerObjectRef(or, ObjectRef new_or){
@@ -1085,8 +1085,6 @@ class RMLoader {
         return new ObjectRef()
     }
 
-    //--------------------------------------------------------------------------
-
     // PARTY_REF
     static def recorrerPartyRef(pr, PartyRef new_pr){
         if (pr != null){
@@ -1098,8 +1096,6 @@ class RMLoader {
         return new PartyRef()
     }
 
-    //--------------------------------------------------------------------------
-
     // TEMPLATE_ID
     static def recorrerTemplateID(ti, TemplateID new_ti){
         if (ti != null){
@@ -1110,8 +1106,6 @@ class RMLoader {
     static def getInstanceTemplateID(){
         return new TemplateID()
     }
-
-    //--------------------------------------------------------------------------
 
     // TERMINOLOGY_ID
     static def recorrerTerminologyID(ti, TerminologyID new_ti){
@@ -1126,8 +1120,6 @@ class RMLoader {
         return new TerminologyID()
     }
 
-    //--------------------------------------------------------------------------
-
     // UID_BASE_ID
     static def recorrerUIDBasedID(uidbi, UIDBasedID new_uidbi){
         if (uidbi != null){
@@ -1138,8 +1130,4 @@ class RMLoader {
     static def getInstanceUIDBasedID(){
         return new UIDBasedID()
     }
-
-    //--------------------------------------------------------------------------
-
 }
-
