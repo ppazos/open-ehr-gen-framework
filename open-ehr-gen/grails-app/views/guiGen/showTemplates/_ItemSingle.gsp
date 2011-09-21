@@ -3,9 +3,7 @@
 in: rmNode (ItemSingle)
 
 --%>
-
 <g:set var="aomNode" value="${archetype.node(rmNode.path)}" />
-
 <g:set var="childNodeID" value="${aomNode.attributes[0].getChildren()[0].nodeID}" />
 
 <g:hasErrors bean="${rmNode}">
