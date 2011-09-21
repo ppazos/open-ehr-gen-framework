@@ -24,11 +24,15 @@
     </style>
   </head>
   <body>
-    <%--
     <div class="nav">
-      <g:link action="unloadAll">Unload all</g:link>
+      <span class="menuButton">
+        <g:link controller="person" action="list" class="list">Personas</g:link>
+      </span>
+      <span class="menuButton">
+        <g:link controller="role" action="list" class="list">Roles</g:link>
+      </span>
     </div>
-    --%>
+    
     <div class="body">
       <h1>Listado de dominios</h1>
       <g:if test="${flash.message}">
