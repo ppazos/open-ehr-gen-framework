@@ -13,15 +13,30 @@ class Person extends Actor {
 
     Date fechaNacimiento // FIXME: DvDateTime
     String sexo
+    String primerNombre
+    String segundoNombre
+    String primerApellido
+    String segundoApellido
+    
+    
+    String toString()
+    {
+        return primerNombre +' '+
+               segundoNombre +' '+
+               primerApellido +' '+
+               segundoApellido +' '+
+               fechaNacimiento +' '+
+               '('+ sexo +')'
+    }
     
     static String SEXO_MASCULINO = "M"
     static String SEXO_FEMENINO = "F"
-
     static List getSexCodes()
     {
     	return [SEXO_MASCULINO, SEXO_FEMENINO]
     }
    
+    /*
     String toString()
     {
         return "Person: \n"+
@@ -30,9 +45,16 @@ class Person extends Actor {
                "  fnac: " + this.fechaNacimiento + "\n" + 
                "  sexo: " + this.sexo
     }
+    */
     
+    
+    // Todo es nullable porque puedo ir llenando de a poco.
     static constraints = {
-        fechaNacimiento(nullable:true)
-        sexo(nullable:true)
+       primerNombre(nullable:true)
+       segundoNombre(nullable:true)
+       primerApellido(nullable:true)
+       segundoApellido(nullable:true)
+       fechaNacimiento(nullable:true, max:new Date()) // Debe haber nacido antes de hoy
+       sexo(nullable:true, inList:getSexCodes())
     }
 }

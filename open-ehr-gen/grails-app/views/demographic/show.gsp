@@ -42,11 +42,10 @@
       </tr>
       <tr>
         <td><g:render template="UIDBasedID" collection="${persona.ids}" var="id" /></td>
-        <g:set var="name" value="${persona.identities.find{ it.purpose == 'PersonName'} }" />
-        <td>${name?.primerNombre}</td>
-        <td>${name?.segundoNombre}</td>
-        <td>${name?.primerApellido}</td>
-        <td>${name?.segundoApellido}</td>
+        <td>${persona.primerNombre}</td>
+        <td>${persona.segundoNombre}</td>
+        <td>${persona.primerApellido}</td>
+        <td>${persona.segundoApellido}</td>
         <td>${persona.fechaNacimiento}</td>
         <td>${persona.sexo}</td>
       </tr>

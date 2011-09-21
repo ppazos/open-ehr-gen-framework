@@ -3,7 +3,7 @@
  */
 package demographic.party
 
-import demographic.role.Role
+import demographic.role.RoleValidity
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -12,5 +12,8 @@ import demographic.role.Role
  */
 class Actor extends Party {
 
-    static hasMany = [roles: Role]
+    //static hasMany = [roles: Role]
+    // Ahora lo que tiene son RoleValidity
+    List roles = []
+    static hasMany = [roles: RoleValidity]
 }

@@ -10,6 +10,5 @@ package demographic.party
  */
 class Organization extends Actor {
 
-    
-    
+    String name // Estaba en OrganizationName que ahora no se usa mas
 }

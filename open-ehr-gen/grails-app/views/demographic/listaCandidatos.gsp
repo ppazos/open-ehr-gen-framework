@@ -32,6 +32,7 @@
   <body>
     <h1><g:message code="demographic.lista_candidatos.title" /></h1>
     
+    <!-- FIXME: esto deberia ser div class=nav como en party.listpatients -->
     <ul class="top_actions">
       <g:if test="${session.traumaContext.episodioId}">
         <li><g:link controller="records" action="show" id="${session.traumaContext.episodioId}" class="home"><g:message code="demographic.lista_candidatos.action.backToEpisode" /></g:link></li>
@@ -95,11 +96,10 @@
 	      <g:each in="${candidatos}" var="persona">
 	        <tr>
 	          <td><g:render template="UIDBasedID" collection="${persona.ids}" var="id" /></td>
-	          <g:set var="name" value="${persona.identities.find{ it.purpose == 'PersonName'} }" />
-	          <td>${name?.primerNombre}</td>
-	          <td>${name?.segundoNombre}</td>
-	          <td>${name?.primerApellido}</td>
-	          <td>${name?.segundoApellido}</td>
+	          <td>${persona.primerNombre}</td>
+	          <td>${persona.segundoNombre}</td>
+	          <td>${persona.primerApellido}</td>
+	          <td>${persona.segundoApellido}</td>
 	          <%-- TODO: taglib --%>
 	          <td><g:if test="${persona.fechaNacimiento}">${format.format(persona.fechaNacimiento)}</g:if></td>
 	          <td>${persona.sexo}</td>

@@ -4,14 +4,10 @@
 
 <g:render template="../demographic/UIDBasedID" collection="${person.ids}" var="id" />
 
-<%
-def nombres = person.identities.find{ it.purpose == 'PersonName' }
-%>
-
-${nombres.primerNombre}
-${nombres.segundoNombre}
-${nombres.primerApellido}
-${nombres.segundoApellido}
+${person.primerNombre}
+${person.segundoNombre}
+${person.primerApellido}
+${person.segundoApellido}
 ( ${person.sexo} )
 <br/>
 

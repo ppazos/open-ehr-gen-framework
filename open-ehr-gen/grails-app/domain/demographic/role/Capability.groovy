@@ -20,4 +20,6 @@ class Capability {
     // Esto podría incluir las cualificaciones profesionales y las
     // identificaciones oficiales, tales como números de su proveedor, etc.
     String credentials
+    
+    // TODO: esto deberia servir para representar una lista de acceso
 }

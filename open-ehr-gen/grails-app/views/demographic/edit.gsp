@@ -24,9 +24,7 @@
       </label>
       
       <g:each in="${patient.ids}" var="pid">
-      
         <g:set var="codigo" value="${TipoIdentificador.findByCodigo(pid.root)}" />
-
         ${pid.extension} ${( (codigo) ? codigo.nombreCorto : pid.root )}<br/>
       </g:each>
       
@@ -38,22 +36,22 @@
       <label for="primerNombre">
         <g:message code="persona.primerNombre" />
       </label>
-      <g:textField name="primerNombre" value="${pn.primerNombre}" />
+      <g:textField name="primerNombre" value="${patient.primerNombre}" />
       
       <label for="segundoNombre">
         <g:message code="persona.segundoNombre" />
       </label>
-      <g:textField name="segundoNombre" value="${pn.segundoNombre}" />
+      <g:textField name="segundoNombre" value="${patient.segundoNombre}" />
       
       <label for="primerApellido">
         <g:message code="persona.primerApellido" />
       </label>
-      <g:textField name="primerApellido" value="${pn.primerApellido}" />
+      <g:textField name="primerApellido" value="${patient.primerApellido}" />
       
       <label for="segundoApellido">
         <g:message code="persona.segundoApellido" />
       </label>
-      <g:textField name="segundoApellido" value="${pn.segundoApellido}" />
+      <g:textField name="segundoApellido" value="${patient.segundoApellido}" />
       
       <label for="fechaNacimiento">
         <g:message code="persona.fechaNacimiento" />
@@ -69,7 +67,6 @@
       <br/>
       <br/>
       <g:submitButton name="doit" value="${message(code:'demographic.edit.save')}" />
-      
     </g:form>
   </body>
 </html>

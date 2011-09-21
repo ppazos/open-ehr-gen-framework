@@ -21,8 +21,8 @@
       <label for="identificador">
         <g:message code="persona.identificador" />
       </label>
-      <g:textField name="extension" value="${params.identificador}" />
-      <g:select name="root" from="${tiposIds}" optionKey="codigo" optionValue="nombreCorto" />
+      <g:textField name="extension" value="${params.extension}" />
+      <g:select name="root" from="${tiposIds}" value="${params.root}" optionKey="codigo" optionValue="nombreCorto" />
       
       <label for="primerNombre">
         <g:message code="persona.primerNombre" />

@@ -3,6 +3,7 @@
  */
 package demographic.identity
 
+// NO SE USA
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -14,5 +15,4 @@ class PartyIdentity {
     // artístico", "Nickname", "nombre tribal", "nombre comercial".
     // Tomado de valor de atributo de nombre heredado.
     String purpose = this.getClass().getSimpleName()
-    
 }
