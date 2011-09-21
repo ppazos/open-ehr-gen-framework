@@ -5,7 +5,6 @@ import org.openehr.am.archetype.constraintmodel.*
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
- *
  */
 class ArchetypeTagLib {
 

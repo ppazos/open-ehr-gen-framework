@@ -4,7 +4,7 @@ import hce.HceService
 import hce.CustomQueriesService
 import authorization.LoginAuth
 import demographic.DemographicService
-import demographic.identity.PersonName
+//import demographic.identity.PersonName
 import demographic.party.Person
 import hce.core.common.change_control.Version
 import demographic.role.*
@@ -81,6 +81,7 @@ class TraumaTagLib {
         out <<       '<span>'+ message(code:'trauma.list.label.observations') + '</span>: ' + composition.context.otherContext.item.value.value
         out <<     '</div>'
         
+        
         // RESPONSABLE
         // Si han firmado, mostrar el responsable de la atencion.
         if (composition.composer)
@@ -104,15 +105,14 @@ class TraumaTagLib {
             
             
             // TODO: mostrar un identificador
-            def nombres = responsable.identities.find{ it.purpose == 'PersonName' }
+            //def nombres = responsable.identities.find{ it.purpose == 'PersonName' }
             
             out << '<div style="padding: 4px;">'
             out << message(code:'trauma.list.label.composer') + ': ' +
-                   ((nombres.primerNombre) ? (nombres.primerNombre + ' ') : '') +
-                   ((nombres.segundoNombre) ? (nombres.segundoNombre + ' ') : '') +
-                   ((nombres.primerApellido) ? (nombres.primerApellido + ' ') : '') +
-                   ((nombres.segundoApellido) ? (nombres.segundoApellido) : '')
-                
+                   responsable.primerNombre + ' ' +
+                   responsable.segundoNombre + ' ' +
+                   responsable.primerApellido + ' ' +
+                   responsable.segundoApellido
             out << '</div>'
         }
         // /RESPONSABLE
@@ -155,21 +155,24 @@ class TraumaTagLib {
     
     
     /**
-     * userId es el identificador del LoginAuth en session.
+     * Muestra los datos del usuario logueado.
      */
     def datosUsuario = { attrs, body ->    
         
-        if (!attrs.userId)
-            throw new Exception("TraumaTagLib.datosUsuario: userId es obligatorio y no vino")
+        def login = LoginAuth.get( session.traumaContext.userId )
+       
+        // FIXME: no puedo poner domain objects en session: http://grails.1312388.n4.nabble.com/Best-way-to-cache-some-domain-objects-in-a-user-session-td3820978.html
+        //LoginAuth login = session.traumaContext.login
+        //println login
+        //println login.person
+        // TODO: if !login
         
-        def login = LoginAuth.get( attrs.userId ) // TODO: puedo sacar el userId de session.traumaContext.userId
-
         // FIXME:
         // Falla porque me dice que la identity que tiene adentro tiene clase PartyIdentity_$$_javassist_123
         //def personName = login.person.identities.find{ it instanceof PersonName }
 
         // FIX rapido, se que tiene una sola identidad y es PersonName, quiero esa...
-        def personName = login.person.identities.find{ true }
+        //def personName = login.person.identities.find{ true }
         // Si no seria: def nombres = person.identities.find{ it.purpose == 'PersonName' }
         
         //println "xxxxxxxxxxxxxxxxxxxxx"
@@ -180,13 +183,13 @@ class TraumaTagLib {
         // FIXME: usar un template para mostrar el Person Name
         if (login.person.sexo == Person.SEXO_FEMENINO)
         {
-            out << "Bienvenida: "
+            out << "Bienvenida "
         }
         else
         {
-            out << "Bienvenido: "
+            out << "Bienvenido "
         }
-        out << personName.primerNombre + " " + personName.primerApellido
+        out << login.person.primerNombre + " " + login.person.primerApellido
     }
     
     /**
@@ -325,16 +328,43 @@ class TraumaTagLib {
     def canFillClinicalRecord = { attrs, body ->
 
         def login = LoginAuth.get( session.traumaContext.userId )
+        
+        // FIXME: no puedo poner domain objects en session: http://grails.1312388.n4.nabble.com/Best-way-to-cache-some-domain-objects-in-a-user-session-td3820978.html
+        //def login = session.traumaContext.login
 
         // Roles de la persona
+        /*
         def roles = Role.withCriteria {
             eq('performer', login.person)
         }
+        */
+        /*
+        def validity = RoleValidity.withCriteria {
+           eq('performer', login.person)
+        }
+        */
         
-        def roleKeys = roles.type
+        //def roleKeys = roles.type
+        def roleKeys = []
         
+        //println "login: " + login
+        //println "person: " + login.person
+        //println "roleValidity: " + login.person.roles // [RoleValidity]
+        //println "role: " + login.person.roles.role // da: demographic.party.Actor.roles (debe ser algo interno de grails)
+        login.person.roles.each { roleValidity ->
+           
+           // FIXME: esto deberia hacerse dinamico y a nivel de controller y accion, no fijo y a nivel general de 'registro clinico'
+           if ( [Role.MEDICO, Role.ENFERMERIA].contains( roleValidity.role.type ) )
+           {
+              out << body()
+              return
+           }
+        }
+        
+        /*
         if ( roleKeys.intersect([Role.MEDICO,Role.ENFERMERIA]).size() > 0 )
             out << body()
+        */
     }
     
     def langSelector = { attrs, body ->
