@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
+<%-- ESTA VISTA YA NO SE USA --%>
 <html>
   <head>
     <meta name="layout" content="ehr" />
@@ -72,7 +73,6 @@
           </ul>
         </g:else>
       </g:each>
-      
     </div>
   </body>
 </html>
