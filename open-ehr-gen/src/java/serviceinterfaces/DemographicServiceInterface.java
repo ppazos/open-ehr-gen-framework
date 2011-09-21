@@ -3,7 +3,7 @@ package serviceinterfaces;
 import demographic.party.*;
 import demographic.identity.*;
 import demographic.role.*;
-import hce.core.support.identification.*;
+import support.identification.*;
 import java.util.Date;
 import java.util.List;
 
@@ -32,15 +32,21 @@ public interface DemographicServiceInterface {
      */
     public List<Person> findPersonById( UIDBasedID id );
 
-    public List<Person> findByPersonData( PersonName n, Date bithdate, String sex );
+    public List<Person> findByPersonData( String pn, String sn, String pa, String sa,
+          Date bithdate, String sex );
 
-    public List<Person> findByPersonDataAndId( PersonName n, Date bithdate, String sex, UIDBasedID id );
+    public List<Person> findByPersonDataAndId( String pn, String sn, String pa, String sa,
+          Date bithdate, String sex, UIDBasedID id );
 
-    public List<Person> findByPersonDataAndIds( PersonName n, Date bithdate, String sex, List<UIDBasedID> ids );
+    public List<Person> findByPersonDataAndIds( String pn, String sn, String pa, String sa,
+          Date bithdate, String sex, List<UIDBasedID> ids );
 
-    public List<Person> findByPersonDataAndRole( PersonName n, Date bithdate, String sex, Role role );
+    public List<Person> findByPersonDataAndRole( String pn, String sn, String pa, String sa,
+          Date bithdate, String sex, Role role );
 
-    public List<Person> findByPersonDataAndIdAndRole( PersonName n, Date bithdate, String sex, UIDBasedID id, String roleType );
+    public List<Person> findByPersonDataAndIdAndRole( String pn, String sn, String pa, String sa,
+          Date bithdate, String sex, UIDBasedID id, String roleType );
 
-    public List<Person> findByPersonDataAndIdsAndRole( PersonName n, Date bithdate, String sex, List<UIDBasedID> ids, Role role );
+    public List<Person> findByPersonDataAndIdsAndRole( String pn, String sn, String pa, String sa,
+          Date bithdate, String sex, List<UIDBasedID> ids, Role role );
 }

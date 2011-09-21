@@ -3,9 +3,7 @@
  */
 package demographic
 
-import hce.core.support.identification.UIDBasedID
-
-import demographic.identity.PersonName
+import support.identification.UIDBasedID
 import demographic.party.Person
 import demographic.role.Role
 
@@ -107,10 +105,11 @@ class PixPdqDemographicAccess extends DemographicAccess {
         */
     }
     
-    public List<Person> findByPersonData( PersonName pn, Date bd, String sx )
+    public List<Person> findByPersonData( String pn, String sn, String pa, String sa,
+                                          Date bd, String sx )
     {
         // Crear mensaje
-        def xml = this.pdqQueryByPersonData( pn, bd, sx )
+        def xml = this.pdqQueryByPersonData( pn, sn, pa, sa, bd, sx )
         println "Request: " + xml
         
         // Enviar mensaje
@@ -200,7 +199,8 @@ class PixPdqDemographicAccess extends DemographicAccess {
         return result
     }
     
-    public List<Person> findByPersonDataAndId( PersonName pn, Date bd, String sx, UIDBasedID id )
+    public List<Person> findByPersonDataAndId( String pn, String sn, String pa, String sa,
+                                               Date bd, String sx, UIDBasedID id )
     {
         def xml = this.pdqQueryByPersonDataAndId( pn, bd, sx, id )
         println "Request: " + xml
@@ -261,27 +261,28 @@ class PixPdqDemographicAccess extends DemographicAccess {
         
     } // findByPersonDataAndId
     
-    public List<Person> findByPersonDataAndIds( PersonName pn, Date bd, String sx, List<UIDBasedID> ids )
+    public List<Person> findByPersonDataAndIds( String pn, String sn, String pa, String sa, Date bd, String sx, List<UIDBasedID> ids )
     {
         // TODO
         println "findByPersonDataAndIds NO IMPLEMENTADA"
         return []
     }
     
-    public List<Person> findByPersonDataAndRole( PersonName pn, Date bd, String sx, Role role )
+    public List<Person> findByPersonDataAndRole( String pn, String sn, String pa, String sa, Date bd, String sx, Role role )
     {
         // TODO
         println "findByPersonDataAndRole NO IMPLEMENTADA"
         return []
     }
     
-    public List<Person> findByPersonDataAndIdAndRole( PersonName pn, Date bd, String sx, UIDBasedID id, String roleType )
+    public List<Person> findByPersonDataAndIdAndRole( String pn, String sn, String pa, String sa,
+                                                      Date bd, String sx, UIDBasedID id, String roleType )
     {
         // Como en el PDQ se busca solo en base de pacientes, el rol en realidad no importa asi que es lo mismo que findByPersonDataAndId
-        return findByPersonDataAndId( pn, bd, sx, id )
+        return findByPersonDataAndId( pn, sn, pa, sa, bd, sx, id )
     }
     
-    public List<Person> findByPersonDataAndIdsAndRole( PersonName pn, Date bd, String sx, List<UIDBasedID> ids, Role role )
+    public List<Person> findByPersonDataAndIdsAndRole( String pn, String sn, String pa, String sa, Date bd, String sx, List<UIDBasedID> ids, Role role )
     {
         // TODO
         println "findByPersonDataAndIdsAndRole NO IMPLEMENTADA"
@@ -396,7 +397,8 @@ class PixPdqDemographicAccess extends DemographicAccess {
        return writer.toString()
     }
     
-    def pdqQueryByPersonData( PersonName pn, Date bd, String sx )
+    def pdqQueryByPersonData( String pn, String sn, String pa, String sa,
+                              Date bd, String sx )
     {
         def writer = new StringWriter()
         def xml = new MarkupBuilder(writer)
@@ -441,18 +443,18 @@ class PixPdqDemographicAccess extends DemographicAccess {
               
               parameterList {
                 // nombre
-                if (pn)
+                if (pn || pa)
                 {
                   livingSubjectName {
                     value {
-                      if (pn.primerNombre)
-                        given( pn.primerNombre )
-                      if (pn.segundoNombre)
-                        given(pn.segundoNombre)
-                      if (pn.primerApellido)
-                        family(pn.primerApellido)
-                      if (pn.segundoApellido)
-                        family(pn.segundoApellido)
+                      if (pn)
+                        given( pn )
+                      if (sn)
+                        given(sn)
+                      if (pa)
+                        family(pa)
+                      if (sa)
+                        family(sa)
                     }
                     semanticsText( 'LivingSubject.name' )
                   }
@@ -488,7 +490,8 @@ class PixPdqDemographicAccess extends DemographicAccess {
     }
     
     
-    def pdqQueryByPersonDataAndId( PersonName pn, Date bd, String sx, UIDBasedID _id )
+    def pdqQueryByPersonDataAndId( String pn, String sn, String pa, String sa,
+                                   Date bd, String sx, UIDBasedID _id )
     {
         def writer = new StringWriter()
         def xml = new MarkupBuilder(writer)
@@ -533,18 +536,18 @@ class PixPdqDemographicAccess extends DemographicAccess {
                     
                     parameterList {
                         // nombre
-                        if (pn)
+                        if (pn || pa)
                         {
                             livingSubjectName {
                                 value {
-                                    if (pn.primerNombre)
-                                        given( pn.primerNombre )
-                                    if (pn.segundoNombre)
-                                        given(pn.segundoNombre)
-                                    if (pn.primerApellido)
-                                        family(pn.primerApellido)
-                                    if (pn.segundoApellido)
-                                        family(pn.segundoApellido)
+                                    if (pn)
+                                        given( pn )
+                                    if (sn)
+                                        given(sn)
+                                    if (pa)
+                                        family(pa)
+                                    if (sa)
+                                        family(sa)
                                 }
                                 semanticsText( 'LivingSubject.name' )
                             }
@@ -887,10 +890,9 @@ class PixPdqDemographicAccess extends DemographicAccess {
             person.sexo = _patient.patientPerson.administrativeGenderCode.'@code'.text()
             
             // TODO: convertir fecha de nacimiento de aaaaMMdd de HL7 a aaaa-MM-dd de openEHR
-            def name = new PersonName(
-               primerNombre: _patient.patientPerson.name.given.text(),
-               primerApellido: _patient.patientPerson.name.family.text()
-            )
+
+            person.primerNombre = _patient.patientPerson.name.given.text()
+            person.primerApellido = _patient.patientPerson.name.family.text()
             
             person.addToIdentities( name )
             
@@ -907,5 +909,4 @@ class PixPdqDemographicAccess extends DemographicAccess {
         
         return result
     }
-    
 }

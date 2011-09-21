@@ -6,7 +6,7 @@ package demographic
 import demographic.DemographicAccess
 import demographic.LocalDemographicAccess
 
-import hce.core.support.identification.UIDBasedID
+import support.identification.UIDBasedID
 
 import demographic.identity.PersonName
 import demographic.party.Person
@@ -43,20 +43,13 @@ class DemographicService {
     
     /**
      * True si la persona tiene 1 id, primer nombre, primer apellido, sexo y fecha nacimiento.
+     * TODO: el criterio de "persona completa" puede variar en cada institucion.
      * @param p
      * @return
      */
     public boolean personHasAllData( Person p )
     {
-        //println "Person: "+ p
-        //println "Identities: " + p.identities
-        
-        if (!p.identities || p.identities.size()==0) return false
-        
-        def pn = p.identities.find{ it.purpose == 'PersonName' }
-        if (!pn) return false
-        
-        return ( p.sexo && p.fechaNacimiento && pn.primerNombre && pn.primerApellido && p.ids.size()>0 )
+        return ( p.sexo && p.fechaNacimiento && p.primerNombre && p.primerApellido && p.ids.size()>0 )
     }
     
     /**
@@ -90,35 +83,41 @@ class DemographicService {
         return  demographicAccess.findPersonById(id)
     }
     
-    public List<Person> findByPersonData( PersonName n, Date bithdate, String sex )
+    public List<Person> findByPersonData( String pn, String sn, String pa, String sa,
+                                          Date bithdate, String sex )
     {
         //this.queryCount++
         //println queryCount
-        return demographicAccess.findByPersonData(n, bithdate, sex)
+        return demographicAccess.findByPersonData(pn, sn, pa, sa, bithdate, sex)
     }
     
-    public List<Person> findByPersonDataAndId( PersonName n, Date bithdate, String sex, UIDBasedID id )
+    public List<Person> findByPersonDataAndId( String pn, String sn, String pa, String sa,
+                                               Date bithdate, String sex, UIDBasedID id )
     {
-        return demographicAccess.findByPersonDataAndId(n, bithdate, sex, id)
+        return demographicAccess.findByPersonDataAndId(pn, sn, pa, sa, bithdate, sex, id)
     }
     
-    public List<Person> findByPersonDataAndIds( PersonName n, Date bithdate, String sex, List<UIDBasedID> ids )
+    public List<Person> findByPersonDataAndIds( String pn, String sn, String pa, String sa,
+                                                Date bithdate, String sex, List<UIDBasedID> ids )
     {
-        return demographicAccess.findByPersonDataAndIds(n, bithdate, sex, ids)
+        return demographicAccess.findByPersonDataAndIds(pn, sn, pa, sa, bithdate, sex, ids)
     }
     
-    public List<Person> findByPersonDataAndRole( PersonName n, Date bithdate, String sex, Role role )
+    public List<Person> findByPersonDataAndRole( String pn, String sn, String pa, String sa,
+                                                 Date bithdate, String sex, Role role )
     {
-        return demographicAccess.findByPersonDataAndRole(n, bithdate, sex, role)
+        return demographicAccess.findByPersonDataAndRole(pn, sn, pa, sa, bithdate, sex, role)
     }
     
-    public List<Person> findByPersonDataAndIdAndRole( PersonName n, Date bithdate, String sex, UIDBasedID id, String roleType )
+    public List<Person> findByPersonDataAndIdAndRole( String pn, String sn, String pa, String sa,
+                                                      Date bithdate, String sex, UIDBasedID id, String roleType )
     {
-        return demographicAccess.findByPersonDataAndIdAndRole(n, bithdate, sex, id, roleType)
+        return demographicAccess.findByPersonDataAndIdAndRole(pn, sn, pa, sa, bithdate, sex, id, roleType)
     }
     
-    public List<Person> findByPersonDataAndIdsAndRole( PersonName n, Date bithdate, String sex, List<UIDBasedID> ids, Role role )
+    public List<Person> findByPersonDataAndIdsAndRole( String pn, String sn, String pa, String sa,
+                                                       Date bithdate, String sex, List<UIDBasedID> ids, Role role )
     {
-        return demographicAccess.findByPersonDataAndIdsAndRole(n, bithdate, sex, ids, role)
+        return demographicAccess.findByPersonDataAndIdsAndRole(pn, sn, pa, sa, bithdate, sex, ids, role)
     }
 }

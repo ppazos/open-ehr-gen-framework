@@ -3,9 +3,8 @@
  */
 package demographic
 
-import hce.core.support.identification.UIDBasedID
+import support.identification.UIDBasedID
 
-import demographic.identity.PersonName
 import demographic.party.Person
 import demographic.role.Role
 
@@ -34,13 +33,21 @@ abstract class DemographicAccess {
     
     abstract public List<Person> findPersonById( UIDBasedID id );
     
-    abstract public List<Person> findByPersonData( PersonName n, Date bithdate, String sex );
+    abstract public List<Person> findByPersonData( String pn, String sn, String pa, String sa,
+                                                   Date bithdate, String sex );
     
-    abstract public List<Person> findByPersonDataAndId( PersonName n, Date bithdate, String sex, UIDBasedID id );
-    abstract public List<Person> findByPersonDataAndIds( PersonName n, Date bithdate, String sex, List<UIDBasedID> ids );
+    abstract public List<Person> findByPersonDataAndId( String pn, String sn, String pa, String sa,
+                                                        Date bithdate, String sex, UIDBasedID id );
+                                                     
+    abstract public List<Person> findByPersonDataAndIds( String pn, String sn, String pa, String sa,
+                                                         Date bithdate, String sex, List<UIDBasedID> ids );
     
-    abstract public List<Person> findByPersonDataAndRole( PersonName n, Date bithdate, String sex, Role role );
+    abstract public List<Person> findByPersonDataAndRole( String pn, String sn, String pa, String sa,
+                                                          Date bithdate, String sex, Role role );
     
-    abstract public List<Person> findByPersonDataAndIdAndRole( PersonName n, Date bithdate, String sex, UIDBasedID id, String roleType );
-    abstract public List<Person> findByPersonDataAndIdsAndRole( PersonName n, Date bithdate, String sex, List<UIDBasedID> ids, Role role );
+    abstract public List<Person> findByPersonDataAndIdAndRole( String pn, String sn, String pa, String sa,
+                                                               Date bithdate, String sex, UIDBasedID id, String roleType );
+                                                            
+    abstract public List<Person> findByPersonDataAndIdsAndRole( String pn, String sn, String pa, String sa,
+                                                                Date bithdate, String sex, List<UIDBasedID> ids, Role role );
 }
