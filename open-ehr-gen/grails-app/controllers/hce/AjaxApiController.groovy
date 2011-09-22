@@ -17,6 +17,10 @@ import hce.HceService
 
 import templates.TemplateManager
 
+// Automatic marshalling of XML and JSON
+import grails.converters.*
+import cache.PathValores
+
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
  *
@@ -24,6 +28,16 @@ import templates.TemplateManager
 class AjaxApiController {
 
     def hceService
+    
+    
+    // TEST de PathValores 2 JSON
+    def pathValores = {
+       
+       //render PathValores.list(params) as JSON
+       //render PathValores.get(1).params as JSON
+       render PathValores.list(params).params as JSON
+    }
+    
     
     // FIXME: tambien esta implementadas en GuiGenController
     
@@ -221,11 +235,12 @@ class AjaxApiController {
         
         pathValor[ descPath ] = params.descripcion
         
+        println "AjaxApi saveDiagnostico: " + pathValor
+        
         // Armo path -> valor para binder! (a mano)
         // openEHR-EHR-ACTION.columna_vertebral.v1/description[at0001]/items[at0002]/value/defining_code
         // openEHR-EHR-OBSERVATION.diagnosticos.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/defining_code
         
-        //BindingAOMRM bindingAOMRM = new BindingAOMRM()
         BindingAOMRM bindingAOMRM = new BindingAOMRM( session )
         def rmobj = bindingAOMRM.bind(pathValor, templateId)
 
@@ -261,7 +276,7 @@ class AjaxApiController {
         
         if (rmobj)
         {
-            if (!rmobj.save(flush:true) || bindingAOMRM.getErrors().hasErrors() || bindingAOMRM.hasErrors() )
+            if (!rmobj.save(flush:true) || bindingAOMRM.hasErrors() )
             {
                 println "ERROR AL SALVAR: ---> " + rmobj.errors
                 println "TheErrors: " + bindingAOMRM.getErrors() + "\n\n"
@@ -298,19 +313,19 @@ class AjaxApiController {
                 
 
                 render( view: '../hce/DIAGNOSTICO-diagnosticos',
-                       model: [
+                        model: [
                            patient: patient,
                            template: template,
                            sections: sections,
                            subsections: subsections,
                            episodeId: session.traumaContext?.episodioId,
-                               userId: session.traumaContext.userId,
-                               // Params para edit
-                               rmNode: rmobj, // si no pudo guardar no puedo hacer get a la base...
-                               index: bindingAOMRM.getRMRootsIndex(),
-                               errors: bindingAOMRM.getErrors(),
-                               allSubsections: this.getDomainTemplates()
-                               //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
+                           //userId: session.traumaContext.userId, // no se usa
+                           // Params para edit
+                           rmNode: rmobj, // si no pudo guardar no puedo hacer get a la base...
+                           index: bindingAOMRM.getRMRootsIndex(),
+                           errors: bindingAOMRM.getErrors(),
+                           allSubsections: this.getDomainTemplates()
+                           //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
                        ] )
                 return
             }
