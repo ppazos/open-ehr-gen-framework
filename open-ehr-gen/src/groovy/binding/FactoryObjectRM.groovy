@@ -668,7 +668,7 @@ class FactoryObjectRM {
 // FIXME: no se le esta seteando la path al CLUSTER!
     def createCLUSTER(List<Object> listaItems, Archetype arquetipo, String archNodeId, String tempId, CObject co)
     {
-        println "========== createCLUSTER " + listaItems
+        //println "========== createCLUSTER " + listaItems
         //println "??????????????? listaItems: " + listaItems
         //println "???????????????????????????????????????????????????"
         
@@ -1269,7 +1269,7 @@ class FactoryObjectRM {
     // Pruebo pasarle en magnitude el valor que recibo de la web para que el GORM valide y reporte errores.
     def createDvQuantity(String mag, String units, Archetype arquetipo, String archNodeId, String tempId, CObject co)
     {
-        println "createDvQuantity: mag " + mag + " units " + units
+        //println "createDvQuantity: mag " + mag + " units " + units
 
         /**
          * Si hay una sola opcion de unidades en la lista de restricciones, en la vista siempre

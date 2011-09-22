@@ -274,7 +274,7 @@ class BindingAOMRM {
      */
     def bind(LinkedHashMap<String, Object> pathsValor, String templateId)
     {
-        println "== bind"
+        //println "== bind"
         //println "   = pathsValor: " + pathsValor
         //println "   = templateId: " + templateId
         //println "======================================================="
@@ -471,7 +471,7 @@ class BindingAOMRM {
      */
     def bindArquetipo(Archetype arquetipo, LinkedHashMap<String, Object> pathValorArquetipo, String tempId)
     {
-        println "==== bindArquetipo " + arquetipo.archetypeId.value
+        //println "==== bindArquetipo " + arquetipo.archetypeId.value
         //println "========================================================"
         
         CComplexObject cco = arquetipo.getDefinition()
@@ -498,7 +498,7 @@ class BindingAOMRM {
      */
     def bindCObject(CObject co, LinkedHashMap<String, Object> pathValorCObject, Archetype arquetipo, String tempId)
     {
-        println "========== bindCObject"
+        //println "========== bindCObject"
        
         // Obtengo el nombre de la clase (nombre sin el paquete), para luego llamar al metodo correspondiente
         String nombreClase = co.getClass().getSimpleName()
@@ -529,7 +529,7 @@ class BindingAOMRM {
         archivo.write(xml)
         */
         
-        println "========== bindCObject -> " + bindMethod
+        //println "========== bindCObject -> " + bindMethod
         
         // Llamara a bindCComplexObject, bindCPrimitiveObject, bindCDomainType, bindArchetypeSlot, bindArchetypeInternalRef
         def bindedObjs = this."$bindMethod"(co, pathValorCObject, arquetipo, tempId)
@@ -625,7 +625,7 @@ class BindingAOMRM {
      */
     def bindCComplexObject(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
-        println "====== bindCComplexObject " + cco.rmTypeName
+        //println "====== bindCComplexObject " + cco.rmTypeName
        
 //         println "==== bindCComplexObject"
         //println "   = pathValor: " + pathValor
@@ -646,7 +646,7 @@ class BindingAOMRM {
         int min = cco.occurrences.getLower()
         if (min == 0 && pathValor.size() == 0)
         {
-            println "====== bindCComplexObject === PODA ==="
+            //println "====== bindCComplexObject === PODA ==="
             return rmObject
         }
         
@@ -657,7 +657,7 @@ class BindingAOMRM {
         // No para ORDINAL, QUANTITY, CODED_TEXT que son DomainType.
         if ( this.isDataValue( rmTypeName ) )
         {
-            println "====== bindCComplexObject -> " + "bind" + rmTypeName
+            //println "====== bindCComplexObject -> " + "bind" + rmTypeName
            
             def method = "bind" + rmTypeName
             rmObject = this."$method"(cco, pathValor, arquetipo, tempId) // es una lista de DataValue, podria ser vacia!
@@ -673,7 +673,7 @@ class BindingAOMRM {
         // como se manmejan para ELEMENT.
         if (rmTypeName == "CLUSTER")
         {
-            println "====== bindCComplexObject -> bindCLUSTER"
+            //println "====== bindCComplexObject -> bindCLUSTER"
            
             // es una lista de clusters siempre
             // adentro hace la recorrida de sus attributes 
@@ -682,7 +682,7 @@ class BindingAOMRM {
         
         if (rmTypeName == "ELEMENT") // El element tambien resuelve multiples ocurrencias
         {
-           println "====== bindCComplexObject -> bindELEMENT"
+           //println "====== bindCComplexObject -> bindELEMENT"
            
            // FIXME:
            // Aca deberia venir el proceso de los rmObjects bindeados para cada atributo.
@@ -792,7 +792,7 @@ class BindingAOMRM {
              // FIXME: primer parametro...
              
             
-             println "====== bindCComplexObject -> "+ factoryRMMethod + " (1)"
+             //println "====== bindCComplexObject -> "+ factoryRMMethod + " (1)"
              
              
              // Ya valida, entonces solo verifico si hay errores
@@ -802,7 +802,7 @@ class BindingAOMRM {
              // FIXED: el unico metodo de factory que tiraba list era createDV_CODED_TEXT
              if (rmObject instanceof Locatable && rmObject.hasErrors())
              {
-                println "bindCComplexObject rmObject tiene errores: " + rmObject.getErrors()
+                //println "bindCComplexObject rmObject tiene errores: " + rmObject.getErrors()
                 
                 // FIXME: la path completa seria archetypeId+refPath+path
                 //        falta calcular refPath como esta calculada en las vistas
@@ -881,7 +881,7 @@ class BindingAOMRM {
 
                         if (value)
                         {
-                            println "====== bindCComplexObject -> "+ factoryRMMethod + " (2)"
+                            //println "====== bindCComplexObject -> "+ factoryRMMethod + " (2)"
                            
                             // FIXME: si da except arriba no deberia invocar este metodo!
                             // Necesitaria que lo invoque para crear el objeto en el que hago rejectValue para poder usar los errors de grails...
@@ -910,7 +910,7 @@ class BindingAOMRM {
                     }
                     else
                     {
-                        println "====== bindCComplexObject -> "+ factoryRMMethod + " (3)"
+                        //println "====== bindCComplexObject -> "+ factoryRMMethod + " (3)"
                        
                         // FIXME: si da except arriba no deberia invocar este metodo!
                         result << rmFactory."$factoryRMMethod"(value, arquetipo, archNodeId, tempId, cco)
@@ -941,7 +941,7 @@ class BindingAOMRM {
      */
     def bindAttribute(CAttribute cattr, LinkedHashMap<String, Object> pathValorAttribute, Archetype arquetipo, String tempId)
     {
-        println "======== bindAttribute "+ cattr.rmAttributeName
+        //println "======== bindAttribute "+ cattr.rmAttributeName
         
         //println "==== bindAttribute"
         //println "   = name: " + cattr.rmAttributeName
@@ -965,7 +965,7 @@ class BindingAOMRM {
             //if (pathValorCObject.size() > 0)
             //{
             
-                println "======== bindAttribute -> bindCObject"
+                //println "======== bindAttribute -> bindCObject"
             
                 //println "  bindAttribute children "+ co.rmTypeName + " pathValor: "+ pathValorCObject
                 def rmObject = bindCObject(co, pathValorCObject, arquetipo, tempId)
@@ -2116,20 +2116,20 @@ class BindingAOMRM {
             }
             else // (+++)
             {
-               println "bindSingleCluster: no hay items para bindear"
+               //println "bindSingleCluster: no hay items para bindear"
                if ( cco.occurrences.getLower() > 0 )
                {
-                  println "bindSingleCluster 1: bindeo el cluser sin items porque tiene ocurrencia > 0"
+                  //println "bindSingleCluster 1: bindeo el cluser sin items porque tiene ocurrencia > 0"
                   cluster = rmFactory.createCLUSTER([], arquetipo, cco.nodeID, tempId, cco)
                }
             }
         }
         else // (+++)
         {
-           println "bindSingleCluster: no bindeo' items del cluster"
+           //println "bindSingleCluster: no bindeo' items del cluster"
            if ( cco.occurrences.getLower() > 0 )
            {
-              println "bindSingleCluster 2: bindeo el cluser sin items porque tiene ocurrencia > 0"
+              //println "bindSingleCluster 2: bindeo el cluser sin items porque tiene ocurrencia > 0"
               cluster = rmFactory.createCLUSTER([], arquetipo, cco.nodeID, tempId, cco)
            }
         }
@@ -2142,9 +2142,8 @@ class BindingAOMRM {
     
     def bindELEMENT(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
-       println '=============================================='
-       //println arquetipo.archetypeId.value
-       println 'bindELEMENT pathValor: ' + pathValor
+       //println '=============================================='
+       //println 'bindELEMENT pathValor: ' + pathValor
        
        // Lista de lista de objetos bindeados para cada atributo del CCObject
        List<Object> listaListRMO = []
@@ -2186,7 +2185,7 @@ class BindingAOMRM {
        {
            def rmObjectsForValue = listaListRMO[0] // Puede ser una lista de objetos (puede ser vacia)
            
-           println "bondElement: rmobjectForValue="+rmObjectsForValue
+           //println "bondElement: rmobjectForValue="+rmObjectsForValue
            
            // FIXME:
            // HICE UN CAMBIO EN FACTORY: si no se tienen todos los valores para crear el value,
@@ -2196,7 +2195,7 @@ class BindingAOMRM {
            // Con esto creo que anda ok:
            if ( rmObjectsForValue.size() < cco.occurrences.getLower() )
            {
-              println "- hay menos valores que la menor ocurrencia permitida"
+              //println "- hay menos valores que la menor ocurrencia permitida"
               
               // Bindeo tantos elements como se esperaban, pero para los que no tengan valor, pongo null,
               // entonces se genera un error para el element.value (que es lo que quiero).
@@ -2294,8 +2293,8 @@ ulo]
                }
            }
            
-           println "Element Null ERROR Count :" + nullErrorCount
-           println "rmObjectsForValue.size :" + rmObjectsForValue.size()
+           //println "Element Null ERROR Count :" + nullErrorCount
+           //println "rmObjectsForValue.size :" + rmObjectsForValue.size()
            
            //println "==== rmObjectsForValue: " + rmObjectsForValue
            
@@ -2588,9 +2587,6 @@ ulo]
                 result << rmObj
             }
             
-            //println "---- result: " + result
-            //println "------------------------------------------------------------------------"
-            
             return result // puede ser vacia
         }
         // por ahora no hay un caso donde venga el valor y otro dato.
@@ -2739,7 +2735,6 @@ ulo]
 // prueba para retornar null de createDV_COUNT
 if (rmObj)
 {
-
                 // Verifico error de rangos
                 if (rmObj.errors.hasErrors())
                 {
