@@ -23,7 +23,7 @@ if (refPath) _refPath = refPath
                         archetype: archetype,
                         archetypeService:archetypeService,
                         refPath: refPath,
-                        params: params]" />
+                        params: params, session:session]" />
   </g:if>
   <g:if test="${cObject instanceof CDomainType}">
       <g:render template="../guiGen/templates2/cDomainType"
@@ -31,7 +31,7 @@ if (refPath) _refPath = refPath
                         archetype: archetype,
                         archetypeService:archetypeService,
                         refPath: refPath,
-                        params: params]" />
+                        params: params, session:session]" />
   </g:if>
   <g:if test="${cObject instanceof CPrimitiveObject}">
       <g:render template="../guiGen/templates2/cPrimitiveObject"
@@ -39,7 +39,7 @@ if (refPath) _refPath = refPath
                         archetype: archetype,
                         archetypeService:archetypeService,
                         refPath: refPath,
-                        params: params]" />
+                        params: params, session:session]" />
   </g:if>
   
   <%-- FIXME: http://code.google.com/p/open-ehr-sa/issues/detail?id=2
@@ -59,5 +59,5 @@ if (refPath) _refPath = refPath
                         archetype: archetype,
                         archetypeService:archetypeService,
                         refPath: refPath,
-                        params: params]" />
+                        params: params, session:session]" />
   </g:if>

@@ -19,4 +19,4 @@ if (refPath) _refPath = refPath
             model="[archetype: archetype,
                     archetypeService: archetypeService,
                     refPath: refPath,
-                    params: params]" />
+                    params: params, session:session]" />

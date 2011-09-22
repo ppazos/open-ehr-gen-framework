@@ -19,13 +19,12 @@ if (refPath) _refPath = refPath
 %>
 
 <g:if test="${cDomainType instanceof CCodePhrase}">
-
     <g:render template="../guiGen/templates2/cCodePhrase"
               model="[cCodePhrase: cDomainType,
                       archetype: archetype,
                       archetypeService:archetypeService,
                       refPath: refPath,
-                      params: params]" />
+                      params: params, session:session]" />
 </g:if>
 <g:if test="${cDomainType instanceof CDvOrdinal}">
     <g:render template="../guiGen/templates2/cDvOrdinal"
@@ -33,7 +32,7 @@ if (refPath) _refPath = refPath
                       archetype: archetype,
                       archetypeService:archetypeService,
                       refPath: refPath,
-                      params: params]" />
+                      params: params, session:session]" />
 </g:if>
 <g:if test="${cDomainType instanceof CDvQuantity}">
     <g:render template="../guiGen/templates2/cDvQuantity"
@@ -41,5 +40,5 @@ if (refPath) _refPath = refPath
                       archetype: archetype,
                       archetypeService:archetypeService,
                       refPath: refPath,
-                      params: params]" />
+                      params: params, session:session]" />
 </g:if>

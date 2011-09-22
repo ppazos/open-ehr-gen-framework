@@ -75,19 +75,14 @@ if (refPath) _refPath = refPath
         </g:if>
       </g:each>
     </g:else>
-    
     <span class="content">
-   
 </g:if>
-
-
 <%
 if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObject.path()) )
 {
 	println "<h1>"+errors.getErrors(archetype.archetypeId.value, cComplexObject.path())+"</h1>"
 }
 %>
-
     <g:if test="${cComplexObject.rmTypeName.startsWith('DV_INTERVAL')}"><%-- DV_INTERVAL<DV_COUNT> --%>
       <%-- TODO?? ver lower y upper 
       
@@ -100,7 +95,7 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
                   model="[archetype: archetype,
                           archetypeService: archetypeService,
                           refPath: refPath,
-                          params: params]" />
+                          params: params, session:session]" />
       </g:if>
     </g:if>
     <g:if test="${cComplexObject.rmTypeName.startsWith('DV_MULTIMEDIA')}">
@@ -116,7 +111,7 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
                     model="[archetype: archetype,
                             archetypeService: archetypeService,
                             refPath: refPath,
-                            params: params]" />
+                            params: params, session:session]" />
       </g:if>
       <g:else><%-- muestra nodos sin restriccion, solo si no tiene atributos para seguir navegando --%>
       

@@ -1,11 +1,9 @@
 <%@ page import="org.openehr.am.archetype.constraintmodel.*" %><%@ page import="com.thoughtworks.xstream.XStream" %><%@ page import="binding.CtrlTerminologia" %>
-
 <%--
 in: cCodePhrase (${cCodePhrase.class}) (${cCodePhrase.rmTypeName}) (${archetype.archetypeId})<br/>
 in: selectedValue si es edit viene con el valor ingresado antes, si no es null.
 <b>${cCodePhrase.path()}</b>
 --%>
-
 <%--
 CCodePhrase<br/>
 <textarea style="width: 700px; height: 200px;">${new XStream().toXML(cCodePhrase)}</textarea>
@@ -45,7 +43,7 @@ if (refPath) _refPath = refPath
   </g:if>
   <g:else>
     <g:set var="codes" value="${cCodePhrase.codeList}" />
-    <g:each in="${cCodePhrase.codeList}" var="code">
+    <g:each in="${codes}" var="code">
       <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, code)}" />
       <g:if test="${!archetypeTerm}">
         El termino con codigo [${code}] no esta definido en el arquetipo, posiblemente el termino no esta definido para el lenguaje seleccionado.<br/>
@@ -53,7 +51,7 @@ if (refPath) _refPath = refPath
       <g:else>
         <% values << archetypeTerm.items.text %>
       </g:else>
-    </g:each>  
+    </g:each>
   </g:else>    
    
 </g:if>
@@ -96,7 +94,6 @@ Params Value: ${params[archetype.archetypeId.value +_refPath+ cCodePhrase.path()
 SelectedValue: ${selectedValue}<br/>
 Path: ${archetype.archetypeId.value +_refPath+ cCodePhrase.path()}<br/><br/>
 --%>
-
-<%-- TODO:
+<% /*
 <span class="ccode_phrase_selected_text_description">TODO: setear con la descripcion del valor seleccionado</span>
---%>
+*/ %>
