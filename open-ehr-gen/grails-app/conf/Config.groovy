@@ -20,7 +20,8 @@ domains = [
            '/domain.internacion_domiciliaria',
            '/domain.internacion_sala',
            '/domain.internacion_ci',
-           '/domain.internacion_cti'
+           '/domain.internacion_cti',
+           '/domain.tests'
            ]
 
 // FIXME: no deberia ir a buscar los templates a distintos directorios,
@@ -57,9 +58,17 @@ templates2 {
       // decisiones terapeuticas evolutivas, ISS
       COMUNES = ['movimiento_paciente']
    }
-   '/domain.emergencia'  {
+   '/domain.emergencia' {
       ACCIONES = ['adm_sust']
       DIAGNOSTICO = ['diagnosticos']
+   }
+   '/domain.tests' {
+      TEST = [
+              'cluster_obligatorio',
+              'cluster_obligatorio_multiple',
+              'cluster_obligatorio_multiple_struct',
+              'cluster_oblig_multiple_element_oblig'
+             ]
    }
 }
 
@@ -170,6 +179,8 @@ log4j = {
 //   appenders {
 //      file name:'file', file:'hibernate.log'
 //   }
+   
+    info 'com.linkedin.grails'
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
 	       'org.codehaus.groovy.grails.web.pages', //  GSP
@@ -186,7 +197,4 @@ log4j = {
     
     //info   'org.hibernate'
     //debug   file:'org.hibernate'
-}
-
-
-     
+}     
