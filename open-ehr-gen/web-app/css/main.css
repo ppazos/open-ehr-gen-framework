@@ -55,8 +55,9 @@ input:focus, select:focus, textarea:focus {
 }
 
 .body {
-    float: left;
-    margin: 0 15px 10px 15px;
+    /*float: left;*/
+    /* margin: 0 15px 10px 15px; */
+	padding: 10px;
 }
 
 /* NAVIGATION MENU */
@@ -67,6 +68,12 @@ input:focus, select:focus, textarea:focus {
     border-style: solid none solid none;	
     margin-top: 5px;
     padding: 7px 12px;
+}
+
+/* Para alinear checks al texto */
+.nav  input[type=checkbox] {
+  position: relative;
+  top: 2px;
 }
 
 .menuButton {

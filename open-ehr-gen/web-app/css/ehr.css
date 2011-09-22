@@ -9,7 +9,7 @@ body {
 }
 #body_table {
   width: 850px;
-  background-color: #aaaaff;
+  background-color: #efefef;
   padding: 10px;
 }
       
@@ -196,7 +196,10 @@ textarea {
        }
        #menu li.active a {
          color: #000000;
-         background-color: #AAAAFF; /*ADDEE4;*/
+           background-color: #efefef; /*ADDEE4;*/
+  border: 1px solid #aaaaaa;
+  border-left: 1px solid #efefef; /* para que lo muestre unido al body */
+  margin-left: -1px; /* para que lo muestre unido al body */
        }
        #body_table table {
          background-color: #ffffdd;
