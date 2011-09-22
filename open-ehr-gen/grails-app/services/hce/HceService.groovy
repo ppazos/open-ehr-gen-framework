@@ -7,21 +7,19 @@ package hce
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 import hce.core.composition.* // Composition y EventContext
-import hce.core.data_types.text.* // DvText, DvCodedText, ...
-import hce.core.support.identification.TerminologyID
-import hce.core.data_types.quantity.date_time.*
+import data_types.text.* // DvText, DvCodedText, ...
+import data_types.quantity.date_time.*
 import hce.core.composition.content.navigation.Section
 
 // other context
 import hce.core.datastructure.itemstructure.ItemSingle
 import hce.core.datastructure.itemstructure.representation.Element
-import hce.core.data_types.text.DvText
 
 import hce.core.common.archetyped.Archetyped
 
 // Crear party proxy para el paciente
 import hce.core.common.generic.*
-import hce.core.support.identification.*
+import support.identification.*
 
 import demographic.party.Person
 
@@ -100,7 +98,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
            
           // setting es el servicio donde se da el cuidado, el valor se saca de la terminologia openehr
           setting: new DvCodedText(
-            value: "emergency care", // TODO: traducir
+            value: "emergency care", // TODO: traducir // FIXME: ahora dependen del dominio
             definingCode: new CodePhrase(
               codeString: '227',
               terminologyId: TerminologyID.create('openehr', null)
@@ -164,7 +162,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
           rmVersion: '1.0.2'
         )
         compo.name = new DvText(
-          value: 'hcet'
+          value: 'hcet' // FIXME: depende del dominio
         )
         
         return compo
@@ -216,7 +214,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
        /*
         * El modelo es:
         * PartySelf(hereda de PartyProxy)
-        * PartySelf.externalRef<PartyRef>.id<UIDBasedID>(root, extension)
+        * PartySelf.externalRef<PartyRef>.objectId<UIDBasedID>(root, extension)
         */
        def patient = new PartySelf (
            externalRef: new PartyRef (
@@ -337,6 +335,8 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
            {
               //println "hceService.getPartySelfFromComposition return PartySelf"
               //return patientParticipation.performer // Error por javassist en lugar de PartySelf
+              // Se recarga de la base la misma clase que ya tengo, esto resuelve el problema del javassist
+              // o sea que patientParticipation.performer es lo mismo que el PartySelf que retorno aqui.
               return PartySelf.get(patientParticipation.performer.id)
            }
         }
@@ -385,6 +385,9 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
            // List<Person> findPersonById( UIDBasedID id )
            def patients = demographicService.findPersonById( patientProxy.externalRef.objectId )
 
+           //println "hceService.getPatientFromComposition findPersonById id: " + patientProxy.externalRef.objectId.value
+           //println "hceService.getPatientFromComposition findPersonById: " + patients
+           
            if (patients.size() == 0)
            {
                // no hago nada, el patient es null...
