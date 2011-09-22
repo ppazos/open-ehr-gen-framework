@@ -2,7 +2,7 @@ package hce.core.composition.content.entry
 
 import hce.core.datastructure.itemstructure.ItemStructure
 
-class CareEntry extends Entry{
+class CareEntry extends Entry {
 
     ItemStructure protocol
 

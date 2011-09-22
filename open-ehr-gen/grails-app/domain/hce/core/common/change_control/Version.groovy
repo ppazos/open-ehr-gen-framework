@@ -1,11 +1,14 @@
-package hce.core.common.change_control;
+package hce.core.common.change_control
 
-import hce.core.support.identification.ObjectRef;
-import hce.core.common.archetyped.Locatable;
-import hce.core.support.identification.ObjectVersionID; // Todavia no se usa para nada, se usaria cuando se implemente el 'change control'
-import hce.core.data_types.quantity.date_time.DvDateTime;
-import hce.core.common.generic.AuditDetails;
-import hce.core.common.generic.*;
+import support.identification.ObjectRef
+import hce.core.common.archetyped.Locatable
+import support.identification.ObjectVersionID // Todavia no se usa para nada, se usaria cuando se implemente el 'change control'
+import data_types.quantity.date_time.DvDateTime
+import hce.core.common.generic.AuditDetails
+import hce.core.common.generic.*
+
+// TEST: para serializar DataValue a string y ahorrar joins
+import com.thoughtworks.xstream.XStream
 
 class Version {
     
@@ -53,19 +56,53 @@ class Version {
     
     int numeroVers
     String nombreArchCDA
+    
+    
+    String codedTimeCommited
+    String codedContribution
+    String codedUid
+    static transients = ['timeCommited', 'contribution', 'uid']
+    
+    def beforeInsert() {
+       // Para generar XML en una sola linea sin pretty print: http://stackoverflow.com/questions/894625/how-to-disable-pretty-printingwhite-space-newline-in-xstream
+       // Interesante: http://www.xml.com/pub/a/2001/06/20/databases.html
+       XStream xstream = new XStream()
+       xstream.omitField(DvDateTime.class, "errors");
+       codedTimeCommited = xstream.toXML(timeCommited)
+       codedContribution = xstream.toXML(contribution)
+       codedUid = xstream.toXML(uid)
+    }
+    def beforeUpdate() {
+       XStream xstream = new XStream()
+       xstream.omitField(DvDateTime.class, "errors");
+       codedTimeCommited = xstream.toXML(timeCommited)
+       codedContribution = xstream.toXML(contribution)
+       codedUid = xstream.toXML(uid)
+    }
+    // Al reves
+    def afterLoad() {
+       XStream xstream = new XStream()
+       if (codedTimeCommited) timeCommited = xstream.fromXML(codedTimeCommited)
+       if (codedContribution) contribution = xstream.fromXML(codedContribution)
+       if (codedUid) uid = xstream.fromXML(codedUid)
+    }
 
     static constraints = {
-        uid(nullable:true)
+        //uid(nullable:true)
+        codedTimeCommited(nullable:true, maxSize:4096) // para que valide
+        codedContribution(nullable:true, maxSize:4096)
+        codedUid(nullable:true, maxSize:4096)
+        
         canonicalForm(nullable:true)
         signature(nullable:true)
-        contribution(nullable:true)
+        //contribution(nullable:true)
         commit_audit(nullable:true)
         nombreArchCDA(nullable:true)
         data(nullable:true)
         committer(nullable:true)
     }
     static mapping = {
-        timeCommited cascade: "save-update"
+        //timeCommited cascade: "save-update"
         commit_audit cascade: "save-update"
         data cascade: "save-update"
         committer cascade: "save-update"

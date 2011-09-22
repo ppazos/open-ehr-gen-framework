@@ -1,11 +1,13 @@
 package hce.core.common.archetyped
 
-import hce.core.support.identification.*
-import hce.core.data_types.text.*
-import hce.core.support.identification.*
+import support.identification.*
+import data_types.text.*
 
-import java.lang.reflect.Method;
+//import java.lang.reflect.Method;
 import java.util.*;
+
+// TEST: para serializar DataValue a string y ahorrar joins
+import com.thoughtworks.xstream.XStream
 
 /**
  * Root structural class of all information models. Instances of
@@ -17,24 +19,42 @@ import java.util.*;
 // Pablo: prueba para agregar el atributo Pathable.parent a los nodos del RM
 class Locatable extends Pathable {
 
-    /* fields */
     //UIDBasedID uid;
     String archetypeNodeId // Id del nodo (ej. at0001) -->  arquetipo.node(path).nodeID
     DvText name // Termino asociado al archetypeNodeId --> termino pedido a la ontologia en base a archetypeNodeId
+    String codedName
     
-    // Es != null para las raices de estructuras del rm. 
+    // Es != null para las raices de estructuras del rm.
     Archetyped archetypeDetails // Tiene ArqchetypeId, TemplateId y VersionID
-    
-    // Cumple el rol de Pathable, guarda la path al nodo del AOM que restringe este 
-    //locatable, el cual se usó para crearlo.
-    // Pablo: Lo paso para Pathable 
-    //String path
     
     //FeederAudit feederAudit;
     //Set<Link> links;
-
+    
+    def beforeInsert() {
+       // Para generar XML en una sola linea sin pretty print: http://stackoverflow.com/questions/894625/how-to-disable-pretty-printingwhite-space-newline-in-xstream
+       // Interesante: http://www.xml.com/pub/a/2001/06/20/databases.html
+       XStream xstream = new XStream()
+       xstream.omitField(DvText.class, "errors");
+       codedName = xstream.toXML(name)
+       //println "beforeInsert codedName " + codedName
+    }
+    def beforeUpdate() {
+       XStream xstream = new XStream()
+       xstream.omitField(DvText.class, "errors");
+       codedName = xstream.toXML(name)
+       //println "beforeUpdate codedName " + codedName
+    }
+    // Al reves
+    def afterLoad() {
+       XStream xstream = new XStream()
+       if (codedName) name = xstream.fromXML(codedName)
+    }
+    
+    // Guarda los datos de archetypeDetails en la misma tabla que locatable, ahorra un join.
+    static embedded = ['archetypeDetails']
+    
     static mapping = {
-        name cascade: "save-update"
+        //name cascade: "save-update"
         archetypeDetails cascade: "save-update"
         //table 'locatable' // pab
     }
@@ -44,11 +64,12 @@ class Locatable extends Pathable {
         //name (nullable: false)
         //links (nullable: false, minSize: 1)
         archetypeDetails(nullable:true)
+        codedName(nullable:true, maxSize:4096) // nullable para que pase validacion
     }
 
     // Solucion a http://old.nabble.com/Getting-Item_%24%24_javassist_165-from-ins.getClass%28%29.getSimpleName%28%29-td27317238.html
     // Con item.getClass().getSimpleName() obtengo Item_$$_javassist_165 en lugar de Cluster o Element
-    static transients = ["className"]
+    static transients = ["className", "name"]
     String getClassName()
     {
         return this.getClass().getSimpleName()
@@ -261,8 +282,7 @@ class Locatable extends Pathable {
      */
     String toString()
     {
-        //return this.getClass().getSimpleName() +"-> "+ ( (archetypeNodeId.equals(name)) ? archetypeNodeId.toString() : archetypeNodeId + "-> " + name)
-       return this.getClass().getSimpleName() +"-> ["+ archetypeNodeId + "] name: " + name.value
+       return this.getClass().getSimpleName() +"-> ["+ archetypeNodeId + "] name: " + name?.value
     }
 
     /**

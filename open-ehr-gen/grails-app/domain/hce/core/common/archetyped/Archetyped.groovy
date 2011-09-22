@@ -1,8 +1,6 @@
 package hce.core.common.archetyped
 
 import hce.core.*;
-import hce.core.support.identification.*;
-import hce.core.datastructure.itemstructure.representation.Item
 
 /**
  * Archetypes act as the configuration basis for the particular
@@ -19,8 +17,7 @@ import hce.core.datastructure.itemstructure.representation.Item
  * @author Leandro Carrasco
  * @version 1.0
  */
-
-class Archetyped { //extends RMObject{
+class Archetyped {
 
     String archetypeId;
     String templateId;

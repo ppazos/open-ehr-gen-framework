@@ -2,7 +2,7 @@ package hce.core.datastructure
 
 import hce.core.common.archetyped.Locatable
 
-class DataStructure extends Locatable{
+class DataStructure extends Locatable {
 
     static constraints = {
     }

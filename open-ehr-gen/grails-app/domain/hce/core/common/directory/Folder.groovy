@@ -2,7 +2,9 @@ package hce.core.common.directory
 
 import hce.core.common.archetyped.Locatable
 import hce.core.common.archetyped.Pathable
-import hce.core.support.identification.ObjectRef
+import support.identification.ObjectRef
+
+import data_types.basic.DataValue
 
 /**
  * Folder puede tener subfolders e items.
@@ -28,6 +30,9 @@ import hce.core.support.identification.ObjectRef
  *
  */
 
+// TEST: para serializar DataValue a string y ahorrar joins
+import com.thoughtworks.xstream.XStream
+
 class Folder extends Locatable {
 
    // El nombre del directorio es es atributo Locatable.name: DvText (podria ser tambien DvCodedText)
@@ -36,11 +41,57 @@ class Folder extends Locatable {
    // - namespace: espacio de nombres al que pertenece el identificador en el sistema local (p.e. terminology, demographic, local, etc)
    // - type: nombre de la clase al que refiere el id, p.e. PERSON, COMPOSITION, OBSERVATION, etc.
    
+   def Folder()
+   {
+      items = []
+   }
+   
    List folders // Para que se guarden en orden
-   static hasMany = [folders: Folder, items: ObjectRef]
+   static hasMany = [folders: Folder]
+   //static hasMany = [folders: Folder, items: ObjectRef]
+   
+   List<ObjectRef> items
+   String codedItems
+   
+   def addToItems(ObjectRef or)
+   {
+      items.add(or)
+   }
+   
+   // Nuevo para calcular codedValue
+   def beforeInsert() {
+      // Para generar XML en una sola linea sin pretty print: http://stackoverflow.com/questions/894625/how-to-disable-pretty-printingwhite-space-newline-in-xstream
+      // Interesante: http://www.xml.com/pub/a/2001/06/20/databases.html
+      XStream xstream = new XStream()
+      xstream.omitField(DataValue.class, "errors");
+      codedItems = xstream.toXML(items)
+      
+      // este beforeInsert sobreescribe el de Locatable, entonces el atributo codedName de locatable lo tengo que calcular aca tambien.
+      codedName = xstream.toXML(name)
+      //println "beforeInsert codedName " + codedName
+   }
+   def beforeUpdate() {
+      XStream xstream = new XStream()
+      xstream.omitField(DataValue.class, "errors");
+      codedItems = xstream.toXML(items)
+      
+      // este beforeInsert sobreescribe el de Locatable, entonces el atributo codedName de locatable lo tengo que calcular aca tambien.
+      codedName = xstream.toXML(name)
+      //println "beforeUpdate codedName " + codedName
+   }
+   // Al reves
+   def afterLoad() {
+      XStream xstream = new XStream()
+      if (codedItems) items = xstream.fromXML(codedItems)
+      if (codedName) name = xstream.fromXML(codedName) // Atributo de superclase Locatable
+   }
+   
+   static constraints = {
+      codedItems(nullable: true, maxSize:4096) // Al validar items falla por null
+   }
    
    static mapping = {
-      items column: "folder_items"
+      //items column: "folder_items"
    }
    
    /*

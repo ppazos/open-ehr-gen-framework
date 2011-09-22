@@ -17,8 +17,4 @@ class Item extends Locatable{ // Abstracta
 
     static constraints = {
     }
-    
-    
-    
-
 }
