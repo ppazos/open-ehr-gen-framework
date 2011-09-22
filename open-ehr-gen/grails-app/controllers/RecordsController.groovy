@@ -1,16 +1,16 @@
 import hce.core.common.change_control.Version
 import hce.core.composition.* // Composition y EventContext
-import hce.core.data_types.quantity.date_time.*
+import data_types.quantity.date_time.*
 import converters.DateConverter
 import demographic.role.Role
-import hce.core.data_types.encapsulated.DvMultimedia
+import data_types.encapsulated.DvMultimedia
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import cda.*
 import util.*
 
 import hce.core.common.directory.Folder
-import hce.core.support.identification.ObjectID
-import hce.core.support.identification.ObjectRef
+import support.identification.ObjectID
+import support.identification.ObjectRef
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -151,13 +151,14 @@ class RecordsController {
          
        // TODO: filtrar registros por paciente, si hay un paciente en session.traumaContext.patientId
        
-       // deselecciona el episodio que este seleccionado
+       // deselecciona el episodio y el paciente que este seleccionado
        session.traumaContext.episodioId = null
-         
-         
+       //session.traumaContext.patient = null // FIXME: todavia no lo puedo hacer porque no puedo poner domain objects en session
+       
+       
        // Antes se devolvian todas las compositions, ahora se filtra por dominio.
        return [compositions: compos,
-               userId: session.traumaContext.userId,
+               //userId: session.traumaContext.userId, // no se usa
                domain: domain ]
     }
     
@@ -181,7 +182,7 @@ class RecordsController {
             // - guardar todo
             
             // FIXME: si hay un paciente seleccionado no deberia venir en params,
-            //        deberia estar en HCESession.
+            //        deberia estar en EHRSession.
             if (params.root && params.extension) // si viene el id del paciente
             {
                 println "Se crea un episodio para el paciente seleccionado"
@@ -249,7 +250,7 @@ class RecordsController {
     def show = {
        
        // TODO: poner en sesion el episodio que se esta viendo
-       println "Show: " + params
+       //println "Show: " + params
        
        
        // Si expira la sesion tengo que volver al listado para crearla de nuevo
@@ -278,60 +279,35 @@ class RecordsController {
        def sections = this.getSections()
        //def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
        
+       def completeSections = [:] // secciones con sus templates
+       def domainTemplates = this.getDomainTemplates()
+       domainTemplates.keySet().each { sectionPrefix ->
+           domainTemplates."$sectionPrefix".each { section ->
+            
+               if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
+             
+               // Tiro la lista de esto para cada "section prefix" que son los templates
+               // de las subsecciones de la seccion principal.
+               //println sectionPrefix + "-" + section
+               completeSections[sectionPrefix] << sectionPrefix + "-" + section
+           }
+       }
 
        // patient puede ser null si todavia no se selecciono un paciente para el episodio,
        // p.e. si la atencion es de urgencia, se atiente primero y luego se identifica al paciente.
        return [composition: composition,
                patient: patient,
                episodeId: session.traumaContext?.episodioId,
-               userId: session.traumaContext.userId,
+               //userId: session.traumaContext.userId, // no se usa
                sections: sections, // necesario para el menu
-               allSubsections: this.getDomainTemplates() 
+               allSubsections: this.getDomainTemplates(),
+               completeSections: completeSections
               ]
     }
     
     
     // TODO: vista listando links a templates segun config.
     // Pantalla 5.1- Registro Clinico
-    def registroClinico = {
-        
-       // FIXME: desde que esta el filter del login esto no es necesario.
-       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
-       if (!session.traumaContext?.episodioId)
-       {
-           flash.message = 'trauma.list.error.noEpisodeSelected'
-           redirect(action:'list')
-           return
-       }
-       
-       def domainTemplates = this.getDomainTemplates()
-       
-       def sections = [:]
-       domainTemplates.keySet().each { sectionPrefix ->
-           domainTemplates."$sectionPrefix".each { section ->
-            
-               if (!sections[sectionPrefix]) sections[sectionPrefix] = []
-             
-               // Tiro la lista de esto para cada "section prefix" que son los templates
-               // de las subsecciones de la seccion principal.
-               //println sectionPrefix + "-" + section
-               sections[sectionPrefix] << sectionPrefix + "-" + section
-           }
-       }
-       
-       def composition = Composition.get( session.traumaContext?.episodioId )
-       
-       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
-       def patient = hceService.getPatientFromComposition( composition )
-         
-       return [sections: sections,
-               composition: composition,
-               episodeId: session.traumaContext?.episodioId,
-               patient: patient,
-               userId: session.traumaContext.userId]
-    }
-    
-    
     def registroClinico2 = {
     
        if (!session.traumaContext?.episodioId)
@@ -449,7 +425,7 @@ class RecordsController {
         
         // Para retornarle a la vista
         def model = [episodeId: session.traumaContext?.episodioId,
-                     userId: session.traumaContext.userId,
+                     //userId: session.traumaContext.userId, // no se usa
                      composition: composition,
                      patient: patient,
                      sections: sections,
@@ -577,7 +553,7 @@ class RecordsController {
                     // TODO: i18n
                     flash.error = "Firma erronea, verifique sus datos"
                     return [episodeId: session.traumaContext?.episodioId,
-                            userId: session.traumaContext.userId,
+                            //userId: session.traumaContext.userId, // no se usa
                             composition: composition,
                             patient: patient,
                             sections: sections,
@@ -599,7 +575,7 @@ class RecordsController {
                 {
                     flash.error = "Firma erronea, la persona firmante no es medico"
                     return [episodeId: session.traumaContext?.episodioId,
-                            userId: session.traumaContext.userId,
+                            //userId: session.traumaContext.userId, // no se usa
                             composition: composition,
                             patient: patient,
                             sections: sections,
@@ -617,7 +593,7 @@ class RecordsController {
                     // TODO: i18n
                     flash.error = "Ocurrio un error al intentar firmar el registro clinico, intente de nuevo"
                     return [episodeId: session.traumaContext?.episodioId,
-                            userId: session.traumaContext.userId,
+                            //userId: session.traumaContext.userId, // no se usa
                             composition: composition,
                             patient: patient,
                             sections: sections,
@@ -706,19 +682,19 @@ class RecordsController {
                 }
                 
                 return [episodeId: session.traumaContext?.episodioId,
-                        userId: session.traumaContext.userId,
+                        //userId: session.traumaContext.userId, // no se usa
                         composition: composition,
                         patient: patient,
                         sections: sections,
                         subsections: subsections,
                         allSubsections: this.getDomainTemplates()
-                        ]
+                       ]
             }
 
             return [composition: composition,
                     patient: patient,
                     episodeId: session.traumaContext?.episodioId,
-                    userId: session.traumaContext.userId,
+                    //userId: session.traumaContext.userId, // no se usa
                     sections: sections, // necesario para el menu
                     subsections: subsections, // necesario para el menu
                     allSubsections: this.getDomainTemplates()
