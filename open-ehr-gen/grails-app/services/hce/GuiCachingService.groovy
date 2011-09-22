@@ -10,10 +10,11 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder;
  */
 class GuiCachingService {
 
-   def groovyPagesTemplateEngine;
-   def grailsTemplateEngineService;
-   //def ctx = ApplicationHolder.getApplication().getMainContext();
+   //def groovyPagesTemplateEngine
+   def grailsTemplateEngineService
+   //def ctx = ApplicationHolder.getApplication().getMainContext()
    
+   /*
    // view is a path relative to the grails-app/views/ directory
    String view2String(view, model)
    {
@@ -22,55 +23,55 @@ class GuiCachingService {
       
       //def path = ApplicationHolder.getApplication().getParentContext().getServletContext().getRealPath(".");
       //println "path $path"
-      /*
-      if (!tmpl)
-      {
-         println "A"
-         tmpl = groovyPagesTemplateEngine.createTemplate('.\\guiGen\\_generarCreate.gsp');
-      }
-      if (!tmpl)
-      {
-         println "B"
-         tmpl = groovyPagesTemplateEngine.createTemplate('.\\views\\guiGen\\_generarCreate.gsp');
-      }
-      if (!tmpl)
-      {
-         println "C"
-         tmpl = groovyPagesTemplateEngine.createTemplate('.\\grails-app\\views\\guiGen\\_generarCreate.gsp');
-      }
       
-      if (!tmpl)
-      {
-         println "D"
-         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/guiGen/_generarCreate');
-      }
-      if (!tmpl)
-      {
-         println "E"
-         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/views/guiGen/_generarCreate');
-      }
-      if (!tmpl)
-      {
-         println "F"
-         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/grails-app/views/guiGen/_generarCreate');
-      }
-      
-      if (!tmpl)
-      {
-         println "G"
-         tmpl = groovyPagesTemplateEngine.createTemplate(path+'guiGen/_generarCreate.gsp');
-      }
-      if (!tmpl)
-      {
-         println "H"
-         tmpl = groovyPagesTemplateEngine.createTemplate(path+'views/guiGen/_generarCreate.gsp');
-      }
-      if (!tmpl)
-      {
-         println "I"
-         tmpl = groovyPagesTemplateEngine.createTemplate(path+'grails-app/views/guiGen/_generarCreate.gsp');
-      }
-   */
+//      if (!tmpl)
+//      {
+//         println "A"
+//         tmpl = groovyPagesTemplateEngine.createTemplate('.\\guiGen\\_generarCreate.gsp');
+//      }
+//      if (!tmpl)
+//      {
+//         println "B"
+//         tmpl = groovyPagesTemplateEngine.createTemplate('.\\views\\guiGen\\_generarCreate.gsp');
+//      }
+//      if (!tmpl)
+//      {
+//         println "C"
+//         tmpl = groovyPagesTemplateEngine.createTemplate('.\\grails-app\\views\\guiGen\\_generarCreate.gsp');
+//      }
+//      
+//      if (!tmpl)
+//      {
+//         println "D"
+//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/guiGen/_generarCreate');
+//      }
+//      if (!tmpl)
+//      {
+//         println "E"
+//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/views/guiGen/_generarCreate');
+//      }
+//      if (!tmpl)
+//      {
+//         println "F"
+//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/grails-app/views/guiGen/_generarCreate');
+//      }
+//      
+//      if (!tmpl)
+//      {
+//         println "G"
+//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'guiGen/_generarCreate.gsp');
+//      }
+//      if (!tmpl)
+//      {
+//         println "H"
+//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'views/guiGen/_generarCreate.gsp');
+//      }
+//      if (!tmpl)
+//      {
+//         println "I"
+//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'grails-app/views/guiGen/_generarCreate.gsp');
+//      }
+   
       // Provide a place to store the processed gsp
       def out = new StringWriter();
         
@@ -79,6 +80,7 @@ class GuiCachingService {
         
       return out.toString();
    }
+   */
    
    String template2String(template, model)
    {
