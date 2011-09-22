@@ -4,9 +4,8 @@
  */
 
 import demographic.party.*
-import demographic.identity.PersonName
 import demographic.role.*
-import hce.core.support.identification.UIDBasedID
+import support.identification.UIDBasedID
 
 import hce.HceService
 
@@ -82,6 +81,9 @@ class DemographicController{
         // En la config dice que IMP se usa.
     
         
+        // FIXME: al metodo en lugar de pasarle cada parametro, le deberia pasar una persona con todos los datos.
+        
+        
         def id = null
         if (params.identificador)
             id = new UIDBasedID(value:params.root+'::'+params.identificador)
@@ -104,36 +106,25 @@ class DemographicController{
         */
 
         // TODO: si no hay datos para los nombres, no crear pn.
-        def pn = null
-        if (params.'personName.primerNombre'  || params.'personName.segundoNombre'||
-            params.'personName.primerApellido' || params.'personName.segundoApellido')
-        {
-            pn = new PersonName()
-            bindData(pn, params, 'personName')
-            //println "Person Name: " + pn
-        }
+        String pn = params.'personName.primerNombre'
+        String sn = params.'personName.segundoNombre'
+        String pa = params.'personName.primerApellido'
+        String sa = params.'personName.segundoApellido'
         
-        /*
-        // TODO: todavia no uso el sexo
-        def candidatos2 = demographicService.findByPersonData(pn, bd, null)
-        println "CANDIDATOS2 : " + candidatos2
-        */
         
-        println "======================================="
-        println "busca por: "
-        println "   PN: "+ pn
-        println "   BD: "+ bd
-        println "======================================="
-        
-        //findByPersonDataAndIdAndRole( PersonName n, Date bithdate, String sex, UIDBasedID id, String roleType )
-        //def candidatos = demographicService.findByPersonDataAndId(pn, bd, null, id)
+//        println "======================================="
+//        println "busca por: "
+//        println "   PN: "+ pn
+//        println "   BD: "+ bd
+//        println "======================================="
+
         
         def candidatos = []
         try // La comunicacion puede tirar timeout
         {
             // busco en la base local
             candidatos = demographicService.findByPersonDataAndIdAndRole(
-                    pn,
+                    pn, sn, pa, sa,
                     bd,
                     null,
                     id,
@@ -176,6 +167,7 @@ class DemographicController{
                             println "Error al salvar persona en cache: " + per.errors
                         }
                         
+                        // FIXME: se hace con roleValidity
                         def role = new Role(timeValidityFrom:new Date(), type:Role.PACIENTE, performer:per)
                         if (!role.save())
                         {
@@ -297,6 +289,12 @@ class DemographicController{
             }
             
             
+            // Pongo en sesion los datos del paciente seleccionado
+            // La idea es que la sesion sirva de cache para no tener que hacer la consulta cada vez
+            // FIXME: todavia no puedo poner domain objects en session...
+            //session.traumaContext.patient = persona
+            
+            
             // Ejecuta eventos cuando el paciente seleccionado con exito.
             EventManager.getInstance().handle("post_seleccionar_paciente_ok", [composition:composition, persona:persona])
             
@@ -363,11 +361,26 @@ class DemographicController{
                 def extension = RandomGenerator.generateDigitString(8)
                 id = UIDBasedID.create(params.root, extension)
                 
+                // FIXME: ahora UIDBasedID no es domain object asi que no puedo hacer findByValue...
+                
                 // Se deberia hacer con doWhile para no repetir el codigo pero groovy no tiene doWhile
-                while ( UIDBasedID.findByValue(id.value) )
+                //while ( UIDBasedID.findByValue(id.value) )
+                def personsWithId = Person.withCriteria {
+                   like ('codedIds', '%>'+ id.value +'<%')
+                }
+                
+                boolean existId = (personsWithId.size() > 0)
+                
+                while ( existId )
                 {
                     extension = RandomGenerator.generateDigitString(8)
                     id = UIDBasedID.create(params.root, extension)
+                    
+                    personsWithId = Person.withCriteria {
+                       like ('codedIds', '%>'+ id.value +'<%')
+                    }
+                    
+                    existId = (personsWithId.size() > 0)
                 }
             }
             else
@@ -379,13 +392,19 @@ class DemographicController{
                     // FIXME: verificar que no hay otro paciente con el mismo id
                     println "===================================================="
                     println "Busco por id para ver si existe: " + id.value
-                    def existId = UIDBasedID.findByValue(id.value)
+                    
+                    //def existId = UIDBasedID.findByValue(id.value)
+                    def personsWithId = Person.withCriteria {
+                       like ('codedIds', '%>'+ id.value +'<%')
+                    }
+                    
+                    boolean existId = (personsWithId.size() > 0)
+                    
                     if (existId)
                     {
                         println "Ya existe!"
                         flash.message = "Ya existe la persona con id: " + id.value + ", verifique el id ingresado o vuelva a buscar la persona"
-                        def tiposIds = TipoIdentificador.list()
-                        return [tiposIds: tiposIds]
+                        return [tiposIds: TipoIdentificador.list()]
                     }
                     else
                        println "No existe!"
@@ -394,34 +413,36 @@ class DemographicController{
                 {
                     // Vuelve a la pagina
                     flash.message = "identificador obligatorio, si no lo tiene seleccione 'Autogenerado' en el tipo de identificador"
-                    def tiposIds = TipoIdentificador.list()
-                    return [tiposIds: tiposIds]
+                    return [tiposIds: TipoIdentificador.list()]
                 }
             }
             
-            def person = new Person( params ) // sexo, fechaNac (no mas)
             
-            def bd = DateConverter.dateFromParams( params, 'fechaNacimiento_' )
-            person.setFechaNacimiento( bd )
-
+            def person = new Person( params )
+            
+            // A este punto deberia llegar con id != null
             person.addToIds( id )
+            person.setFechaNacimiento( DateConverter.dateFromParams( params, 'fechaNacimiento_' ) )
+
+
+            // validity se guarda en cascada al guardar la persona
+            def validity = new RoleValidity(timeValidityFrom: new Date(), role: Role.findByType(Role.PACIENTE), performer: person)
             
-            def name = new PersonName(params)
-            person.addToIdentities( name )
+            person.addToRoles(validity)
             
-            if (!person.save()) println person.errors
+            if (!person.save())
+            {
+               // FIXME: deberia volver y mostrar errores!!! p.e. fecha de nacimiento en el futuro..
+               println person.errors
+            }
             
-            
-            def role = new Role(timeValidityFrom: new Date(), type: "paciente", performer: person)
-            if (!role.save()) println role.errors
             
             redirect(action:'seleccionarPaciente', id:person.id)
             return
         }
         
         // creacion de un nuevo paciente
-        def tiposIds = TipoIdentificador.list()
-        return [tiposIds: tiposIds]
+        return [tiposIds: TipoIdentificador.list()]
     }
     
     /**
@@ -443,33 +464,11 @@ class DemographicController{
         }
         
         def patient = Person.get( params.id )
-        def pn = patient.identities.find{ it.purpose == 'PersonName' }
         def tiposIds = TipoIdentificador.list()
 
         if (params.doit)
         {
             patient.setProperties( params )
-            //pn.setProperties( params )
-            
-            println "PN:: " + pn
-            
-            // borra el viejo
-            patient.removeFromIdentities(pn)
-            pn.delete()
-
-            // crea el nuevo
-            pn = new PersonName(params)
-            patient.addToIdentities( pn )
-
-
-            /*
-            def person = new Person( params ) // sexo, fechaNac (no mas)
-            
-            def bd = DateConverter.dateFromParams( params, 'fechaNacimiento_' )
-            person.setFechaNacimiento( bd )
-            
-            person.addToIds( id )
-            */
             
             if (!patient.save(flush:true))
             {
@@ -485,6 +484,6 @@ class DemographicController{
         }
         
         // muestra pagina de edit
-        return [patient:patient, pn:pn, tiposIds:tiposIds]
+        return [patient:patient, tiposIds:tiposIds]
     }
 }
