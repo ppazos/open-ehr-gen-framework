@@ -1,6 +1,4 @@
-<%@ page import="com.thoughtworks.xstream.XStream" %>
-<%@ page import="hce.core.data_types.text.DvCodedText" %>
-<%@ page import="tablasMaestras.Cie10Trauma" %>
+<%@ page import="com.thoughtworks.xstream.XStream" %><%@ page import="tablasMaestras.Cie10Trauma" %>
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <html>
   <head>
