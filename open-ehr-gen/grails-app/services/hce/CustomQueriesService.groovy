@@ -4,8 +4,8 @@ import hce.core.composition.Composition
 import hce.HceService
 import hce.core.datastructure.itemstructure.ItemTree
 import hce.core.datastructure.itemstructure.representation.*
-import hce.core.data_types.text.*
-import hce.core.data_types.basic.*
+import data_types.text.*
+import data_types.basic.*
 import util.*
 import com.thoughtworks.xstream.XStream
 
@@ -69,7 +69,8 @@ class CustomQueriesService {
      * Retorna la lista de todos los codeString correspondientes a los movimientos de un episodio
      * @autor Leandro Carrasco
      **/
-    List<String> getMovimientosEpisodio(Composition comp){
+    List<String> getMovimientosEpisodio(Composition comp)
+    {
 
         List<String> listaMovimientos = new LinkedList<String>()
         def movimientoPaciente = hceService.getCompositionContentItemForTemplate( comp, "COMUNES-movimiento_paciente" )
@@ -80,14 +81,16 @@ class CustomQueriesService {
         //(Composition).[(ContentItem)content](Instruction).[(Activity)activities].(ItemTree)description.[(Item)items](Element).(DvCodedText)value.(CodePhrase)definingCode.(String)codeString == at0008
 
         // movimientoPaciente es una Instruction
-        movimientoPaciente.activities.each{act ->
+        movimientoPaciente.activities.each { act ->
+           
             getMovimientosEpisodioItemTree(act.description, listaMovimientos)
         }
         return listaMovimientos
     }
     
     // FIXME: it es una palabra clave y le falta el tipo.
-    def getMovimientosEpisodioItemTree(it, List<String> listaMovimientos){
+    def getMovimientosEpisodioItemTree(it, List<String> listaMovimientos)
+    {
         it.items.each{i ->
             String metodoGetMovimientosEpisodio = "getMovimientosEpisodio" + i.getClassName()
             this."$metodoGetMovimientosEpisodio"(i, listaMovimientos)
@@ -95,7 +98,8 @@ class CustomQueriesService {
     }
     
     // FIXME: a c le falta el tipo.
-    def getMovimientosEpisodioCluster(c, List<String> listaMovimientos){
+    def getMovimientosEpisodioCluster(c, List<String> listaMovimientos)
+    {
         c.items.each{i ->
             String metodoGetMovimientosEpisodio = "getMovimientosEpisodio" + i.getClassName()
             this."$metodoGetMovimientosEpisodio"(i, listaMovimientos)
@@ -111,19 +115,23 @@ class CustomQueriesService {
     //}
 
     //------------
-    def getMovimientosEpisodioElement(e, List<String> listaMovimientos){
+    def getMovimientosEpisodioElement(e, List<String> listaMovimientos)
+    {
         String metodoGetMovimientosEpisodio = "getMovimientosEpisodio" + e.value.getClass().getSimpleName()
         this."$metodoGetMovimientosEpisodio"(e.value, listaMovimientos)
     }
 
-    def getMovimientosEpisodioDvCodedText(dvct, List<String> listaMovimientos){
+    def getMovimientosEpisodioDvCodedText(dvct, List<String> listaMovimientos)
+    {
         // Obtengo path y codeString del examen imagenológico
-        if ((dvct != null) && (dvct.definingCode != null) && (dvct.definingCode.codeString != null)){
+        if ((dvct != null) && (dvct.definingCode != null) && (dvct.definingCode.codeString != null))
+        {
             listaMovimientos.add(dvct.definingCode.codeString)
         }
     }
 
-    def getMovimientosEpisodioDvDateTime(dvb, List<String> listaMovimientos){
+    def getMovimientosEpisodioDvDateTime(dvb, List<String> listaMovimientos)
+    {
         println "ENTRO getMovimientosEpisodioDvDateTime: " + dvb // FIXME no deberia llegar aqui, pero llega
     }
     //------------
@@ -134,13 +142,14 @@ class CustomQueriesService {
      * Retorna la lista de todos los codeString correspondientes a los codigos CIE-10 de diagnosticos de un episodio
      * @autor Leandro Carrasco
      **/
-    List<String> getDiagnosticosEpisodio(Composition comp){
+    List<String> getDiagnosticosEpisodio(Composition comp)
+    {
 
         def diagnostico = hceService.getCompositionContentItemForTemplate( comp, "DIAGNOSTICO-diagnosticos" )
          
         List<String> listaCIE10 = new LinkedList<String>()
-        if (diagnostico != null){
-
+        if (diagnostico != null)
+        {
             diagnostico.data.events.each{event ->
                 getDiagnosticosEpisodioItemList(event.data, listaCIE10)
             }
@@ -149,23 +158,27 @@ class CustomQueriesService {
         return listaCIE10
     }
 
-    def getDiagnosticosEpisodioItemList(il, List<String> listaCIE10){
-        il.items.each{i ->
+    def getDiagnosticosEpisodioItemList(il, List<String> listaCIE10)
+    {
+        il.items.each { i ->
             String metodoGetDiagnosticosEpisodio = "getDiagnosticosEpisodio" + i.getClassName()
             this."$metodoGetDiagnosticosEpisodio"(i, listaCIE10)
         }
     }
 
-    def getDiagnosticosEpisodioCluster(c, List<String> listaCIE10){
+    def getDiagnosticosEpisodioCluster(c, List<String> listaCIE10)
+    {
         c.items.each{i ->
             String metodoGetMovimientosEpisodio = "getMovimientosEpisodio" + i.getClassName()
             this."$metodoGetMovimientosEpisodio"(i, listaCIE10)
         }
     }
 
-    def getDiagnosticosEpisodioElement(e, List<String> listaCIE10){
+    def getDiagnosticosEpisodioElement(e, List<String> listaCIE10)
+    {
         // at0004 es el archetypeNodeId de diagnostico
-        if ((e.archetypeNodeId == "at0004") && (e.value != null) && (e.value.definingCode != null) && (e.value.definingCode.codeString != null)){
+        if ((e.archetypeNodeId == "at0004") && (e.value != null) && (e.value.definingCode != null) && (e.value.definingCode.codeString != null))
+        {
             listaCIE10.add(e.value.definingCode.codeString)
         }
     }
@@ -178,17 +191,21 @@ class CustomQueriesService {
      * @autor Leandro Carrasco 
      **/
     // FIXME: falta el tipo a listaComp.
-    List<StringEntero> getDiagnosticosMasFrecuetes(listaComp, int cantDiagnosticos){
-
+    List<StringEntero> getDiagnosticosMasFrecuetes(listaComp, int cantDiagnosticos)
+    {
         // Cuento la cantidad de veces que aparece cada diagnostico (utilizo un HashMap para mantener los valores)
         HashMap<String, Integer> mapDiagCant = new HashMap<String, Integer>()
-        listaComp.each{comp ->
+        listaComp.each { comp ->
+           
             List<String> listaDiagsEpisodio = getDiagnosticosEpisodio(comp)
-            listaDiagsEpisodio.each{codeStringDiag ->
-                if (mapDiagCant.containsKey(codeStringDiag)){
+            listaDiagsEpisodio.each { codeStringDiag ->
+               
+                if (mapDiagCant.containsKey(codeStringDiag))
+                {
                     mapDiagCant.put(codeStringDiag,mapDiagCant.get(codeStringDiag)+1)
                 }
-                else{
+                else
+                {
                     mapDiagCant.put(codeStringDiag,1)
                 }
             }
@@ -198,7 +215,8 @@ class CustomQueriesService {
         // listDiagnosticos.entrySet() retorna un Set de Map.Entry<K,V>
         // StringEntero implementa la interfaz Comparable, y toma en cuanta el entero (cantidad) para ordenar
         List<StringEntero> listDiagCant = new LinkedList<StringEntero>()
-        mapDiagCant.entrySet().each{mapEntry ->
+        mapDiagCant.entrySet().each { mapEntry ->
+           
             // FIXME: para que inventar un nuevo tipo de dato si se puede hacer con un Map<String, Integer>,
             //        donde la clave es mapEntry.getKey() y el valor mapEntry.getValue(), igual que en mapDiagCant.
             StringEntero se = new StringEntero(str: mapEntry.getKey(), entero: mapEntry.getValue())
@@ -211,14 +229,18 @@ class CustomQueriesService {
         Collections.sort(listDiagCant);
         Collections.reverse(listDiagCant); // Hago el reverse porque el sort ordena de menor a mayor (y queremos al revez)
 
-        if (listDiagCant.size() < cantDiagnosticos){
+        if (listDiagCant.size() < cantDiagnosticos)
+        {
             return listDiagCant
         }
-        else{
+        else
+        {
             // FIXME: sublist es tambien una lista (interfaz List), si no usar getAt() descrito aca> http://groovy.codehaus.org/groovy-jdk/java/util/List.html 
             int cantItems = listDiagCant.size()
             List<StringEntero> listReturn = new LinkedList<StringEntero>() // Hago una copia limpia de los elementos porque sino retorna un objeto de la clase SubList (y no me gusto)
-            listDiagCant.subList(0, cantDiagnosticos).each{se ->
+            
+            listDiagCant.subList(0, cantDiagnosticos).each { se ->
+               
                 listReturn.add(se)
             }
             return listReturn
@@ -226,25 +248,29 @@ class CustomQueriesService {
 
     }
 
-    //--------------------------------------------------------------------------
 
     /**
     * Retorna el valor de la Frecuencia Respiratoria para un Episodio.
     * Retorna null si no fue registrada.
     * @autor Leandro Carrasco
     **/
-    Double getFrecuenciaRespiratoriaEpisodio(Composition comp){
- 
+    Double getFrecuenciaRespiratoriaEpisodio(Composition comp)
+    {
         // El dato a encontrar esta en sectionVentilacion.items[i].data.events[j].data.item.value.magnitude
         def sectionVentilacion = hceService.getCompositionContentItemForTemplate( comp, "EVALUACION_PRIMARIA-ventilacion" )
         def result = null
-        if ((sectionVentilacion != null) && (sectionVentilacion.items != null)){
+        if ((sectionVentilacion != null) && (sectionVentilacion.items != null))
+        {
             sectionVentilacion.items.each{item ->
-                if ((item.archetypeNodeId != null) && (item.archetypeNodeId == "openEHR-EHR-OBSERVATION.frecuencia_respiratoria.v1")){
-                    if ((item.data != null) && (item.data.events != null)){
+                if ((item.archetypeNodeId != null) && (item.archetypeNodeId == "openEHR-EHR-OBSERVATION.frecuencia_respiratoria.v1"))
+                {
+                    if ((item.data != null) && (item.data.events != null))
+                    {
                         item.data.events.each{event ->
-                            if (event.archetypeNodeId == "at0002"){
-                                if ((event.data != null) && (event.data.item != null) && (event.data.item.value != null) && (event.data.item.value.magnitude != null)){
+                            if (event.archetypeNodeId == "at0002")
+                            {
+                                if ((event.data != null) && (event.data.item != null) && (event.data.item.value != null) && (event.data.item.value.magnitude != null))
+                                {
                                     result = event.data.item.value.magnitude
                                 }
                             }
