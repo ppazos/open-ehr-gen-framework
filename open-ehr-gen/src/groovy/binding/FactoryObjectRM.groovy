@@ -1365,8 +1365,6 @@ class FactoryObjectRM {
     // 's' es el codeString que se selecciona en la web como valor.
     def createDvOrdinal(CDvOrdinal cdvo, String s, Archetype arquetipo, String archNodeId, String tempId, CObject co)
     {
-        String[] parts = s.split(/\|\|/) // code||value
-       
         //println "createDvordinal: s="+ s
         //println "parts="+ parts[0] + ", " + parts[1]
         
@@ -1378,6 +1376,8 @@ class FactoryObjectRM {
         }
         else
         {
+           String[] parts = s.split(/\|\|/) // code||value
+           
            /*
             Set<Ordinal> setOrdinal = cdvo.getList()
             //Ordinal ordin = setOrdinal.find{it.getSymbol().codeString.endsWith(s)}
@@ -1385,12 +1385,10 @@ class FactoryObjectRM {
             */
            
             Ordinal ordin = cdvo.getList().find{it.getSymbol().codeString == parts[0]} // la condicion es que sea el mismo codigo.
-    
             TerminologyID ti = TerminologyID.create(ordin.getSymbol().terminologyId.name, null)
             CodePhrase cp = new CodePhrase(codeString: parts[0], terminologyId: ti)
             
-            Locale locale = this.session.locale
-            String value = CtrlTerminologia.getInstance().getTermino(cp.terminologyId, cp.codeString, arquetipo, locale)
+            String value = CtrlTerminologia.getInstance().getTermino(cp.terminologyId, cp.codeString, arquetipo, this.session.locale)
           
             ord = new DvOrdinal(
                symbol:  new DvCodedText(value: value, definingCode: cp),
