@@ -843,11 +843,11 @@ class FactoryObjectRM {
               def interval = cattr.children[0].item.interval
               if ( interval )
               {
-                 if (interval.lower != null && rmObj.magnitude < interval.lower)
+                 if (interval.lower != null && dvcount.magnitude < interval.lower)
                  {
                     dvcount.errors.rejectValue('magnitude', 'error.range.min')
                  }
-                 if (interval.upper != null && rmObj.magnitude > interval.upper)
+                 if (interval.upper != null && dvcount.magnitude > interval.upper)
                  {
                     dvcount.errors.rejectValue('magnitude', 'error.range.max')
                  }
@@ -919,7 +919,9 @@ class FactoryObjectRM {
         
         // FIXME: no valida los que son null, pero si el element que lo contiene no es obligatorio, no deberia tirar error
         // Tiene que hacerse haya o no value
-        if (!ret.validate()) println "No valida DvBoolean value:" + value
+        //if (!ret.validate()) println "No valida DvBoolean value:" + value
+        
+        ret.validate()
         
         return ret
     }
