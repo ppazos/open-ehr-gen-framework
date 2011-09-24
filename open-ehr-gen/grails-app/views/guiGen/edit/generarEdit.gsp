@@ -226,7 +226,33 @@
             console.log('show piped coded text');
             var partes = value.split("||");
             field.addClass(templateId+"_"+partes[0]); // para customizar el estilo, por ejemplo se usa en el triage.
-	        field.val(value);
+           
+            if (field.attr('type') == 'checkbox')
+            {
+               // FIXME: este creo que seria analogo al caso del radio
+               field.attr('checked', 'true');
+            }
+            else if (field.attr('type') == 'radio')
+            {
+               // Si el field es radio, vienen todos los fields que se llaman iguales,
+               // tengo que distinguir por el valor, cual seleccionar.
+               //console.log('========================================');
+               //console.log(field); // array
+               
+               $.each( field, function(i, radio) {
+           
+                  //console.log(radio.value);
+                  //console.log(value);
+                  if (radio.value == value)
+                  {
+                     radio.checked = 'true';
+                     return false; // Sale del loop cuando encuentra el valor
+                  }
+               });
+            }
+            else
+	          field.val(value);
+           
 	        return;
 	      }
 
