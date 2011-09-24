@@ -258,9 +258,12 @@
 
           if (value == "label.boolean.true" || value == "label.boolean.false")
           {
-             console.log('show boolean');
+             //console.log('show boolean');
+             //console.log(booleans[value]); // Si/No
+             
              // TODO: cuando se genera la GUI, el GSP deberia poner los booleanos en el locale seleccionado.
-             field.val(booleans[value]);
+             //field.val(booleans[value]);
+             field.val(value); // Se debe usar label.boolean.x, no Si/No
              return;
           }
 	
