@@ -268,6 +268,7 @@ class GuiGenController {
    
    /**
     * Prueba con la vista cacheada.
+    * FIXME: cambiar nombre a create.
     */
    def generarTemplate = {
 
@@ -369,8 +370,10 @@ class GuiGenController {
       // FIXME: if !rmNode (creo que esto seria chequear si existe el registro para el template y la composition, si no es asi, tambien lo deberia verificar)
       // ========================================
       
+      
+      // El templateId se saca del objeto del RM guardado, asi si varia la version del template,
+      // siempre voy a poder mostrar el contenido guardado con versiones anteriores del mismo.
       def templateId = rmNode.archetypeDetails.templateId
-      //def templateId = params.templateId // es el nombre del archivo
 
       // Model: Paciente del episodio seleccionado
       def composition = Composition.get( session.traumaContext.episodioId )
@@ -418,6 +421,7 @@ class GuiGenController {
    
    /**
     * prueba de salvar desde generarTemplate2, usando FieldNames para obtener las paths.
+    * FIXME: deberia estar en recordController.
     */
    def save = {
       
@@ -785,13 +789,15 @@ class GuiGenController {
       //println "Params: " + params.toString() + "\n"
       //println "Path value: " + pathValue + "\n"
       
+      /*
       XStream xstream = new XStream()
       xstream.omitField(Locatable.class, "errors");
       xstream.omitField(data_types.basic.DataValue.class, "errors");
       println "-- rmobj se guardo en RM Bindeado para template.xml"
       File file = new File("RM Bindeado para template.xml")
       file << xstream.toXML(rmobj)
-   
+      */
+      
       if (!rmobj)
       {
          // volver a la pagina y pedirle que ingrese algun dato
@@ -855,10 +861,15 @@ class GuiGenController {
          
          // Transformo las paths de los errores, a nombres de campos (donde se tiene que mostrar el error)
          def errors = [:]
-         for (def entry in bindingAOMRM.errors)
+         for (def entry in bindingAOMRM.errors) // path => lista de errors del gorm
          {
+            // Intento resolver el caso de que tengo 2 errores para 2 nodos uno clonado del otro,
+            // que si uso un map field error, pierdo el error para el segundo nodo.
+            //if (!errors[fields.getField(entry.key)]) errors[fields.getField(entry.key)] = []
+            //errors[fields.getField(entry.key)] << entry.value
+            
             // deberia pedir el field con archetype.archetypeId.value +_refPath+ entry.key
-            errors[fields.getField(entry.key)] = entry.value
+            errors[fields.getField(entry.key)] = entry.value // field => lista de errors
          }
          
          render(view: 'edit/generarEdit',
