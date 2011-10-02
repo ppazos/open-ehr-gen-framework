@@ -64,7 +64,7 @@
     </g:if>
     <%-- Form cacheado --%>
    <g:form url="[controller:'guiGen', action:'save']" class="ehrform" method="post" enctype="multipart/form-data">
-     <input type="hidden" name="templateId" value="${template.id}" />
+     <input type="hidden" name="templateId" value="${params.templateId}" />
      ${form}
      <br/>
      <div class="bottom_actions">
