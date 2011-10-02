@@ -79,9 +79,7 @@
 	        <g:if test="${completeSections[section].size()==1}">
 	          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${completeSections[section][0]}">
 	            <g:if test="${it.hasItem}">
-	              <%-- No deberia ir a edit, deberia ir a show y si quiere en show hace edit.
-	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}" params="[mode:'edit']">
-	              --%>
+	              <%-- No va a edit, debe ir a show y si quiere en show hace edit. --%>
 	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+section}" /></g:link>
 	              (*)
 	            </g:if>
@@ -106,9 +104,7 @@
 	                 <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subSection}">
 	                   <%--${it}--%>
 	                   <g:if test="${it.hasItem}">
-	                     <%-- No deberia ir a edit, deberia ir a show y si quiere en show hace edit.
-	                     <g:link controller="guiGen" action="generarShow" id="${it.itemId}" params="[mode:'edit']">
-	                     --%>
+	                     <%-- Si el regsitro no esta incompleto, no se puede editar --%>
 	                     <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subSection}" /></g:link>
 	                     (*)
 	                   </g:if>
