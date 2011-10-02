@@ -244,8 +244,14 @@ class TemplateManager {
             //def templateFile = new File( "templates/" + ApplicationHolder.application.config.domain +"/"+ templateId +".xml" )
             
             // Nuevo!
-            println "  Carga desde: "+ "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml"
-            def templateFile = new File( "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml" )
+            println "  Intenta cargar archivo: "+ "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml"
+            File templateFile = new File( "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml" )
+            
+            if (!templateFile.exists())
+            {
+               println "  No se encuentra el archivo: " + "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml"
+               return null
+            }
             
             // PARSEAR template
             Template template = parseTemplate( templateFile )
@@ -270,5 +276,4 @@ class TemplateManager {
         
         return this.cache[templateId]
     }
-    
 }
