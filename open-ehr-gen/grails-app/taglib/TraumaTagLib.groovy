@@ -194,7 +194,7 @@ class TraumaTagLib {
     
     /**
      * TagLib condicional, si el component tiene el item para el template, ertorna el body.
-     * in: templateId
+     * in: templateId 'EVALUACION_PRIMARIA-via_aerea.v1' (la verificacion deberia hacerse sin considerar la version, para poder mostrar registros viejos hechos con templates en otras versiones).
      * in: episodeId (composition.id)
      */
     def hasContentItemForTemplate = { attrs, body ->
