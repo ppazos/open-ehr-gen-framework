@@ -97,8 +97,8 @@ class BootStrap {
               //name: new DvText(value: g.message(code: domain)),
               name: new DvText(value: messageSource.getMessage(domain, new Object[2], new Locale('es'))),
               path: domain,
-              archetypeNodeId: "at0001",         // Inventado
-              archetypeDetails: new Archetyped(  // Inventado
+              archetypeNodeId: "at0001",         // FIXME: Inventado
+              archetypeDetails: new Archetyped(  // FIXME: Inventado
                 archetypeId: 'ehr.domain',
                 templateId: 'ehr.domain',
                 rmVersion: '1.0.2' // FIXME: deberia ser variable global de config
@@ -227,11 +227,9 @@ class BootStrap {
         
         
         def paciente = new Person(primerNombre:'Pablo', primerApellido:'Pazos')
-        //paciente.addToIds( new UIDBasedID(root:'2.16.840.1.113883.2.14.2.1', value:'1234567') )
-        //paciente.addToIds( new UIDBasedID(root:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1', value:'6677') )
+        
         paciente.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::1234567') )
         paciente.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::6677') )
-        //paciente.addToIdentities( new PersonName(primerNombre:'Pablo', primerApellido:'Pazos') )
         paciente.fechaNacimiento = new Date(81, 9, 24) // 24/10/1981
         paciente.type = "Persona" // FIXME: el type no se setea solo con el nombre de la clase? (Person)
         paciente.sexo = "M"
@@ -240,11 +238,8 @@ class BootStrap {
         if (!paciente.save()) println paciente.errors
         
         def pac2 = new Person(primerNombre:'Leandro', primerApellido:'Carrasco')
-        //pac2.addToIds( new UIDBasedID(root:'2.16.840.1.113883.2.14.2.4', value:'2345678') )
-        //pac2.addToIds( new UIDBasedID(root:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1', value:'3366') )
         pac2.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.4::2345678') )
         pac2.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::3366') )
-        //pac2.addToIdentities( new PersonName(primerNombre:'Leandro', primerApellido:'Carrasco') )
         pac2.fechaNacimiento = new Date(82, 10, 25)
         pac2.type = "Persona"
         pac2.sexo = "M"
@@ -253,11 +248,8 @@ class BootStrap {
         if (!pac2.save()) println pac2.errors
         
         def persona3 = new Person(primerNombre:'Marta', primerApellido:'Doctora')
-        //pac3.addToIds( new UIDBasedID(root:'2.16.840.1.113883.4.330.858', value:'6667778') )
-        //pac3.addToIds( new UIDBasedID(root:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1', value:'444') )
         persona3.addToIds( new UIDBasedID(value:'2.16.840.1.113883.4.330.858::6667778') )
         //persona3.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::444') ) // este es un id de paciente, si fuera paciente tambien deberia asociarle el rol
-        //persona3.addToIdentities( new PersonName(primerNombre:'Marta', primerApellido:'Doctora') )
         persona3.fechaNacimiento = new Date(83, 11, 26)
         persona3.type = "Persona"
         persona3.sexo = "F"
@@ -268,7 +260,6 @@ class BootStrap {
         def persona4 = new Person(primerNombre:'Pablo', primerApellido:'Cardozo')
         persona4.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::1234888') )
         persona4.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::44556') )
-        //persona4.addToIdentities( new PersonName(primerNombre:'Pablo', primerApellido:'Cardozo') )
         persona4.fechaNacimiento = new Date(85, 9, 24) // 24/10/1981
         persona4.type = "Persona"
         persona4.sexo = "M"
@@ -279,7 +270,6 @@ class BootStrap {
         def persona5 = new Person(primerNombre:'Marcos', primerApellido:'Carisma')
         persona5.addToIds( new UIDBasedID(value:'2.16.840.1.113883.4.330.858::45687543') )
         persona5.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::2233445') )
-        //persona5.addToIdentities( new PersonName(primerNombre:'Marcos', primerApellido:'Carisma') )
         persona5.fechaNacimiento = new Date(80, 11, 26)
         persona5.type = "Persona"
         persona5.sexo = "M"
@@ -290,7 +280,6 @@ class BootStrap {
         // Paciente con estudios imagenologicos en el CCServer local
         def persona6 = new Person(primerNombre:'CT', primerApellido:'Mister')
         persona6.addToIds( new UIDBasedID(value:'2.16.840.1.113883.4.330.666::2178309') ) // id en el CCServer
-        //persona6.addToIdentities( new PersonName(primerNombre:'CT', primerApellido:'Mister') )
         persona6.type = "Persona"
         def validityPac5 = new RoleValidity(performer: persona6, role: rPaciente)
         persona6.addToRoles(validityPac5)
@@ -298,7 +287,6 @@ class BootStrap {
         
         def persona_administrativo = new Person(primerNombre:'Charles', primerApellido:'Administrativo')
         persona_administrativo.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::3334442') )
-        //persona_administrativo.addToIdentities( new PersonName(primerNombre:'Charles', primerApellido:'Administrativo') )
         persona_administrativo.type = "Persona"
         persona_administrativo.sexo = "M"
         def validityPac9 = new RoleValidity(performer: persona_administrativo, role: rAdministrativo)
@@ -307,7 +295,6 @@ class BootStrap {
         
         def persona_enfermera = new Person(primerNombre:'Juana', primerApellido:'Enfermera')
         persona_enfermera.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::9876456') )
-        //persona_enfermera.addToIdentities( new PersonName(primerNombre:'Juana', primerApellido:'Enfermera') )
         persona_enfermera.type = "Persona"
         persona_enfermera.sexo = "F"
         def validityPac7 = new RoleValidity(performer: persona_enfermera, role: rEnfermeria)
@@ -316,7 +303,6 @@ class BootStrap {
         
         def persona_admin = new Person(primerNombre:'The', primerApellido:'Admin')
         persona_admin.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::98607521') )
-        //persona_admin.addToIdentities( new PersonName(primerNombre:'The', primerApellido:'Admin') )
         persona_admin.type = "Persona"
         persona_admin.sexo = "M"
         def validityPac8 = new RoleValidity(performer: persona_admin, role: rAdmin)
@@ -404,14 +390,65 @@ class BootStrap {
               String form
               entry.value.each { subsection -> // via_aerea
                  
-                 templateId = entry.key + "-" + subsection // EVALUACION_PRIMARIA-via_aerea
+                 templateId = entry.key + "-" + subsection // 'EVALUACION_PRIMARIA-via_aerea.v1'
+                 
+                 println "templateId: " + templateId
+                 //println "split . " + templateId.split('\\.')
                  
                  // Si existe la vista estatica, no genero el html
                  if (!new File('.\\grails-app\\views\\hce\\'+templateId+'.gsp').exists())
                  {
+                    
+                    // FIXME: deberia generar para todas las versiones del template,
+                    //        o sea: EVALUACION_PRIMARIA-via_aerea.vX, para toda X.
+                    // Para ver todas las versiones del template, tengo que ir a buscar al disco.
+   
+                    // Para todas las versiones del template
+                    String templatePrefix = templateId.split('\\.')[0] // 'EVALUACION_PRIMARIA-via_aerea', El nombre DEBE tener .vX
+                    
+                    // http://pleac.sourceforge.net/pleac_groovy/directories.html
+                    new File('.\\templates\\hce').eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
+                       
+                       // Template id del versionado.
+                       String templateIdV = f.name - '.xml'
+                       
+                       //if (f.isFile()) println f.canonicalPath
+                       
+                       // FIXME: al template le falta la version en el modelo. Por ahora esta solo en el nombre del archivo.
+                       Template template = TemplateManager.getInstance().getTemplate( templateIdV )
+                      
+                       form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:'es']) // FIXME: hacerlo para todos los locales
+                       form = form.replace('x</textarea>', '</textarea>')
+                       def archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create.htm")
+                       archivo.write(form);
+                       
+                       // No hago cache para ver los tiempos de carga de disco
+                       guiManager.add(templateIdV, "create", form);
+                       
+                       // idem para el show
+                       form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:'es'])
+                       
+                       archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show.htm")
+                       archivo.write(form);
+                       
+                       guiManager.add(templateIdV, "show", form);
+                       
+                       
+                       // idem para edit
+                       form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:'es'])
+                       form = form.replace('x</textarea>', '</textarea>')
+                       archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_edit.htm")
+                       archivo.write(form);
+                       
+                       guiManager.add(templateIdV, "edit", form);
+                    }
+                    
+                    
+                    /* Generacion sin considerar version del template, genera solo para el que esta configurado.
+                     * 
                     Template template = TemplateManager.getInstance().getTemplate( templateId )
                     //form = guiCachingService.template2String('.\\grails-app\\views\\guiGen\\_generarCreate.gsp', [template:template])
-                    form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:'es'])
+                    form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:'es']) // FIXME: hacerlo para todos los locales
                     form = form.replace('x</textarea>', '</textarea>')
                     def archivo = new File(".\\grails-app\\views\\genViews\\" + templateId + "_create.htm")
                     archivo.write(form);
@@ -435,10 +472,11 @@ class BootStrap {
                     archivo.write(form);
                     
                     guiManager.add(templateId, "edit", form);
+                    
+                    */
                  }
               }
            }
-           //println ""
         }
         
         

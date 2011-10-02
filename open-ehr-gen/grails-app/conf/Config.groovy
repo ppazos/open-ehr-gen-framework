@@ -5,9 +5,13 @@
 langs = ['es','en','pt'] // ISO 639-1 Code
 
 // donde se buscan con templates en disco, corresponde al domino de la HCE.
-// TODO: el framework podria soportar multiples dominios ofreciendo una pantalla
-//       con todos los dominios disponibles al usuario (segun su perfil) luedo de
-//       que se loguea.
+// El framework soporta multiples dominios ofreciendo una pantalla
+// con todos los dominios disponibles al usuario (segun su perfil) luedo de
+//  que se loguea.
+
+// TODO: la gestion de dominios se deberia poder hacer desde el area de
+//       configuracion, agregando nuevos dominios, y asociando multiples
+//       templates a cada dominio. ESTO AHORA SE HACE DE FORMA DURA AQUI.
 
 // Nuevo para organizar los registros por domain
 // ver http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=12
@@ -37,37 +41,38 @@ templates2 {
    // cada dominio tiene un registro distinto
    // formado por multiples templates
    '/domain.prehospitalario_same_uy' {
-      PREHOSPITALARIO = ['same_uy', 'same_uy_ubicacion']
+      PREHOSPITALARIO = ['same_uy.v1', 'same_uy_ubicacion.v1']
    }
    '/domain.trauma' {
       // en la composition se listan las sections y subsections, si tiene una sola es que no hay subsecciones.
       // con estos nombres se arman los nombres de los templates a pedir para cada registro.
-      INGRESO = ['triage'] //,'test_body_weight'] //, 'test_a1_a2', 'test_cluster', 'test_dates']
-      ADMISION = ['prehospitalario', 'contexto_del_evento']
-      ANAMNESIS = ['resumen_clinico']
+      INGRESO = ['triage.v1'] //,'test_body_weight'] //, 'test_a1_a2', 'test_cluster', 'test_dates']
+      ADMISION = ['prehospitalario.v1', 'contexto_del_evento.v1']
+      ANAMNESIS = ['resumen_clinico.v1']
       EVALUACION_PRIMARIA = [
-                             'via_aerea',
-                             'columna_vertebral',
-                             'ventilacion',
-                             'estado_circulatorio',
-                             'disfuncion_neurologica'
+                             'via_aerea.v1',
+                             'columna_vertebral.v1',
+                             'ventilacion.v1',
+                             'estado_circulatorio.v1',
+                             'disfuncion_neurologica.v1'
                             ]
-      PARACLINICA = ['pedido_imagenes', 'pedido_laboratorio']
-      EVALUACION_SECUNDARIA = ['exposicion_corporal_total']
-      DIAGNOSTICO = ['diagnosticos']
+      PARACLINICA = ['pedido_imagenes.v1', 'pedido_laboratorio.v1']
+      EVALUACION_SECUNDARIA = ['exposicion_corporal_total.v1']
+      DIAGNOSTICO = ['diagnosticos.v1']
       // decisiones terapeuticas evolutivas, ISS
-      COMUNES = ['movimiento_paciente']
+      COMUNES = ['movimiento_paciente.v1']
    }
    '/domain.emergencia' {
-      ACCIONES = ['adm_sust']
-      DIAGNOSTICO = ['diagnosticos']
+      ACCIONES = ['adm_sust.v1']
+      DIAGNOSTICO = ['diagnosticos.v1']
    }
    '/domain.tests' {
       TEST = [
-              'cluster_obligatorio',
-              'cluster_obligatorio_multiple',
-              'cluster_obligatorio_multiple_struct',
-              'cluster_oblig_multiple_element_oblig'
+              //'cluster_obligatorio.v1',
+              'cluster_obligatorio.v2',
+              'cluster_obligatorio_multiple.v1',
+              'cluster_obligatorio_multiple_struct.v1',
+              'cluster_oblig_multiple_element_oblig.v1'
              ]
    }
 }
