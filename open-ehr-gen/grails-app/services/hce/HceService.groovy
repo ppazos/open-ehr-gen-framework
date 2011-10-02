@@ -533,7 +533,7 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
      * por ejemplo cuando hay templates anidados.
      * 
      * @param composition
-     * @param templateId
+     * @param templateId 'EVALUACION_PRIMARIA-via_aerea.v1' la comparacion no deberia considerar la version para poder mostrar registros anteriores hechos con versiones anteriores del mismo template.
      * @return
      */
     def ContentItem getCompositionContentItemForTemplate( Composition composition, String templateId )
@@ -543,7 +543,8 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
         while (iter.hasNext())
         {
             item = iter.next()
-            if (item.archetypeDetails.templateId == templateId)
+            //if (item.archetypeDetails.templateId == templateId)
+            if (item.archetypeDetails.templateId.split('\\.')[0] == templateId.split('\\.')[0]) // le saca el .vX y compara, asi no considera la version
             {
                 return item
             }
