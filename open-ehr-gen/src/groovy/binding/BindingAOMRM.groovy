@@ -81,6 +81,12 @@ class BindingAOMRM {
     // Este mapa de errores por path se necesita para el edit con la generacion actual de gui
     def errors = [:]
     
+    // La idea es: el bind de los nodos multiples setean esto al numero de nodo actual,
+    // y si ocurre un error, este numero se incluye en el error, y sirve para ubicar el
+    // error en el nodo multiple correspondiente, sino, no se sabe donde ubicarlo
+    // (todos los campos de nodos multiples se llaman igual).
+    int currentIndex = 0
+    
     // Si la validacion en el save del GORM no detecta errores, aunque yo haya metido un reject
     // (me pasa en el bool de 'hay alteraciones' en la evaluacion de la via aerea), al terminar
     // como no detecta errores va a show en lugar de a edit. Con esta bandera logro prenderla
@@ -90,6 +96,26 @@ class BindingAOMRM {
     def hasErrors()
     {
         return this.hasErrors   
+    }
+    
+    /**
+     * Sirve para que el binder vaya metiendo errores en errors a medida que los va encontrando
+     * @param path
+     * @param errors http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/validation/Errors.html
+     */
+    private void addErrors( String path, Object errors )
+    {
+       this.hasErrors = true
+       
+       // Una misma path podria tener varios errores,
+       // esto pasa en caso de nodos multiples clonados.
+       if (!this.errors[path]) this.errors[path] = [:] // index -> errors
+       
+       // Agrega los errors (tipo de errores del GORM)
+       this.errors[path][currentIndex] = errors
+       
+       // Intento diferenciar usando currentIndex
+       //this.errors[path+'__'+currentIndex] << errors
     }
     //
     // /VALIDACION ==========================================================
@@ -521,13 +547,6 @@ class BindingAOMRM {
         println "   = co: " + co
         println "======================================================="
         */
-        /*
-        def archivo = new File('.\\log.txt')
-        XStream xstream = new XStream()
-        //String xml = xstream.toXML(co)
-        String xml = xstream.toXML(arquetipo)
-        archivo.write(xml)
-        */
         
         //println "========== bindCObject -> " + bindMethod
         
@@ -540,6 +559,7 @@ class BindingAOMRM {
         
         //println "==== Setear las paths a los objetos del RM bindeados ..."
 
+        // FIXME: la path se la deberia poner la factory
         if (bindedObjs instanceof List)
         {
             //println "==== bindCObject######## ES UNA LIsTA @@@@@@@@@@"
@@ -806,8 +826,9 @@ class BindingAOMRM {
                 
                 // FIXME: la path completa seria archetypeId+refPath+path
                 //        falta calcular refPath como esta calculada en las vistas
-                this.errors[arquetipo.archetypeId.value + cco.path()] = rmObject.errors
-                this.hasErrors = true
+                //this.errors[arquetipo.archetypeId.value + cco.path()] = rmObject.errors
+                //this.hasErrors = true
+                this.addErrors(arquetipo.archetypeId.value + cco.path(), rmObject.errors)
              }
 
              // TEST
@@ -954,49 +975,43 @@ class BindingAOMRM {
         // Creo la lista de items que voy a retornar
         List<Object> listaRMObject = []
 
+        // FIXME: hacer una para multiple attribute y otra para single.
+        // Lo bueno es que para single, el template deberia decir cual de los children usar,
+        // porque son alternativas, entonces se tendria una sola restriccion children para bidear.
+        // Para que esto funcione, deberia tener la estructura completa del arquetipo, segun como
+        // fue definido su uso en el template, incluso si son multiples arquetipos, se
+        // deberian tener resueltos los slots.
+        
         // Recorro los CObjects del CAttribute
         cattr.getChildren().each { co ->
         
             // Me quedo con los path que corresponde al children (CObject) que se esta procesando
             LinkedHashMap<String, Object> pathValorCObject = pathValorAttribute.findAll{it.key.startsWith(co.path())}
             
-            // PAB: poda previa, si no tengo valores para bindear no llamo a bindCObject
-            // TEST: si es una referencia con SLOT no va a tener pathValor... esta poda me corta el bind de slots...
-            //if (pathValorCObject.size() > 0)
-            //{
-            
-                //println "======== bindAttribute -> bindCObject"
-            
-                //println "  bindAttribute children "+ co.rmTypeName + " pathValor: "+ pathValorCObject
-                def rmObject = bindCObject(co, pathValorCObject, arquetipo, tempId)
-    
-                //println "==============================================="
-                //println "==== Objetos Bindeados en Attribute (resultado de bindCObject) ===="
-                //println rmObject
-                //println "==============================================="
-                
-                //------------------------------------
-                // Agregado para multiples ocurrencias
-                //------------------------------------
-                
-                // PAB:
-                // FIXME: mas facil si siempre devuelve una lista, cuando es un solo elemento es una lista con ese elemento.
-                if (rmObject)
-                {
-                    if (rmObject instanceof List)
-                    {
-                        //println "  bindAttribute rmObject es una lista de "+ rmObject.size() + " elementos " + rmObject
-                        rmObject.each { rmo ->
-                        
-                            if (rmo) listaRMObject.add(rmo)
-                        }
-                    }
-                    else
-                    {
-                        listaRMObject.add(rmObject)
-                    }
-                }
-            //}
+             //println "======== bindAttribute -> bindCObject"
+             //println "  bindAttribute children "+ co.rmTypeName + " pathValor: "+ pathValorCObject
+             def rmObject = bindCObject(co, pathValorCObject, arquetipo, tempId)
+ 
+             //------------------------------------
+             // Agregado para multiples ocurrencias
+             //------------------------------------
+             
+             // FIXME: mas facil si siempre devuelve una lista, cuando es un solo elemento es una lista con ese elemento.
+             if (rmObject)
+             {
+                 if (rmObject instanceof List)
+                 {
+                     //println "  bindAttribute rmObject es una lista de "+ rmObject.size() + " elementos " + rmObject
+                     rmObject.each { rmo ->
+                     
+                         if (rmo) listaRMObject.add(rmo)
+                     }
+                 }
+                 else
+                 {
+                     listaRMObject.add(rmObject)
+                 }
+             }
         }
         
         //println "  bindAttribute listaRMObject es una lista de "+ listaRMObject.size() + " elementos " + listaRMObject
@@ -1552,6 +1567,8 @@ class BindingAOMRM {
             //return null
             
             def rmObj = rmFactory.createDvOrdinal(cdvo, null, arquetipo, cdvo.nodeID, tempId, cdvo)
+            
+            // FIXME: esto deberia estar en factory!
             rmObj.errors.rejectValue('value', 'error.empty') // errorCode
             // TODO: verificar si alguien verrifica este error, sino marcarlo aca.
             
@@ -1781,7 +1798,7 @@ class BindingAOMRM {
                                 if (rmObj.errors.hasErrors())
                                 {
                                    //println "bindCDvQuantity hasErrors 1"
-                                   this.hasErrors = true
+                                   //this.hasErrors = true
                                    
                                    // FIXME: si el ELEMENT es opcional, y el error es de incompleto, no deberia dejar el error en errors.
                                    //        si es incompleto porque vino la unidad y no la magnitud, y hay una sola unidad, viene la unidad
@@ -1789,7 +1806,8 @@ class BindingAOMRM {
                                    //        porque tampoco pone la unidad, se pone sola.
                                    // FIXME: la path completa seria archetypeId+refPath+path
                                    //        falta calcular refPath como esta calculada en las vistas
-                                   this.errors[arquetipo.archetypeId.value + cdvc.path()] = rmObj.errors
+                                   //this.errors[arquetipo.archetypeId.value + cdvc.path()] = rmObj.errors
+                                   this.addErrors(arquetipo.archetypeId.value + cdvc.path(), rmObj.errors)
                                 }
                                 result << rmObj
                             }
@@ -1824,7 +1842,7 @@ class BindingAOMRM {
                             if (rmObj.errors.hasErrors())
                             {
                                 // println "bindCDvQuantity hasErrors 2"
-                                this.hasErrors = true
+                                //this.hasErrors = true
                                 
                                 // FIXME: si el ELEMENT es opcional, y el error es de incompleto, no deberia dejar el error en errors.
                                 //        si es incompleto porque vino la unidad y no la magnitud, y hay una sola unidad, viene la unidad
@@ -1832,7 +1850,8 @@ class BindingAOMRM {
                                 //        porque tampoco pone la unidad, se pone sola.
                                 // FIXME: la path completa seria archetypeId+refPath+path
                                 //        falta calcular refPath como esta calculada en las vistas
-                                this.errors[arquetipo.archetypeId.value + cdvc.path()] = rmObj.errors
+                                //this.errors[arquetipo.archetypeId.value + cdvc.path()] = rmObj.errors
+                                this.addErrors(arquetipo.archetypeId.value + cdvc.path(), rmObj.errors)
                             }
                             result << rmObj
                         }
@@ -1858,14 +1877,15 @@ class BindingAOMRM {
                         if (rmObj.errors.hasErrors())
                         {
                             //println "bindCDvQuantity hasErrors 3"
-                            this.hasErrors = true
+                            //this.hasErrors = true
                             // FIXME: si el ELEMENT es opcional, y el error es de incompleto, no deberia dejar el error en errors.
                             //        si es incompleto porque vino la unidad y no la magnitud, y hay una sola unidad, viene la unidad
                             //        porque se pone como hidden en la vista, no deberia mostrar un error por no poner la magnitud,
                             //        porque tampoco pone la unidad, se pone sola.
                             // FIXME: la path completa seria archetypeId+refPath+path
                             //        falta calcular refPath como esta calculada en las vistas
-                            this.errors[arquetipo.archetypeId.value + cdvc.path()] = rmObj.errors
+                            //this.errors[arquetipo.archetypeId.value + cdvc.path()] = rmObj.errors
+                            this.addErrors(arquetipo.archetypeId.value + cdvc.path(), rmObj.errors)
                         }
                         result << rmObj
                     }
@@ -1885,7 +1905,7 @@ class BindingAOMRM {
                    if (rmObj.errors.hasErrors())
                    {
                       //println "bindCDvQuantity hasErrors 3"
-                      this.hasErrors = true
+                      //this.hasErrors = true
                       
                       // FIXME: si el ELEMENT es opcional, y el error es de incompleto, no deberia dejar el error en errors.
                       //        si es incompleto porque vino la unidad y no la magnitud, y hay una sola unidad, viene la unidad
@@ -1893,7 +1913,8 @@ class BindingAOMRM {
                       //        porque tampoco pone la unidad, se pone sola.
                       // FIXME: la path completa seria archetypeId+refPath+path
                       //        falta calcular refPath como esta calculada en las vistas
-                      this.errors[arquetipo.archetypeId.value + cdvc.path()] = rmObj.errors
+                      //this.errors[arquetipo.archetypeId.value + cdvc.path()] = rmObj.errors
+                      this.addErrors(arquetipo.archetypeId.value + cdvc.path(), rmObj.errors)
                    }
                    result << rmObj
                 }
@@ -2029,6 +2050,11 @@ class BindingAOMRM {
                 def termino = false
                 while (!termino)
                 {
+                    // ==================================================
+                    // Indice para poner errores 
+                    currentIndex = index
+                    // ==================================================
+                   
                     def subPathValor = [:]
                     
                     // armo el subPathValor
@@ -2064,6 +2090,12 @@ class BindingAOMRM {
                     }
                     
                 } // while ! termino
+                
+                // ==================================================
+                // Indice para poner errores
+                currentIndex = 0
+                // ==================================================
+                
             } // multiples valores
         }
         else // Cluster no tiene ocurrencias multiples
@@ -2082,32 +2114,53 @@ class BindingAOMRM {
     } // bindCLUSTER
     
     // Metodo auxiliar para bindCLUSTER, devuelve un CLUSTER con sus ELEMENTs.
+    /**
+     * 
+     * @param cco
+     * @param pathValor
+     * @param arquetipo
+     * @param tempId
+     * @param index indice del cluster a bindear si se estan bindeando multiples clusters.
+     * @return
+     */
     def bindSingleCluster(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
         def cluster = null
         
         // Lista de lista de objetos bindeados para cada atributo del CCObject
+        /*
         List<Object> listaListRMO = []
 
+        assert cco.getAttributes().size() == 1 // Un Cluster debe tener un CAttribute para su atributo items
+        
         // El unico atributo que espero que tenga es 'items'
         cco.getAttributes().each { cattr ->
         
             // Me quedo con los path que corresponde al atributo que se esta procesando
             LinkedHashMap<String, Object> pathValorAtribute = pathValor.findAll{it.key.startsWith(cattr.path())}
+            
+            // Es innecesario hacer el filtro porque ya se que lo que viene es todo para el atributo items del cluster...
+            assert pathValorAtribute == pathValor
+            
             def listRMO = bindAttribute(cattr, pathValorAtribute, arquetipo, tempId)
             listaListRMO.add(listRMO)
         }
+        */
         
+        // Simplificacion por conocer la estructura interna de un CLUSTER
+        // 1. No hago loop each porque se que tengo un solo CAttribute (cco.getAttributes()[0])
+        // 2. No hago filtro de pathsValor porque se que todas las paths son para el atributo items del cluster
+        //
+        // TODO: se puede hacer lo mismo con los demas tipos!
+        //
+        def listaItems = bindAttribute(cco.getAttributes()[0], pathValor, arquetipo, tempId)
         
-        // TODO: Que pasa si no bindeo nada para items?
-        //       Si el cluster es obligatorio, deberia retornarlo (ocurrencia minima>0)
-        //       Lo corrijo mas abajo... (+++)
         
         
         // FIXME: no se valida la cardinalidad de los items del CLUSTER, deberia hacerse igual que se hace para ITEM_TREE
-        if (listaListRMO.size()==1) // Ha bindeado 'items'
-        {
-            def listaItems = listaListRMO[0] // Puede ser una lista de objetos
+        //if (listaListRMO.size()==1) // Ha bindeado 'items'
+        //{
+        //    def listaItems = listaListRMO[0] // Puede ser una lista de objetos
             if (countValues(listaItems) > 0)
             {
                 //println "|||||||||||=========>>>>>>> (List<Object>?) tipo listaItems: " + listaItems.getClass()
@@ -2123,16 +2176,15 @@ class BindingAOMRM {
                   cluster = rmFactory.createCLUSTER([], arquetipo, cco.nodeID, tempId, cco)
                }
             }
-        }
-        else // (+++)
-        {
-           //println "bindSingleCluster: no bindeo' items del cluster"
-           if ( cco.occurrences.getLower() > 0 )
-           {
-              //println "bindSingleCluster 2: bindeo el cluser sin items porque tiene ocurrencia > 0"
-              cluster = rmFactory.createCLUSTER([], arquetipo, cco.nodeID, tempId, cco)
-           }
-        }
+        //}
+        //else // (+++)
+        //{
+        //   if ( cco.occurrences.getLower() > 0 )
+        //   {
+        //      //println "bindSingleCluster 2: bindeo el cluser sin items porque tiene ocurrencia > 0"
+        //      cluster = rmFactory.createCLUSTER([], arquetipo, cco.nodeID, tempId, cco)
+        //   }
+        //}
         
         // Cluster nunca puede tener 2 atributos bindeados
         
@@ -2145,282 +2197,264 @@ class BindingAOMRM {
        //println '=============================================='
        //println 'bindELEMENT pathValor: ' + pathValor
        
-       // Lista de lista de objetos bindeados para cada atributo del CCObject
-       List<Object> listaListRMO = []
-       cco.getAttributes().each { cattr ->
+              
+       // Un Element debe tener un CAttribute para su atributo value
+       // Es innecesario hacer el filtro porque ya se que lo que viene es todo para el atributo value del Element...
        
-           // Me quedo con los path que corresponde al atributo que se esta procesando
-           LinkedHashMap<String, Object> pathValorAtribute = pathValor.findAll{it.key.startsWith(cattr.path())}
-           def listRMO = bindAttribute(cattr, pathValorAtribute, arquetipo, tempId)
-           //println 'bindELEMENT listRMO tiene ' + listRMO.size() + ' elementos'
-           
-           listaListRMO.add(listRMO)
-       }
        
-       //println 'bindedValues ('+ listaListRMO.size() + '): ' + listaListRMO
-      
+       // Simplificacion por conocer la estructura interna de un ELEMENT
+       // 1. No hago loop each porque se que tengo un solo CAttribute (cco.getAttributes()[0])
+       // 2. No hago filtro de pathsValor porque se que todas las paths son para el atributo items del cluster
+       //
+       def rmObjectsForValue = bindAttribute(cco.getAttributes()[0], pathValor, arquetipo, tempId)
+       
+       
        // Lista para retornar
        def elements = []
-       
-       /*
-       // OJO: nunca entra aca porque si no hay valores lo que viene es una lista con una lista
-       // vacia adentro. O sea que la lista externa tiene 1 elemento siempre.
-       // FIXME: verificar errores por ocurrencias
-       if (listaListRMO.size()==0) // No pudo bindear el attr 'value'
-       {
-           //println "~~~~~ No pudo bindear el attr 'value'"
-           //println "~~~~~ No pudo bindear el attr 'value'"
-           //println "~~~~~ No pudo bindear el attr 'value'"
-           
-           println 'No se bindearon valores para el element, y si la occurrence del Element es 1..1, deberia marcar el error en su padre'
-          
-           // TODO: verificar si hay un caso que caiga aca, me parece que siempre
-           //       que siempre mete una lista en la lista, aunque puede ser vacia.
 
-           // Quiero que esté el elemento aunque no tenga value, así valido con GORM
-           //return null // null element
-       }
-       */
-       if (listaListRMO.size()==1) // Ha bindeado el 'value'
-       {
-           def rmObjectsForValue = listaListRMO[0] // Puede ser una lista de objetos (puede ser vacia)
+       
+        //println "bondElement: rmobjectForValue="+rmObjectsForValue
+        
+        // FIXME:
+        // HICE UN CAMBIO EN FACTORY: si no se tienen todos los valores para crear el value,
+        // se devuelve null, entonces deberia verificar si la cantidad de elementos que me
+        // devuelve es menor que el occurrences.lower del element que estoy bindeando.
+        // Ahora lo que hace es buscar errores de null en los values, pero por el cambio: NO HAY VALUES!
+        // Con esto creo que anda ok:
+        if ( rmObjectsForValue.size() < cco.occurrences.getLower() )
+        {
+           //println "- hay menos valores que la menor ocurrencia permitida"
            
-           //println "bondElement: rmobjectForValue="+rmObjectsForValue
-           
-           // FIXME:
-           // HICE UN CAMBIO EN FACTORY: si no se tienen todos los valores para crear el value,
-           // se devuelve null, entonces deberia verificar si la cantidad de elementos que me
-           // devuelve es menor que el occurrences.lower del element que estoy bindeando.
-           // Ahora lo que hace es buscar errores de null en los values, pero por el cambio: NO HAY VALUES!
-           // Con esto creo que anda ok:
-           if ( rmObjectsForValue.size() < cco.occurrences.getLower() )
+           // Bindeo tantos elements como se esperaban, pero para los que no tengan valor, pongo null,
+           // entonces se genera un error para el element.value (que es lo que quiero).
+           // FIXME: Tambien se podria generar un error en el padre que diga que se esperaban X
+           // elements y se tienen Y, es un error mas amigable al usuario.
+           def element
+           for (def i in 0..cco.occurrences.getLower()-1)
            {
-              //println "- hay menos valores que la menor ocurrencia permitida"
+              // ==================================================
+              // Indice para poner errores
+              currentIndex = i
+              // ==================================================
               
-              // Bindeo tantos elements como se esperaban, pero para los que no tengan valor, pongo null,
-              // entonces se genera un error para el element.value (que es lo que quiero).
-              // FIXME: Tambien se podria generar un error en el padre que diga que se esperaban X
-              // elements y se tienen Y, es un error mas amigable al usuario.
-              def element
-              for (def i in 0..cco.occurrences.getLower()-1)
+              // rmObjectsForValue[i] puede ser null
+              element = rmFactory.createELEMENT(rmObjectsForValue[i], arquetipo, arquetipo.node(cco.path()).nodeID, tempId, cco)
+              if (!element.validate()) // valida que tenga value, no las ocurrencias del propio element
               {
-                 // rmObjectsForValue[i] puede ser null
-                 element = rmFactory.createELEMENT(rmObjectsForValue[i], arquetipo, arquetipo.node(cco.path()).nodeID, tempId, cco)
-                 if (!element.validate()) // valida que tenga value, no las ocurrencias del propio element
-                 {
-                    this.hasErrors = true
+                 //this.hasErrors = true
+                 
+                 //println "errors: " + element.errors
+                 
+                 // El i es para saber para cual de los nodos multiples dio el error
+                 // FIXME: la path completa seria archetypeId+refPath+path
+                 //        falta calcular refPath como esta calculada en las vistas
+                 // FIXME: poner el i solo si el nodo puede ser multiple!
+                 //this.errors[arquetipo.archetypeId.value + cco.path()+'_'+i] = bindedElem.errors
+                 //this.errors[arquetipo.archetypeId.value + cco.path()] = element.errors
+                 this.addErrors(arquetipo.archetypeId.value + cco.path(), element.errors)
+              }
+              elements << element
+           }
+           
+           // ==================================================
+           // Indice para poner errores
+           currentIndex = 0
+           // ==================================================
+           
+           return elements
+        }
+        
+        /* FIXME:
+         * El error de ocurrencia se debe verificar en el ELEMENT, pero deben ponerse
+         * las paths dependiendo del tipo de su value. Por ejemplo si es unQuantity,
+         * hay que ver si se ponen errores para las 2 paths, y el element debe saber
+         * los nombres de los atributos sabiendo el tipo del value.
+         * Esto se resolveria llamando a un metodo que se encargue de averiguar
+         * los nombres de lo atributos, asi aqui veo so el element tiene las ocurrencias
+         * correctas y se que  es porque faltan valores para paths de sus atributos
+         */
+        /**
+         * LA CONDICION CORRECTA SERIA, SI LA CANTIDAD DE LOS VALORES QUE
+         * VIENEN BINDEADOS PARA LOS ELEMS QUE TIENEN ERROR DE VALOR NULO
+         * SON MENOS QUE LOS QUE EXIGE EL ELEM.
+         * Porque aunque el valor no sea nulo, el param que le pasé para
+         * crearlo pudo haber sido y el GORM valida metiendo error de nulo.
+         * El error deberia mostrarse una sola vez, esto lo logor mostrando
+         * el error para la path y sacandolo del map de errores.
+         * Se chequea aca: *****
+         */
+         // La verificacion de errores la hace el GORM, aqui veo si hay errores en los
+         // datavalues y los traslado al ELEMENT si corresponde.
+        
+        // Cantidad de errores por null?
+        def nullErrorCount = 0
+        rmObjectsForValue.each { bindedElementValue ->
+            
+            //println "xxx Tipo: " + bindedElementValue.getClass().getSimpleName()
+
+            // FIXME: faltan datatypes para ver el atributo obligatorio segun el RM
+            // Si es boolean, el atributo es value, asi que no habria que verificar si es DvBoolean. 
+            def attribute = "value"
+            if (["DvQuantity","DvCount"].contains( bindedElementValue.getClass().getSimpleName() ))
+                attribute = "magnitude"
+            else if (["DvCodedText"].contains( bindedElementValue.getClass().getSimpleName() ))
+                attribute = "definingCode"
+            
+            //println "Clase 1: " + bindedElementValue.getClass().getSimpleName()
+            //println "Errores: " + bindedElementValue.errors
+            
+            //println "Tiene error: " + bindedElementValue.errors.getFieldError(attribute)
+            //println "Rejected value: " + bindedElementValue.errors.getFieldError(attribute).rejectedValue
+            
+            //println "xxx Attribute: " + attribute
+            // Si hay un error y el valor rejected fue null...
+            if (bindedElementValue.errors.getFieldError(attribute) &&
+                bindedElementValue.errors.getFieldError(attribute).rejectedValue == null)
+            {
+               nullErrorCount++
+            }
+        }
+        
+        //println "Element Null ERROR Count :" + nullErrorCount
+        //println "rmObjectsForValue.size :" + rmObjectsForValue.size()
+        //println "==== rmObjectsForValue: " + rmObjectsForValue
+        
+        rmObjectsForValue.eachWithIndex { bindedElementValue, i ->
+
+           
+           // ==================================================
+           // Indice para poner errores
+           currentIndex = i
+           // ==================================================
+           
+           
+            // *****
+            //println bindedElementValue.errors // TODO> ver cuantos errores son por nulos...
+            
+            // FIXME: el valor puede ser null y el Element puede ser obligatorio!
+            if (bindedElementValue)
+            {
+                //println "==== bindedElementValue: " + bindedElementValue.getClass()
+                
+                // rmFactory.createELEMENT
+                //elements << rmFactory."$factoryRMMethod"(bindedElementValue, arquetipo, arquetipo.node(cco.path()).nodeID, tempId)
+                def bindedElem = rmFactory.createELEMENT(bindedElementValue, arquetipo, arquetipo.node(cco.path()).nodeID, tempId, cco)
+
+                //println "====>>>> bindedElem: " + bindedElem
+
+                // Por [555]
+                // Indica si debe poner al element en el resultado.
+                def bindElement = true
                     
-                    //println "errors: " + element.errors
-                    /*
-                     * errors: org.springframework.validation.BeanPropertyBindingResult: 1 errors
-Field error in object 'hce.core.datastructure.itemstructure.representation.Element' on field 'value': rejected value [null]; codes [hce.core.datastruc
-ture.itemstructure.representation.Element.value.nullable.error.hce.core.datastructure.itemstructure.representation.Element.value,hce.core.datastructur
-e.itemstructure.representation.Element.value.nullable.error.value,hce.core.datastructure.itemstructure.representation.Element.value.nullable.error.dat
-a_types.basic.DataValue,hce.core.datastructure.itemstructure.representation.Element.value.nullable.error,element.value.nullable.error.hce.core.datastr
-ucture.itemstructure.representation.Element.value,element.value.nullable.error.value,element.value.nullable.error.data_types.basic.DataValue,element.v
-alue.nullable.error,hce.core.datastructure.itemstructure.representation.Element.value.nullable.hce.core.datastructure.itemstructure.representation.Ele
-ment.value,hce.core.datastructure.itemstructure.representation.Element.value.nullable.value,hce.core.datastructure.itemstructure.representation.Elemen
-t.value.nullable.data_types.basic.DataValue,hce.core.datastructure.itemstructure.representation.Element.value.nullable,element.value.nullable.hce.core
-.datastructure.itemstructure.representation.Element.value,element.value.nullable.value,element.value.nullable.data_types.basic.DataValue,element.value
-.nullable,nullable.hce.core.datastructure.itemstructure.representation.Element.value,nullable.value,nullable.data_types.basic.DataValue,nullable]; arg
-uments [value,class hce.core.datastructure.itemstructure.representation.Element]; default message [La propiedad [{0}] de la clase [{1}] no puede ser n
-ulo]
-                     */
+                //println "xxx Comparacion: " + (rmObjectsForValue.size()-nullErrorCount) + " y " + cco.occurrences.getLower()
+
+                
+                // FIXME: Esta verificacion se hace considerando el size de la coleccion por la que estoy iterando,
+                //        esto se deberia verificar por fuera de la iteracion.
+                //        Ademas pone un error para todos los ELEMENTS que se hayan bindeado, no solamente en los
+                //        que les falta el value.
+                //        Por otro lado, la validacion sobre las ocurrencias del ELEMENT deberia ponerse en el
+                //        contenedor, no en cada ELEMENT, porque cada instancia de ELEMENT ve su ocurrencia (1)
+                //        no la ocurrencia de todos sus hermanos, quien es responsable por las ocurrencias de
+                //        todos los ELEMENTs es el padre (CLUSTER o un ITEM_STRUCTURE).
+                //        
+                //        El padre verificaria algo asi:
+                //
+                //        PARA OCURRENCIAS DE UN NODO HIJO:
+                //         - Un CLUSTER/ITEM_STRUCT verifica que todos sus items tengan su ocurrencia minima cumplida
+                //         - Un CLUSTER/ITEM_STRUCT verifica que todos sus items tengan su ocurrencia maxima cumplida 
+                //
+                //        PARA CARDINALIDAD DE ATRIBUTOS COLECCION:
+                //         - Un CLUSTER/ITEM_STRUCT verifica que la cantidad de items que tiene cumple con la cardinalidad minima
+                //         - Un CLUSTER/ITEM_STRUCT verifica que la cantidad de items que tiene cumple con la cardinalidad maxima
+                //
+                //        Los errores de ocurrencias y de cardinalidad, van en el contenedor, no en los hijos! 
+                
+                // TODO: esta validacion deberia hacerse en el Factory.
+                
+                // Si hay menos valores OK de null de los necesarios por ocurrencias, error de ocurrencias!
+                if ( rmObjectsForValue.size()-nullErrorCount < cco.occurrences.getLower() )
+                {
+                    //println "ooooo pongo error a: " + cco.path()
+                    //println "bindELEMENT hasErrors 1 " + cco.path()
+                    
+                    // FIXME: en realidad cuando no tengo element.value no es error de ocurrencias,
+                    // es error del RM de que value no puede ser null.
+                    // El error de ocurrencias deberia ir en el padre del element, que diga que se
+                    // esperaban X elements y se tienen Y.
+                   
+                    // es value porque estoy en ELEMENT
+                    bindedElem.errors.rejectValue("value", Errors.ERROR_OCCURRENCES)
+
+                    //this.hasErrors = true
                     
                     // El i es para saber para cual de los nodos multiples dio el error
                     // FIXME: la path completa seria archetypeId+refPath+path
                     //        falta calcular refPath como esta calculada en las vistas
                     // FIXME: poner el i solo si el nodo puede ser multiple!
                     //this.errors[arquetipo.archetypeId.value + cco.path()+'_'+i] = bindedElem.errors
-                    this.errors[arquetipo.archetypeId.value + cco.path()] = element.errors
-                 }
-                 elements << element
-              }
-              return elements
-           }
-           
-           
-           /* FIXME:
-            * El error de ocurrencia se debe verificar en el ELEMENT, pero deben ponerse
-            * las paths dependiendo del tipo de su value. Por ejemplo si es unQuantity,
-            * hay que ver si se ponen errores para las 2 paths, y el element debe saber
-            * los nombres de los atributos sabiendo el tipo del value.
-            * Esto se resolveria llamando a un metodo que se encargue de averiguar
-            * los nombres de lo atributos, asi aqui veo so el element tiene las ocurrencias
-            * correctas y se que  es porque faltan valores para paths de sus atributos
-            */
-           /**
-            * LA CONDICION CORRECTA SERIA, SI LA CANTIDAD DE LOS VALORES QUE
-            * VIENEN BINDEADOS PARA LOS ELEMS QUE TIENEN ERROR DE VALOR NULO
-            * SON MENOS QUE LOS QUE EXIGE EL ELEM.
-            * Porque aunque el valor no sea nulo, el param que le pasé para
-            * crearlo pudo haber sido y el GORM valida metiendo error de nulo.
-            * El error deberia mostrarse una sola vez, esto lo logor mostrando
-            * el error para la path y sacandolo del map de errores.
-            * Se chequea aca: *****
-            */
-            // La verificacion de errores la hace el GORM, aqui veo si hay errores en los
-            // datavalues y los traslado al ELEMENT si corresponde.
-           
-           // Cantidad de errores por null?
-           def nullErrorCount = 0
-           rmObjectsForValue.each { bindedElementValue ->
-               
-               //println "xxx Tipo: " + bindedElementValue.getClass().getSimpleName()
+                    //this.errors[arquetipo.archetypeId.value + cco.path()] = bindedElem.errors
+                    this.addErrors(arquetipo.archetypeId.value + cco.path(), bindedElem.errors)
+                    
+                    //println "xxx pongo el error en el ELEMENT: " + cco.path()
 
-               // FIXME: faltan datatypes para ver el atributo obligatorio segun el RM
-               // Si es boolean, el atributo es value, asi que no habria que verificar si es DvBoolean. 
-               def attribute = "value"
-               if (["DvQuantity","DvCount"].contains( bindedElementValue.getClass().getSimpleName() ))
-                   attribute = "magnitude"
-               else if (["DvCodedText"].contains( bindedElementValue.getClass().getSimpleName() ))
-                   attribute = "definingCode"
-               
-               //println "Clase 1: " + bindedElementValue.getClass().getSimpleName()
-               //println "Errores: " + bindedElementValue.errors
-               
-               //println "Tiene error: " + bindedElementValue.errors.getFieldError(attribute)
-               //println "Rejected value: " + bindedElementValue.errors.getFieldError(attribute).rejectedValue
-               
-               
-                   
-               //println "xxx Attribute: " + attribute
-               // Si hay un error y el valor rejected fue null...
-               if (bindedElementValue.errors.getFieldError(attribute) &&
-                   bindedElementValue.errors.getFieldError(attribute).rejectedValue == null)
-               {
-                  nullErrorCount++
-               }
-           }
-           
-           //println "Element Null ERROR Count :" + nullErrorCount
-           //println "rmObjectsForValue.size :" + rmObjectsForValue.size()
-           
-           //println "==== rmObjectsForValue: " + rmObjectsForValue
-           
-           rmObjectsForValue.eachWithIndex { bindedElementValue, i ->
+                    // Saco el error del element.value
+                    bindedElem.value.errors = null // Saco errores de formato que pueda tener el hijo value, asi muestro solo errores en el element.
 
-               // *****
-               //println bindedElementValue.errors // TODO> ver cuantos errores son por nulos...
-               
-               // FIXME: el valor puede ser null y el Element puede ser obligatorio!
-               if (bindedElementValue)
-               {
-                   //println "==== bindedElementValue: " + bindedElementValue.getClass()
-                   
-                   // rmFactory.createELEMENT
-                   //elements << rmFactory."$factoryRMMethod"(bindedElementValue, arquetipo, arquetipo.node(cco.path()).nodeID, tempId)
-                   def bindedElem = rmFactory.createELEMENT(bindedElementValue, arquetipo, arquetipo.node(cco.path()).nodeID, tempId, cco)
+                    nullErrorCount = 0 // Asi el error solo va en el primer ELEMENT, asi se muestra el error una sola vez!
+                }
+                else if (bindedElem.value.errors.hasErrors() && cco.occurrences.getLower()==0) // Si tengo un error (TODO: deberia ser un error de null) en el element.value pero el element es opcional, el element queda en null y no se agrega a la lista bindeada.
+                {
+                    // FIXME: faltan datatypes para ver el atributo obligatorio segun el RM
+                    def attribute = "value"
+                    if (["DvQuantity","DvCount"].contains( bindedElementValue.getClass().getSimpleName() ))
+                        attribute = "magnitude"
+                    else if (["DvCodedText"].contains( bindedElementValue.getClass().getSimpleName() ))
+                        attribute = "definingCode"
+                    
+                    //println "Clase 2: " + bindedElementValue.getClass().getSimpleName()
+                    //println "== Rejected attribute: " + attribute
+                    //println "== Tiene error en el attr: " + bindedElem.value.errors.hasFieldErrors(attribute)
+                    //println "== Rejected value: " + bindedElem.value.errors.getFieldError(attribute)?.rejectedValue
+                    
+                    // Le digo que no bindee el ELEMENT solo si el valor rechazado es null,
+                    // si el valor es por ejemplo un string mal formado que se necesita pasar
+                    // a numerico, el ELEMENT se tiene que bindear para cargar el error para ser
+                    // mostrado en la web.
+                    if ( bindedElem.value.errors.hasFieldErrors(attribute) &&
+                         bindedElem.value.errors.getFieldError(attribute)?.rejectedValue == null )
+                    {
+                        /** [555]
+                         * *****************************************************************************************
+                         * *****************************************************************************************
+                         * Si bindea un datavalue con un valor nulo, va a dar error de validacion en el DV,
+                         * pero si el ELEMENT donde va ese DV es opcional, ese ELEMENT deberia ser null adentro
+                         * de su estructura contenedora, de esa forma no bindea un element opcional con un
+                         * valor null en su datavalue.value, o sea el valor simple adentro del datavalue en
+                         * ELEMENT.value.
+                         * *****************************************************************************************
+                         * *****************************************************************************************
+                         */
+                        bindElement = false
+                        //println "----=== LE DICE QUE NO META AL ELEMENT EN LA LIsTA DE ELEMENTS!"
+                    }
+                }
 
-                   //println "====>>>> bindedElem: " + bindedElem
-
-                   // Por [555]
-                   // Indica si debe poner al element en el resultado.
-                   def bindElement = true
-                       
-                   //println "xxx Comparacion: " + (rmObjectsForValue.size()-nullErrorCount) + " y " + cco.occurrences.getLower()
-
-                   
-                   // FIXME: Esta verificacion se hace considerando el size de la coleccion por la que estoy iterando,
-                   //        esto se deberia verificar por fuera de la iteracion.
-                   //        Ademas pone un error para todos los ELEMENTS que se hayan bindeado, no solamente en los
-                   //        que les falta el value.
-                   //        Por otro lado, la validacion sobre las ocurrencias del ELEMENT deberia ponerse en el
-                   //        contenedor, no en cada ELEMENT, porque cada instancia de ELEMENT ve su ocurrencia (1)
-                   //        no la ocurrencia de todos sus hermanos, quien es responsable por las ocurrencias de
-                   //        todos los ELEMENTs es el padre (CLUSTER o un ITEM_STRUCTURE).
-                   //        
-                   //        El padre verificaria algo asi:
-                   //
-                   //        PARA OCURRENCIAS DE UN NODO HIJO:
-                   //         - Un CLUSTER/ITEM_STRUCT verifica que todos sus items tengan su ocurrencia minima cumplida
-                   //         - Un CLUSTER/ITEM_STRUCT verifica que todos sus items tengan su ocurrencia maxima cumplida 
-                   //
-                   //        PARA CARDINALIDAD DE ATRIBUTOS COLECCION:
-                   //         - Un CLUSTER/ITEM_STRUCT verifica que la cantidad de items que tiene cumple con la cardinalidad minima
-                   //         - Un CLUSTER/ITEM_STRUCT verifica que la cantidad de items que tiene cumple con la cardinalidad maxima
-                   //
-                   //        Los errores de ocurrencias y de cardinalidad, van en el contenedor, no en los hijos! 
-                   
-                   // TODO: esta validacion deberia hacerse en el Factory.
-                   
-                   // Si hay menos valores OK de null de los necesarios por ocurrencias, error de ocurrencias!
-                   if ( rmObjectsForValue.size()-nullErrorCount < cco.occurrences.getLower() )
-                   {
-                       //println "ooooo pongo error a: " + cco.path()
-                       //println "bindELEMENT hasErrors 1 " + cco.path()
-                       
-                       // FIXME: en realidad cuando no tengo element.value no es error de ocurrencias,
-                       // es error del RM de que value no puede ser null.
-                       // El error de ocurrencias deberia ir en el padre del element, que diga que se
-                       // esperaban X elements y se tienen Y.
-                      
-                       // es value porque estoy en ELEMENT
-                       bindedElem.errors.rejectValue("value", Errors.ERROR_OCCURRENCES)
-
-                       this.hasErrors = true
-                       
-                       // El i es para saber para cual de los nodos multiples dio el error
-                       // FIXME: la path completa seria archetypeId+refPath+path
-                       //        falta calcular refPath como esta calculada en las vistas
-                       // FIXME: poner el i solo si el nodo puede ser multiple!
-                       //this.errors[arquetipo.archetypeId.value + cco.path()+'_'+i] = bindedElem.errors
-                       this.errors[arquetipo.archetypeId.value + cco.path()] = bindedElem.errors
-                       
-                       //println "xxx pongo el error en el ELEMENT: " + cco.path()
-
-                       // Saco el error del element.value
-                       bindedElem.value.errors = null // Saco errores de formato que pueda tener el hijo value, asi muestro solo errores en el element.
-
-                       nullErrorCount = 0 // Asi el error solo va en el primer ELEMENT, asi se muestra el error una sola vez!
-                   }
-                   else if (bindedElem.value.errors.hasErrors() && cco.occurrences.getLower()==0) // Si tengo un error (TODO: deberia ser un error de null) en el element.value pero el element es opcional, el element queda en null y no se agrega a la lista bindeada.
-                   {
-                       // FIXME: faltan datatypes para ver el atributo obligatorio segun el RM
-                       def attribute = "value"
-                       if (["DvQuantity","DvCount"].contains( bindedElementValue.getClass().getSimpleName() ))
-                           attribute = "magnitude"
-                       else if (["DvCodedText"].contains( bindedElementValue.getClass().getSimpleName() ))
-                           attribute = "definingCode"
-                       
-                       //println "Clase 2: " + bindedElementValue.getClass().getSimpleName()
-                           
-                       //println "== Rejected attribute: " + attribute
-                       //println "== Tiene error en el attr: " + bindedElem.value.errors.hasFieldErrors(attribute)
-                       //println "== Rejected value: " + bindedElem.value.errors.getFieldError(attribute)?.rejectedValue
-                       
-                       // Le digo que no bindee el ELEMENT solo si el valor rechazado es null,
-                       // si el valor es por ejemplo un string mal formado que se necesita pasar
-                       // a numerico, el ELEMENT se tiene que bindear para cargar el error para ser
-                       // mostrado en la web.
-                       if ( bindedElem.value.errors.hasFieldErrors(attribute) &&
-                            bindedElem.value.errors.getFieldError(attribute)?.rejectedValue == null )
-                       {
-                           /** [555]
-                            * *****************************************************************************************
-                            * *****************************************************************************************
-                            * Si bindea un datavalue con un valor nulo, va a dar error de validacion en el DV,
-                            * pero si el ELEMENT donde va ese DV es opcional, ese ELEMENT deberia ser null adentro
-                            * de su estructura contenedora, de esa forma no bindea un element opcional con un
-                            * valor null en su datavalue.value, o sea el valor simple adentro del datavalue en
-                            * ELEMENT.value.
-                            * *****************************************************************************************
-                            * *****************************************************************************************
-                            */
-                           bindElement = false
-                           //println "----=== LE DICE QUE NO META AL ELEMENT EN LA LIsTA DE ELEMENTS!"
-                       }
-                   }
-
-                   //println "bindELEMENT Element errors: " + bindedElem.errors
-                   
-                   if (bindElement) elements << bindedElem
-                   
-               } // if (bindedElementValue)
-           } // rmObjectsForValue.each
-       } // Ha bindeado el 'value'
-       
-       return elements // lista de elementos
+                //println "bindELEMENT Element errors: " + bindedElem.errors
+                
+                if (bindElement) elements << bindedElem
+                
+            } // if (bindedElementValue)
+        } // rmObjectsForValue.each
+        
+        
+        // ==================================================
+        // Indice para poner errores
+        currentIndex = 0
+        // ==================================================
+        
+        
+        return elements // lista de elementos
     }
     
     // =============================================================
@@ -2639,11 +2673,12 @@ ulo]
             {
                 // Marco que hubo error para que el controller mande a edit
                 //println "bindDV_CODED_TEXT hasErrors "
-                this.hasErrors = true
+                //this.hasErrors = true
                 
                 // FIXME: la path completa seria archetypeId+refPath+path
                 //        falta calcular refPath como esta calculada en las vistas
-                this.errors[arquetipo.archetypeId.value + cco.path()] = rmObj.errors
+                //this.errors[arquetipo.archetypeId.value + cco.path()] = rmObj.errors
+                this.addErrors(arquetipo.archetypeId.value + cco.path(), rmObj.errors)
             }
 
             result << rmObj
@@ -2675,12 +2710,14 @@ ulo]
                 if (rmObj.errors.hasErrors())
                 {
                     //println "bindDV_COUNT hasErrors 1"
-                    this.hasErrors = true
+                    //this.hasErrors = true
                     
                     // FIXME: la path completa seria archetypeId+refPath+path
                     //        falta calcular refPath como esta calculada en las vistas
-                    this.errors[arquetipo.archetypeId.value + cco.path()] = rmObj.errors
+                    //this.errors[arquetipo.archetypeId.value + cco.path()] = rmObj.errors
                     //println "==== EL ERROR QUE DA ES: " + rmObj.errors
+                    
+                    this.addErrors(arquetipo.archetypeId.value + cco.path(), rmObj.errors)
                 }
                 
                 result << rmObj
@@ -2713,11 +2750,12 @@ ulo]
                         {
                             //println "==== EL ERROR QUE DA ES: " + rmObj.errors
                             //println "bindDV_COUNT hasErrors 2"
-                            this.hasErrors = true
+                            //this.hasErrors = true
                             
                             // FIXME: la path completa seria archetypeId+refPath+path
                             //        falta calcular refPath como esta calculada en las vistas
-                            this.errors[arquetipo.archetypeId.value + cco.path()] = rmObj.errors
+                            //this.errors[arquetipo.archetypeId.value + cco.path()] = rmObj.errors
+                            this.addErrors(arquetipo.archetypeId.value + cco.path(), rmObj.errors)
                         }
     
                         result << rmObj
@@ -2731,24 +2769,25 @@ ulo]
                 // Pruebo crear el obj aunque el valor sea incorrecto, asi pongo el error adentro.
                 def rmObj = rmFactory.createDV_COUNT( value, arquetipo, cco.nodeID, tempId, cco )
 
-// ABC*
-// prueba para retornar null de createDV_COUNT
-if (rmObj)
-{
-                // Verifico error de rangos
-                if (rmObj.errors.hasErrors())
-                {
-                    //println "==== EL ERROR QUE DA ES: " + rmObj.errors
-                    //println "bindDV_COUNT hasErrors 3"
-                    this.hasErrors = true
-                    
-                    // FIXME: la path completa seria archetypeId+refPath+path
-                    //        falta calcular refPath como esta calculada en las vistas
-                    this.errors[arquetipo.archetypeId.value + cco.path()] = rmObj.errors
-                }
-
-                result << rmObj
-}
+               // ABC*
+               // prueba para retornar null de createDV_COUNT
+               if (rmObj)
+               {
+                   // Verifico error de rangos
+                   if (rmObj.errors.hasErrors())
+                   {
+                       //println "==== EL ERROR QUE DA ES: " + rmObj.errors
+                       //println "bindDV_COUNT hasErrors 3"
+                       //this.hasErrors = true
+                       
+                       // FIXME: la path completa seria archetypeId+refPath+path
+                       //        falta calcular refPath como esta calculada en las vistas
+                       //this.errors[arquetipo.archetypeId.value + cco.path()] = rmObj.errors
+                       this.addErrors(arquetipo.archetypeId.value + cco.path(), rmObj.errors)
+                   }
+   
+                   result << rmObj
+               }
             }
             
             return result // puede ser vacia
