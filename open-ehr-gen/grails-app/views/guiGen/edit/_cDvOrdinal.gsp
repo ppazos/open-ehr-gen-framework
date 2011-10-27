@@ -33,9 +33,12 @@ if (refPath) _refPath = refPath
 --%>
 <%
 def values2 = [:]
-for (int i in 0..values.size()-1)
+if (values.size()>0)
 {
-  values2[values[i] +'||'+ labels[i]] = labels[i]
+  for (int i in 0..values.size()-1)
+  {
+    values2[values[i] +'||'+ labels[i]] = labels[i]
+  }
 }
 %>
 

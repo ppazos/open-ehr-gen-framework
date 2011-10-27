@@ -31,11 +31,15 @@ if (refPath) _refPath = refPath
 <%-- collectEntries disponible desde Groovy 1.7.9 y grails 1.3.7 tiene Groovy 1.7.8 
 <g:set var="values" value="${values.collectEntries{ key, value -> [key +'||'+ value, value] }}" />
 --%>
+
 <%
 def values2 = [:]
-for (int i in 0..values.size()-1)
+if (values.size()>0)
 {
-  values2[values[i] +'||'+ labels[i]] = labels[i]
+  for (int i in 0..values.size()-1)
+  {
+    values2[values[i] +'||'+ labels[i]] = labels[i]
+  }
 }
 %>
 
