@@ -150,7 +150,7 @@
         for (var field in errors)
 	    {
            console.log(field); // field_37
-           console.log(errors[field]); // object json
+           console.log(errors[field]); // object json (ahora es un array, p.e. si el campo es multiple y mas de un campo tiene error)
            
            // field es un identificador (aunque se pone como class), de la div
            // contenedora del field para el que se detecta error.
@@ -178,32 +178,62 @@
 		       }
 		     ]
 		   }
-           */
-                
-           // TODO: verificar que existe el container con class field (que va a ser field_0, field_1, ...)
-           var mensajesError = '';
-           
-           
-           console.log(errors[field].errors); // array de objects json
-           
-           
-           for (var err in errors[field].errors) // Varios errores para el mismo nodo
            {
-             mensajesError += errors[field].errors[err].message + '<br/>';
+			    "field_634":{
+			        "0":{
+			            "errors":[{
+			                    "object":"DvQuantity",
+			                    "field":"magnitude",
+			                    "rejected-value":null,
+			                    "message":"Debe ingresar magnitud y unidades"
+			                }
+			            ]
+			        },
+			        "1":{
+			            "errors":[{
+			                    "object":"DvQuantity",
+			                    "field":"magnitude",
+			                    "rejected-value":null,
+			                    "message":"Debe ingresar magnitud y unidades"
+			                }
+			            ]
+			        }
+			    }
+			}
+           */
+           
+           
+           for (var errIdx in errors[field])
+	       {
+               console.log('errIdx %s', errIdx); 
+               //console.log(errors[field][errIdx]); // Array de errores para un nodo particular
+               
+               // TODO: verificar que existe el container con class field (que va a ser field_0, field_1, ...)
+               var mensajesError = '';
+                
+	           //for (var err in errors[field].errors) // Varios errores para el mismo nodo
+               for (var err in errors[field][errIdx].errors)
+	           {
+	             //mensajesError += errors[field].errors[err].message + '<br/>';
+	             mensajesError += errors[field][errIdx].errors[err].message + '<br/>';
+	           }
+	           var nodeError = $('<div class="error">'+ mensajesError +'</div>');
+	           
+	           
+	           // Pido containers por la class (en realidad deberia ser id)
+	           var containers = $('.'+field); // Deberia ser uno solo
+	           //var container = $(containers[0]);
+	           var container = $(containers[parseInt(errIdx)]); // Pone el error en el nodo idx, es el caso de nodo multiple y varios nodos tienen errores.
+	           
+	           
+	           // No puedo obtener el nombre de la tag HTML de container...
+	           //console.log(container.type); // undefined
+	           //console.log(container.attr('type')); // undefined
+	           //console.log(container.attr('class')); // field_37 field_y
+	           
+	           // Agrego el nodo con los errores de los campos del container
+	           container.prepend( nodeError );
            }
-           var nodeError = $('<div class="error">'+ mensajesError +'</div>');
-           
-           // Pido containers por la class (en realidad deberia ser id)
-           var containers = $('.'+field); // Deberia ser uno solo
-           var container = $(containers[0]);
-           
-           // No puedo obtener el nombre de la tag HTML de container...
-           //console.log(container.type); // undefined
-           //console.log(container.attr('type')); // undefined
-           //console.log(container.attr('class')); // field_37 field_y
-           
-           
-           container.prepend( nodeError ); // Agrego el nodo con los errores de los campos del container
         }
         
         console.groupEnd();
@@ -317,7 +347,7 @@
     </g:if>
     <%-- Form cacheado --%>
     <g:form url="[controller:'guiGen', action:'save']" class="ehrform" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="templateId" value="${template.id}" />
+      <input type="hidden" name="templateId" value="${params.templateId}" />
       ${form}
       <br/>
       <div class="bottom_actions">
