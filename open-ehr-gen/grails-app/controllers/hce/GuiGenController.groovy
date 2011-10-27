@@ -281,6 +281,18 @@ class GuiGenController {
       }
 
       def templateId = params.templateId // es el nombre del archivo
+      Template template = TemplateManager.getInstance().getTemplate( templateId )
+      
+      // Si no hay template, es porque metio un valor a mano en el templateId
+      // Debe regregas al show del registro actual y seleccionar una seccion dek registro (cada seccion tiene un templateId)
+      if (!template)
+      {
+         // FIXME: el id del temaplate es de uso interno, no se lo deberia mostrar al usuario. Queda asi para debuggear.
+         flash.message = "Seccion de registro no encontrada " + params.templateId
+         redirect(controller:'records', action:'show', id:session.traumaContext?.episodioId)
+         return
+      }
+      
 
       // Model: Paciente del episodio seleccionado
       def composition = Composition.get( session.traumaContext.episodioId )
@@ -296,8 +308,6 @@ class GuiGenController {
       {
          //println "subSectionPrefix: " + subSectionPrefix
          //println "subsections: " + subsections
-   
-         Template template = TemplateManager.getInstance().getTemplate( templateId )
          
          // TODO:
          // Es mas rapido que la generacion y estoy levantando de disco!
@@ -511,6 +521,17 @@ class GuiGenController {
 
       
       def template = TemplateManager.getInstance().getTemplate( params.templateId )
+      
+      // Si no hay template, es porque metio un valor a mano en el templateId
+      // Debe regregas al show del registro actual y seleccionar una seccion dek registro (cada seccion tiene un templateId)
+      if (!template)
+      {
+         // FIXME: el id del temaplate es de uso interno, no se lo deberia mostrar al usuario. Queda asi para debuggear.
+         flash.message = "Seccion de registro no encontrada " + params.templateId
+         redirect(controller:'records', action:'show', id:session.traumaContext?.episodioId)
+         return
+      }
+      
       def transformations = template.getTransformations()
 
       //println "+++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -883,10 +904,8 @@ class GuiGenController {
                   errors: errors as JSON,
                   errors2: bindingAOMRM.errors as JSON,
                   episodeId: session.traumaContext?.episodioId, // necesario para el layout
-                  //userId: session.traumaContext.userId,
                   subsections: this.getSubsections(params.templateId.split("-")[0]),
                   allSubsections: this.getDomainTemplates()
-                  //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
                 ]
                )
          return
