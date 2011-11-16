@@ -3,6 +3,7 @@ import hce.core.composition.* // Composition y EventContext
 import data_types.quantity.date_time.*
 import converters.DateConverter
 import demographic.role.Role
+import demographic.role.RoleValidity
 import data_types.encapsulated.DvMultimedia
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import cda.*
@@ -461,11 +462,18 @@ class RecordsController {
             // Este problema puede pasar si estoy logueado como medico pero firmo con datos de un adminsitrativo.
             // TODO: un posible tema a ver es que pasa si la persona firmante no es la persona
             //       que esta logueada, puede pasar y no necesariamente es un problema.
-            def roles = Role.withCriteria {
+            //def roles = Role.withCriteria {
+            def validities = RoleValidity.withCriteria {
                 eq('performer', auth.person)
             }
             
-            def roleKeys = roles.type
+            //def roleKeys = roles.type
+            def roleKeys = validities.role.type
+            
+            println "----------------------"
+            println "roleKeys: " + roleKeys
+            println "----------------------"
+            
             if ( !roleKeys.contains(Role.MEDICO) )
             {
                 flash.error = "trauma.sign.wrongSigningRole"
@@ -489,6 +497,8 @@ class RecordsController {
             // Usar clave privada del medico para encriptar el digesto, y asi firmar el registro.
             //   Luego con su clave publica se podra decifrar el digesto y compararlo con el digesto original.
             //   Con esto se garantiza autoria, pero se necesita algun tipo de gestor de claves para mantener la publica y permitir que el medico ingrese la privada (que no se puede mantener en el sistema).
+            
+            println "id medico: " + id + " " + id.root + " " + id.extension
             
             // Firma el registro 
             if (!hceService.setCompositionComposer(composition, id.root, id.extension))
@@ -566,11 +576,13 @@ class RecordsController {
                 // Este problema puede pasar si estoy logueado como medico pero firmo con datos de un adminsitrativo.
                 // TODO: un posible tema a ver es que pasa si la persona firmante no es la persona
                 //       que esta logueada, puede pasar y no necesariamente es un problema.
-                def roles = Role.withCriteria {
-                    eq('performer', auth.person)
+                //def roles = Role.withCriteria {
+                def validities = RoleValidity.withCriteria {
+                   eq('performer', auth.person)
                 }
-
-                def roleKeys = roles.type
+               
+                //def roleKeys = roles.type
+                def roleKeys = validities.role.type
                 if ( !roleKeys.contains(Role.MEDICO) )
                 {
                     flash.error = "Firma erronea, la persona firmante no es medico"
