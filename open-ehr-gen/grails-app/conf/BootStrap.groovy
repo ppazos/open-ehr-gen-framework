@@ -147,16 +147,16 @@ class BootStrap {
         
         
      
-        println " - START: Carga tablas maestras"
+        println " - START: Carga catalogos maestros"
         
         // saco para acelerar la carga
-        /*
+        
         println "   - CIE 10..."
         def codigos = Cie10Trauma.getCodigos()
         codigos.each { codigo ->
            if (!codigo.save()) println codigo.errors
         }
-        */
+        
         
         println "   - OpenEHR Concepts..."
         def oehr_concepts = OpenEHRConcept.getConcepts()
@@ -200,7 +200,8 @@ class BootStrap {
         //
         Permit.createDefault()
         //
-        
+        DomainPermit.createDefault()
+        //
         
         // ROLES: se crea una instancia por cada rol existente.
         // Luego el admin puede crear otros roles y asignar permisos.
@@ -388,6 +389,7 @@ class BootStrap {
               
               String templateId
               String form
+              File archivo
               entry.value.each { subsection -> // via_aerea
                  
                  templateId = entry.key + "-" + subsection // 'EVALUACION_PRIMARIA-via_aerea.v1'
@@ -396,6 +398,7 @@ class BootStrap {
                  //println "split . " + templateId.split('\\.')
                  
                  // Si existe la vista estatica, no genero el html
+                 // Para la estatica, necesito generar el show igual
                  if (!new File('.\\grails-app\\views\\hce\\'+templateId+'.gsp').exists())
                  {
                     
@@ -419,7 +422,7 @@ class BootStrap {
                       
                        form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:'es']) // FIXME: hacerlo para todos los locales
                        form = form.replace('x</textarea>', '</textarea>')
-                       def archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create.htm")
+                       archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create.htm")
                        archivo.write(form);
                        
                        // No hago cache para ver los tiempos de carga de disco
@@ -474,6 +477,29 @@ class BootStrap {
                     guiManager.add(templateId, "edit", form);
                     
                     */
+                 }
+                 else // para la vista estatica genero el show igual
+                 {
+                    // Para todas las versiones del template
+                    String templatePrefix = templateId.split('\\.')[0] // 'EVALUACION_PRIMARIA-via_aerea', El nombre DEBE tener .vX
+                    
+                    // http://pleac.sourceforge.net/pleac_groovy/directories.html
+                    new File('.\\templates\\hce').eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
+                       
+                       // Template id del versionado.
+                       String templateIdV = f.name - '.xml'
+                       
+                       //if (f.isFile()) println f.canonicalPath
+                       
+                       // FIXME: al template le falta la version en el modelo. Por ahora esta solo en el nombre del archivo.
+                       Template template = TemplateManager.getInstance().getTemplate( templateIdV )
+                      
+                       // idem para el show
+                       form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:'es'])
+                       archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show.htm")
+                       archivo.write(form);
+                       guiManager.add(templateIdV, "show", form);
+                    }
                  }
               }
            }
