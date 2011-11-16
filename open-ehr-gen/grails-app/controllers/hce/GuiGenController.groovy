@@ -384,7 +384,7 @@ class GuiGenController {
       // El templateId se saca del objeto del RM guardado, asi si varia la version del template,
       // siempre voy a poder mostrar el contenido guardado con versiones anteriores del mismo.
       def templateId = rmNode.archetypeDetails.templateId
-
+      
       // Model: Paciente del episodio seleccionado
       def composition = Composition.get( session.traumaContext.episodioId )
 
@@ -405,6 +405,10 @@ class GuiGenController {
       //println f.getText()
       GuiManager guiManager = GuiManager.getInstance()
       
+      println "-----------------------------------------"
+      //println guiManager.get(templateId, "show") // OK
+      println pv
+      
       //if ( f.exists() )
       //{
          //println 'vista cacheada!'
@@ -412,6 +416,7 @@ class GuiGenController {
                model: [
                      patient: patient,
                      template: template,
+                     templateId: templateId, // FIXME: este incluye la version y el id del template no, deberian ser iguales.
                      sections: sections,
                      subsections: subsections,
                      episodeId: session.traumaContext?.episodioId,
