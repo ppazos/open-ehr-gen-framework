@@ -20,6 +20,7 @@ import templates.TemplateManager
 // Automatic marshalling of XML and JSON
 import grails.converters.*
 import cache.PathValores
+import util.FieldNames
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -208,7 +209,7 @@ class AjaxApiController {
         
         def codePath = 'openEHR-EHR-OBSERVATION.diagnosticos.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/defining_code'
         def descPath = 'openEHR-EHR-OBSERVATION.diagnosticos.v1/data[at0001]/events[at0002]/data[at0003]/items[at0005]/value'
-        def templateId = "DIAGNOSTICO-diagnosticos"
+        //def templateId = "DIAGNOSTICO-diagnosticos"
         
         //XStream xstream = new XStream()
         
@@ -242,10 +243,10 @@ class AjaxApiController {
         // openEHR-EHR-OBSERVATION.diagnosticos.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/defining_code
         
         BindingAOMRM bindingAOMRM = new BindingAOMRM( session )
-        def rmobj = bindingAOMRM.bind(pathValor, templateId)
+        def rmobj = bindingAOMRM.bind(pathValor, params.templateId)
 
         // Se necesita para generar la vista edit
-        def template = TemplateManager.getInstance().getTemplate( templateId )
+        def template = TemplateManager.getInstance().getTemplate( params.templateId )
         
         // FIXME: hacer flujo de guardar y volver al registro clinico.
         //println pathValor.toString()
@@ -256,7 +257,7 @@ class AjaxApiController {
         // Idem al chequeo de GuiGenController.save, si ya existe el ContentItem y
         // es mode=edit, ser borra el viejo y se guarda el nuevo CI.
         // Si mode!=edit, el registro ya esta hecho, no se puede volver a hacer.
-        def item = hceService.getCompositionContentItemForTemplate( comp, templateId )
+        def item = hceService.getCompositionContentItemForTemplate( comp, params.templateId )
         if (item)
         {
             // Si es el save de un edit, borra el registro anterior y sustituye por el nuevo.
@@ -291,7 +292,7 @@ class AjaxApiController {
                 def patient = hceService.getPatientFromComposition( composition )
 
                 // ==============================================================================
-
+                
                 // Secciones predefinidas para seleccionar registro clinico
                 // Es necesario para mostrar el menu
                 /*
@@ -333,6 +334,28 @@ class AjaxApiController {
             {
                 println "SALVADO ENTRY O SECTION OK"
 
+                
+                // ========================================================================
+                FieldNames fields = FieldNames.getInstance()
+                def fieldValor = [:] // En el cache se tiene que guardar el field no la path
+                String field
+                pathValor.each{
+                   
+                   field = fields.getField(it.key) // obtengo el field por la path
+                   fieldValor[field] = it.value
+                }
+                
+                PathValores paramsCache = new PathValores(params: fieldValor, item: rmobj)
+                
+                // Guarda el los valores submiteados para poder generar las vistas mas
+                // rapido (cache) sin necesidad de recorrer toda la estructura del RM.
+                //PathValores paramsCache = new PathValores(params: pathValue, item: rmobj)
+                
+                // TODO: verificar que guarda correctamente y hacer log si no guarda.
+                if (!paramsCache.save()) println paramsCache.errors
+                // ========================================================================
+                
+                
                 // Se linkea las Entry y Section bindeadas a la Composition Correspondiente
                 comp.addToContent(rmobj)
                 
