@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
+NO SE USA MAS
 <html>
   <head>
     <meta name="layout" content="ehr" />
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'generarTemplate.css')}" />
   </head>
-  <body>    
-    <%-- ${archetypeList} --%>
-    
+  <body>
     <%-- SUBMENU DE SECCIONES SI EXISTEn --%>
     <g:if test="${subsections.size()>1}">
       <div id="navbar">
         <ul>
           <g:each in="${subsections}" var="subsection">
-            <li ${((template.id==subsection)?'class="active"':'')}>
+            <li ${((params.templateId==subsection)?'class="active"':'')}>
 	          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
-	            <g:if test="${it.hasItem}">
+	            <g:if test="${it.hasItem}">-${subsection}-
 	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
 	            </g:if>
 	            <g:else>
-		          <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
+		          <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">-${subsection}-
 		            <g:message code="${'section.'+subsection}" />
 		          </g:link>
 		        </g:else>
