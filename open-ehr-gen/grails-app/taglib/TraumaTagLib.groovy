@@ -9,6 +9,7 @@ import demographic.party.Person
 import hce.core.common.change_control.Version
 import demographic.role.*
 import java.text.DecimalFormat;
+import hce.core.common.generic.PartyIdentified // composer
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -30,10 +31,7 @@ class TraumaTagLib {
        if (!composition)
           throw new Exception("No se encuentra el episodio con id " + attrs.episodeId + " @TraumaTagLib 1")
 
-        //-----------------------------------------------------------------------
-        // Datos para mostrar Triage
-        //-----------------------------------------------------------------------
-        def color = triageColor( composition ) 
+        
 
         /*
         //-----------------------------------------------------------------------
@@ -86,6 +84,10 @@ class TraumaTagLib {
         // Si han firmado, mostrar el responsable de la atencion.
         if (composition.composer)
         {
+            def composer = PartyIdentified.get( composition.composer.id )
+            println "-------------------------------------"
+            println composer.externalRef
+           
             def persons = demographicService.findPersonById( composition.composer.externalRef.objectId )
             def responsable
             if (persons.size() == 0)
@@ -110,9 +112,9 @@ class TraumaTagLib {
             out << '<div style="padding: 4px;">'
             out << message(code:'trauma.list.label.composer') + ': ' +
                    responsable.primerNombre + ' ' +
-                   responsable.segundoNombre + ' ' +
+                   ((responsable.segundoNombre) ? (responsable.segundoNombre + ' ') : '') +
                    responsable.primerApellido + ' ' +
-                   responsable.segundoApellido
+                   ((responsable.segundoApellido) ? responsable.segundoApellido : '')
             out << '</div>'
         }
         // /RESPONSABLE
@@ -138,7 +140,13 @@ class TraumaTagLib {
         out << '<div>&nbsp;</div>'
         */
 
-        
+        // FIXME: sacarlo a una taglib que se filtre por dominio y templateId
+        // o sea, se muestran todas las taglibs si se esta en el dominio o dominio y templateId actual.
+        // asi puedo implementar
+        //-----------------------------------------------------------------------
+        // Datos para mostrar Triage
+        //-----------------------------------------------------------------------
+        def color = triageColor( composition )
         // Para mostrar el color del triage si es que ya fue registrado.
         if (color)
         {
