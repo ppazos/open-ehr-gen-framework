@@ -36,6 +36,7 @@ class PartyProxy { // Abstracta
     }
 
     static constraints = {
+       codedExternalRef(nullable:true)
     }
     
     // Solucion a http://old.nabble.com/Getting-Item_%24%24_javassist_165-from-ins.getClass%28%29.getSimpleName%28%29-td27317238.html

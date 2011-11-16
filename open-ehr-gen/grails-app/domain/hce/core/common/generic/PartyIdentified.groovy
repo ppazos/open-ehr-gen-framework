@@ -12,7 +12,7 @@ class PartyIdentified extends PartyProxy {
     //static hasMany = [identifiers: DvIdentifier]
     String codedIdentifiers // Las colecciones de datatypes tambien se deben serializar
     
-    static transients = ['identifiers']
+    static transients = ['identifiers', 'externalRef'] // externalRef es de party proxy
     
     def PartyIdentified()
     {
@@ -30,21 +30,24 @@ class PartyIdentified extends PartyProxy {
        XStream xstream = new XStream()
        xstream.omitField(DataValue.class, "errors");
        codedIdentifiers = xstream.toXML(identifiers)
+       codedExternalRef = xstream.toXML(externalRef) // de PartyProxy
     }
     def beforeUpdate() {
        XStream xstream = new XStream()
        xstream.omitField(DataValue.class, "errors");
        codedIdentifiers = xstream.toXML(identifiers)
+       codedExternalRef = xstream.toXML(externalRef) // de PartyProxy
     }
     // Al reves
     def afterLoad() {
        XStream xstream = new XStream()
        if (codedIdentifiers) identifiers = xstream.fromXML(codedIdentifiers)
+       if (codedExternalRef) externalRef = xstream.fromXML(codedExternalRef) // de PartyProxy
     }
     
     static constraints = {
       name(nullable:true)
       //identifiers(nullable:true)
-      codedIdentifiers(maxSize:4096)
+      codedIdentifiers(nullable:true, maxSize:4096)
     }
 }
