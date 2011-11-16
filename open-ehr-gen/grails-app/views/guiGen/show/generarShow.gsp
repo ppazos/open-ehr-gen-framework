@@ -175,7 +175,7 @@
       <div id="navbar">
         <ul>
           <g:each in="${subsections}" var="subsection">
-            <li ${((template.id==subsection)?'class="active"':'')}>
+            <li ${((templateId==subsection)?'class="active"':'')}>
               <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
                 <g:if test="${it.hasItem}">
                   <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
