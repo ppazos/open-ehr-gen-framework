@@ -178,6 +178,7 @@
       <g:form controller="ajaxApi" action="saveDiagnostico">
         
         <input type="hidden" name="mode" value="${mode}" />
+        <input type="hidden" name="templateId" value="${params.templateId}" />
         
         <h3><g:message code="section.DIAGNOSTICO-diagnosticos.label.selectedDiagnoses" /></h3>
         <div id="seleccionados">
