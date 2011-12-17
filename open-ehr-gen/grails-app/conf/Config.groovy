@@ -72,7 +72,8 @@ templates2 {
               'cluster_obligatorio.v2',
               'cluster_obligatorio_multiple.v1',
               'cluster_obligatorio_multiple_struct.v1',
-              'cluster_oblig_multiple_element_oblig.v1'
+              'cluster_oblig_multiple_element_oblig.v1',
+              'blood_pressure.v3'
              ]
    }
 }
