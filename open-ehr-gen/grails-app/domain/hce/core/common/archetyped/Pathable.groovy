@@ -1,6 +1,6 @@
 package hce.core.common.archetyped
 
-//import hce.core.*
+import hce.core.composition.Composition
 
 /**
  * Padre abstracto de todas las clases cuyas instancias son accesibles por caminos (path), y
@@ -22,6 +22,21 @@ class Pathable { // Abstracta
    Long rmParentId // Cumple el rol de Pathable parent
    String path
 
+   
+   // =====================================================================================
+   // Implementacion particular de EHRGen para poder realizar busquedas semanticas
+   // y relacionar bojetos del rm con distintas paths y saber si pertenecen a la misma
+   // estructura de registro: COMPOSITION. Los objetos de la misma composition se podran
+   // mostrar juntos y bajo el mismo marco de tiempo.
+   // Todos los objetos del RM tendran parentComposition menos las compositions.
+   
+   // Guardar la composicion en los objetos del RM me da un error en backred entre Composition y Section.
+   // Voy a guardar solo el id de la composition, eso es suficiente.
+   //Composition parentComposition
+   Long parentCompositionId
+   
+   
+   
    // El atributo parent y su persistencia se maneja a mano, no se deja que GRAILS guarde o actualiza el parent.
    // rmParentId definido en Pathable
    // Si no se pone tira except property [rmParent] not found on entity
@@ -50,6 +65,7 @@ class Pathable { // Abstracta
 
    static constraints = {
       rmParentId(nullable: true)
+      parentCompositionId(nullable: true)
    }
 
    /**
