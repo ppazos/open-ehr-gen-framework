@@ -91,57 +91,60 @@ class BootStrap {
         
         def folder
         def domains = grailsApplication.config.domains
-        domains.each { domain ->
-           
-           folder = new Folder(
-              //name: new DvText(value: g.message(code: domain)),
-              name: new DvText(value: messageSource.getMessage(domain, new Object[2], new Locale('es'))),
-              path: domain,
-              archetypeNodeId: "at0001",         // FIXME: Inventado
-              archetypeDetails: new Archetyped(  // FIXME: Inventado
-                archetypeId: 'ehr.domain',
-                templateId: 'ehr.domain',
-                rmVersion: '1.0.2' // FIXME: deberia ser variable global de config
+        if (Folder.count() == 0) // Si no se crearon los folders...
+        {
+           domains.each { domain ->
+              
+              folder = new Folder(
+                 //name: new DvText(value: g.message(code: domain)),
+                 name: new DvText(value: messageSource.getMessage(domain, new Object[2], new Locale('es'))),
+                 path: domain,
+                 archetypeNodeId: "at0001",         // FIXME: Inventado
+                 archetypeDetails: new Archetyped(  // FIXME: Inventado
+                   archetypeId: 'ehr.domain',
+                   templateId: 'ehr.domain',
+                   rmVersion: '1.0.2' // FIXME: deberia ser variable global de config
+                 )
               )
-           )
-           
-           // FIXME: no esta salvando...
-           // TODO: setear atributos de Locatable
-           
-           if (!folder.save())
-           {
-              println folder.errors
-              //println folder.name.errors
-              println folder.archetypeDetails.errors
+              
+              // FIXME: no esta salvando...
+              // TODO: setear atributos de Locatable
+              
+              if (!folder.save())
+              {
+                 println folder.errors
+                 //println folder.name.errors
+                 println folder.archetypeDetails.errors
+              }
+              
+              // =====================================================================================
+              // Crea registro de prueba para cada dominio
+              def startDate = DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
+              def composition = hceService.createComposition( startDate, "bla bla bla" )
+              
+              // Set parent
+              //Folder domain = Folder.findByPath( session.traumaContext.domainPath )
+              composition.padre = folder           
+   
+              if (!composition.save())
+              {
+                  println "Error: " + composition.errors
+              }
+              
+              // Crea la version inicial
+              def version = new Version(
+                data: composition,
+                timeCommited: new DvDateTime(
+                  value: DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
+                )
+              )
+              
+              if (!version.save())
+              {
+                  println "ERROR: " + version.errors
+              }
+              // =====================================================================================
            }
-           
-           // =====================================================================================
-           // Crea registro de prueba para cada dominio
-           def startDate = DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
-           def composition = hceService.createComposition( startDate, "bla bla bla" )
-           
-           // Set parent
-           //Folder domain = Folder.findByPath( session.traumaContext.domainPath )
-           composition.padre = folder           
-
-           if (!composition.save())
-           {
-               println "Error: " + composition.errors
-           }
-           
-           // Crea la version inicial
-           def version = new Version(
-             data: composition,
-             timeCommited: new DvDateTime(
-               value: DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
-             )
-           )
-           
-           if (!version.save())
-           {
-               println "ERROR: " + version.errors
-           }
-           // =====================================================================================
         }
         // /TEST Folder
         
@@ -152,16 +155,30 @@ class BootStrap {
         // saco para acelerar la carga
         
         println "   - CIE 10..."
-        def codigos = Cie10Trauma.getCodigos()
-        codigos.each { codigo ->
-           if (!codigo.save()) println codigo.errors
+        if (Cie10Trauma.count() == 0)
+        {
+           def codigos = Cie10Trauma.getCodigos()
+           codigos.each { codigo ->
+              if (!codigo.save()) println codigo.errors
+           }
+        }
+        else
+        {
+           println "      ya estan cargados"
         }
         
         
         println "   - OpenEHR Concepts..."
-        def oehr_concepts = OpenEHRConcept.getConcepts()
-        oehr_concepts.each { concept ->
-           if (!concept.save()) println concept.errors
+        if (OpenEHRConcept.count() == 0)
+        {
+           def oehr_concepts = OpenEHRConcept.getConcepts()
+           oehr_concepts.each { concept ->
+              if (!concept.save()) println concept.errors
+           }
+        }
+        else
+        {
+           println "      ya estan cargados"
         }
         
         println "   - Tipos de identificadores..."
