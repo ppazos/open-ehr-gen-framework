@@ -32,7 +32,7 @@ if (refPath) _refPath = refPath
     <g:each in="${codes}" var="code">
       <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, code)}" />
       <g:if test="${!archetypeTerm}">
-        El termino con codigo [${code}] no esta definido en el arquetipo ${archetype.archetypeID.value}, ver que el termino este definido para el lenguaje ${lang}.<br/>
+        El termino con codigo [${code}] no esta definido en el arquetipo ${archetype.archetypeId.value}, ver que el termino este definido para el lenguaje ${lang}.<br/>
       </g:if>
       <g:else>
         <% values << archetypeTerm.items.text %>
