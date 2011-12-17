@@ -43,9 +43,18 @@ import converters.DateConverter // Para formatos de fechas
 class FactoryObjectRM {
 
     def session
+    
+    // Agrego la composition para poder asociarsela a todos los objetos
+    // del RM bindeados, esto sirve para hacer las busquedas semanticas
+    // y relacionar objetos del RM devueltos como resultado entre si,
+    // cuando pertenecen a la misma ocmposition.
+    //def composition
+    
     def FactoryObjectRM(Object session)
     {
         this.session = session
+        // Guardar la composicion en los objetos del RM me da un error en backred entre Composition y Section.
+        //this.composition = Composition.get(session.traumaContext.episodioId)
     }
 
     /**
@@ -53,11 +62,20 @@ class FactoryObjectRM {
     * archetypeDetails del los Objetos del RM creados.
     * FIXME: en lugar de pasarle el archNodeIde psarle el CObject y con su path,
     *        del archetype saco el archNodeId: arquetipo.node(cco.path()).nodeID
+    * FIXME: tambien esta operacion deberia setear el locatable.path
     */
     def completarLocatable(Locatable locatable, String archNodeId, Archetype archetype, String tempId)
     {
         //println "ENTRANDO A COMPLETAR LOCATABLE"
 
+       
+        // Es para asociar nodos del RM en la busqueda semantica
+        // Guardar la composicion en los objetos del RM me da un error en backred entre Composition y Section.
+        // Voy a guardar solo el id de la composition, eso es suficiente.
+        //locatable.parentComposition = this.composition
+        locatable.parentCompositionId = session.traumaContext.episodioId
+         
+       
         String rmV = ApplicationHolder.application.config.openEHR.RMVersion
         String archetypeId = archetype.archetypeId.value
         Archetyped archDetails = new Archetyped(archetypeId: archetypeId, templateId: tempId, rmVersion: rmV)
@@ -451,6 +469,8 @@ class FactoryObjectRM {
         {
             e = new Event()
             e.data = listaItems[0]
+            // FIXME: OJO con el formato! para crear la composition estoy usando iso8601ExtendedDateTimeFromParams
+            // que deja yyyy-mm-dd, y esta de hl7 es yyyymmdd !!!!
             e.time = new DvDateTime(value: DateConverter.toHL7DateFormat(new Date()) )
             completarLocatable(e, archNodeId, arquetipo, tempId)
         }
@@ -478,6 +498,8 @@ class FactoryObjectRM {
                 if (event) h.addToEvents(event)
             }
     
+            // FIXME: OJO con el formato! para crear la composition estoy usando iso8601ExtendedDateTimeFromParams
+            // que deja yyyy-mm-dd, y esta de hl7 es yyyymmdd !!!!
             h.origin = new DvDateTime(value: DateConverter.toHL7DateFormat(new Date()) ) //new DvDateTime(value: "20091121")
             completarLocatable(h, archNodeId, arquetipo, tempId)
         }
@@ -641,6 +663,8 @@ class FactoryObjectRM {
             
             // FIXME: mal fecha
             //a.time = new DvDateTime(value: "20091121")
+            // FIXME: OJO con el formato! para crear la composition estoy usando iso8601ExtendedDateTimeFromParams
+            // que deja yyyy-mm-dd, y esta de hl7 es yyyymmdd !!!!
             a.time = new DvDateTime(value: DateConverter.toHL7DateFormat(new Date()) )
         }
 
