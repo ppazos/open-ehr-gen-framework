@@ -2,6 +2,7 @@ package hce.core.common.archetyped
 
 import support.identification.*
 import data_types.text.*
+import data_types.basic.DataValue
 
 //import java.lang.reflect.Method;
 import java.util.*;
@@ -19,7 +20,7 @@ import com.thoughtworks.xstream.XStream
 // Pablo: prueba para agregar el atributo Pathable.parent a los nodos del RM
 class Locatable extends Pathable {
 
-    //UIDBasedID uid;
+    //UIDBasedID uid // Optional globally unique object identifier for root points of archetyped structures.
     String archetypeNodeId // Id del nodo (ej. at0001) -->  arquetipo.node(path).nodeID
     DvText name // Termino asociado al archetypeNodeId --> termino pedido a la ontologia en base a archetypeNodeId
     String codedName
@@ -34,13 +35,13 @@ class Locatable extends Pathable {
        // Para generar XML en una sola linea sin pretty print: http://stackoverflow.com/questions/894625/how-to-disable-pretty-printingwhite-space-newline-in-xstream
        // Interesante: http://www.xml.com/pub/a/2001/06/20/databases.html
        XStream xstream = new XStream()
-       xstream.omitField(DvText.class, "errors");
+       xstream.omitField(DataValue.class, "errors");
        codedName = xstream.toXML(name)
        //println "beforeInsert codedName " + codedName
     }
     def beforeUpdate() {
        XStream xstream = new XStream()
-       xstream.omitField(DvText.class, "errors");
+       xstream.omitField(DataValue.class, "errors");
        codedName = xstream.toXML(name)
        //println "beforeUpdate codedName " + codedName
     }
