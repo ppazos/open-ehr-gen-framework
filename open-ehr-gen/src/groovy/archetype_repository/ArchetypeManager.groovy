@@ -13,6 +13,8 @@ import se.acode.openehr.parser.*
 import org.apache.log4j.Logger
 import java.util.regex.Pattern
 
+import org.openehr.am.archetype.constraintmodel.ArchetypeConstraint
+
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
  * @version 1.0
@@ -265,6 +267,21 @@ class ArchetypeManager {
        }
        
        return archetype
+   }
+   
+   /**
+    * La path incluye el id del arquetipo:
+    * @param fullPath openEHR-EHR-OBSERVATION.diagnosticos.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/defining_code
+    * @return
+    */
+   public ArchetypeConstraint getArchetypeNode(String fullPath)
+   {
+      int i = fullPath.indexOf('/')
+      String archetypeId = fullPath.substring(0, i)
+      String path = fullPath.substring(i)
+      
+      Archetype a = this.getArchetype(archetypeId)
+      return a?.node(path)
    }
    
    public String toString()

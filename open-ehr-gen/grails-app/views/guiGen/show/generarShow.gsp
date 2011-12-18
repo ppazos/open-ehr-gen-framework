@@ -144,7 +144,7 @@
         {
           var partes = value.split("||");
           field.addClass(templateId+"_"+partes[0]); // para customizar el estilo, por ejemplo se usa en el triage.
-          field.text(partes[1]);
+          field.text(partes[1] + ' ('+ partes[0] +')'); // muestro el nombre y el codigo entre parentesis
           return;
         }
 

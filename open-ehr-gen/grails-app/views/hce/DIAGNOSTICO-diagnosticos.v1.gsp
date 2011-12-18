@@ -61,7 +61,7 @@
           //       ids de los codigos seleccionados para diagnosticos.
           //
           $('seleccionados').innerHTML += '<div id="selected_'+code.id+'">' +
-                                          '<input type="hidden" name="codes" value="'+ code.id +'" />'+
+                                          '<input type="hidden" name="codes" value="'+ code.id +'||'+ code.nombre +'" />'+
                                           '('+ ((code.codigo) ? code.codigo : code.subgrupo) + ') ' + code.nombre + // si no es un codigo, para que no muestre null
                                           ' <a href="javascript:unselect(\'' + code.id + '\');">[borrar]</a> ' +
                                           '</div>';
