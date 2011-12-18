@@ -20,6 +20,7 @@
     <script type="text/javascript" src="${createLinkTo(dir:'js', file:'jquery-1.6.2.min.js')}"></script>
     <script type="text/javascript" src="${createLinkTo(dir:'js', file:'jquery.form.2_43.js')}"></script>
     <g:javascript library="jquery.scrollTo-1.4.2-min" />
+    <g:javascript library="jquery.tableFilter-1.0.0" />
     <script type="text/javascript">
     
     var calendar1;
@@ -106,6 +107,8 @@
       // 
       // Ojo que input es un evento nuevo de HTML5
       //
+      $('input[name=archetype_filter]').tableFilter( $('#concepts'), 1 );
+      /*
       $('input[name=archetype_filter]').bind('input', function(evt) {
         
         //console.log(this.value); // OK! idem a evt.target.value
@@ -128,6 +131,7 @@
            }
         });
       });
+      */
 
     });
     
