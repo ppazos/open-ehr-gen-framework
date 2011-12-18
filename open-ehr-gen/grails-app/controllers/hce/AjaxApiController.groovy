@@ -171,13 +171,17 @@ class AjaxApiController {
           codigos {
             _codigos.each { _codigo ->
             
+              // FIXME: hacer el highlight del lado del cliente con js, asi tengo el nombre sin tags html para procesar en la vista
               // a negrita los textos de entrada en el texto de salida
+              /*
               def _nombre = _codigo.nombre
               partes.each { parte ->
               
                 // El texto en la base esta en upper
+                
                 _nombre = _nombre.replaceAll(parte.toUpperCase(), '<b class="highlight">'+parte.toUpperCase()+'</b>')
               }
+              */
               //println "nombre: "+_nombre
             
               codigo (
@@ -187,8 +191,8 @@ class AjaxApiController {
                 codigo: _codigo.codigo,
                 
                 
-                //nombre: _codigo.nombre
-                nombre: _nombre
+                nombre: _codigo.nombre
+                //nombre: _nombre
               )
             }
           }
@@ -202,7 +206,7 @@ class AjaxApiController {
     // No se si va aca, capaz en un controller que se encargue de recibir las salvadas.
     def saveDiagnostico = {
         
-        def cie10ids = request.getParameterValues("codes") as List
+        def cie10ids = request.getParameterValues("codes") as List // 845||OTROS TRAUMATISMOS Y LOS NO ESPECIFICADOS DE LA CABEZA
         //List everyDays = java.util.Arrays.asList( everyDaysArray );
         
         def pathValor = [:]
@@ -213,9 +217,16 @@ class AjaxApiController {
         
         //XStream xstream = new XStream()
         
-        cie10ids.each { id ->
+        cie10ids.each { id_name ->
         
-            def code = Cie10Trauma.get( id )
+            // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=50
+            // Viene con || el nombre para poder mostrar el nombre del codedtext en el show, no solo el cie10
+            def partes = id_name.split("\\|\\|")
+           
+            //println id_name
+            //println partes
+            
+            def code = Cie10Trauma.get( partes[0] )
             
             //println xstream.toXML(code)
             
@@ -225,7 +236,11 @@ class AjaxApiController {
             // le meto cie10 al principio para saber de cual terminologica tiene que sacar el texto y para que pueda crear la terminology Id del definingcode del CodedText.
             // FIXME: si el seleccionado es un subgrupo, no tiene codigo!
             //pathValor['openEHR-EHR-OBSERVATION.diagnosticos.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/defining_code'] << 'cie10::'+code.codigo
-            pathValor[ codePath ] << ((code.codigo)?code.codigo:code.subgrupo) // si es un subgrupo, el codigo es el del subgrupo!
+            //pathValor[ codePath ] << ((code.codigo)?code.codigo:code.subgrupo) // si es un subgrupo, el codigo es el del subgrupo!
+            
+            // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=50
+            // le pongo el nombre del coded text
+            pathValor[ codePath ] << ((code.codigo)?code.codigo:code.subgrupo) + '||' + partes[1]
         }
         
         //println "PathValor: " + pathValor
