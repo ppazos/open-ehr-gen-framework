@@ -25,9 +25,13 @@
         // Agrego links para clonar nodos multiples
         $('.multiple').each( function(i, e) {
           
+          // FIXME: i18n
+    
           // Agrega un link en el contenedor (padre) del nodo multiple.
           var link = $('<a href="#" class="cloner">agregar otro</a>');
-          $(e).parent().append(link);
+          
+          // Inserta luego del nodo que hay que clonar, para saber que el prev() es el nodo a clonar.
+          $(e).after(link);
         });
         
         $('.cloner').click( function (evt) {
@@ -44,7 +48,6 @@
           
           evt.preventDefault();
         });
-        //
         // ===================================================
         
         // ===================================================
