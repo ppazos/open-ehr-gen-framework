@@ -6,6 +6,8 @@ package hce
 
 import se.acode.openehr.parser.*
 import org.openehr.am.archetype.Archetype
+import org.openehr.am.archetype.constraintmodel.ArchetypeConstraint
+import org.openehr.am.openehrprofile.datatypes.text.CCodePhrase
 
 import hce.HceService
 
@@ -42,7 +44,6 @@ class GuiGenController {
    def hceService
    
    
-   
    // ============================= GESTION DE GUIS generadas ======================================
    // TEST
    def fieldPathlist = {
@@ -61,9 +62,7 @@ class GuiGenController {
     * 
     * 
    */
-   
    // ============================= GESTION DE GUIS generadas ======================================
-   
    
    
    
@@ -407,7 +406,75 @@ class GuiGenController {
       
       println "-----------------------------------------"
       //println guiManager.get(templateId, "show") // OK
-      println pv
+      println "pathValores: " + pv.params
+      
+      // ===============================================================================
+      // FIXED: el problema se resolvio en AjaxApiController.save porque para los coded
+      // text faltaba guardar el nombre como se guarda en GuiGenController.save: codigo||nombre
+      //
+      // Para los textos codificados tengo que pedir los valores
+      // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=50
+      /*
+      ArchetypeManager am = ArchetypeManager.getInstance()
+      FieldNames fields = FieldNames.getInstance()
+      binding.CtrlTerminologia terms = binding.CtrlTerminologia.getInstance()
+      
+      String fullPath
+      Archetype archetype
+      ArchetypeConstraint n
+      
+      // Para cada codigo encontrado, su nombre
+      def names = [:]
+      
+      pv.params.each { entry ->
+         
+         // entry.key es fieldName
+         fullPath = fields.getPath(entry.key)
+         println 'fullPath: '+ fullPath
+         
+         // Si el campo es una parte de una fecha, no va a tener path
+         if (!fullPath) return
+         
+         //def n = am.getArchetypeNode(fullPath) // No puedo usar esto porque tambien necesito el arquetipo para pedirle el termino a CtrlTerminologia...
+         int i = fullPath.indexOf('/')
+         String archetypeId = fullPath.substring(0, i)
+         String path = fullPath.substring(i)
+         
+         archetype = am.getArchetype(archetypeId)
+         n = archetype?.node(path)
+         //println n
+         
+
+         // Veo los nombres de los codigos para este nodo del arquetipo si es CCodePhrase
+         if (n instanceof CCodePhrase)
+         {
+            // Ojo este es: org.openehr.rm.support.identification.TerminologyID
+            // Y necesito: support.identification.TErminologyID que es mi implementacion!
+            //println n.terminologyId
+            
+            // Quiero siempre una lista de codigos
+            def codes = []
+            
+            if (entry.value instanceof String)
+            {
+               codes << entry.value
+            }
+            else
+            {
+               codes = entry.value
+            }
+            
+            codes.each{ code ->
+               names[code] = terms.getTermino(
+                   support.identification.TerminologyID.create(n.terminologyId.name, n.terminologyId.version),
+                   code,
+                   archetype,
+                   session.locale)
+            }
+         }
+      }
+      */
+      
       
       //if ( f.exists() )
       //{
@@ -807,10 +874,11 @@ class GuiGenController {
          return
       }
       
-      
+      // ==========================================================
       // Bind
       BindingAOMRM bindingAOMRM = new BindingAOMRM(session)
       def rmobj = bindingAOMRM.bind(pathValue, params.templateId)
+      
       
       //println "Params: " + params.toString() + "\n"
       //println "Path value: " + pathValue + "\n"
