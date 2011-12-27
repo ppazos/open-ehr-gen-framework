@@ -27,27 +27,33 @@ class CtrlTerminologia {
     String getTermino(TerminologyID terminologyId, String codigo, Archetype arquetipo, Locale locale)
     {
         String lang = 'es' // Lenguaje por defecto, FIXME: sacar de config.
+        
+        /*
         if (locale)
         {
-            lang = locale.getLanguage()
+            //lang = locale.getLanguage()
+            lang = locale.toString() // si tomo solo el lenguaje, pierdo las traducciones con pais como es_ar
+            // ojo que el locale es es_AR y en el arquetipo es es_ar
         }
+        */
         
         switch ( terminologyId.name )
         {
             case "local":
-                /*
-                def archetypeTerm = arquetipo.ontology.termDefinition('es', codigo) // TODO: lenguaje no hardcoded
-                if (!archetypeTerm)
-                    return "" //El termino con codigo [${code}] no esta definido en el arquetipo, posiblemente el termino no esta definido para el lenguaje seleccionado.<br/>
-                else
-                    return archetypeTerm.text //archetypeTerm.items.text
-                */
+
                 String text
-                def term = arquetipo.ontology.termDefinition(lang, codigo)
+                
+                // Escala al igual que en ArchetypeTagLib.findTerm
+                // Cuidado el locale tiene formato: es_AR
+                // Pero el arquetipo tiene formato: es-ar
+                
+                def term = arquetipo.ontology.termDefinition(locale.toString().toLowerCase().replaceAll("_", "-"), codigo)
+                if (!term) term = arquetipo.ontology.termDefinition(locale.language+'-'+session.locale.country.toLowerCase(), codigo)
+                if (!term) term = arquetipo.ontology.termDefinition(locale.language, codigo)
                 if (!term)
                 {
                     text = 'Termino no encontrado en el arquetipo ['+codigo+'], '+
-                           'para el nodo ['+codigo+'], y el lang ['+lang+']'
+                           'para el nodo ['+codigo+'], y el locale ['+locale.toString()+']'
                 }
                 else
                 {
@@ -140,4 +146,3 @@ class CtrlTerminologia {
         return []
     }
 }
-

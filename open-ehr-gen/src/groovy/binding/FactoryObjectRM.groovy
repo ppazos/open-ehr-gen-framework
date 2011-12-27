@@ -86,6 +86,7 @@ class FactoryObjectRM {
         {
             if (session.locale)
             {
+                // FIXME: deberia escalar en locale como ArchetypeTagLib.findTerm
                 lang = session.locale.getLanguage()
             }
         }
@@ -100,6 +101,8 @@ class FactoryObjectRM {
             // que referencia a una terminologia externa mediante ConstraintRef.
             //nameN = archetype.ontology.termDefinition("es", archNodeId)?.getItems()?.text
             
+            // FIXME: en lugar de consultar directamente al arquetipo, deberia usar 
+            // CtrlTerminologia.getInstance().getTermino(cp.terminologyId, cp.codeString, arquetipo, this.session.locale)
             def term = archetype.ontology.termDefinition(lang, archNodeId)
             if (!term)
             {
@@ -1278,11 +1281,6 @@ class FactoryObjectRM {
     {
        //println "createCodePhrase: cs="+ cs // at0009||Coloca
        //println ""
-       
-       /*
-       Locale locale = this.session.locale
-       println "createCodePhrase: " + cs
-       */
        
        // TEST con el texto y el codigo viniendo desde la web separeado por ||
        String[] parts = cs.split(/\|\|/) // code||texto
