@@ -2,7 +2,8 @@
 // config files can either be Java properties files or ConfigSlurper scripts
 
 // idiomas disponibles
-langs = ['es','en','pt'] // ISO 639-1 Code
+langs = ['es','en','es_AR'] // ISO 639-1 Code
+locales = [new Locale('es'), new Locale('en'), new Locale('es', 'AR')]
 
 // donde se buscan con templates en disco, corresponde al domino de la HCE.
 // El framework soporta multiples dominios ofreciendo una pantalla
@@ -62,6 +63,7 @@ templates2 {
       // decisiones terapeuticas evolutivas, ISS
       COMUNES = ['movimiento_paciente.v1']
    }
+   /*
    '/domain.emergencia' {
       ACCIONES = ['adm_sust.v1']
       DIAGNOSTICO = ['diagnosticos.v1']
@@ -73,9 +75,12 @@ templates2 {
               'cluster_obligatorio_multiple.v1',
               'cluster_obligatorio_multiple_struct.v1',
               'cluster_oblig_multiple_element_oblig.v1',
-              'blood_pressure.v3'
+              'blood_pressure.v3',
+              'blood_pressure_liotta.v1'
              ]
+   
    }
+   */
 }
 
 /* templates2 es el nuevo

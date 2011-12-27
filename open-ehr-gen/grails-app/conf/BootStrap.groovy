@@ -1,5 +1,5 @@
 
-import javax.management.relation.RoleInfo;
+import javax.management.relation.RoleInfo
 
 import demographic.*
 import demographic.contact.*
@@ -97,7 +97,15 @@ class BootStrap {
               
               folder = new Folder(
                  //name: new DvText(value: g.message(code: domain)),
-                 name: new DvText(value: messageSource.getMessage(domain, new Object[2], new Locale('es'))),
+                 //name: new DvText(value: messageSource.getMessage(domain, new Object[2], new Locale('es'))),
+                 // para verificar seguridad necesito tambien el codigo en el folder.
+                 name: new DvCodedText(
+                   value: messageSource.getMessage(domain, new Object[2], new Locale('es')),
+                   definingCode: new CodePhrase(
+                     codeString: domain,
+                     terminologyId: TerminologyID.create('ehrgen', null)
+                   )
+                 ),
                  path: domain,
                  archetypeNodeId: "at0001",         // FIXME: Inventado
                  archetypeDetails: new Archetyped(  // FIXME: Inventado
@@ -182,27 +190,55 @@ class BootStrap {
         }
         
         println "   - Tipos de identificadores..."
-        def identificadores = TipoIdentificador.getTipos()
-        identificadores.each { id ->
-           if (!id.save()) println id.errors
+        if (TipoIdentificador.count() == 0)
+        {
+           def identificadores = TipoIdentificador.getTipos()
+           identificadores.each { id ->
+              if (!id.save()) println id.errors
+           }
+        }
+        else
+        {
+           println "      ya estan cargados"
         }
         
-        println "   - Motivos de consulta (idem tipos de evento)..."
-        def eventos = MotivoConsulta.getTipos()
-        eventos.each { evento ->
-           if (!evento.save()) println evento.errors
+        if (MotivoConsulta.count() == 0)
+        {
+           println "   - Motivos de consulta (idem tipos de evento)..."
+           def eventos = MotivoConsulta.getTipos()
+           eventos.each { evento ->
+              if (!evento.save()) println evento.errors
+           }
+        }
+        else
+        {
+           println "      ya estan cargados"
         }
         
-        println "   - Empresas emergencia movil..."
-        def emergencias = EmergenciaMovil.getEmergencias()
-        emergencias.each { emergencia ->
-           if (!emergencia.save()) println emergencia.errors
+        if (EmergenciaMovil.count() == 0)
+        {
+           println "   - Empresas emergencia movil..."
+           def emergencias = EmergenciaMovil.getEmergencias()
+           emergencias.each { emergencia ->
+              if (!emergencia.save()) println emergencia.errors
+           }
+        }
+        else
+        {
+           println "      ya estan cargados"
         }
         
-        println "   - Departamentos UY..."
-        def departamentos = DepartamentoUY.getDepartamentos()
-        departamentos.each { dpto ->
-           if (!dpto.save()) println dpto.errors
+        if (DepartamentoUY.count() == 0)
+        {
+           println "   - Departamentos UY..."
+           def departamentos = DepartamentoUY.getDepartamentos()
+           departamentos.each { dpto ->
+              if (!dpto.save()) println dpto.errors
+           }
+        }
+        else
+        {
+           println "      ya estan cargados"
         }
         
         println " - END: Carga tablas maestras"
@@ -215,13 +251,14 @@ class BootStrap {
         
         
         //
-        Permit.createDefault()
+        Permit.createDefault() // controler/action
         //
-        DomainPermit.createDefault()
+        DomainPermit.createDefault() // domain/templateId
         //
         
         // ROLES: se crea una instancia por cada rol existente.
         // Luego el admin puede crear otros roles y asignar permisos.
+        // TODO: crear un usuario para el rol GODLIKE
         def rGodLike = new Role(type: Role.GODLIKE)
         if (!rGodLike.save()) println rGodLike.errors
         
@@ -271,8 +308,8 @@ class BootStrap {
         persona3.fechaNacimiento = new Date(83, 11, 26)
         persona3.type = "Persona"
         persona3.sexo = "F"
-        def validityPac6 = new RoleValidity(performer: persona3, role: rMedico)
-        persona3.addToRoles(validityPac6)
+        def validityMed1 = new RoleValidity(performer: persona3, role: rMedico)
+        persona3.addToRoles(validityMed1)
         if (!persona3.save()) println persona3.errors
         
         def persona4 = new Person(primerNombre:'Pablo', primerApellido:'Cardozo')
@@ -326,6 +363,21 @@ class BootStrap {
         def validityPac8 = new RoleValidity(performer: persona_admin, role: rAdmin)
         persona_admin.addToRoles(validityPac8)
         if (!persona_admin.save()) println persona_admin.errors
+        
+        
+        // =============================================================
+        // ASIGNACION DE PERMISOS POR DEFECTO
+        
+        // ROL MEDICO, ACCESO A TODOS LOS DOMINIOS y todos los templates
+        // -------------------------------------------------------------
+        DomainPermit.findAllByTemplateId("*").each {
+        
+           rMedico.addToDomainPermits(it)
+        }
+        
+        rMedico.save()
+        //
+        // =============================================================
         
         
         /*
@@ -437,30 +489,37 @@ class BootStrap {
                        // FIXME: al template le falta la version en el modelo. Por ahora esta solo en el nombre del archivo.
                        Template template = TemplateManager.getInstance().getTemplate( templateIdV )
                       
-                       form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:'es']) // FIXME: hacerlo para todos los locales
-                       form = form.replace('x</textarea>', '</textarea>')
-                       archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create.htm")
-                       archivo.write(form);
+                       int i = 0
                        
-                       // No hago cache para ver los tiempos de carga de disco
-                       guiManager.add(templateIdV, "create", form);
+                       // Se genera cada vista para cada locale disponible
+                       grailsApplication.config.langs.each { lang ->
                        
-                       // idem para el show
-                       form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:'es'])
-                       
-                       archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show.htm")
-                       archivo.write(form);
-                       
-                       guiManager.add(templateIdV, "show", form);
-                       
-                       
-                       // idem para edit
-                       form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:'es'])
-                       form = form.replace('x</textarea>', '</textarea>')
-                       archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_edit.htm")
-                       archivo.write(form);
-                       
-                       guiManager.add(templateIdV, "edit", form);
+                          println 'lang: '+ lang
+                          println 'locale: '+ grailsApplication.config.locales[i].toString()
+                          println 'template: '+ templateIdV
+                          
+                          
+                          form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
+                          form = form.replace('x</textarea>', '</textarea>')
+                          archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create_"+ lang +".htm")
+                          archivo.write(form);
+                          guiManager.add(templateIdV, "create", form);
+                          
+                          // idem para el show
+                          form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
+                          archivo.write(form);
+                          guiManager.add(templateIdV, "show", form);
+                          
+                          // idem para edit
+                          form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          form = form.replace('x</textarea>', '</textarea>')
+                          archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_edit_"+ lang +".htm")
+                          archivo.write(form);
+                          guiManager.add(templateIdV, "edit", form);
+                          
+                          i++
+                       }
                     }
                     
                     
@@ -511,11 +570,19 @@ class BootStrap {
                        // FIXME: al template le falta la version en el modelo. Por ahora esta solo en el nombre del archivo.
                        Template template = TemplateManager.getInstance().getTemplate( templateIdV )
                       
-                       // idem para el show
-                       form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:'es'])
-                       archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show.htm")
-                       archivo.write(form);
-                       guiManager.add(templateIdV, "show", form);
+                       int i = 0
+                       
+                       // Se genera cada vista para cada locale disponible
+                       grailsApplication.config.langs.each { lang ->
+                       
+                          // idem para el show
+                          form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: i18n
+                          archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
+                          archivo.write(form);
+                          guiManager.add(templateIdV, "show", form)
+                          
+                          i++
+                       }
                     }
                  }
               }
