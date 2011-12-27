@@ -12,25 +12,14 @@ def _refPath = ''
 if (refPath) _refPath = refPath
 
 %>
-<!-- armo lista de valores con textos -->
-<g:set var="labels" value="${[]}" />
-<g:each in="${cDvOrdinal.list.sort{ it.value }}" var="ordinal">
-  <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, ordinal.symbol.codeString)}" />
-    <g:if test="${!archetypeTerm}">
-    El termino con codigo [${ordinal.symbol.codeString}] no esta definido en el arquetipo, posiblemente el termino no esta definido para el lenguaje ${lang}.<br/>
-  </g:if>
-  <g:else>
-    <% labels << archetypeTerm.items.text %>
-  </g:else>
-</g:each>
 
 <%-- Aca values tiene los codigos, es como codes en _cCodePhrase.gsp --%>
 <g:set var="values" value="${cDvOrdinal.list.sort{ it.value }.symbol.codeString}" />
 
-<!-- le pongo el value al code para obtener el value en el show, porque asi se guarda en PathValores -->
-<%-- collectEntries disponible desde Groovy 1.7.9 y grails 1.3.7 tiene Groovy 1.7.8 
-<g:set var="values" value="${values.collectEntries{ key, value -> [key +'||'+ value, value] }}" />
---%>
+<g:codeListTerms archetype="${archetype}" codeList="${values}" locale="${locale}">
+  <g:set var="labels" value="${it.labels}" />
+</g:codeListTerms>
+
 <%
 def values2 = [:]
 if (values.size()>0)

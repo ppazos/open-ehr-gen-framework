@@ -21,5 +21,4 @@ TODO: la path la debe resolver desde este nodo, no desde el nodo referenciado.<b
                   (templateName): node,
                   archetype: archetype,
                   archetypeService: archetypeService,
-                  params: params,
-                  lang: lang, template: template]" />
+                  params: params, lang: lang, locale: locale, template: template]" />

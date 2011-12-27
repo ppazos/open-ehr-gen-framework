@@ -29,6 +29,11 @@ if (refPath) _refPath = refPath
   </g:if>
   <g:else>
     <g:set var="codes" value="${cCodePhrase.codeList}" />
+    <g:codeListTerms archetype="${archetype}" codeList="${codes}" locale="${locale}">
+      <g:set var="values" value="${it.labels}" />
+    </g:codeListTerms>
+    
+    <%--
     <g:each in="${codes}" var="code">
       <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, code)}" />
       <g:if test="${!archetypeTerm}">
@@ -38,6 +43,8 @@ if (refPath) _refPath = refPath
         <% values << archetypeTerm.items.text %>
       </g:else>
     </g:each>
+    --%>
+    
   </g:else>
 </g:if>
 <g:else>

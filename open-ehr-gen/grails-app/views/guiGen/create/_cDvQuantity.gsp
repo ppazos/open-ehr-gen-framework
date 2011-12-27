@@ -14,7 +14,7 @@
   <%
     def concepts = OpenEHRConcept.withCriteria {
       eq('conceptId', cDvQuantity.property.codeString)
-      eq('lang', lang)
+      eq('lang', lang) // FIXME: i18n con locale
     }
     if (concepts.size()==1)
       print concepts[0].rubric

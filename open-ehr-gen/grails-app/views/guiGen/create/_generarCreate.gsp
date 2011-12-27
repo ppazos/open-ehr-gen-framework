@@ -19,7 +19,7 @@ in: template
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
-                                    params: params, lang:lang, template: template]" />
+                                    params: params, lang: lang, locale: locale, template: template]" />
                 </g:if>
                 <g:else>
                   Dice que el node es nulo<br/>
@@ -40,7 +40,7 @@ in: template
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
-                                    params: params, lang:lang, template: template]" />
+                                    params: params, lang:lang, locale: locale, template: template]" />
                 </g:if>
                 <g:else>
                   Dice que el node es nulo<br/>
@@ -59,8 +59,7 @@ in: template
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
-                                    params: params,
-                                    lang:lang, template: template]" />
+                                    params: params, lang: lang, locale: locale, template: template]" />
                 </g:if>
                 <g:else>
                   Dice que el node es nulo<br/>
@@ -80,8 +79,7 @@ in: template
                           model="[(templateName): node,
                                   archetype: archRef.getReferencedArchetype(),
                                   archetypeService: archetypeService,
-                                  params: params,
-                                  lang: lang, template: template]" />
+                                  params: params, lang: lang, locale: locale, template: template]" />
               </g:each>
             </g:each>
           </td>

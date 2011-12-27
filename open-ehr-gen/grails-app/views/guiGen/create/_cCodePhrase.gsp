@@ -45,6 +45,11 @@ if (refPath) _refPath = refPath
   </g:if>
   <g:else>
     <g:set var="codes" value="${cCodePhrase.codeList}" />
+    <g:codeListTerms archetype="${archetype}" codeList="${codes}" locale="${locale}">
+      <g:set var="values" value="${it.labels}" />
+    </g:codeListTerms>
+    
+    <%--
     <g:each in="${codes}" var="code">
       <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, code)}" />
       <g:if test="${!archetypeTerm}">
@@ -54,6 +59,8 @@ if (refPath) _refPath = refPath
         <% values << archetypeTerm.items.text %>
       </g:else>
     </g:each>
+    --%>
+    
   </g:else>    
    
 </g:if>
@@ -62,9 +69,6 @@ if (refPath) _refPath = refPath
 </g:else>
 
 <!-- le pongo el value al code para obtener el value en el show, porque asi se guarda en PathValores -->
-<%-- collectEntries disponible desde Groovy 1.7.9 y grails 1.3.7 tiene Groovy 1.7.8 
-<g:set var="values" value="${values.collectEntries{ key, value -> [key +'||'+ value, value] }}" />
---%>
 <%
 def values2 = [:]
 if (values.size()>0)

@@ -22,7 +22,7 @@ if (refPath) _refPath = refPath
                       archetype: archetype,
                       archetypeService:archetypeService,
                       refPath: refPath,
-                      params: params, lang: lang, template: template]" />
+                      params: params, lang: lang, locale: locale, template: template]" />
 </g:if>
 <g:if test="${cDomainType instanceof CDvOrdinal}">
     <g:render template="../guiGen/show/cDvOrdinal"
@@ -30,7 +30,7 @@ if (refPath) _refPath = refPath
                       archetype: archetype,
                       archetypeService:archetypeService,
                       refPath: refPath,
-                      params: params, lang: lang, template: template]" />
+                      params: params, lang: lang, locale: locale, template: template]" />
 </g:if>
 <g:if test="${cDomainType instanceof CDvQuantity}">
     <g:render template="../guiGen/show/cDvQuantity"
@@ -38,5 +38,5 @@ if (refPath) _refPath = refPath
                       archetype: archetype,
                       archetypeService:archetypeService,
                       refPath: refPath,
-                      params: params, lang: lang, template: template]" />
+                      params: params, lang: lang, locale: locale, template: template]" />
 </g:if>

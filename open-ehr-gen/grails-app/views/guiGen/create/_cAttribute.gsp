@@ -17,4 +17,4 @@ if (refPath) _refPath = refPath
             model="[archetype: archetype,
                     archetypeService: archetypeService,
                     refPath: refPath,
-                    params: params, lang: lang, template: template]" />
+                    params: params, lang: lang, locale: locale, template: template]" />

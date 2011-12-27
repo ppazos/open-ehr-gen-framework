@@ -41,9 +41,10 @@ if (refPath) _refPath = refPath
     <!-- PATH: ${archetype.archetypeId.value +_refPath+ cComplexObject.path()} -->
     <g:if test="${cComplexObject.nodeID}">
       <!-- Si es item structure no pone el titulo -->
+      <%--
       <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, cComplexObject.nodeID)}" />
       <g:if test="${!archetypeTerm}">
-         <%-- Si es un nodo hoja, siempre cae aca porque no tiene ID --%>
+         < % - - Si es un nodo hoja, siempre cae aca porque no tiene ID - - % >
          El termino con codigo [${cComplexObject.nodeID}] no esta definido en el arquetipo, 
          posiblemente el termino no esta definido para el lenguaje ${lang}.
          <br/><br/>
@@ -51,29 +52,21 @@ if (refPath) _refPath = refPath
       </g:if>
       <g:else>
          <span class="label">
-           ${archetypeTerm.text}: <%-- ${archetypeTerm.items.text}: FIXME: items es una coleccion de muchos? --%>
+           ${archetypeTerm.text}:
          </span>
       </g:else>
+      --%>
+        
+      <span class="label">
+        <g:displayTerm archetype="${archetype}" code="${cComplexObject.nodeID}" locale="${locale}" />:
+      </span>
+      
     </g:if>
     <g:else><%-- si no tengo nodeID, busco por path --%>
 
       <%-- El problema es que deberia caer aqui solo si el atributo simple (son los que no tienen nodeID)
            no esta adentro de un element, ya que para el element ya se muestra la label.
            El tema es que para los primitives hijos de elements, no defino TermBindings en el arq. --%>
-    
-      <%-- forma larga de hacer la busqueda
-      <g:each in="${archetype.ontology.getTermBindingList()}" var="ontologyBinding">
-        <g:each in="${ontologyBinding.getBindingList()}" var="termBindingItem">
-          path: ${termBindingItem.code} - 
-          terms: ${termBindingItem.terms[0].class}<br/>
-          <g:if test="${cComplexObject.path()==termBindingItem.code}">
-            <span class="label">
-              <g:message code="${termBindingItem.terms[0].replace('::','-')}" />
-            </span>
-          </g:if>
-        </g:each>
-      </g:each>
-      --%>
       
       <g:each in="${archetype.ontology.getTermBindingList()}" var="ontologyBinding">
         <g:set var="termBindingItem" value="${ontologyBinding.getBindingList().find{ it.code == cComplexObject.path() }}" />
@@ -95,7 +88,6 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
 --%>
     <g:if test="${cComplexObject.rmTypeName.startsWith('DV_INTERVAL')}"><%-- DV_INTERVAL<DV_COUNT> --%>
       <%-- TODO?? ver lower y upper 
-      
       es el mismo codigo que abajo...
       --%>
       <g:if test="${cComplexObject.attributes}">
@@ -105,8 +97,7 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
                   model="[archetype: archetype,
                           archetypeService: archetypeService,
                           refPath: refPath,
-                          params: params,
-                          lang: lang, template: template]" />
+                          params: params, lang: lang, locale: locale, template: template]" />
       </g:if>
     </g:if>
     <g:if test="${cComplexObject.rmTypeName.startsWith('DV_MULTIMEDIA')}">
@@ -122,9 +113,7 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
                   model="[archetype: archetype,
                           archetypeService: archetypeService,
                           refPath: refPath,
-                          params: params,
-                          lang: lang,
-                          template: template]" />
+                          params: params, lang: lang, locale: locale, template: template]" />
       </g:if>
       <g:else><%-- muestra nodos sin restriccion, solo si no tiene atributos para seguir navegando --%>
       
@@ -174,13 +163,6 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
 --%>
 
     </span>
-    <%--
-    <g:parentElementIsMultiple archetypeId="${archetype.archetypeId.value}" nodePath="${cComplexObject.path()}">
-      <div class="multiple">
-        <a href="#${anchor}" class="clone">Agregar entrada</a>
-      </div>
-    </g:parentElementIsMultiple>
-    --%>
   </div>
 </g:if>
 

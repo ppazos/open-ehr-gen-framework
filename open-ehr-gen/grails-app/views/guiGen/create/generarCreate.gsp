@@ -16,7 +16,7 @@
           // FIXME: i18n
     
           // Agrega un link en el contenedor (padre) del nodo multiple.
-          var link = $('<a href="#" class="cloner">agregar otro</a>');
+          var link = $('<a href="#" class="cloner">${g.message(code:'guigen.action.addMultiplenode')}</a>');
           
           // Inserta luego del nodo que hay que clonar, para saber que el prev() es el nodo a clonar.
           $(e).after(link);
