@@ -61,7 +61,31 @@ class DataValueEditTagLib {
       {
          codes = cphrase.codeList
          codes.each{ code ->
+            
+            /*
+            // FIXME: deberia escalar en el locale como ArchetypeTagLib.findTerm, o mismo usar esa funcion.
             def archetypeTerm = attrs.archetype.ontology.termDefinition(session.locale.language, code)
+            if (archetypeTerm) values << archetypeTerm.items.text
+            else
+            {
+               // TODO:
+               // El termino con codigo [${code}] no esta definido en el arquetipo, posiblemente el
+               // termino no esta definido para el lenguaje seleccionado.<br/>
+            }
+            */
+            
+            // Cuidado el locale tiene formato: es_AR
+            // Pero el arquetipo tiene formato: es-ar
+            
+            // pido para todo el locale
+            def archetypeTerm = attrs.archetype.ontology.termDefinition(session.locale.toString().toLowerCase().replaceAll("_", "-"), code)
+            
+            // pido para el idioma y pais
+            if (!archetypeTerm) archetypeTerm = attrs.archetype.ontology.termDefinition(session.locale.language+'-'+session.locale.country.toLowerCase(), code)
+            
+            // pido para el idioma
+            if (!archetypeTerm) archetypeTerm = attrs.archetype.ontology.termDefinition(session.locale.language, code)
+            
             if (archetypeTerm) values << archetypeTerm.items.text
             else
             {
