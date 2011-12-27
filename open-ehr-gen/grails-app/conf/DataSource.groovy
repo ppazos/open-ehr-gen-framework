@@ -1,8 +1,8 @@
 dataSource {
-	pooled = true
-	driverClassName = "org.hsqldb.jdbcDriver"
-	username = "sa"
-	password = ""
+   pooled = true
+   driverClassName = "org.hsqldb.jdbcDriver"
+   username = "sa"
+   password = ""
 }
 hibernate {
     cache.use_second_level_cache=true
@@ -11,31 +11,32 @@ hibernate {
 }
 // environment specific settings
 environments {
-	development {
-		dataSource {
+   development {
+      dataSource {
 //          dbCreate = "create-drop" // one of 'create', 'create-drop','update'
-//			url = "jdbc:hsqldb:mem:devDB"
-			
-	        pooling = true
-	        driverClassName = "com.mysql.jdbc.Driver"
-	        url = "jdbc:mysql://localhost:3306/oehr_dev?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
-	        dbCreate = "create-drop"
-	        username = "root"
-	        password = ""
+//            url = "jdbc:hsqldb:mem:devDB"
+         
+           pooling = true
+           driverClassName = "com.mysql.jdbc.Driver"
+           url = "jdbc:mysql://localhost:3306/oehr_dev?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
+           dbCreate = "create-drop"
+           //dbCreate = "update"
+           username = "root"
+           password = ""
             
-            //loggingSql = true
-		}
-	}
-	test {
-		dataSource {
-			dbCreate = "update"
-			url = "jdbc:hsqldb:mem:testDb"
-		}
-	}
-	production {
-		dataSource {
-			//dbCreate = "update"
-			//url = "jdbc:hsqldb:file:prodDb;shutdown=true"
+           //loggingSql = true
+      }
+   }
+   test {
+      dataSource {
+         dbCreate = "update"
+         url = "jdbc:hsqldb:mem:testDb"
+      }
+   }
+   production {
+      dataSource {
+         //dbCreate = "update"
+         //url = "jdbc:hsqldb:file:prodDb;shutdown=true"
             
             pooling = true
             driverClassName = "com.mysql.jdbc.Driver"
@@ -43,6 +44,6 @@ environments {
             dbCreate = "create-drop"
             username = "root"
             password = ""
-		}
-	}
+      }
+   }
 }

@@ -5,6 +5,7 @@ package demographic.role
 
 import demographic.party.*
 import authorization.Permit
+import authorization.DomainPermit
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -16,8 +17,9 @@ import authorization.Permit
  */
 class Role extends Party {
     
+    // FIXME: ESTA CLASE MODELA ROLES DEL DOMINIO, NO ROLES DE SEGURIDAD! SE DEBERIA HACER UNA CLASE AuthRole que contenga los permits, y que pueda hacer referencia a un tipo de party o rol del dominio.
     // Roles predefinidos
-    // FIXME: deberian ir en una tabla maestra
+    // FIXME: deberian ir en una tabla gestionable
     static String GODLIKE        = 'master_of_the_universe' // rol de prueba con acceso a todo
     static String ADMIN          = 'administrador'  // administrador del sistema con acceso al backend
     static String PACIENTE       = 'paciente'       // este rol no tiene acceso al sistema
@@ -38,7 +40,13 @@ class Role extends Party {
     
     // Esto se cambia por Permit
     //static hasMany = [capabilities:Capability]
-    static hasMany = [permits: Permit]
+    
+    // Se combinan permits y domain permits para lograr controlar todo el acceso de cada rol.
+    // Para que el rol acceda, se deben cumplir ambos permits
+    // El primer punto de control es si tiene acceso al dominio
+    // Luego, para las acciones de registro, depende del template y de las acciones de los controladores que tienen que ver con el registro.
+    // Por ultimo se usan los permits para el resto de las acciones del sistema, p.e. acciones de gestion.
+    static hasMany = [permits: Permit, domainPermits: DomainPermit]
 
     static constraints = {
         //timeValidityTo(nullable:true)

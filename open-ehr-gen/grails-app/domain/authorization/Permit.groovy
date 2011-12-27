@@ -10,7 +10,6 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
  * Y se usa * para indicar que se tiene acceso a cualquiera.
  * 
  * @author pab
- *
  */
 class Permit {
     
@@ -22,7 +21,7 @@ class Permit {
       action(nullable: false)
    }
     
-   static Map createDefault()
+   static void createDefault()
    {
       def data = []
       for (controller in ApplicationHolder.application.controllerClasses)

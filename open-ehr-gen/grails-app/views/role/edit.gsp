@@ -17,16 +17,16 @@
         padding: 0px;
       }
       /* Para corregir alineamiento de checkboxes a sus labels */
-	  input[type=checkbox] {
-	    width: 13px;
-	    height: 13px;
-	    padding: 0;
-	    margin:0;
-	    vertical-align: middle;
-	    position: relative;
-	    top: -1px;
-	    *overflow: hidden;
-	  }
+      input[type=checkbox] {
+        width: 13px;
+        height: 13px;
+        padding: 0;
+        margin:0;
+        vertical-align: middle;
+        position: relative;
+        top: -1px;
+        *overflow: hidden;
+      }
     </style>
   </head>
   <body>
@@ -47,10 +47,42 @@
         </div>
       </g:hasErrors>
       
-      <g:form method="post" >
+      <g:form method="post">
         <g:hiddenField name="id" value="${roleInstance?.id}" />
         <g:hiddenField name="version" value="${roleInstance?.version}" />
-        <div class="dialog">
+        <div class="dialog list">
+
+          <h2>Permisos de dominio</h2>
+          <table>
+            <tbody>
+              <!--
+              TODO: i18n de los textos hardcoded.
+              TODO: al seleccionar "todas" para un controler, se deben apagar los checks de las demas acciones de ese controller.
+              TODO: el id del template deberia traer el nombre y descripcion del template, que esta definido adentro del propio template.
+              -->
+              
+              <g:each in="${domainPermits.domain.unique()}" var="domain" status="i">
+                <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                  <td class="title">
+                    ${message(code:domain)}                
+                  </td>
+                </tr>
+                <g:each in="${domainPermits.findAll{ it.domain == domain }}" var="permit">
+                  <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                    <g:set var="checked" value="${roleInstance.domainPermits.find{ p -> p.domain==permit.domain && p.templateId==permit.templateId }}" />
+                    <td ${((checked)?'class="permit"':'')} title="${permit.templateId}">
+                      <label>
+                        <input type="checkbox" name="dpermits" value="${permit.domain}__${permit.templateId}" ${((checked)?'checked="true"':'')} />
+                        ${permit.templateId} <g:if test="${permit.templateId == '*'}">(todas)</g:if>
+                      </label>
+                    </td>
+                  </tr>
+                </g:each>
+              </g:each>
+            </tbody>
+          </table>
+        
+          <h2>Permisos de bajo nivel</h2>
           <table>
             <tbody>
             

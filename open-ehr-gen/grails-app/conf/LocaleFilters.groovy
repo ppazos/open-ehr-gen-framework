@@ -25,7 +25,28 @@ class LocaleFilters {
                {
                   // Codigo de Staffmember.changeLocale
                   log.debug("sessionLang parameter:"+params.sessionLang)
-                  Locale locale = new Locale(params.sessionLang)
+                  
+                  // El locale de java tiene formato aa_AA_aaaa
+                  def localeParts = params.sessionLang.split('_') // lang, country, variant
+                  
+                  //Locale locale = new Locale(params.sessionLang)
+                  Locale locale
+                  switch (localeParts.length)
+                  {
+                     case 1:
+                       locale = new Locale(localeParts[0])
+                     break;
+                     case 2:
+                        locale = new Locale(localeParts[0], localeParts[1])
+                     break;
+                     case 3:
+                        locale = new Locale(localeParts[0], localeParts[1], localeParts[2])
+                     break;
+                     // Otro caso termina en el locale por defecto.
+                  }
+                  
+                  println "locale set to: " + locale.toString()
+                  
                   //i18nService.setLocale(locale, request, response, session) // sets the session as well
                   if (request)
                   {
@@ -37,8 +58,9 @@ class LocaleFilters {
                }
                catch (Exception e)
                {
-                  log.error("Error changing locale to:"+params.lang)
+                  //log.error("Error changing locale to:"+params.lang)
                   log.debug("Exception:"+e)
+                  println "Exception:"+e
                }
             }
             else if (session.user && session.user.selectedLocale)

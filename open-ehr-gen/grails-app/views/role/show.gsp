@@ -33,35 +33,61 @@
         <div class="message">${flash.message}</div>
       </g:if>
       
-      <div class="dialog">
+      <div class="dialog list">
+        <h2>Permisos de dominio</h2>
         <table>
           <tbody>
+            <!--
+            TODO: i18n de los textos hardcoded.
+            TODO: al seleccionar "todas" para un controler, se deben apagar los checks de las demas acciones de ese controller.
+            TODO: el id del template deberia traer el nombre y descripcion del template, que esta definido adentro del propio template.
+            -->
+            
+            <g:each in="${domainPermits.domain.unique()}" var="domain" status="i">
+              <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                <td class="title">
+                  ${message(code:domain)}                
+                </td>
+              </tr>
+              <g:each in="${domainPermits.findAll{ it.domain == domain }}" var="permit">
+                <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                  <g:set var="checked" value="${roleInstance.domainPermits.find{ p -> p.domain==permit.domain && p.templateId==permit.templateId }}" />
+                  <td ${((checked)?'class="permit"':'')} title="${permit.templateId}">
+                    ${permit.templateId} <g:if test="${permit.templateId == '*'}">(todas)</g:if>
+                  </td>
+                </tr>
+              </g:each>
+            </g:each>
+          </tbody>
+        </table>
         
-	          <!--
-	          TODO: i18n de los textos hardcoded.
-	          TODO: al seleccionar "todas" para un controler, se deben apagar los checks de las demas acciones de ese controller.
-	          TODO: si el rol tiene un permit, mostrar el checkbox checked.
-	          -->
-	          
-	          <g:each in="${permits.controller.unique()}" var="controller" status="i">
-	            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-	              <td class="title">
-	                ${controller}                
-	              </td>
-	            </tr>
-	            <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-	              <g:each in="${permits.findAll{ it.controller == controller }}" var="permit">
-	              	<g:set var="checked" value="${roleInstance.permits.find{ p -> p.controller==permit.controller && p.action==permit.action }}" />
-	                <td ${((checked)?'class="permit"':'')}>
-	                  ${permit.action} <g:if test="${permit.action == '*'}">(todas)</g:if>
-	                </td>
-	              </g:each>
-	            </tr>
-	          </g:each>
-
+        <h2>Permisos de bajo nivel</h2>
+        <table>
+          <tbody>
+            <!--
+              TODO: i18n de los textos hardcoded.
+              TODO: al seleccionar "todas" para un controler, se deben apagar los checks de las demas acciones de ese controller.
+            -->
+              
+            <g:each in="${permits.controller.unique()}" var="controller" status="i">
+              <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                <td class="title">
+                  ${controller}                
+                </td>
+              </tr>
+              <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                <g:each in="${permits.findAll{ it.controller == controller }}" var="permit">
+                 <g:set var="checked" value="${roleInstance.permits.find{ p -> p.controller==permit.controller && p.action==permit.action }}" />
+                  <td ${((checked)?'class="permit"':'')}>
+                    ${permit.action} <g:if test="${permit.action == '*'}">(todas)</g:if>
+                  </td>
+                </g:each>
+              </tr>
+            </g:each>
           </tbody>
         </table>
       </div>
+      
       <div class="buttons">
         <g:form>
           <g:hiddenField name="id" value="${roleInstance?.id}" />

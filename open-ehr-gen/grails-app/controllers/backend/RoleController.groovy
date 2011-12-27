@@ -2,6 +2,7 @@ package backend
 
 import demographic.role.*
 import authorization.Permit
+import authorization.DomainPermit
 
 class RoleController {
 
@@ -20,13 +21,16 @@ class RoleController {
       
       def role = Role.get(params.id)
       def permits = Permit.list()
+      def domainPermits = DomainPermit.list()
       
-      return [roleInstance: role, permits: permits]
+      return [roleInstance: role, permits: permits, domainPermits: domainPermits]
    }
    
+   /*
    def create = {
       
    }
+   */
    
    def save = {
       
@@ -43,8 +47,9 @@ class RoleController {
       
       def role = Role.get(params.id)
       def permits = Permit.list()
+      def domainPermits = DomainPermit.list()
       
-      return [roleInstance: role, permits: permits]
+      return [roleInstance: role, permits: permits, domainPermits: domainPermits]
    }
    
    /* id: identificador del rol a actualizar
@@ -52,8 +57,8 @@ class RoleController {
     */
    def update = {
       
-      // TODO: eliminar los permits actuales del rol.
-      // TODO: ver los permits que vienen, pedirlos a la base y setearselos al rol.
+      // 1. Elimina los permits actuales del rol.
+      // 2. Ve los permits que vienen, pide a la base y setea al rol.
       
       def role = Role.get(params.id)
       
@@ -64,14 +69,36 @@ class RoleController {
          role.removeFromPermits(it)
       }
       
+      permitsToRemove = []
+      permitsToRemove.addAll( role.domainPermits )
+      permitsToRemove.each {
+         role.removeFromDomainPermits(it)
+      }
       
-      params.permits.each { controllerAction ->
+      def partes
+      def permit
+      
+      // Permits
+      params.list('permits').each { controllerAction ->
          
-         def partes = controllerAction.split("__")
+         partes = controllerAction.split("__")
          
-         def permit = Permit.findByControllerAndAction(partes[0], partes[1])
+         permit = Permit.findByControllerAndAction(partes[0], partes[1])
          role.addToPermits(permit)
-         role.save()
+      }
+      
+      // DomainPermits
+      params.list('dpermits').each { domainTemplateId ->
+         
+         partes = domainTemplateId.split("__")
+         
+         permit = DomainPermit.findByDomainAndTemplateId(partes[0], partes[1])
+         role.addToDomainPermits(permit)
+      }
+      
+      if (!role.save())
+      {
+         println role.errors
       }
       
       redirect(action:'show', id:params.id)
