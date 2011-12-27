@@ -17,6 +17,7 @@ in: fieldPaths paths de los fields del archRef del template para el que se esta 
 <g:if test="${generarGUI}">
   <div class="OBSERVATION">
     <g:set var="aomNode" value="${archetype.node(rmNode.path)}" />
+    <%-- // FIXME: deberia escalar en locale como ArchetypeTagLib.findTerm --%>
     <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, aomNode.nodeID)}" />
     <span class="label">
       ${archetypeTerm?.text}:

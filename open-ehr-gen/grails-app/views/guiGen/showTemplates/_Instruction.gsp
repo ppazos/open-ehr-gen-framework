@@ -15,6 +15,7 @@ in: rmNode (Instruction)
 <g:if test="${generarGUI}">
   <div class="INSTRUCTION">
     <g:set var="aomNode" value="${archetype.node(rmNode.path)}" />
+    <%-- // FIXME: deberia escalar en locale como ArchetypeTagLib.findTerm --%>
     <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, aomNode.nodeID)}" />
     <span class="label">
       ${archetypeTerm?.text}:

@@ -14,6 +14,7 @@ in: rmNode (Action)
 <g:set var="generarGUI" value="${fieldPaths.find{ rmNode.path.startsWith(it)} != null}" />
 <g:if test="${generarGUI}">
   <div class="ACTION">
+    <%-- // FIXME: deberia escalar en locale como ArchetypeTagLib.findTerm --%>  
     <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, aomNode.nodeID)}" />
     <span class="label">
       ${archetypeTerm?.text}:

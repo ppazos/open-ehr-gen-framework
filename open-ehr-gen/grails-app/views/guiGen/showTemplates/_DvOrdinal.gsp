@@ -16,7 +16,8 @@ in: dataValue (DvOrdinal)
   <%-- Codigo similar a _cDvOrdinal --%>
   <g:set var="labels" value="${[]}" />
   <g:each in="${aomNode.list.sort{ it.value }}" var="ordinal">
-      <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, ordinal.symbol.codeString)}" />
+    <%-- // FIXME: deberia escalar en locale como ArchetypeTagLib.findTerm --%>  
+    <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, ordinal.symbol.codeString)}" />
       <g:if test="${!archetypeTerm}">
         El termino con codigo [${ordinal.symbol.codeString}] no esta definido en el arquetipo,
         posiblemente el termino no esta definido para el lenguaje seleccionado.<br/>
