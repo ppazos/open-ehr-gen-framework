@@ -97,8 +97,8 @@ class GuiCachingService {
       
       // Para resolver:
       // org.xml.sax.SAXParseException: The entity "aacute" was referenced, but not declared
-      List remover = ['\\&aacute;', '\\&eacute;', '\\&iacute;', '\\&oacute;', '\\&uacute;', '\\&ntilde;']
-      List reemplazo = ['á', 'é', 'í', 'ó', 'ú', 'ñ']
+      List remover = ['\\&aacute;', '\\&eacute;', '\\&iacute;', '\\&oacute;', '\\&uacute;', '\\&ntilde;', '&']
+      List reemplazo = ['á', 'é', 'í', 'ó', 'ú', 'ñ', '&amp;']
       
       for (int i in 0..remover.size()-1)
       {
@@ -107,8 +107,19 @@ class GuiCachingService {
       
       // Intento de preety print del xml
       //String xml = output.toString()
-      def node = new XmlParser().parseText(xml);
-      return groovy.xml.XmlUtil.serialize( node )
+      def node
+      def ret
+      try
+      {
+         node = new XmlParser().parseText(xml)
+         ret = groovy.xml.XmlUtil.serialize( node )
+      }
+      catch (Exception e)
+      {
+         println e.message
+         println xml.replaceAll("\n", "")
+      }
+      return ret
    }
    
    /*
