@@ -2,7 +2,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main" />
-    <title>Domain list</title>
+    <title><g:message code="domain.list.title" /></title>
     <style>
     .domain {
         width: 120px;
@@ -26,36 +26,28 @@
   <body>
     <div class="nav">
       <span class="menuButton">
-        <g:link controller="person" action="list" class="list">Personas</g:link>
+        <g:link controller="person" action="list" class="list"><g:message code="domain.list.action.personas" /></g:link>
       </span>
       <span class="menuButton">
-        <g:link controller="role" action="list" class="list">Roles</g:link>
+        <g:link controller="role" action="list" class="list"><g:message code="domain.list.action.roles" /></g:link>
       </span>
     </div>
     
     <div class="body">
-      <h1>Listado de dominios</h1>
+      <h1><g:message code="domain.list.title" /></h1>
       <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
       </g:if>
       <div class="list">
-        <%--
-        <g:each in="${domains}" status="i" var="domain">
-          <div class="domain">
-            <g:link action="selectDomain">
-              <img src="${createLinkTo(dir: 'images', file: 'folder.png')}" /><br/>
-              ${message(code: domain)}
-            </g:link>
-          </div>
-        </g:each>
-        --%>
         <g:each in="${folders}" status="i" var="folder">
-          <div class="domain">
-            <g:link action="selectDomain" params="[path: folder.path]">
-              <img src="${createLinkTo(dir: 'images', file: 'folder.png')}" /><br/>
-              ${folder.name.value}
-            </g:link>
-          </div>
+          <g:hasDomainPermit domain="${folder.name.definingCode.codeString}">
+            <div class="domain">
+              <g:link action="selectDomain" params="[path: folder.path]">
+                <img src="${createLinkTo(dir: 'images', file: 'folder.png')}" /><br/>
+                ${folder.name.value}
+              </g:link>
+            </div>
+          </g:hasDomainPermit>
         </g:each>
       </div>
     </div>
