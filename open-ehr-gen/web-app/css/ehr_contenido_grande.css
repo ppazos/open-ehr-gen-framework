@@ -143,6 +143,10 @@ ul.userBar li.active a {
   background-color: #ffffff;
 }
 
+ul.lang li {
+  font-size: 10px;
+}
+
 #menu {
   width: 180px;
   /*left: 0px;*/
