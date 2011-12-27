@@ -13,7 +13,6 @@ import hce.core.common.generic.PartyIdentified // composer
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
- *
  */
 class TraumaTagLib {
     
@@ -32,7 +31,6 @@ class TraumaTagLib {
           throw new Exception("No se encuentra el episodio con id " + attrs.episodeId + " @TraumaTagLib 1")
 
         
-
         /*
         //-----------------------------------------------------------------------
         // Datos para mostrar RTS y RTSp
@@ -85,8 +83,8 @@ class TraumaTagLib {
         if (composition.composer)
         {
             def composer = PartyIdentified.get( composition.composer.id )
-            println "-------------------------------------"
-            println composer.externalRef
+            //println "-------------------------------------"
+            //println composer.externalRef
            
             def persons = demographicService.findPersonById( composition.composer.externalRef.objectId )
             def responsable
@@ -101,7 +99,7 @@ class TraumaTagLib {
             else
             {
                 // TODO: en teoria no deberia pasar pero en ningun lugar hay una restriccion explicita de no tener 2 pacientes con un id comun, hay que probar.
-                println persons
+                //println persons
                 throw new Exception('Se encuentran: ' + persons.size() + ' personas a partir del ID: '+ composition.composer.externalRef.objectId )
             }
             
@@ -377,8 +375,11 @@ class TraumaTagLib {
     
     def langSelector = { attrs, body ->
         
+        int i = 0
         grailsApplication.config.langs.each {
-            out << body(it) 
+           
+            out << body(localeString:it, locale:grailsApplication.config.locales[i])
+            i++ 
         }
     }
     
