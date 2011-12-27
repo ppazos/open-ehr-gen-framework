@@ -313,7 +313,7 @@ class GuiGenController {
          // Si cacheo en memoria es incluso mas rapido! tengo que hacer un handler!!
          //
          GuiManager guiManager = GuiManager.getInstance()
-         if (guiManager.exists(templateId, 'create'))
+         if (guiManager.exists(templateId, 'create', session.locale.toString()))
          {
             println 'vista generada'
             
@@ -326,7 +326,7 @@ class GuiGenController {
                      episodeId: session.traumaContext?.episodioId,
                      // userId: session.traumaContext.userId, // no se usa
                      allSubsections: this.getDomainTemplates(),
-                     form: guiManager.get(templateId, 'create')
+                     form: guiManager.get(templateId, 'create', session.locale.toString())
                     ] )
             return
          }
@@ -490,7 +490,7 @@ class GuiGenController {
                      //userId: session.traumaContext.userId,
                      allSubsections: this.getDomainTemplates(),
                      //content: f.getText(),
-                     content: guiManager.get(templateId, "show"),
+                     content: guiManager.get(templateId, "show", session.locale.toString()),
                      data: pv.params as JSON
                     ] )
          return
@@ -864,7 +864,7 @@ class GuiGenController {
          render(view: 'create/generarCreate',
                 model: [
                   template: template,
-                  form: guiManager.get(params.templateId, "create"),
+                  form: guiManager.get(params.templateId, "create", session.locale.toString()),
                   episodeId: session.traumaContext?.episodioId, // necesario para el layout
                   //userId: session.traumaContext.userId,
                   subsections: this.getSubsections(params.templateId.split("-")[0]),
@@ -903,7 +903,7 @@ class GuiGenController {
          render(view: 'create/generarCreate',
                 model: [
                   template: template,
-                  form: guiManager.get(params.templateId, "create"),
+                  form: guiManager.get(params.templateId, "create", session.locale.toString()),
                   episodeId: session.traumaContext?.episodioId, // necesario para el layout
                   //userId: session.traumaContext.userId,
                   subsections: this.getSubsections(params.templateId.split("-")[0]),
@@ -973,7 +973,7 @@ class GuiGenController {
                   template: template,
                   //mode: 'edit',
                   data: paramsCache.params as JSON,
-                  form: guiManager.get(params.templateId, "edit"),
+                  form: guiManager.get(params.templateId, "edit", session.locale.toString()),
                   errors: errors as JSON,
                   errors2: bindingAOMRM.errors as JSON,
                   episodeId: session.traumaContext?.episodioId, // necesario para el layout
