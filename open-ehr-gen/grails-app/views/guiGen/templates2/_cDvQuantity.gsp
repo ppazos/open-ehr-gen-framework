@@ -11,7 +11,7 @@
   <%
     def concepts = OpenEHRConcept.withCriteria {
       eq('conceptId', cDvQuantity.property.codeString)
-      eq('lang', session.locale.language)
+      eq('lang', session.locale.language) // FIXME: deberia escalar en locale como ArchetypeTagLib.findTerm
     }
     if (concepts.size()==1)
       print concepts[0].rubric

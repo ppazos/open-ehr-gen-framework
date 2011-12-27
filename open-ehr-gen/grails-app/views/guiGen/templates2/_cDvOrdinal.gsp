@@ -15,6 +15,7 @@ if (refPath) _refPath = refPath
 <!-- armo lista de valores con textos -->
 <g:set var="labels" value="${[]}" />
 <g:each in="${cDvOrdinal.list.sort{ it.value }}" var="ordinal">
+   <%-- // FIXME: deberia escalar en locale como ArchetypeTagLib.findTerm --%>
   <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, ordinal.symbol.codeString)}" />
     <g:if test="${!archetypeTerm}">
     El termino con codigo [${ordinal.symbol.codeString}] no esta definido en el arquetipo, posiblemente el termino no esta definido para el lenguaje seleccionado.<br/>

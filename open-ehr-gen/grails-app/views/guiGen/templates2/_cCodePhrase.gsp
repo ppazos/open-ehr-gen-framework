@@ -44,6 +44,8 @@ if (refPath) _refPath = refPath
   <g:else>
     <g:set var="codes" value="${cCodePhrase.codeList}" />
     <g:each in="${codes}" var="code">
+      
+      <%-- // FIXME: deberia escalar en locale como ArchetypeTagLib.findTerm --%>
       <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(session.locale.language, code)}" />
       <g:if test="${!archetypeTerm}">
         El termino con codigo [${code}] no esta definido en el arquetipo, posiblemente el termino no esta definido para el lenguaje seleccionado.<br/>
