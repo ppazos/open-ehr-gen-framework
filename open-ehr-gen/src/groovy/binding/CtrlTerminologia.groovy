@@ -41,27 +41,24 @@ class CtrlTerminologia {
         {
             case "local":
 
-                String text
-                
                 // Escala al igual que en ArchetypeTagLib.findTerm
                 // Cuidado el locale tiene formato: es_AR
                 // Pero el arquetipo tiene formato: es-ar
                 
+                // FIXME: si el locale es "es" no deberia escalar.
+                // FIXME: si el locale es "es_AR" el primer y segundo intento son lo mismo, el tema es que el primero intenta con la variante y si no tiene variante, es lo mismo.
+            
                 def term = arquetipo.ontology.termDefinition(locale.toString().toLowerCase().replaceAll("_", "-"), codigo)
-                if (!term) term = arquetipo.ontology.termDefinition(locale.language+'-'+session.locale.country.toLowerCase(), codigo)
+                if (!term) term = arquetipo.ontology.termDefinition(locale.language+'-'+locale.country.toLowerCase(), codigo)
                 if (!term) term = arquetipo.ontology.termDefinition(locale.language, codigo)
                 if (!term)
                 {
-                    text = 'Termino no encontrado en el arquetipo ['+codigo+'], '+
+                    return 'Termino no encontrado en el arquetipo '+ arquetipo.archetypeId.value + ' codigo ['+codigo+'], '+
                            'para el nodo ['+codigo+'], y el locale ['+locale.toString()+']'
                 }
-                else
-                {
-                    //text = term.getItems().text // TODO: esto que tira en comparacion con term.text?
-                    text = term.text
-                }
-                
-                return text
+
+                return term.getText() // Tambien esta el getDescription!!!
+
             break
             case "cie10":
                 // FIXME: optimizacion: usar criteria y un OR.

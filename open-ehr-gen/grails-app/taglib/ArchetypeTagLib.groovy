@@ -1,7 +1,11 @@
 
+import java.util.Locale;
+
 import archetype_repository.ArchetypeManager
 import org.openehr.am.archetype.Archetype
 import org.openehr.am.archetype.constraintmodel.*
+import binding.CtrlTerminologia
+import support.identification.TerminologyID
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -74,6 +78,11 @@ class ArchetypeTagLib {
        def locale = attrs.locale
        if (!locale) throw new Exception("Parametro 'locale' es obligatorio")
        
+       
+       // Ya escala, si no encuentra devuelve un texto
+       out << CtrlTerminologia.getInstance().getTermino(TerminologyID.create('local', null), code, archetype, locale)
+       
+       /* esto hace lo mismo que la linea de codigo de arriba
        def archetypeTerm = archetype.ontology.termDefinition(locale.toString().toLowerCase().replaceAll("_", "-"), code)
        
        
@@ -111,8 +120,10 @@ class ArchetypeTagLib {
           println archetype.ontology.getTermDefinitionsList().language // hay que ver los idiomas para ver el formato porque no esta coincidiendo!
           out << 'displayTerm: No hay traduccion para el arquetipo '+ archetype.archetypeId.value + ', codigo ' + code + ' y locale ' + locale.toString()
        }
+       */
     }
     
+    /** esto es lo mismo que // Ya escala, si no encuentra devuelve un texto CtrlTerminologia.getInstance().getTermino(TerminologyID.create('local', null), code, archetype, locale)
     private String getTerm(Archetype archetype, String code, Locale locale)
     {
        if (!archetype) throw new Exception("Parametro 'archetype' es obligatorio")
@@ -161,6 +172,7 @@ class ArchetypeTagLib {
        
        return null
     }
+    */
     
     // Devuelve una lista de textos en el locale especificado, para cada uno
     // de los codigos en la lista de codigos que se definen dentro de un arquetipo.
@@ -175,10 +187,12 @@ class ArchetypeTagLib {
        
        println "codeList: " + attrs.codeList
        
+       def terms = CtrlTerminologia.getInstance()
        def list = []
        attrs.codeList.each { code ->
           
-          list << this.getTerm(attrs.archetype, code, attrs.locale)
+          //list << this.getTerm(attrs.archetype, code, attrs.locale)
+          list << terms.getTermino(TerminologyID.create('local', null), code, attrs.archetype, attrs.locale) // Ya escala, si no encuentra devuelve un texto
        }
        
        println "list: " + list

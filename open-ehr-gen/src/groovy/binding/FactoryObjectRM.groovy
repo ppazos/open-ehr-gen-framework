@@ -101,8 +101,7 @@ class FactoryObjectRM {
             // que referencia a una terminologia externa mediante ConstraintRef.
             //nameN = archetype.ontology.termDefinition("es", archNodeId)?.getItems()?.text
             
-            // FIXME: en lugar de consultar directamente al arquetipo, deberia usar 
-            // CtrlTerminologia.getInstance().getTermino(cp.terminologyId, cp.codeString, arquetipo, this.session.locale)
+            /*
             def term = archetype.ontology.termDefinition(lang, archNodeId)
             if (!term)
             {
@@ -113,6 +112,9 @@ class FactoryObjectRM {
             {
                 nameN = term.getItems().text // TODO: verificar si getItems da un solo texto!
             }
+            */
+           
+            nameN = CtrlTerminologia.getInstance().getTermino(TerminologyID.create('local', null), archNodeId, archetype, session.locale) // Ya escala, si no encuentra devuelve un texto
         }
         else
         {
