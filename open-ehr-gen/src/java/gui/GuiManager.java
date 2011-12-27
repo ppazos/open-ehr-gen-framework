@@ -37,15 +37,15 @@ public class GuiManager {
       return instance;
    }
    
-   public boolean exists(String templateId, String mode)
+   public boolean exists(String templateId, String mode, String locale)
    {
-      File f = new File(this.guiRepositoryPath + templateId +"_"+ mode + ".htm");
+      File f = new File(this.guiRepositoryPath + templateId +"_"+ mode +"_"+ locale +".htm");
       return f.exists();
    }
    
-   public String get(String templateId, String mode)
+   public String get(String templateId, String mode, String locale)
    {
-      String value = cache.get(templateId+"_"+mode);
+      String value = cache.get(templateId+"_"+mode+"_"+locale);
       if (value == null)
       {
          //this.cache.put(templateId+"_"+mode, archivo.getText());
@@ -53,7 +53,7 @@ public class GuiManager {
          value = "";
          try
          {
-            FileReader archivo = new FileReader(this.guiRepositoryPath + templateId +"_"+ mode + ".htm");
+            FileReader archivo = new FileReader(this.guiRepositoryPath + templateId +"_"+ mode +"_"+ locale +".htm");
             //System.out.println("Archivo: "+ this.guiRepositoryPath + templateId +"_"+ mode + ".htm");
             
             // Implementacion mia
