@@ -1,7 +1,6 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %>
 <%@ page import="hce.core.common.directory.Folder" %>
-<%--<?xml version="1.0" encoding="ISO-8859-1?>--%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <g:set var="startmsec" value="${System.currentTimeMillis()}"/>
@@ -25,81 +24,29 @@
       window.history.go(1);
     </g:javascript>
     
-    <%--
-    <g:javascript library="prototype/prototype" />
-    <g:javascript>
-      Event.observe(window, 'load', function () {
- 
-        $$('a.clone').each( function(item) {
-        
-          // item es cada link con class=clone
-          item.observe('click', function(event) {
-            
-            //alert('clic');
-            
-            //alert( item.parentNode ); // parentNode es de DOM
-            //alert( $(item.parentNode).previous() ); // parentNode es de DOM
-            
-            nodeToClone = $(item.parentNode).previous();
-            
-            // Extiendo DOM para .previous de prototype
-            /*
-            nodeToClone.setStyle({
-              //backgroundColor: '#900',
-              border: '3px solid #ffff00'
-            });
-            */
-            
-            // Object.clone tira un Object y necesito un Element para hacer insert
-            //newNode = Object.clone(nodeToClone); //nodeToClone.clone();
-            newNode = nodeToClone.cloneNode(true); // cloneNode tira un Element y me deja hacer insert
-            
-            //alert(newNode);
-            
-            nodeToClone.insert({
-              after: newNode
-            });
-            
-            /*
-            item.insert({
-              before: newNode
-            });
-            */
-          });
-        });
-      });
-    </g:javascript>
-    --%>
-    
-    <title><g:layoutTitle/> | Open EHR-Gen | v${ApplicationHolder.application.metadata['app.version']}</title>
-    <%--
-    <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'ehr.css')}" />
-    --%>
+    <title><g:layoutTitle/> | Open-EHRGen | v${ApplicationHolder.application.metadata['app.version']}</title>
     <link rel="stylesheet" href="${createLinkTo(dir:'css' ,file:'ehr_contenido_grande.css')}" />
     <g:layoutHead />
   </head>
   <body>
     <div id="user_bar">
-      <b>Open EHR-Gen</b> v${ApplicationHolder.application.metadata['app.version']} | 
+      <b>Open-EHRGen</b> v${ApplicationHolder.application.metadata['app.version']} | 
       <g:datosUsuario />
       <span class="user_actions">
         
-        <%-- FECHA ACTUAL --%>
         <span class="currentDate">
           <g:format date="${new Date()}" />
         </span>
         
-        <ul class="userBar">
+        <ul class="userBar lang">
           <g:langSelector>
-            <li ${(session.locale.getLanguage()==it)?'class="active"':''}>
-              <%-- no dejo cambiar el idioma si la accion es save 
-                   http://code.google.com/p/open-ehr-sa/issues/detail?id=65
-              --%>
+            <li ${(session.locale.toString()==it.localeString)?'class="active"':''}>
+              <%-- no dejo cambiar el idioma si la accion es save http://code.google.com/p/open-ehr-sa/issues/detail?id=65 --%>
               <g:if test="${actionName=='save'}">
-                 <a href="#"><g:message code="common.lang.${it}" /></a>
+                 <a href="#">${it.locale.getDisplayName(session.locale)}</a>
               </g:if>
               <g:else>
-                <a href="?sessionLang=${it}&templateId=${params.templateId}"><g:message code="common.lang.${it}" /></a>
+                <a href="?sessionLang=${it.localeString}&templateId=${params.templateId}">${it.locale.getDisplayName(session.locale)}</a>
               </g:else>
             </li>
           </g:langSelector>
@@ -143,7 +90,7 @@
               <g:if test="${patient}">
                 <g:render template="../demographic/Person" model="[person:patient]" />
                 <g:canEditPatient patient="${patient}">
-                  <g:link controller="demographic" action="edit" id="${patient.id}">Completar datos</g:link>
+                  <g:link controller="demographic" action="edit" id="${patient.id}"><g:message code="demographic.action.completarDatos" /></g:link>
                 </g:canEditPatient>
               </g:if>
               <g:else>

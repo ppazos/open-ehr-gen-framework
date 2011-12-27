@@ -1,7 +1,6 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %>
 <%@ page import="hce.core.common.directory.Folder" %>
-<%--<?xml version="1.0" encoding="ISO-8859-1?>--%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <g:set var="startmsec" value="${System.currentTimeMillis()}"/>
@@ -25,7 +24,7 @@
       window.history.go(1);
     </g:javascript>
     
-    <title><g:layoutTitle/> | Open EHR-Gen | v${ApplicationHolder.application.metadata['app.version']}</title>
+    <title><g:layoutTitle/> | Open-EHRGen | v${ApplicationHolder.application.metadata['app.version']}</title>
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'ehr.css')}" />
     <g:layoutHead />
     
@@ -45,23 +44,21 @@
   </head>
   <body>
     <div id="user_bar">
-      <b>Open EHR-Gen</b> v${ApplicationHolder.application.metadata['app.version']} | 
+      <b>Open-EHRGen</b> v${ApplicationHolder.application.metadata['app.version']} | 
       <g:datosUsuario />
       <span class="user_actions">
       
-        <%-- FECHA ACTUAL --%>
         <span class="currentDate">
           <g:format date="${new Date()}" />
         </span>
         
-        <ul class="userBar">
+        <ul class="userBar lang">
           <g:langSelector>
-            <li ${(session.locale.getLanguage()==it)?'class="active"':''}>
-              <a href="?sessionLang=${it}&templateId=${params.templateId}"><g:message code="common.lang.${it}" /></a>
+            <li ${(session.locale.toString()==it.localeString)?'class="active"':''}>
+              <a href="?sessionLang=${it.localeString}&templateId=${params.templateId}">${it.locale.getDisplayName(session.locale)}</a>
             </li>
           </g:langSelector>
         </ul>
-
         <ul class="userBar">
           <li ${(['domain'].contains(controllerName))?'class="active"':''}>
             <g:link controller="domain" action="list"><g:message code="domain.action.list" /></g:link>
