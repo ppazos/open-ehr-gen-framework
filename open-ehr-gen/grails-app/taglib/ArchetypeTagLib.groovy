@@ -32,6 +32,9 @@ class ArchetypeTagLib {
        }
     }
     
+    
+    // FIXME: esta taglib no se usa en ninguna vista...
+    //
     // Obtiene el termino asociado al id del nodo en el arquetipo.
     // Si el nodo no tiene id, se busca por los padres hasta llegar
     // a uno con id y con el termino declarado en el arquetipo.
@@ -53,6 +56,137 @@ class ArchetypeTagLib {
        }
     }
     
+    // Muestra el texto para un arquetipo, nodeid/codigo y locale.
+    // Escala en el locale si no encuentra el termino.
+    //
+    // archetype
+    // code
+    // locale
+    //
+    def displayTerm = { attrs ->
+       
+       def archetype = attrs.archetype
+       if (!archetype) throw new Exception("Parametro 'archetype' es obligatorio")
+       
+       def code = attrs.code
+       if (!code) throw new Exception("Parametro 'code' es obligatorio")
+       
+       def locale = attrs.locale
+       if (!locale) throw new Exception("Parametro 'locale' es obligatorio")
+       
+       def archetypeTerm = archetype.ontology.termDefinition(locale.toString().toLowerCase().replaceAll("_", "-"), code)
+       
+       
+       // FIXME: si el locale es "es" no deberia escalar.
+       // FIXME: si el locale es "es_AR" el primer y segundo intento son lo mismo, el tema es que el primero intenta con la variante y si no tiene variante, es lo mismo.
+       
+       
+       // pido para el idioma y pais
+       if (!archetypeTerm)
+       {
+           println "No encuentra termino para intento: " + locale.toString().toLowerCase().replaceAll("_", "-")
+           archetypeTerm = archetype.ontology.termDefinition(locale.language+'-'+locale.country.toLowerCase(), code)
+       }
+       
+       // pido para el idioma
+       if (!archetypeTerm)
+       {
+          println "No encuentra termino para intento: " + locale.language+'-'+locale.country.toLowerCase()
+          archetypeTerm = archetype.ontology.termDefinition(locale.language, code)
+       }
+       
+       if (archetypeTerm)
+       {
+          println "Se encuentra termino !!! " + archetypeTerm.getText()
+          //out << archetypeTerm.items.text
+          out << archetypeTerm.getText() // Tambien esta el getDescription!!!
+       }
+       else
+       {
+          println "No encuentra termino luego de escalar a: " + locale.language
+          
+          // FIXME: deberia hacer una de dos cosas> 1. dejar el termino en el idioma por defecto (garantiza que siempre muestra texto),
+          //        2. tirar una excepcion y pedirle al diseniador de arquetipos que agregue los terminos faltantes.
+          
+          println archetype.ontology.getTermDefinitionsList().language // hay que ver los idiomas para ver el formato porque no esta coincidiendo!
+          out << 'displayTerm: No hay traduccion para el arquetipo '+ archetype.archetypeId.value + ', codigo ' + code + ' y locale ' + locale.toString()
+       }
+    }
+    
+    private String getTerm(Archetype archetype, String code, Locale locale)
+    {
+       if (!archetype) throw new Exception("Parametro 'archetype' es obligatorio")
+       
+       if (!code) throw new Exception("Parametro 'code' es obligatorio")
+       
+       if (!locale) throw new Exception("Parametro 'locale' es obligatorio")
+       
+       def archetypeTerm = archetype.ontology.termDefinition(locale.toString().toLowerCase().replaceAll("_", "-"), code)
+       
+       
+       // FIXME: si el locale es "es" no deberia escalar.
+       // FIXME: si el locale es "es_AR" el primer y segundo intento son lo mismo, el tema es que el primero intenta con la variante y si no tiene variante, es lo mismo.
+       
+       
+       // pido para el idioma y pais
+       if (!archetypeTerm)
+       {
+           //println "No encuentra termino para intento: " + locale.toString().toLowerCase().replaceAll("_", "-")
+           archetypeTerm = archetype.ontology.termDefinition(locale.language+'-'+locale.country.toLowerCase(), code)
+       }
+       
+       // pido para el idioma
+       if (!archetypeTerm)
+       {
+          //println "No encuentra termino para intento: " + locale.language+'-'+locale.country.toLowerCase()
+          archetypeTerm = archetype.ontology.termDefinition(locale.language, code)
+       }
+       
+       if (archetypeTerm)
+       {
+          //println "Se encuentra termino !!! " + archetypeTerm.getText()
+          //out << archetypeTerm.items.text
+          return archetypeTerm.getText() // Tambien esta el getDescription!!!
+       }
+       else
+       {
+          //println "No encuentra termino luego de escalar a: " + locale.language
+          
+          // FIXME: deberia hacer una de dos cosas> 1. dejar el termino en el idioma por defecto (garantiza que siempre muestra texto),
+          //        2. tirar una excepcion y pedirle al diseniador de arquetipos que agregue los terminos faltantes.
+          
+          //println archetype.ontology.getTermDefinitionsList().language // hay que ver los idiomas para ver el formato porque no esta coincidiendo!
+          //println 'displayTerm: No hay traduccion para el arquetipo '+ archetype.archetypeId.value + ', codigo ' + code + ' y locale ' + locale.toString()
+       }
+       
+       return null
+    }
+    
+    // Devuelve una lista de textos en el locale especificado, para cada uno
+    // de los codigos en la lista de codigos que se definen dentro de un arquetipo.
+    // Se utiliza para obtener las descripcioens de los codigos que son restricciones
+    // de DvCodedText o DvOrdinal.
+    //
+    // archetype
+    // codeList
+    // locale
+    //
+    def codeListTerms = { attrs, body ->
+       
+       println "codeList: " + attrs.codeList
+       
+       def list = []
+       attrs.codeList.each { code ->
+          
+          list << this.getTerm(attrs.archetype, code, attrs.locale)
+       }
+       
+       println "list: " + list
+       
+       out << body( labels: list )
+    }
+    
+    
     // recursivo sobre la path, auxiliar de taglig displayLabel.
     private String findTerm( Archetype archetype, CObject node, String path )
     {
@@ -62,8 +196,25 @@ class ArchetypeTagLib {
           if (node.nodeID)
           {
              //println "nodeId: " + node.nodeID + " " + session.locale.language
+             /*
              def archetypeTerm = archetype.ontology.termDefinition(session.locale.language, node.nodeID) // podria ser null si el termino no esta definido en el arquetipo
              if (!archetypeTerm) return null // FIXME: deberia seguir recursiva
+             */
+             
+             // Cuidado el locale tiene formato: es_AR
+             // Pero el arquetipo tiene formato: es-ar
+             
+             // pido para todo el locale
+             def archetypeTerm = archetype.ontology.termDefinition(session.locale.toString().toLowerCase().replaceAll("_", "-"), node.nodeID) // podria ser null si el termino no esta definido en el arquetipo
+             
+             // pido para el idioma y pais
+             if (!archetypeTerm) archetypeTerm = archetype.ontology.termDefinition(session.locale.language+'-'+session.locale.country.toLowerCase(), node.nodeID) // podria ser null si el termino no esta definido en el arquetipo
+             
+             // pido para el idioma
+             if (!archetypeTerm) archetypeTerm = archetype.ontology.termDefinition(session.locale.language, node.nodeID) // podria ser null si el termino no esta definido en el arquetipo
+             
+             if (!archetypeTerm) return null
+             
              return archetypeTerm.items.text // + " ("+ path +")"
           }
           else // recursivo en path
