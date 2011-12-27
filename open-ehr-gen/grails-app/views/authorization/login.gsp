@@ -26,15 +26,6 @@
         vertical-align: middle;
       }      
 
-      #sheetbar {
-        text-align:left;
-      }
-
-      #sheet {
-        text-align:left;
-        width:30em;
-      }
-
       * {margin:0;padding:0}
       html,body{height:100%}
       #wrapper{
@@ -66,6 +57,19 @@
         left: -50%;
         /*background-color: #aaaaff;*/
       }
+      ul.userBar {
+        position: relative;
+        left: -50%;
+        top: 1px;
+      }
+      ul.userBar li.active {
+        position: relative;
+        z-index: 9999;
+      }
+      ul.userBar li a {
+        border-bottom: 0px;
+      }
+    
       p {margin:1em 0}
       input {
         position:relative;
@@ -104,29 +108,15 @@
       </style>
     <![endif]-->
   </head>
-  <body>
-
-     <%--
-     <div id="sheetbar">
-       <ul>
-         <li ${(session.locale.getLanguage()=='en')?'class="active"':''}>
-           <a href="?sessionLang=en"><g:message code="common.lang.en" /></a>
-         </li>
-         <li ${(session.locale.getLanguage()=='es')?'class="active"':''}>
-           <a href="?sessionLang=es"><g:message code="common.lang.es" /></a>
-         </li>
-       </ul>
-     </div>
-     --%>
-     
+  <body>     
     <div id="wrapper">
       <div id="outer">
         <div id="formwrap">
         
-          <ul class="userBar">
+          <ul class="userBar lang">
             <g:langSelector>
-              <li ${(session.locale.getLanguage()==it)?'class="active"':''}>
-                <a href="?sessionLang=${it}&templateId=${params.templateId}"><g:message code="common.lang.${it}" /></a>
+              <li ${(session.locale.toString()==it.localeString)?'class="active"':''}>
+                <a href="?sessionLang=${it.localeString}&templateId=${params.templateId}">${it.locale.getDisplayName(session.locale)}</a>
               </li>
             </g:langSelector>
           </ul>
@@ -148,9 +138,7 @@
               </tr>
               <tr>
                 <th></th>
-                <td>
-                  <input type="submit" name="doit" value="${message(code:'auth.login.action.signin')}" />
-                </td>
+                <td><input type="submit" name="doit" value="${message(code:'auth.login.action.signin')}" /></td>
               </tr>
             </table>
             <%-- TODO: recordar clave
