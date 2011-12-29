@@ -12,11 +12,15 @@ import java.util.Map;
 
 public class GuiManager {
 
+   // Ruta debe ser independiente del SO
+   // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+   private static String PS = System.getProperty("file.separator");
+   
    /**
    * Directorio donde estan las guis generadas.
    * FIXME: deberia ser un parametro de la aplicacion en un .properties
    */
-   private String guiRepositoryPath = ".\\grails-app\\views\\genViews\\";
+   private static String guiRepositoryPath = "." + PS + "grails-app" + PS + "views" + PS + "genViews" + PS;
    
    // Cache: templateId_mode => String (html de la gui generada)
    // mode puede ser show, create o edit
@@ -39,7 +43,7 @@ public class GuiManager {
    
    public boolean exists(String templateId, String mode, String locale)
    {
-      File f = new File(this.guiRepositoryPath + templateId +"_"+ mode +"_"+ locale +".htm");
+      File f = new File(guiRepositoryPath + templateId +"_"+ mode +"_"+ locale +".htm");
       return f.exists();
    }
    
@@ -53,7 +57,7 @@ public class GuiManager {
          value = "";
          try
          {
-            FileReader archivo = new FileReader(this.guiRepositoryPath + templateId +"_"+ mode +"_"+ locale +".htm");
+            FileReader archivo = new FileReader(guiRepositoryPath + templateId +"_"+ mode +"_"+ locale +".htm");
             //System.out.println("Archivo: "+ this.guiRepositoryPath + templateId +"_"+ mode + ".htm");
             
             // Implementacion mia
@@ -68,7 +72,6 @@ public class GuiManager {
             
             //long end = System.currentTimeMillis();
             //System.out.println("tiempo lectura 1: " + (end-start));
-            
             
             cache.put(templateId+"_"+mode, value);
             

@@ -18,17 +18,20 @@ import org.openehr.am.archetype.constraintmodel.ArchetypeConstraint
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
  * @version 1.0
- * 
  */
 class ArchetypeManager {
 
    private Logger log = Logger.getLogger(getClass()) 
-    
+   
+   // Ruta independiente del SO
+   // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+   private static String PS = System.getProperty("file.separator")
+   
    /**
     * Directorio donde estan los arquetipos.
     * FIXME: deberia ser un parametro de la aplicacion en un .properties
     */
-   private String archetypeRepositoryPath = "archetypes/ehr"
+   private String archetypeRepositoryPath = "archetypes"+ PS +"ehr"
     
    // Cache: archetypeId => Archetype
    private static Map<String, Archetype> cache = [:]
@@ -127,8 +130,8 @@ class ArchetypeManager {
            // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
            
            // archetypes/ehr/type/archId.adl
-           println "Carga desde: " + this.archetypeRepositoryPath+"/"+getTypePath(type)+"/"+archetypeId+".adl"
-           def adlFile = new File( this.archetypeRepositoryPath+"/"+getTypePath(type)+"/"+archetypeId+".adl" )
+           println "Carga desde: " + this.archetypeRepositoryPath+ PS +getTypePath(type)+ PS +archetypeId+".adl"
+           def adlFile = new File( this.archetypeRepositoryPath+ PS +getTypePath(type)+ PS +archetypeId+".adl" )
            
            // PARSEAR ARQUETIPO
            ADLParser parser = null;
@@ -181,10 +184,10 @@ class ArchetypeManager {
            case 'evaluation':
            case 'instruction':
            case 'observation':
-               return 'entry/'+type
+               return 'entry'+ PS + type
            break
            case 'admin_entry':
-               return 'entry/'+type
+               return 'entry'+ PS + type
            break
            default:
                throw new Exception('Tipo no conocido ['+ type +'], se espera uno de: cluster, composition, element, section, item_tree, item_single, item_list, item_table, action, observation, instruction, evaluation' )
@@ -226,8 +229,8 @@ class ArchetypeManager {
        
        // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
        
-      // archetypes/ehr/type/archId.adl
-       def root = new File( this.archetypeRepositoryPath+"/"+getTypePath(type) ) // Abre el directorio donde supuestamente esta el arquetipo
+       // archetypes/ehr/type/archId.adl
+       def root = new File( this.archetypeRepositoryPath + PS + getTypePath(type) ) // Abre el directorio donde supuestamente esta el arquetipo
        
        // FIXME: varios pueden matchear!
        def adlFile = null
@@ -293,6 +296,7 @@ class ArchetypeManager {
    {
        return this.cache
    }
+   
    public Map getLastUse()
    {
        return this.timestamps
@@ -304,5 +308,4 @@ class ArchetypeManager {
        this.cache.clear()
        this.timestamps.clear()
    }
-   
 }

@@ -225,6 +225,10 @@ class TemplateManager {
     
     public Template getTemplate( String templateId )
     {
+        // Ruta independiente del SO
+        // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+        String PS = System.getProperty("file.separator")
+       
         // Si no esta cargado, lo intenta cargar
         if (!this.cache[templateId])
         {
@@ -244,12 +248,12 @@ class TemplateManager {
             //def templateFile = new File( "templates/" + ApplicationHolder.application.config.domain +"/"+ templateId +".xml" )
             
             // Nuevo!
-            println "  Intenta cargar archivo: "+ "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml"
-            File templateFile = new File( "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml" )
+            println "  Intenta cargar archivo: templates" + PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml"
+            File templateFile = new File( "templates"+ PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml" )
             
             if (!templateFile.exists())
             {
-               println "  No se encuentra el archivo: " + "templates/" + ApplicationHolder.application.config.templates2.path +"/"+ templateId +".xml"
+               println "  No se encuentra el archivo: templates" + PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml"
                return null
             }
             

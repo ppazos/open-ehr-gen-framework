@@ -448,6 +448,9 @@ class BootStrap {
         //List domains = grailsApplication.config.domains // Ya esta definida mas arriba
         GuiManager guiManager = GuiManager.getInstance()
         Map domainTemplates
+        
+        String PS = System.getProperty("file.separator")
+        
         domains.each { domain ->
            
            //println "Domain: $domain"
@@ -466,20 +469,45 @@ class BootStrap {
                  println "templateId: " + templateId
                  //println "split . " + templateId.split('\\.')
                  
-                 // Si existe la vista estatica, no genero el html
-                 // Para la estatica, necesito generar el show igual
-                 if (!new File('.\\grails-app\\views\\hce\\'+templateId+'.gsp').exists())
+                 
+                 // Path independiente del OS
+                 // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+                 // '.\\grails-app\\views\\hce\\'+templateId+'.gsp'
+                 //
+                 String pathToStaticViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'hce'+ PS + templateId +'.gsp'
+                 //pathToStaticViews = pathToStaticViews.replaceAll("\\\\", "\\\\\\\\")
+                 
+                 
+                 // Path independiente del OS
+                 // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+                 // '.\\templates\\hce'
+                 //
+                 String pathToTemplates = '.'+ PS +'templates'+ PS +'hce'
+                 
+                 String pathToGuiGenCreate   = 'guiGen'+ PS +'create'+ PS +'_generarCreate' // dentro del directorio /grails-app/views al template _generarCreate.gsp
+                 String pathToGuiGenShow     = 'guiGen'+ PS +'show'  + PS +'_generarShow'
+                 String pathToGuiGenEdit     = 'guiGen'+ PS +'edit'  + PS +'_generarEdit'
+                 String pathToGeneratedViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
+                 
+                 
+                 // FIXME: deberia generar para todas las versiones del template,
+                 //        o sea: EVALUACION_PRIMARIA-via_aerea.vX, para toda X.
+                 // Para ver todas las versiones del template, tengo que ir a buscar al disco.
+
+                 // Para todas las versiones del template
+                 String templatePrefix = templateId.split('\\.')[0] // 'EVALUACION_PRIMARIA-via_aerea', El nombre DEBE tener .vX
+                 
+                 
+                 
+                 // Si no existe la vista estatica, genero create, show y edit.
+                 // Para la estatica solo genero el show.
+                 //
+                 //if (!new File('.\\grails-app\\views\\hce\\'+templateId+'.gsp').exists())
+                 if (!new File(pathToStaticViews).exists())
                  {
-                    
-                    // FIXME: deberia generar para todas las versiones del template,
-                    //        o sea: EVALUACION_PRIMARIA-via_aerea.vX, para toda X.
-                    // Para ver todas las versiones del template, tengo que ir a buscar al disco.
-   
-                    // Para todas las versiones del template
-                    String templatePrefix = templateId.split('\\.')[0] // 'EVALUACION_PRIMARIA-via_aerea', El nombre DEBE tener .vX
-                    
                     // http://pleac.sourceforge.net/pleac_groovy/directories.html
-                    new File('.\\templates\\hce').eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
+                    //new File('.\\templates\\hce').eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
+                    new File(pathToTemplates).eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
                        
                        // Template id del versionado.
                        String templateIdV = f.name - '.xml'
@@ -498,23 +526,28 @@ class BootStrap {
                           println 'locale: '+ grailsApplication.config.locales[i].toString()
                           println 'template: '+ templateIdV
                           
-                          
-                          form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
+                          //form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
+                          form = guiCachingService.template2String(pathToGuiGenCreate, [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
                           form = form.replace('x</textarea>', '</textarea>')
-                          archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create_"+ lang +".htm")
+                          //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create_"+ lang +".htm")
+                          archivo = new File(pathToGeneratedViews + templateIdV + "_create_"+ lang +".htm")
                           archivo.write(form);
                           guiManager.add(templateIdV, "create", form);
                           
                           // idem para el show
-                          form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
-                          archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
+                          //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          form = guiCachingService.template2String(pathToGuiGenShow, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
+                          archivo = new File(pathToGeneratedViews + templateIdV + "_show_"+ lang +".htm")
                           archivo.write(form);
                           guiManager.add(templateIdV, "show", form);
                           
                           // idem para edit
-                          form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          //form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          form = guiCachingService.template2String(pathToGuiGenEdit, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
                           form = form.replace('x</textarea>', '</textarea>')
-                          archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_edit_"+ lang +".htm")
+                          //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_edit_"+ lang +".htm")
+                          archivo = new File(pathToGeneratedViews + templateIdV + "_edit_"+ lang +".htm")
                           archivo.write(form);
                           guiManager.add(templateIdV, "edit", form);
                           
@@ -556,11 +589,9 @@ class BootStrap {
                  }
                  else // para la vista estatica genero el show igual
                  {
-                    // Para todas las versiones del template
-                    String templatePrefix = templateId.split('\\.')[0] // 'EVALUACION_PRIMARIA-via_aerea', El nombre DEBE tener .vX
-                    
                     // http://pleac.sourceforge.net/pleac_groovy/directories.html
-                    new File('.\\templates\\hce').eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
+                    //new File('.\\templates\\hce').eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
+                    new File(pathToTemplates).eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
                        
                        // Template id del versionado.
                        String templateIdV = f.name - '.xml'
@@ -576,8 +607,10 @@ class BootStrap {
                        grailsApplication.config.langs.each { lang ->
                        
                           // idem para el show
-                          form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: i18n
-                          archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
+                          //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: i18n
+                          form = guiCachingService.template2String(pathToGuiGenShow, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
+                          archivo = new File(pathToGeneratedViews + templateIdV + "_show_"+ lang +".htm")
                           archivo.write(form);
                           guiManager.add(templateIdV, "show", form)
                           

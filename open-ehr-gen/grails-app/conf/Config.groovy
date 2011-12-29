@@ -63,7 +63,6 @@ templates2 {
       // decisiones terapeuticas evolutivas, ISS
       COMUNES = ['movimiento_paciente.v1']
    }
-   /*
    '/domain.emergencia' {
       ACCIONES = ['adm_sust.v1']
       DIAGNOSTICO = ['diagnosticos.v1']
@@ -80,7 +79,6 @@ templates2 {
              ]
    
    }
-   */
 }
 
 /* templates2 es el nuevo
@@ -130,9 +128,12 @@ hce {
 
 openEHR.RMVersion = '1.0.2'
 
+// ==============================================================
 // Ruta a directorio en donde se almacenan los CDAs generados
-
-hce.rutaDirCDAs = ".\\CDAs"
+// Independiente del SO
+// http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+String PS = System.getProperty("file.separator")
+hce.rutaDirCDAs = '.'+ PS + 'CDAs'
 
 // grails.config.locations = [ "classpath:${appName}-config.properties",
 //                             "classpath:${appName}-config.groovy",

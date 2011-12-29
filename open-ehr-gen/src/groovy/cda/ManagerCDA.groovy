@@ -27,8 +27,6 @@ class ManagerCDA {
    def hceService = ctx.getBean("hceService");
    def serviceDemographic = ctx.getBean("demographicService") // (DemographicServiceInterface)
 
-   //--------------------------------------------------------------------------
-
    def createFileCDA(int idEpisodio)
    {
       def composition = Composition.get(idEpisodio)
@@ -48,20 +46,17 @@ class ManagerCDA {
       def version = Version.findByData(composition)
 
       String nombreArch = getNombreArchCDA(idEpisodio,version.getNumVersion(),new Date())
-      def archivo = new File(ApplicationHolder.application.config.hce.rutaDirCDAs + "\\" + nombreArch)
+      String PS = System.getProperty("file.separator") // Separador de rutas del SO
+      def archivo = new File(ApplicationHolder.application.config.hce.rutaDirCDAs + PS + nombreArch)
       archivo.write(xmlCDA);
       version.nombreArchCDA = nombreArch
       version.save()
    }
 
-   //--------------------------------------------------------------------------
-
    String getNombreArchCDA(int idEpisodio, int numVersion, Date fecha)
    {
       return "CDA-" + idEpisodio + "-" + "V" + numVersion + "-" + getStringFecha(fecha) + ".xml"
    }
-
-   //--------------------------------------------------------------------------
 
    String getStringFecha(Date fecha)
    {
@@ -69,10 +64,7 @@ class ManagerCDA {
       return sdf.format(fecha)
    }
 
-   //--------------------------------------------------------------------------
-
-   //public String createCDA( Composition comp ) //, Object session )
-   def createCDA( Composition comp )
+   String createCDA( Composition comp )
    {
       //XStream xstream = new XStream();
       //DemographicService demAcc = new DemographicService()// Para buscar Personas
