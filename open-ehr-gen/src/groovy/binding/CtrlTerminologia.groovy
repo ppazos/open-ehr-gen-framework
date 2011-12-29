@@ -11,7 +11,7 @@ import org.openehr.am.archetype.Archetype
 import tablasMaestras.* 
 
 /**
- * @author leacar21
+ * @author Leandro Carrasco
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
  */
 class CtrlTerminologia {
@@ -37,6 +37,12 @@ class CtrlTerminologia {
         }
         */
         
+        // TODO: agregar nuevas terminologias no deberia requerir agregar un case aqui,
+        //       se deberia definir una convencion de carga de archivos de configuracion,
+        //       que se cacheen o se guarden en la DB, y leer el codigo deberia buscar
+        //       en la configuracion, si no se cargo la terminologia, deberia cargarla,
+        //       y ponerla en memoria o en DB y la busqueda deberia hacerse en memoria
+        //       o DB segun el caso.
         switch ( terminologyId.name )
         {
             case "local":
