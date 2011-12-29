@@ -1,6 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %>
-<%@ page import="hce.core.common.change_control.Version" %><%@ page import="hce.core.composition.Composition" %>
-<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %><%@ page import="hce.core.common.change_control.Version" %><%@ page import="hce.core.composition.Composition" %><%@ page import="java.text.SimpleDateFormat" %>
 <html>
   <head>
     <meta name="layout" content="ehr-modal" />
@@ -42,6 +40,8 @@
     <table id="list">
       <tr>
         <th><g:message code="trauma.list.label.id" /></th>
+        <th><g:message code="trauma.list.label.patient" /></th>
+        <th><g:message code="trauma.list.label.responsible" /></th>
         <th><g:message code="trauma.list.label.startTime" /></th>
         <th><g:message code="trauma.list.label.endTime" /></th>
         <th><g:message code="trauma.list.label.observations" /></th>
@@ -51,6 +51,12 @@
       <g:each in="${compositions}" var="composition">
         <tr>
           <td>${composition.id}</td>
+          <td>
+            <g:showPatientFromComposition composition="${composition}" />
+          </td>
+          <td>
+            <g:showCompositionComposer composition="${composition}" />
+          </td>
           <td><g:format date="${composition.context.startTime?.toDate()}" /></td>
           <td><g:format date="${composition.context.endTime?.toDate()}" /></td>
           <td>

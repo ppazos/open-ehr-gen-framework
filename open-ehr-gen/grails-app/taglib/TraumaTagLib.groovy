@@ -10,6 +10,7 @@ import hce.core.common.change_control.Version
 import demographic.role.*
 import java.text.DecimalFormat;
 import hce.core.common.generic.PartyIdentified // composer
+import support.identification.*
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -19,6 +20,78 @@ class TraumaTagLib {
     def hceService
     def customQueriesService
     def demographicService
+    
+    /**
+     * Necesaria para mostrar datos del paciente de una composition en las vistas.
+     * composition Composition
+     */
+    def showPatientFromComposition = { attrs, body ->
+        
+       // TODO: esto deberia hacerse en un template y de aqui renderearlo nomas.
+       
+       def composition = attrs.composition
+       if (!composition)
+          throw new Exception("No se encuentra el episodio con id " + attrs.episodeId + " @TraumaTagLib")
+       
+       def person = hceService.getPatientFromComposition(composition)
+       
+       if (person)
+          out << render(template:'../demographic/Person', model:[person:person])
+    }
+    
+    def showCompositionComposer =  { attrs, body ->
+        
+       // TODO: esto deberia hacerse en un template y de aqui renderearlo nomas.
+       
+       def composition = attrs.composition
+       if (!composition)
+          throw new Exception("No se encuentra el episodio con id " + attrs.episodeId + " @TraumaTagLib")
+       
+       def partyIdentified = hceService.getCompositionComposer(composition)
+       if (partyIdentified)
+       {
+          //out << '['+partyIdentified.externalRef.objectId.value+']' // externalRef es partyRef
+          //out << partyIdentified.name // vacio
+          
+          // Mismo codigo que en hceService.getPatientFromComposition, que
+          // resuelve la Person contra el servicio demografico a partir de su id.
+          def person
+
+          // TODO: probar esta funcion en el Maciel
+          // FIXME: probar si creo 2 episodios para la misma persona a ver si no obtiene 2 pacientes...
+          // List<Person> findPersonById( UIDBasedID id )
+             def persons = demographicService.findPersonById( partyIdentified.externalRef.objectId )
+  
+          //println "hceService.getPatientFromComposition findPersonById id: " + patientProxy.externalRef.objectId.value
+          //println "hceService.getPatientFromComposition findPersonById: " + patients
+          
+          if (persons.size() == 0)
+          {
+              // no hago nada, el patient es null...
+          }
+          else if (persons.size() == 1)
+          {
+              person = persons[0]
+          }
+          else
+          {
+              // TODO: en teoria no deberia pasar pero en ningun lugar hay una restriccion explicita de no tener 2 pacientes con un id comun, hay que probar.
+              println persons
+              throw new Exception('Se encuentran: ' + persons.size() + ' pacientes a partir del ID: '+ partyIdentified.externalRef.objectId )
+          }
+          
+          // TODO: verificar que patientProxy.externalRef.objectId no tiene clase javassist
+          if (!partyIdentified.externalRef.objectId instanceof UIDBasedID)
+             throw new Exception('Se espera un UIDBasedID y el tipo del id es: ' + partyIdentified.externalRef.objectId.getClass())
+
+          
+          if (person)
+          {
+             out << render(template:'../demographic/Person', model:[person:person])
+          }
+       }
+    }
+    
     
     // Viene archetypeId o (rmtype y idMarchingKey)
     // in: episodeId

@@ -254,7 +254,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
      * @param composition
      * @return
      */
-    def PartyRef getCompositionComposer( Composition composition )
+    def PartyIdentified getCompositionComposer( Composition composition )
     {
         return composition.composer
     }
