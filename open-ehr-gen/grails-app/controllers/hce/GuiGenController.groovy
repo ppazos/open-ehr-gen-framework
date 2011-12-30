@@ -61,7 +61,7 @@ class GuiGenController {
     * volver a generar todas, o solo las vistas de algun template, o solo las de algun locale
     * 
     * 
-   */
+    */
    // ============================= GESTION DE GUIS generadas ======================================
    
    
