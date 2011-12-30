@@ -114,23 +114,19 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
         
         <g:if test="${cComplexObject.rmTypeName == 'DV_TEXT'}">
           <g:if test="${control && control.type=='smallText'}">
-            <!-- TODO: donde va el valor -->
             <label class="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}"></label>
           </g:if>
           <g:else>
-            <!-- TODO: donde va el valor -->
             <label class="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}"></label>
           </g:else>
         </g:if>
         
         <g:if test="${cComplexObject.rmTypeName == 'DV_DATE_TIME'}">
           <%-- Si datetime se muestra desde CComplexObject, no tiene restricciones sobre la forma de la fecha o las fechas posibles. --%>
-          <!-- TODO: donde va el valor -->
           <label class="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}"></label>
         </g:if>
         <g:if test="${cComplexObject.rmTypeName == 'DV_DATE'}">
           <%-- Si date se muestra desde CComplexObject, no tiene restricciones sobre la forma de la fecha o las fechas posibles. --%>
-          <!-- TODO: donde va el valor -->
           <label class="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}"></label>
         </g:if>
         <%-- TODO: tipo DV_TIME --%>
@@ -139,7 +135,6 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
 
           <%-- Si count se muestra desde complexObject es que no tiene restricciones. --%>
           (*..*)
-          <!-- TODO: donde va el valor -->
           <label class="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}"></label>
         </g:if>
       </g:else>

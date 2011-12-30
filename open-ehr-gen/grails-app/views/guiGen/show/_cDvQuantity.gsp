@@ -52,23 +52,18 @@ if (refPath) _refPath = refPath
 </g:each>
 
 <%-- muestra (min..max) para la magnitude, si hay restriccion --%>
+<g:set var="lower" value="*" />
+<g:set var="upper" value="*" />
 <g:if test="${interval != null}">
   <g:if test="${interval.lower != null}">
     <g:set var="lower" value="${interval.lower}" />
   </g:if>
-  <g:else>
-    <g:set var="lower" value="*" />
-  </g:else>
   <g:if test="${interval.upper != null}">
     <g:set var="upper" value="${interval.upper}" />
   </g:if>
-  <g:else>
-    <g:set var="upper" value="*" /> 
-  </g:else>
-  (${lower}..${upper})
 </g:if>
-<g:else>(*..*)</g:else>
 
-<!-- TODO: poner el valor -->
-<label class="${fields.getField(archetype.archetypeId.value +_refPath+ cDvQuantity.path()+'/magnitude')}"></label>
-<label class="${fields.getField(archetype.archetypeId.value +_refPath+ cDvQuantity.path()+'/units')}"></label>
+(${lower}..${upper})
+<!-- El valor se pone por javascript. http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=59 -->
+<label class="${fields.getField(archetype.archetypeId.value +_refPath+ cDvQuantity.path()+'/magnitude')}" />
+<label class="${fields.getField(archetype.archetypeId.value +_refPath+ cDvQuantity.path()+'/units')}" />

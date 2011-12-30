@@ -11,55 +11,69 @@
     
       $(document).ready(function() {
     
-       for (path in data)
-       {
-         // if (path.startsWith('field'))
-         if (path.match("^field")=="field")
-         {
-           //alert(path + ": " + data[path]);
-            
-           // busca elementos por su class (como es por class devuelve coleccion)
-           // es solo uno por como genero el show.
-           var elems = $("label."+path);
-           //console.log(elems);
-           //alert("Hay elems: " + elems.size());
+    //return;
     
-           // TODO: si el tipo es DvQuantity y tenia una sola unidad en el arquetipo, pasa que no se ingresa como dato, entonces no viene en los field-values y no la puedo mostrar junto con la magnitud.
-           // TODO: resolver valores booleanos a Si/No o Yes/No, etc, segun el idioma elegido en la config.
-           // FIXED: si el valor para path es date.struct, los valores vienen en las keys: path_year, path_month, path_day, path_hour, path_minute.
+        for (path in data)
+        {
+          if (path.match("^field")=="field") // path.startsWith('field')
+          {
+            //alert(path + ": " + data[path]);
+            
+            // busca elementos por su class (como es por class devuelve coleccion)
+            // es solo uno por como genero el show.
+            var elems = $("label."+path);
+    
+    console.group("ELEMS");
+            console.log('elems para path: label.'+path);
+            console.log(elems);
+    console.groupEnd();
+
+            // Cuando la path es a un campo que es parte de una date, elems es siempre vacio
+            // y para mostrar la date tengo que esperar al campo que contiene todas las partes.
+            if (elems.size()==0) continue;
+    
+    
+            
+            
+    
+            //alert("Hay elems: " + elems.size());
+    
+            // TODO: si el tipo es DvQuantity y tenia una sola unidad en el arquetipo, pasa que no se ingresa como dato, entonces no viene en los field-values y no la puedo mostrar junto con la magnitud.
+            // TODO: resolver valores booleanos a Si/No o Yes/No, etc, segun el idioma elegido en la config.
+            // FIXED: si el valor para path es date.struct, los valores vienen en las keys: path_year, path_month, path_day, path_hour, path_minute.
           
-           /*
+            /*
              Puede ser array de un solo elemento, por ejemplo si se sumitea esto:
               - [a,'','']
              En el paramsCache (que es el 'data') se guarda:
               - [a]
-            */
-           if ($.isArray( data[path] ))
-           {
-             console.log( path+ ' tiene muchos valores: ' + data[path] );
-             // El elem seleccionado deberia tener su contenedor con class multiple
-             // En realidad no es su contenedor, sino el primer padre con class "multiple"
+             */
+            if ($.isArray( data[path] ))
+            {
+              console.log( path+ ' tiene muchos valores: ' + data[path] );
+              // El elem seleccionado deberia tener su contenedor con class multiple
+              // En realidad no es su contenedor, sino el primer padre con class "multiple"
 
-             // El nodo a clonar siempre es el contenedor multiple del elem
-             var nodeToClone = $(elems[0]).closest('.multiple');
-             //nodeToClone.css({'border':'2px solid #f00'}); // OK!
+              // El nodo a clonar siempre es el contenedor multiple del elem
+              var nodeToClone = $(elems[0]).closest('.multiple');
+              //nodeToClone.css({'border':'2px solid #f00'}); // OK!
 
 
-             // si i es 0, pongo el valor en el nodo, si es mayor que 0 tengo que clonar
-             // el nodo para poner el valor en el nodo clonado.
+              // si i es 0, pongo el valor en el nodo, si es mayor que 0 tengo que clonar
+              // el nodo para poner el valor en el nodo clonado.
 
-             // el ultimo sibling de nodeToClone, los nuevos nodos clonados van despues de este.
-             var lastSibling = nodeToClone;
+              // el ultimo sibling de nodeToClone, los nuevos nodos clonados van despues de este.
+              var lastSibling = nodeToClone;
 
-             // El array puede no tener valores
-             if ( data[path].length == 0 ) continue;
+              // El array puede no tener valores
+              if ( data[path].length == 0 ) continue;
     
-             // pone el primer valor en el primer nodo
-             show($(elems[0]), data[path][0]);
+              // pone el primer valor en el primer nodo
+              show($(elems[0]), data[path][0]);
 
-             // pone el valor para el resto de los nodos
-             for (i=1; i<data[path].length; i++)
-             {
+              // pone el valor para el resto de los nodos
+              for (i=1; i<data[path].length; i++)
+              {
                 // FIXME: si es un tipo estructurado (mas de un valor para el nodo), el nodo puede
                 // ya estar clonado, solo tengo que meterle el valor. Para saberlo, tengo que ver
                 // si el numero de elems es 1 o no, si es 1, el nodo no esta clonado y lo tengo que clonar.
@@ -93,52 +107,58 @@
                 
                 console.log('muestra valor %s de array (%d)', data[path][i], i);
                 show($(elems[i]), data[path][i]);
-            }
+              }
                 
-        //console.log('elems2');
-        //console.log(elems);
-        //console.log('---------------------------------');
-        
-        /* Ejemplo del nodo multiple
-        <div class="CLUSTER multiple"> << este es el nodo que deberia clonar
-          <span class="label">VVP:</span>
-          <span class="content">
-            <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
-              <span class="label">Topografía:</span>
-              <span class="content">
-                <div class="DV_CODED_TEXT ">
-                  <span class="content">
-                    <label class="field_134"></label> << estos son los elems por los que itero aca
-                  </span>
-                </div>
-              </span>
-            </div>
-            <div class="ELEMENT ELEMENT_DvOrdinal">
-              <span class="label">Calibre:</span>
-              <span class="content">
-                <label class="field_135"></label> << estos son los elems por los que itero aca
-              </span>
-            </div>
-          </span>
-        </div>
-        */
+              //console.log('elems2');
+              //console.log(elems);
+              //console.log('---------------------------------');
+            
+              /* Ejemplo del nodo multiple
+             <div class="CLUSTER multiple"> << este es el nodo que deberia clonar
+               <span class="label">VVP:</span>
+               <span class="content">
+                 <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+                   <span class="label">Topografía:</span>
+                   <span class="content">
+                     <div class="DV_CODED_TEXT ">
+                       <span class="content">
+                         <label class="field_134"></label> << estos son los elems por los que itero aca
+                       </span>
+                     </div>
+                   </span>
+                 </div>
+                 <div class="ELEMENT ELEMENT_DvOrdinal">
+                   <span class="label">Calibre:</span>
+                   <span class="content">
+                     <label class="field_135"></label> << estos son los elems por los que itero aca
+                   </span>
+                 </div>
+               </span>
+             </div>
+              */
         
               continue;
-            }
+             
+            } // if ($.isArray( data[path] ))
 
             // elemento y valor simple
             console.log('muestra valor simple %s', data[path]);
             show(elems, data[path]);
-          }
-        }
+            
+          } // path.startsWith('field')
+        } // for path in data
     
         // Otra cosa que puedo hacer es usar como key el atributo id en lugar del class,
         // porque cada item aparece una sola vez en la pagina cuando carga, luego desde
-        // js puedo clonar nodos multiples... ahi cambios los ids. 
-      });
+        // js puedo clonar nodos multiples... ahi cambios los ids.
+         
+      }); // document ready
 
       var show = function (field, value)
       {
+        //console.log('show en de ' + value + ' en field: ');
+        //console.log(field);
+            
         // Para CodedText viene "codeString||Texto"
         if (value.indexOf("||") > 0)
         {

@@ -528,7 +528,7 @@ class BootStrap {
                           
                           //form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
                           form = guiCachingService.template2String(pathToGuiGenCreate, [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
-                          form = form.replace('x</textarea>', '</textarea>')
+                          form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
                           //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create_"+ lang +".htm")
                           archivo = new File(pathToGeneratedViews + templateIdV + "_create_"+ lang +".htm")
                           archivo.write(form);
@@ -537,6 +537,10 @@ class BootStrap {
                           // idem para el show
                           //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
                           form = guiCachingService.template2String(pathToGuiGenShow, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          
+                          // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=59
+                          //form = form.replaceAll('<label class="(.*?)"(/s)/>', '<label class="$1"> </label>')
+                          form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
                           //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
                           archivo = new File(pathToGeneratedViews + templateIdV + "_show_"+ lang +".htm")
                           archivo.write(form);
@@ -545,7 +549,7 @@ class BootStrap {
                           // idem para edit
                           //form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
                           form = guiCachingService.template2String(pathToGuiGenEdit, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
-                          form = form.replace('x</textarea>', '</textarea>')
+                          form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
                           //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_edit_"+ lang +".htm")
                           archivo = new File(pathToGeneratedViews + templateIdV + "_edit_"+ lang +".htm")
                           archivo.write(form);
@@ -609,6 +613,7 @@ class BootStrap {
                           // idem para el show
                           //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: i18n
                           form = guiCachingService.template2String(pathToGuiGenShow, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
+                          form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
                           //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
                           archivo = new File(pathToGeneratedViews + templateIdV + "_show_"+ lang +".htm")
                           archivo.write(form);
