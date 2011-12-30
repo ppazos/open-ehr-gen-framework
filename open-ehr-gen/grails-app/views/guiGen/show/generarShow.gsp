@@ -11,8 +11,6 @@
     
       $(document).ready(function() {
     
-    //return;
-    
         for (path in data)
         {
           if (path.match("^field")=="field") // path.startsWith('field')
@@ -32,9 +30,6 @@
             // y para mostrar la date tengo que esperar al campo que contiene todas las partes.
             if (elems.size()==0) continue;
     
-    
-            
-            
     
             //alert("Hay elems: " + elems.size());
     
