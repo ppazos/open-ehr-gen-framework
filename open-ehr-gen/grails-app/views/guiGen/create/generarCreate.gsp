@@ -8,6 +8,16 @@
     <g:javascript>
       $(document).ready( function() {
         
+        // Disable submit button on submit
+        // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=47
+        $('.ehrform').submit( function() {
+
+          // FIXME: si por algo falla la conexion con el servidor, se deberia poder enviar de nuevo sin tener que ingresar todos los datos!
+          // esto se soluciona facil si el envio es por ajax: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=60
+          $('input[type=submit]', this).attr('disabled', 'disabled');
+        });
+    
+    
         // Agrego links para clonar nodos multiples
         $('.multiple').each( function(i, e) {
           
@@ -21,6 +31,7 @@
           // Inserta luego del nodo que hay que clonar, para saber que el prev() es el nodo a clonar.
           $(e).after(link);
         });
+        
         
         $('.cloner').click( function (evt) {
           

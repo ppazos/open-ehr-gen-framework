@@ -19,6 +19,16 @@
     
       $(document).ready( function() {
         
+        // Disable submit button on submit
+        // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=47
+        $('.ehrform').submit( function() {
+    
+          // FIXME: si por algo falla la conexion con el servidor, se deberia poder enviar de nuevo sin tener que ingresar todos los datos!
+          // esto se soluciona facil si el envio es por ajax: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=60
+          $('input[type=submit]', this).attr('disabled', 'disabled');
+        });
+    
+    
         // ====================================================
         // MISMO JS QUE EN CREATE!
     
