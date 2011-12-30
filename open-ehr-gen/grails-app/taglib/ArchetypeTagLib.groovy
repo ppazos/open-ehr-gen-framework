@@ -185,7 +185,7 @@ class ArchetypeTagLib {
     //
     def codeListTerms = { attrs, body ->
        
-       println "codeList: " + attrs.codeList
+       //println "codeList: " + attrs.codeList
        
        def terms = CtrlTerminologia.getInstance()
        def list = []
@@ -195,7 +195,7 @@ class ArchetypeTagLib {
           list << terms.getTermino(TerminologyID.create('local', null), code, attrs.archetype, attrs.locale) // Ya escala, si no encuentra devuelve un texto
        }
        
-       println "list: " + list
+       //println "list: " + list
        
        out << body( labels: list )
     }
@@ -266,7 +266,7 @@ class ArchetypeTagLib {
             if ( this.parentElementIsMultipleRecursive(archetype, node,  attrs.nodePath ) )
                out << body()
         }
-     }
+    }
     
     private boolean parentElementIsMultipleRecursive( Archetype archetype, CObject node, String path )
     {
