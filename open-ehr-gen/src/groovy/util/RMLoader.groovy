@@ -26,9 +26,9 @@ import demographic.role.*
 import demographic.*
 import com.thoughtworks.xstream.XStream
 
+
 /**
- *
- * @author leacar21
+ * @author Leandro Carrasco
  */
 class RMLoader {
 
@@ -47,10 +47,12 @@ class RMLoader {
         imprimirObjetoXML(composition) // FIXME
         Composition new_composition = new Composition()
         recorrerComposition(composition, new_composition) // Al recorrer el composition cargo toda su estructura
-        if (composition != null){
+        if (composition != null)
+        {
             return new_composition
         }
-        else{
+        else
+        {
             return null
         }
     }
@@ -58,18 +60,24 @@ class RMLoader {
     // COMPOSITION
     static def recorrerComposition(c, Composition new_c)
     {
-        if (c != null){
-            if (c.composer != null){
+        if (c != null)
+        {
+            if (c.composer != null)
+            {
                 def metodoRecorrerPartyProxy = 'recorrer' + c.composer.getClass().getSimpleName()
                 def metodoGetInstancePartyProxy = 'getInstance' + c.composer.getClass().getSimpleName()
                 this."$metodoRecorrerPartyProxy"(c.composer, new_c.composer = this."$metodoGetInstancePartyProxy"())
             }
+            
             recorrerEventContext(c.context, new_c.context = new EventContext())
             recorrerDvCodedText(c.category, new_c.category = new DvCodedText())
             recorrerCodePhrase(c.territory, new_c.territory = new CodePhrase())
             recorrerCodePhrase(c.language, new_c.language = new CodePhrase())
-            if (c.content != null){
-                c.content.each{elem ->
+            
+            if (c.content != null)
+            {
+                c.content.each { elem ->
+                   
                     def metodoRecorrerContentItem = 'recorrer' + elem.getClassName()
                     def metodoGetInstanceContentItem = 'getInstance' + elem.getClassName()
                     def new_elem = null
@@ -87,8 +95,10 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // ARCHETYPED
-    static def recorrerArchetyped(a, Archetyped new_a){
-        if (a != null){
+    static def recorrerArchetyped(a, Archetyped new_a)
+    {
+        if (a != null)
+        {
             new_a.archetypeId = (a.archetypeId)
             new_a.templateId = (a.templateId)
             new_a.rmVersion = (a.rmVersion)
@@ -96,10 +106,11 @@ class RMLoader {
     }
 
     //--------------------------------------------------------------
-
     // LINK
-    static def recorrerLink(l, Link new_l){
-        if (l != null){
+    static def recorrerLink(l, Link new_l)
+    {
+        if (l != null)
+        {
             recorrerDvText(l.meaning, new_l.meaning = new DvText())
             recorrerDvText(l.type, new_l.type = new DvText())
             recorrerDvEHRURI(l.target, new_l.target = new DvEHRURI())
@@ -107,7 +118,6 @@ class RMLoader {
     }
 
     //--------------------------------------------------------------
-
     // LOCATABLE
     static def recorrerLocatable(l, Locatable new_l){
         if (l != null){
@@ -119,10 +129,11 @@ class RMLoader {
     }
 
     //--------------------------------------------------------------
-
     // PATHABLE
-    static def recorrerPathable(p, Pathable new_p){
-        if (p != null){
+    static def recorrerPathable(p, Pathable new_p)
+    {
+        if (p != null)
+        {
             recorrerPathable(p.parent, new_p.parent = new Pathable())
         }
     }
@@ -132,8 +143,10 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // PARTICIPATION
-    static def recorrerParticipation(p, Participation new_p){
-        if (p != null){
+    static def recorrerParticipation(p, Participation new_p)
+    {
+        if (p != null)
+        {
             def metodoRecorrerPartyProxy = 'recorrer' + p.performer.getClass().getSimpleName()
             def metodoGetInstancePartyProxy = 'getInstance' + p.performer.getClass().getSimpleName()
             this."$metodoRecorrerPartyProxy"(p.performer, new_p.performer = this."$metodoGetInstancePartyProxy"())
@@ -144,22 +157,25 @@ class RMLoader {
     }
 
     //--------------------------------------------------------------
-
     // PARTY_PROXY
-    static def recorrerPartyProxy(pp, PartyProxy new_pp){
-        if (pp != null){
+    static def recorrerPartyProxy(pp, PartyProxy new_pp)
+    {
+        if (pp != null)
+        {
             recorrerPartyRef(pp.externalRef, new_pp.externalRef = new PartyRef())
         }
     }
 
     //--------------------------------------------------------------
-
     // PARTY_IDENTIFIED
-    static def recorrerPartyIdentified(pi, PartyIdentified new_pi){
-        if (pi != null){
+    static def recorrerPartyIdentified(pi, PartyIdentified new_pi)
+    {
+        if (pi != null)
+        {
             new_pi.name = (pi.name)
-            if (pi.identifiers != null){
-                pi.identifiers.each{elem ->
+            if (pi.identifiers != null)
+            {
+                pi.identifiers.each { elem ->
                     def new_elem = null
                     recorrerDvIdentifier(elem, new_elem = new DvIdentifier())
                     new_pi.addToIdentifiers(new_elem)
@@ -169,20 +185,23 @@ class RMLoader {
         }
     }
 
-    static def getInstancePartyIdentified(){
+    static def getInstancePartyIdentified()
+    {
         return new PartyIdentified()
     }
 
     //--------------------------------------------------------------
-
     // PARTY_SELF
-    static def recorrerPartySelf(ps, PartySelf new_ps){
-        if (ps != null){
+    static def recorrerPartySelf(ps, PartySelf new_ps)
+    {
+        if (ps != null)
+        {
             recorrerPartyProxy(ps, new_ps) // Por ser subclase de PartyProxy
         }
     }
 
-    static def getInstancePartySelf(){
+    static def getInstancePartySelf()
+    {
         return new PartySelf()
     }
 
@@ -191,8 +210,10 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // ACTION
-    static def recorrerAction(a, Action new_a){
-        if (a != null){
+    static def recorrerAction(a, Action new_a)
+    {
+        if (a != null)
+        {
             recorrerDvDateTime(a.time, new_a.time = new DvDateTime())
             def metodoRecorrerItemStructure = 'recorrer' + a.description.getClassName()
             def metodoGetInstanceItemStructure = 'getInstance' + a.description.getClassName()
@@ -201,15 +222,17 @@ class RMLoader {
         }
     }
 
-    static def getInstanceAction(){
+    static def getInstanceAction()
+    {
         return new Action()
     }
 
     //--------------------------------------------------------------------------
-
     // ACTIVITY
-    static def recorrerActivity(a, Activity new_a){
-        if (a != null){
+    static def recorrerActivity(a, Activity new_a)
+    {
+        if (a != null)
+        {
             def metodoRecorrerItemStructure = 'recorrer' + a.description.getClassName()
             def metodoGetInstanceItemStructure = 'getInstance' + a.description.getClassName()
             this."$metodoRecorrerItemStructure"(a.description, new_a.description = this."$metodoGetInstanceItemStructure"())
@@ -220,10 +243,11 @@ class RMLoader {
     }
 
     //--------------------------------------------------------------------------
-
     // ADMIN_ENTRY
-    static def recorrerAdminEntry(ae, AdminEntry new_ae){
-        if (ae != null){
+    static def recorrerAdminEntry(ae, AdminEntry new_ae)
+    {
+        if (ae != null)
+        {
             def metodoRecorrerItemStructure = 'recorrer' + ae.data.getClassName()
             def metodoGetInstanceItemStructure = 'getInstance' + ae.data.getClassName()
             this."$metodoRecorrerItemStructure"(ae.data, new_ae.data = this."$metodoGetInstanceItemStructure"())
@@ -231,16 +255,19 @@ class RMLoader {
         }
     }
 
-    static def getInstanceAdminEntry(){
+    static def getInstanceAdminEntry()
+    {
         return new AdminEntry()
     }
 
     //--------------------------------------------------------------------------
-
-     // CARE_ENTRY
-    static def recorrerCareEntry(ce, CareEntry new_ce){
-        if (ce != null){
-            if (ce.protocol != null){
+    // CARE_ENTRY
+    static def recorrerCareEntry(ce, CareEntry new_ce)
+    {
+        if (ce != null)
+        {
+            if (ce.protocol != null)
+            {
                 def metodoRecorrerItemStructure = 'recorrer' + ce.protocol.getClassName()
                 def metodoGetInstanceItemStructure = 'getInstance' + ce.protocol.getClassName()
                 this."$metodoRecorrerItemStructure"(ce.protocol, new_ce.protocol = this."$metodoGetInstanceItemStructure"())
@@ -249,15 +276,17 @@ class RMLoader {
         }
     }
 
-    static def getInstanceCareEntry(){
+    static def getInstanceCareEntry()
+    {
         return new CareEntry()
     }
 
-    //--------------------------------------------------------------------------
 
     // ENTRY
-    static def recorrerEntry(e, Entry new_e){
-        if (e != null){
+    static def recorrerEntry(e, Entry new_e)
+    {
+        if (e != null)
+        {
             recorrerCodePhrase(e.language, new_e.language = new CodePhrase())
             recorrerCodePhrase(e.encoding, new_e.encoding = new CodePhrase())
             recorrerContentItem(e, new_e) // Por ser subclase de ContentItem
@@ -265,10 +294,11 @@ class RMLoader {
     }
 
     //--------------------------------------------------------------------------
-
     // EVALUATION
-    static def recorrerEvaluation(e, Evaluation new_e){
-        if (e != null){
+    static def recorrerEvaluation(e, Evaluation new_e)
+    {
+        if (e != null)
+        {
             def metodoRecorrerItemStructure = 'recorrer' + e.data.getClassName()
             def metodoGetInstanceItemStructure = 'getInstance' + e.data.getClassName()
             this."$metodoRecorrerItemStructure"(e.data, new_e.data = this."$metodoGetInstanceItemStructure"())
@@ -276,20 +306,23 @@ class RMLoader {
         }
     }
 
-    static def getInstanceEvaluation(){
+    static def getInstanceEvaluation()
+    {
         return new Evaluation()
     }
 
     //--------------------------------------------------------------------------
-
     // INSTRUCTION
-    static def recorrerInstruction(i, Instruction new_i){
-        if (i != null){
+    static def recorrerInstruction(i, Instruction new_i)
+    {
+        if (i != null)
+        {
             recorrerDvText(i.narrative, new_i.narrative = new DvText())
             recorrerDvDateTime(i.expiryTime, new_i.expiryTime = new DvDateTime())
             recorrerDvParsable(i.wfDefinition, new_i.wfDefinition = new DvParsable())
-            if (i.activities != null){
-                i.activities.each{elem ->
+            if (i.activities != null)
+            {
+                i.activities.each { elem ->
                     Activity new_elem = null
                     recorrerActivity(elem, new_elem = new Activity())
                     new_i.addToActivities(new_elem)
@@ -299,21 +332,24 @@ class RMLoader {
         }
     }
 
-    static def getInstanceInstruction(){
+    static def getInstanceInstruction()
+    {
         return new Instruction()
     }
 
-    //--------------------------------------------------------------------------
 
     // OBSERVATION
-    static def recorrerObservation(o, Observation new_o){
-        if (o != null){
+    static def recorrerObservation(o, Observation new_o)
+    {
+        if (o != null)
+        {
             recorrerHistory(o.data, new_o.data = new History())
             recorrerCareEntry(o, new_o) // Por ser subclase de CareEntry
         }
     }
 
-    static def getInstanceObservation(){
+    static def getInstanceObservation()
+    {
         return new Observation()
     }
 
@@ -322,10 +358,13 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // SECTION
-    static def recorrerSection(s, Section new_s){
-        if (s != null){
-            if (s.items != null){
-                s.items.each{elem ->
+    static def recorrerSection(s, Section new_s)
+    {
+        if (s != null)
+        {
+            if (s.items != null)
+            {
+                s.items.each { elem ->
                     def metodoRecorrerContentItem = 'recorrer' + elem.getClassName()
                     def metodoGetInstanceContentItem = 'getInstance' + elem.getClassName()
                     def new_elem = null
@@ -337,7 +376,8 @@ class RMLoader {
         }
     }
 
-    static def getInstanceSection(){
+    static def getInstanceSection()
+    {
         return new Section()
     }
 
@@ -346,8 +386,10 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // CONTENT_ITEM
-    static def recorrerContentItem(ci, ContentItem new_ci){
-        if (ci != null){
+    static def recorrerContentItem(ci, ContentItem new_ci)
+    {
+        if (ci != null)
+        {
             recorrerLocatable(ci, new_ci) // Por ser subclase de Locatable
         }
     }
@@ -357,14 +399,18 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // EVENT_CONTEXT
-    static def recorrerEventContext(ec, EventContext new_ec){
-        if (ec != null){
+    static def recorrerEventContext(ec, EventContext new_ec)
+    {
+        if (ec != null)
+        {
             recorrerDvDateTime(ec.startTime, new_ec.startTime = new DvDateTime())
             recorrerDvDateTime(ec.endTime, new_ec.endTime = new DvDateTime())
             new_ec.location = (ec.location)
             recorrerDvCodedText(ec.setting, new_ec.setting = new DvCodedText())
-            if (ec.participations != null){
-                ec.participations.each{elem ->
+            
+            if (ec.participations != null)
+            {
+                ec.participations.each { elem ->
                     Participation new_elem = null
                     recorrerParticipation(elem, new_elem = new Participation())
                     new_ec.addToParticipations(new_elem)
@@ -378,42 +424,50 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // DV_BOOLEAN
-    static def recorrerDvBoolean(dvb, DvBoolean new_dvb){
-        if (dvb != null){
+    static def recorrerDvBoolean(dvb, DvBoolean new_dvb)
+    {
+        if (dvb != null)
+        {
             new_dvb.value = (dvb.value)
         }
     }
 
-    static def getInstanceDvBoolean(){
+    static def getInstanceDvBoolean()
+    {
         return new DvBoolean()
     }
 
     //--------------------------------------------------------------------------
 
     // DV_IDENTIFIER
-    static def recorrerDvIdentifier(dvi, DvIdentifier new_dvi){
-        if (dvi != null){
+    static def recorrerDvIdentifier(dvi, DvIdentifier new_dvi)
+    {
+        if (dvi != null)
+        {
             new_dvi.assigner = (dvi.assigner)
             new_dvi.code = (dvi.code)
             new_dvi.issuer (dvi.issuer)
         }
     }
 
-    static def getInstanceDvIdentifier(){
+    static def getInstanceDvIdentifier()
+    {
         return new DvIdentifier()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_IDENTIFIER
-    static def recorrerDvState(dvs, DvState new_dvs){
-        if (dvs != null){
+    static def recorrerDvState(dvs, DvState new_dvs)
+    {
+        if (dvs != null)
+        {
             new_dvs.terminal = (dvs.terminal)
             recorrerDvCodedText(dvs.value, dvs.value = new DvCodedText())
         }
     }
 
-    static def getInstanceDvState(){
+    static def getInstanceDvState()
+    {
         return new DvState()
     }
 
@@ -424,8 +478,10 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     //DV_ENCAPSULATED
-    static def recorrerDvEncapsulated(e, DvEncapsulated new_e){
-        if (e != null){
+    static def recorrerDvEncapsulated(e, DvEncapsulated new_e)
+    {
+        if (e != null)
+        {
             recorrerCodePhrase(e.charset, new_e.charset = new CodePhrase())
             recorrerCodePhrase(e.language, new_e.language = new CodePhrase())
             new_e.size = (e.size)
@@ -433,8 +489,10 @@ class RMLoader {
     }
 
     //DV_MULTIMEDIA
-    static def recorrerDvMultimedia(dvmm, DvMultimedia new_dvmm){
-        if (dvmm != null){
+    static def recorrerDvMultimedia(dvmm, DvMultimedia new_dvmm)
+    {
+        if (dvmm != null)
+        {
             new_dvmm.alternateText = (dvmm.alternateText)
             recorrerCodePhrase(dvmm.mediaType, new_dvmm.mediaType = new CodePhrase())
             recorrerCodePhrase(dvmm.compressionAlgorithm, new_dvmm.compressionAlgorithm = new CodePhrase())
@@ -447,92 +505,105 @@ class RMLoader {
         }
     }
 
-    static def getInstanceDvMultimedia(){
+    static def getInstanceDvMultimedia()
+    {
         return new DvMultimedia()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_PARSEABLE
-    static def recorrerDvParsable(dvp, DvParsable new_dvp){
-        if (dvp != null){
+    static def recorrerDvParsable(dvp, DvParsable new_dvp)
+    {
+        if (dvp != null)
+        {
             new_dvp.value = (dvp.value)
             new_dvp.formalism = (dvp.formalism)
             recorrerDvEncapsulated(dvp, new_dvp) // Por ser subclase de DvEncapsulated
         }
     }
 
-    static def getInstanceDvParsable(){
+    static def getInstanceDvParsable()
+    {
         return new DvParsable()
     }
 
-    //--------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------
     // hce.core.data_types.quantity.date_time
     //--------------------------------------------------------------------------
 
     // DV_DATE
-    static def recorrerDvDate(dvd, DvDate new_dvd){
-        if (dvd != null){
+    static def recorrerDvDate(dvd, DvDate new_dvd)
+    {
+        if (dvd != null)
+        {
             recorrerDvTemporal(dvd, new_dvd) // Por ser subclase de DvTemporal
         }
     }
 
-    static def getInstanceDvDate(){
+    static def getInstanceDvDate()
+    {
         return new DvDate()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_DATE_TIME
-    static def recorrerDvDateTime(dvdt, DvDateTime new_dvdt){
-        if (dvdt != null){
+    static def recorrerDvDateTime(dvdt, DvDateTime new_dvdt)
+    {
+        if (dvdt != null)
+        {
             recorrerDvTemporal(dvdt, new_dvdt) // Por ser subclase de DvTemporal
         }
     }
 
-    static def getInstanceDvDateTime(){
+    static def getInstanceDvDateTime()
+    {
         return new DvDateTime()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_TIME
-    static def recorrerDvTime(dvt, DvTime new_dvt){
-        if (dvt != null){
+    static def recorrerDvTime(dvt, DvTime new_dvt)
+    {
+        if (dvt != null)
+        {
             recorrerDvTemporal(dvt, new_dvt) // Por ser subclase de DvTemporal
         }
     }
 
-    static def getInstanceDvTime(){
+    static def getInstanceDvTime()
+    {
         return new DvTime()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_DURATION
-    static def recorrerDvDuration(dvd, DvDuration new_dvd){
-        if (dvd != null){
+    static def recorrerDvDuration(dvd, DvDuration new_dvd)
+    {
+        if (dvd != null)
+        {
             new_dvd.value = (dvd.value)
             recorrerDvAmount(dvd, new_dvd) // Por ser subclase de DvAmount
         }
     }
 
-    static def getInstanceDvDuration(){
+    static def getInstanceDvDuration()
+    {
         return new DvDuration()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_TEMPORAL
-    static def recorrerDvTemporal(dvt, DvTemporal new_dvt){
-        if (dvt != null){
+    static def recorrerDvTemporal(dvt, DvTemporal new_dvt)
+    {
+        if (dvt != null)
+        {
             new_dvt.value = (dvt.value)
         }
     }
 
-    static def getInstanceDvTemporal(){
+    static def getInstanceDvTemporal()
+    {
         return new DvTemporal()
     }
 
@@ -541,67 +612,77 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // DV_ABSOLUTE_QUANTITY
-    static def recorrerDvAbsoluteQuantity(dvaq, DvAbsoluteQuantity new_dvaq){
-        if (dvaq != null){
+    static def recorrerDvAbsoluteQuantity(dvaq, DvAbsoluteQuantity new_dvaq)
+    {
+        if (dvaq != null)
+        {
             recorrerDvAmount(dvaq.accuracy, new_dvaq.accuracy = new DvAmount())
             recorrerDvQuantified(dvaq, new_dvaq) // Por ser subclase de DvQuantified
         }
     }
 
-    static def getInstanceDvAbsoluteQuantity(){
+    static def getInstanceDvAbsoluteQuantity()
+    {
         return new DvAbsoluteQuantity()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_AMOUNT
-    static def recorrerDvAmount(dva, DvAmount new_dva){
-        if (dva != null){
+    static def recorrerDvAmount(dva, DvAmount new_dva)
+    {
+        if (dva != null)
+        {
             new_dva.accuracy = (dva.accuracy)
             new_dva.accuracyIsPercent = (dva.accuracyIsPercent)
             recorrerDvQuantified(dva, new_dva) // Por ser subclase de DvQuantified
         }
     }
 
-    static def getInstanceDvAmount(){
+    static def getInstanceDvAmount()
+    {
         return new DvAmount()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_COUNT
-    static def recorrerDvCount(dc, DvCount new_dc){
-        if (dc != null){
+    static def recorrerDvCount(dc, DvCount new_dc)
+    {
+        if (dc != null)
+        {
             new_dc.magnitude = (dc.magnitude)
             recorrerDvAmount(dc, new_dc) // Por ser subclase de DvAmount
         }
     }
 
-    static def getInstanceDvCount(){
+    static def getInstanceDvCount()
+    {
         return new DvCount()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_INTERVAL
-    static def recorrerDvInterval(dvi, DvInterval new_dvi){
+    static def recorrerDvInterval(dvi, DvInterval new_dvi)
+    {
         if (dvi != null){
             recorrerInterv(dvi.interv, new_dvi.interv = new Interv())
         }
     }
 
-    static def getInstanceDvInterval(){
+    static def getInstanceDvInterval()
+    {
         return new DvInterval()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_ORDERED
-    static def recorrerDvOrdered(dvo, DvOrdered new_dvo){
-        if (dvo != null){
+    static def recorrerDvOrdered(dvo, DvOrdered new_dvo)
+    {
+        if (dvo != null)
+        {
             recorrerDvInterval(dvo.normalRange, new_dvo.normalRange = new DvInterval())
-            if (dvo.otherReferenceRanges != null){
-                dvo.otherReferenceRanges.each{elem ->
+            if (dvo.otherReferenceRanges != null)
+            {
+                dvo.otherReferenceRanges.each { elem ->
                     ReferenceRange new_elem = null
                     recorrerReferenceRange(elem, new_elem = new ReferenceRange())
                     new_dvo.addToOtherReferenceRanges(new_elem)
@@ -610,15 +691,17 @@ class RMLoader {
         }
     }
 
-    static def getInstanceDvOrdered(){
+    static def getInstanceDvOrdered()
+    {
         return new DvOrdered()
     }
 
     //--------------------------------------------------------------------------
-
     // DV_ORDINAL
-    static def recorrerDvOrdinal(dvo, DvOrdinal new_dvo){
-        if (dvo != null){
+    static def recorrerDvOrdinal(dvo, DvOrdinal new_dvo)
+    {
+        if (dvo != null)
+        {
             new_dvo.value = (dvo.value)
             recorrerDvCodedText(dvo.symbol, new_dvo.symbol = new DvCodedText())
             new_dvo.limitsIndex = (dvo.limitsIndex)
@@ -745,8 +828,10 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // CODE_PHRASE
-    static def recorrerCodePhrase(cp, CodePhrase new_cp){
-        if (cp != null){
+    static def recorrerCodePhrase(cp, CodePhrase new_cp)
+    {
+        if (cp != null)
+        {
             new_cp.codeString = (cp.codeString)
             recorrerTerminologyID(cp.terminologyId, new_cp.terminologyId = new TerminologyID())
         }
@@ -997,13 +1082,15 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // DATA_STRUCTURE
-    static def recorrerDataStructure(ds, DataStructure new_ds){
+    static def recorrerDataStructure(ds, DataStructure new_ds)
+    {
         if (ds != null){
             recorrerLocatable(ds, new_ds)
         }
     }
 
-    static def getInstanceDataStructure(){
+    static def getInstanceDataStructure()
+    {
         return new DataStructure()
     }
 
@@ -1014,8 +1101,10 @@ class RMLoader {
     //--------------------------------------------------------------------------
 
     // INTERV
-    static def recorrerInterv(i, Interv new_i){
-        if (i != null){
+    static def recorrerInterv(i, Interv new_i)
+    {
+        if (i != null)
+        {
             recorrerDvOrdered(i.lower, new_i.lower = new DvOrdered())
             recorrerDvOrdered(i.upper, new_i.upper = new DvOrdered())
             new_i.lowerIncluded = (i.lowerIncluded)
@@ -1041,63 +1130,74 @@ class RMLoader {
     // ARCHETYPE_ID
     static def recorrerArchetypeID(ai, ArchetypeID new_ai)
     {
-        if (ai != null){
-            new_ai.qualifiedRmEntity = (ai.qualifiedRmEntity)   // calculated
+        if (ai != null)
+        {
+            new_ai.qualifiedRmEntity = (ai.qualifiedRmEntity) // calculated
             new_ai.rmOriginator = (ai.rmOriginator)
             new_ai.rmName = (ai.rmName)
             new_ai.rmEntity = (ai.rmEntity)
-            new_ai.domainConcept = (ai.domainConcept)       // calculated
+            new_ai.domainConcept = (ai.domainConcept)         // calculated
             new_ai.conceptName = (ai.conceptName)
-            new_ai.specialisation = (ai.specialisation) // List<String>
+            new_ai.specialisation = (ai.specialisation)       // List<String>
             new_ai.versionID = (ai.versionID)
             recorrerObjectID(ai, new_ai)
         }
     }
 
-    static def getInstanceArchetypeID(){
+    // TODO: esta operacion no se usa
+    static def getInstanceArchetypeID()
+    {
         return new ArchetypeID()
     }
 
-    //--------------------------------------------------------------------------
 
     // OBJECT_ID
     static def recorrerObjectID(oi, ObjectID new_oi)
     {
-        if (oi != null){
+        if (oi != null)
+        {
             new_oi.value = (oi.value)
             //recorrerRMObject(oi, new_oi)
         }
     }
 
-    static def getInstanceObjectID(){
+    static def getInstanceObjectID()
+    {
         return new ObjectID()
     }
 
     // OBJECT_REF
-    static def recorrerObjectRef(or, ObjectRef new_or){
-        if (or != null){
+    static def recorrerObjectRef(or, ObjectRef new_or)
+    {
+        if (or != null)
+        {
             new_or.type = (or.type)
             recorrerObjectID(or.objectId, new_or.objectId = new ObjectID())
         }
     }
 
-    static def getInstanceObjectRef(){
+    static def getInstanceObjectRef()
+    {
         return new ObjectRef()
     }
 
     // PARTY_REF
-    static def recorrerPartyRef(pr, PartyRef new_pr){
-        if (pr != null){
+    static def recorrerPartyRef(pr, PartyRef new_pr)
+    {
+        if (pr != null)
+        {
             recorrerObjectRef(pr, new_pr) // Por ser subclase de ObjectRef
         }
     }
 
-    static def getInstancePartyRef(){
+    static def getInstancePartyRef()
+    {
         return new PartyRef()
     }
 
     // TEMPLATE_ID
-    static def recorrerTemplateID(ti, TemplateID new_ti){
+    static def recorrerTemplateID(ti, TemplateID new_ti)
+    {
         if (ti != null){
             recorrerObjectID(ti, new_ti) // Por ser subclase de ObjectID
         }
@@ -1108,7 +1208,8 @@ class RMLoader {
     }
 
     // TERMINOLOGY_ID
-    static def recorrerTerminologyID(ti, TerminologyID new_ti){
+    static def recorrerTerminologyID(ti, TerminologyID new_ti)
+    {
         if (ti != null){
             new_ti.name = (ti.name)
             new_ti.versionId = (ti.versionId)
@@ -1116,18 +1217,22 @@ class RMLoader {
         }
     }
 
-    static def getInstanceTerminologyID(){
+    static def getInstanceTerminologyID()
+    {
         return new TerminologyID()
     }
 
     // UID_BASE_ID
-    static def recorrerUIDBasedID(uidbi, UIDBasedID new_uidbi){
-        if (uidbi != null){
+    static def recorrerUIDBasedID(uidbi, UIDBasedID new_uidbi)
+    {
+        if (uidbi != null)
+        {
             recorrerObjectID(uidbi, new_uidbi) // Por ser subclase de ObjectID
         }
     }
 
-    static def getInstanceUIDBasedID(){
+    static def getInstanceUIDBasedID()
+    {
         return new UIDBasedID()
     }
 }

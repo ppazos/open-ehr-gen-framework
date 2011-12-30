@@ -259,14 +259,14 @@ class BindingAOMRM {
      * @param templateId, nombre del template para el cual se obtendra el mapeo
      * @return mapeo nombre arquetipo, arquetipo para los arquetipos incluidos en el template
      */
-    LinkedHashMap<String, Archetype> getArchetypeIdList(String templateId)
+    LinkedHashMap<String, Archetype> getArchetypeIDList(String templateId)
     {
        def template = TemplateManager.getInstance().getTemplate(templateId)
     
        def manager = ArchetypeManager.getInstance()
 
        def archetypeList = [:] // archId => archetype
-       template.getArchetypeIds().each { archId ->
+       template.getArchetypeIDs().each { archId ->
            archetypeList[archId] = manager.getArchetype(archId)
        }
     
@@ -283,7 +283,7 @@ class BindingAOMRM {
     String getIdArchetypeRoot(String templateId)
     {
         def template = TemplateManager.getInstance().getTemplate(templateId)
-        return template.getRootArchetypeId()
+        return template.getRootArchetypeID()
     }
 
 
@@ -305,7 +305,7 @@ class BindingAOMRM {
         //println "   = templateId: " + templateId
         //println "======================================================="
         
-        LinkedHashMap<String, Archetype> arquetipos = getArchetypeIdList(templateId)
+        LinkedHashMap<String, Archetype> arquetipos = getArchetypeIDList(templateId)
         
         // FIXME: para los arquetipos que interesa el bindeo van a ser los que tengan elements, que es donde se ponen los valores.
         //        las estructuras de DataStructure para arriba pueden ser generadas a partir del arquetipo sin necesidad de los valores submiteados, por lo que pueden estar cacheadas para cada arquetipo.

@@ -21,7 +21,7 @@ class Template {
      * Retorna los identificadores de todos los arquetipos del template.
      * @return
      */
-    List<String> getArchetypeIds()
+    List<String> getArchetypeIDs()
     {
         def ret = []
         ret << rootArchetype.id
@@ -33,7 +33,7 @@ class Template {
      * Retorna el identificador del arquetipo raiz del template.
      * @return
      */
-    String getRootArchetypeId()
+    String getRootArchetypeID()
     {
         return rootArchetype.id
     }

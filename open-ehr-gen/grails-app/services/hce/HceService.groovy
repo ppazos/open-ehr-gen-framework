@@ -464,19 +464,19 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
     }
     
     /**
-     * Devuelve un map<ArchetypeId,Locatable>, con las referencias de los
+     * Devuelve un map<ArchetypeID,Locatable>, con las referencias de los
      * arquetipos del template a los respectivos nodos del RM.
      * Se usa para que el show y el edit sepan donde mostrar los objetos en
      * la web.
      * Este metodo seria mas un RM_UTILS que un HCEService.
      * @param template
      * @param rmNode
-     * @return map<ArchetypeId,Locatable>
+     * @return map<ArchetypeID,Locatable> // cuidado que es el ArchetypeID de la Java Ref Impl, no el de nuestro modelo.
      */
     def Map getRMRootsIndex( Template template, Locatable rmNode)
     {
         def idx = [:]
-        def archIds = template.getArchetypeIds()
+        def archIds = template.getArchetypeIDs()
         
         archIds.each { archId ->
             
