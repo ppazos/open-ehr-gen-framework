@@ -1,0 +1,220 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-ACTION.disposition.v1draft
+
+concept
+	[at0000]	-- Disposition
+language
+	original_language = <[ISO_639-1::en]>
+description
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	ACTION[at0000] matches {	-- Disposition
+		ism_transition matches {
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::524]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0001]}		-- Plan
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::524]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0004]}		-- Coordinate disposition with all parties
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::527]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0009]}		-- Postpone disposition
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::528]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0011]}		-- Cancel disposition
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::529]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0002]}		-- Schedule
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::529]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0005]}		-- Notify all parties
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::529]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0006]}		-- Arrange transfer details
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::245]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0007]}		-- Transfer patient
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::530]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0010]}		-- Suspend disposition
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::531]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0012]}		-- Stop disposition
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::532]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0008]}		-- Transfer completed
+					}
+				}
+			}
+		}
+		description matches {
+			allow_archetype ITEM_TREE occurrences matches {0..1} matches {
+				include
+					archetype_id/value matches {/disposition\.v1draft/}
+				exclude
+					archetype_id/value matches {/.*/}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record of actions related to patient disposition">
+					text = <"Disposition">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"Plan">
+				>
+				["at0002"] = <
+					description = <"*">
+					text = <"Schedule">
+				>
+				["at0004"] = <
+					description = <"*">
+					text = <"Coordinate disposition with all parties">
+				>
+				["at0005"] = <
+					description = <"*">
+					text = <"Notify all parties">
+				>
+				["at0006"] = <
+					description = <"*">
+					text = <"Arrange transfer details">
+				>
+				["at0007"] = <
+					description = <"*">
+					text = <"Transfer patient">
+				>
+				["at0008"] = <
+					description = <"*">
+					text = <"Transfer completed">
+				>
+				["at0009"] = <
+					description = <"*">
+					text = <"Postpone disposition">
+				>
+				["at0010"] = <
+					description = <"*">
+					text = <"Suspend disposition">
+				>
+				["at0011"] = <
+					description = <"*">
+					text = <"Cancel disposition">
+				>
+				["at0012"] = <
+					description = <"*">
+					text = <"Stop disposition">
+				>
+			>
+		>
+	>

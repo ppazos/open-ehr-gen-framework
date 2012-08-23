@@ -1,0 +1,82 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.exam.v1draft
+
+concept
+	[at0000]	-- Examination findings
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	OBSERVATION[at0000] matches {	-- Examination findings
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									allow_archetype CLUSTER occurrences matches {0..5} matches {
+										include
+											archetype_id/value matches {/exam\.v1/}
+											archetype_id/value matches {/exam-uterus\.v1/}
+											archetype_id/value matches {/exam-fetus\.v1/}
+											archetype_id/value matches {/exam-uterine_cervix\.v1/}
+											archetype_id/value matches {/exam-chest\.v1/}
+											archetype_id/value matches {/exam-generic-joint\.v1/}
+											archetype_id/value matches {/exam-generic-lympnode\.v1/}
+											archetype_id/value matches {/exam-generic-mass\.v1/}
+											archetype_id/value matches {/exam-generic\.v1/}
+											archetype_id/value matches {/fluid\.v1/}
+											archetype_id/value matches {/exam-abdomen\.v1/}
+											archetype_id/value matches {/exam-nervous_system\.v1/}
+											archetype_id/value matches {/inspection-skin-wound\.v1draft/}
+											archetype_id/value matches {/palpation\.v1/}
+											archetype_id/value matches {/inspection-skin\.v1draft/}
+											archetype_id/value matches {/placeholder\.v1draft/}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"For recording findings determined at physical examination">
+					text = <"Examination findings">
+				>
+				["at0001"] = <
+					description = <"@ internal @">
+					text = <"Event Series">
+				>
+				["at0002"] = <
+					description = <"*">
+					text = <"Any event">
+				>
+				["at0003"] = <
+					description = <"@ internal @">
+					text = <"Tree">
+				>
+			>
+		>
+	>

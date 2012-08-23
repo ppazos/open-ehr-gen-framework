@@ -1,0 +1,186 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-ACTION.patient_information.v1draft
+
+concept
+	[at0000]	-- Patient information
+language
+	original_language = <[ISO_639-1::en]>
+description
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	ACTION[at0000] matches {	-- Patient information
+		ism_transition matches {
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::524]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0004]}		-- Need for information identified
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::524]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0005]}		-- Provider for transmission of information identified
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::527]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0006]}		-- Provision of information is postponed
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::528]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0008]}		-- Provision of information is cancelled
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::529]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0001]}		-- Time and Mechanism for transmission of information is arranged
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::245]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0002]}		-- Information provided/sent to patient
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::530]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0007]}		-- Provision of information is suspended
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::531]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0009]}		-- Provision of information is aborted
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::532]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0003]}		-- Patient has received information
+					}
+				}
+			}
+		}
+		description matches {
+			allow_archetype ITEM_TREE occurrences matches {0..1} matches {
+				include
+					archetype_id/value matches {/.*/}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Patient information provided">
+					text = <"Patient information">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"Time and Mechanism for transmission of information is arranged">
+				>
+				["at0002"] = <
+					description = <"*">
+					text = <"Information provided/sent to patient">
+				>
+				["at0003"] = <
+					description = <"*">
+					text = <"Patient has received information">
+				>
+				["at0004"] = <
+					description = <"*">
+					text = <"Need for information identified">
+				>
+				["at0005"] = <
+					description = <"*">
+					text = <"Provider for transmission of information identified">
+				>
+				["at0006"] = <
+					description = <"*">
+					text = <"Provision of information is postponed">
+				>
+				["at0007"] = <
+					description = <"*">
+					text = <"Provision of information is suspended">
+				>
+				["at0008"] = <
+					description = <"*">
+					text = <"Provision of information is cancelled">
+				>
+				["at0009"] = <
+					description = <"*">
+					text = <"Provision of information is aborted">
+				>
+			>
+		>
+	>

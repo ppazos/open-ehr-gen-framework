@@ -1,0 +1,271 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.pre_operative-caesarean_section.v1draft
+specialize
+	openEHR-EHR-OBSERVATION.pre_operative.v1draft
+
+concept
+	[at0000.1]	-- Pre-operative record for caesarian section
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.biz">
+		["date"] = <"13/04/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			keywords = <"pre-operative", "operation", "surgery", "indication", "elective", "emergency", "caesarean", "section">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+
+definition
+	OBSERVATION[at0000.1] matches {	-- Pre-operative record for caesarian section
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Indication
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0013] occurrences matches {0..*} matches {	-- Intended Operation 
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- Urgency of operation
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0006, 	-- Elective
+													at0007]	-- Emergency
+												}
+											}
+											C_DV_ORDINAL <
+											>
+										}
+									}
+									CLUSTER[at0008] occurrences matches {0..*} matches {	-- Attendees
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0009] occurrences matches {0..1} matches {	-- Role
+												value matches {
+													DV_TEXT matches {
+														value matches {"Operator", "Operator assistant", "Anaesthetist", "Anaesthetist assistant", "Scrub nurse", "Nurse", "Medical student", "Student nurse", "Orderly", "Observer"}
+													}
+												}
+											}
+											ELEMENT[at0014] occurrences matches {0..1} matches {	-- Name
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {[local::]}
+													}
+												}
+											}
+											ELEMENT[at0010] occurrences matches {0..1} matches {	-- Grade
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {[local::]}
+													}
+												}
+											}
+											ELEMENT[at0016] occurrences matches {0..1} matches {	-- Consultant present
+												value matches {
+													DV_BOOLEAN matches {
+														value matches {True, False}
+													}
+												}
+											}
+										}
+									}
+									ELEMENT[at0011] occurrences matches {0..1} matches {	-- Type of anaesthetic
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									CLUSTER[at0015] occurrences matches {0..1} matches {	-- Patient preparation checklist
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0017] occurrences matches {0..1} matches {	-- Urinary Catheter in situ?
+												value matches {
+													DV_BOOLEAN matches {
+														value matches {True, False}
+													}
+												}
+											}
+											ELEMENT[at0021] occurrences matches {0..1} matches {	-- Known haemoglobin result?
+												value matches {
+													DV_BOOLEAN matches {
+														value matches {True, False}
+													}
+												}
+											}
+											ELEMENT[at0022] occurrences matches {0..1} matches {	-- Blood group and save?
+												value matches {
+													DV_BOOLEAN matches {
+														value matches {True, False}
+													}
+												}
+											}
+											ELEMENT[at0018] occurrences matches {0..1} matches {	-- Blood cross-matched?
+												value matches {
+													DV_BOOLEAN matches {
+														value matches {True, False}
+													}
+												}
+											}
+											ELEMENT[at0019] occurrences matches {0..1} matches {	-- Pre-operative heparin?
+												value matches {
+													DV_BOOLEAN matches {
+														value matches {True, False}
+													}
+												}
+											}
+											ELEMENT[at0020] occurrences matches {0..1} matches {	-- Pre-operative antibiotics
+												value matches {
+													DV_BOOLEAN matches {
+														value matches {True, False}
+													}
+												}
+											}
+											ELEMENT[at0023] occurrences matches {0..1} matches {*}
+										}
+									}
+									CLUSTER[at0.24] occurrences matches {0..1} matches {	-- Pre-operative Examination findings
+										items cardinality matches {0..*; unordered} matches {
+											allow_archetype CLUSTER occurrences matches {0..1} matches {
+												include
+													archetype_id/value matches {/exam-abdomen\.v1/}
+													archetype_id/value matches {/exam-fetus\.v1/}
+													archetype_id/value matches {/exam-uterus\.v1/}
+													archetype_id/value matches {/exam-uterine_cervix\.v1/}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0.24"] = <
+					text = <"Pre-operative Examination findings">
+					description = <"*">
+				>
+				["at0000"] = <
+					text = <"Pre-operative record">
+					description = <"Record of details pertaining to pre-operative preparation ">
+				>
+				["at0000.1"] = <
+					text = <"Pre-operative record for caesarian section">
+					description = <"Record of details pertaining to pre-operative preparation prior to caesarian section">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Any event">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Indication">
+					description = <"Indication for surgery">
+				>
+				["at0005"] = <
+					text = <"Urgency of operation">
+					description = <"Elective or emergency">
+				>
+				["at0006"] = <
+					text = <"Elective">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"Emergency">
+					description = <"*">
+				>
+				["at0008"] = <
+					text = <"Attendees">
+					description = <"People in attendance in operating theatre">
+				>
+				["at0009"] = <
+					text = <"Role">
+					description = <"Role of attendee">
+				>
+				["at0010"] = <
+					text = <"Grade">
+					description = <"*">
+				>
+				["at0011"] = <
+					text = <"Type of anaesthetic">
+					description = <"Type of anaesthetic">
+				>
+				["at0013"] = <
+					text = <"Intended Operation ">
+					description = <"Name of operation intended to be performed at commencement of operation">
+				>
+				["at0014"] = <
+					text = <"Name">
+					description = <"Name of attendee">
+				>
+				["at0015"] = <
+					text = <"Patient preparation checklist">
+					description = <"*">
+				>
+				["at0016"] = <
+					text = <"Consultant present">
+					description = <"Consultant present in operating theatre">
+				>
+				["at0017"] = <
+					text = <"Urinary Catheter in situ?">
+					description = <"Does patient have urinary catheter in in situ?">
+				>
+				["at0018"] = <
+					text = <"Blood cross-matched?">
+					description = <"Was blood cross-matched prior to surgery?">
+				>
+				["at0019"] = <
+					text = <"Pre-operative heparin?">
+					description = <"Was patient given pre-operative heparin?">
+				>
+				["at0020"] = <
+					text = <"Pre-operative antibiotics">
+					description = <"Was patient given pre-operative antibioticsa?">
+				>
+				["at0021"] = <
+					text = <"Known haemoglobin result?">
+					description = <"Known pre-operative Haemoglobin?">
+				>
+				["at0022"] = <
+					text = <"Blood group and save?">
+					description = <"Was blood group and save performed prior to surgery?">
+				>
+				["at0023"] = <
+					text = <"Other">
+					description = <"Other unspecified check">
+				>
+			>
+		>
+	>

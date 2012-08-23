@@ -1,0 +1,3 @@
+
+    * openEHR-EHR-OBSERVATION.test_cluster_obligatorio_multiple.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0006]/value/value: field_621
+    * openEHR-EHR-OBSERVATION.test_cluster_obligatorio_multiple.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0005]/value: field_622

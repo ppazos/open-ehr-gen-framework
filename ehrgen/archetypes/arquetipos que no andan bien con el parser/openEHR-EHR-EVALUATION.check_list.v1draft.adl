@@ -1,0 +1,133 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-EVALUATION.check_list.v1draft
+
+concept
+	[at0000]	-- A health oriented check list
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			author = <
+				["name"] = <"Jasmin Buck, Sebastian Garde">
+				["organisation"] = <"University of Heidelberg, Central Queensland University">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	EVALUATION[at0000] matches {	-- A health oriented check list
+		data matches {
+			ITEM_TREE[at0001] matches {	-- Tree
+				items cardinality matches {0..*; unordered} matches {
+					CLUSTER[at0004] occurrences matches {1..*} matches {	-- Question group
+						items cardinality matches {0..*; unordered} matches {
+							CLUSTER[at0002] occurrences matches {1..*} matches {	-- Question
+								items cardinality matches {1..2; unordered} matches {
+									ELEMENT[at0003] occurrences matches {1..*} matches {*}
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- A comment on the answer
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+					}
+					ELEMENT[at0006] occurrences matches {0..1} matches {	-- Summary
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["de"] = <
+			items = <
+				["at0000"] = <
+					description = <"Ein allgemeiner Archetyp zur Dokumentation von Fragen und Antworten, ermöglicht strukturierte Aufzeichnung. Tatsächliche Befunde werden in anderen Strukturen aufgezeichnet.">
+					text = <"eine gesundheitsorientierte Kontrollliste">
+				>
+				["at0001"] = <
+					description = <"@ internal @">
+					text = <"Baum">
+				>
+				["at0002"] = <
+					description = <"Der Name der Gruppe ist die Frage">
+					text = <"Frage">
+				>
+				["at0003"] = <
+					description = <"Die Antwort(en) auf die Frage">
+					text = <"Antwort">
+				>
+				["at0004"] = <
+					description = <"Eine Gruppierung von Fragen und Antworten">
+					text = <"Fragegruppe">
+				>
+				["at0005"] = <
+					description = <"Eine Anmerkung zur Antwort">
+					text = <"Eine Anmerkung zur Antwort">
+				>
+				["at0006"] = <
+					description = <"Zusammenfassung von Fragen">
+					text = <"Zusammenfassung">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"A generic archetype for recording questions and answers to allow structured recording. Actual findings are recorded in other structures">
+					text = <"A health oriented check list">
+				>
+				["at0001"] = <
+					description = <"@ internal @">
+					text = <"Tree">
+				>
+				["at0002"] = <
+					description = <"The name of the cluster is the question">
+					text = <"Question">
+				>
+				["at0003"] = <
+					description = <"The answer(s) to the question">
+					text = <"Answer">
+				>
+				["at0004"] = <
+					description = <"A grouping for questions and answers">
+					text = <"Question group">
+				>
+				["at0005"] = <
+					description = <"A comment on the answer">
+					text = <"A comment on the answer">
+				>
+				["at0006"] = <
+					description = <"Summary of questions">
+					text = <"Summary">
+				>
+			>
+		>
+	>

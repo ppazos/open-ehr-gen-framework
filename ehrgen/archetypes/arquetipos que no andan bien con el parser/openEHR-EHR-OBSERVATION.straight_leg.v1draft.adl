@@ -1,0 +1,154 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.straight_leg.v1draft
+
+concept
+	[at0000]	-- Straight leg raising
+language
+	original_language = <[ISO_639-1::en]>
+description
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	OBSERVATION[at0000] matches {	-- Straight leg raising
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TABLE[at0003] matches {	-- List
+								rotated matches {True}
+								number_key_columns matches {|1|}
+								rows cardinality matches {0..1; unordered} matches {
+									CLUSTER[at0014] occurrences matches {0..1} matches {	-- row
+										items cardinality matches {3; unordered} matches {
+											ELEMENT[at0011] occurrences matches {0..1} matches {	-- row_head
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {
+															[local::
+															at0010, 	-- Left
+															at0012]	-- Right
+														}
+													}
+												}
+											}
+											ELEMENT[at0008] occurrences matches {0..1} matches {	-- Straight leg raising
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::497]>
+														list = <
+															["1"] = <
+																units = <"°">
+																magnitude = <|0.0..180.0|>
+																precision = <|0|>
+															>
+														>
+													>
+												}
+											}
+											ELEMENT[at0013] occurrences matches {0..1} matches {	-- Distribution of pain
+												value matches {
+													DV_TEXT matches {*}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						state matches {
+							ITEM_LIST[at0004] matches {	-- List
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- Distraction
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0006, 	-- Undistracted
+													at0007]	-- Distracted
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Assesses the degree of raising a straight leg when lying flat">
+					text = <"Straight leg raising">
+					comment = <"The Journal of Bone and Joint Surgery, Vol 69, Issue 4 517-522">
+				>
+				["at0001"] = <
+					description = <"@ internal @">
+					text = <"Event Series">
+				>
+				["at0002"] = <
+					description = <"Timing event">
+					text = <"Any event">
+				>
+				["at0003"] = <
+					description = <"@ internal @">
+					text = <"List">
+				>
+				["at0004"] = <
+					description = <"@ internal @">
+					text = <"List">
+				>
+				["at0005"] = <
+					description = <"Whether the patient is distracted at the time of measurement">
+					text = <"Distraction">
+				>
+				["at0006"] = <
+					description = <"The patient is not distracted in any way">
+					text = <"Undistracted">
+				>
+				["at0007"] = <
+					description = <"The person is distracted through being asked to assume the position in another manner or through other means">
+					text = <"Distracted">
+				>
+				["at0008"] = <
+					description = <"Raising the straightened leg from the anatomical position in the sagital plane to the point where it is uncomfortable.">
+					text = <"Straight leg raising">
+				>
+				["at0010"] = <
+					description = <"The left leg">
+					text = <"Left">
+				>
+				["at0011"] = <
+					description = <"*">
+					text = <"row_head">
+				>
+				["at0012"] = <
+					description = <"The right leg">
+					text = <"Right">
+				>
+				["at0013"] = <
+					description = <"The distribution of pain or tingling sensation at the extreme of straight leg raising">
+					text = <"Distribution of pain">
+				>
+				["at0014"] = <
+					description = <"@ internal @">
+					text = <"row">
+				>
+			>
+		>
+	>

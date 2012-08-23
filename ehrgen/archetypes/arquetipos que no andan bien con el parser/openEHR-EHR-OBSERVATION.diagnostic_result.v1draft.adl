@@ -1,0 +1,195 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.diagnostic_result.v1draft
+
+concept
+	[at0000]	-- Diagnostic result
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["date"] = <"13/04/2007">
+		["email"] = <"heather.leslie@oceaninformatics.biz">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			keywords = <"diagnostic", "result">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+
+definition
+	OBSERVATION[at0000] matches {	-- Diagnostic result
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									CLUSTER[at0004] occurrences matches {0..1} matches {	-- Test
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0005] occurrences matches {0..1} matches {	-- Description
+												value matches {
+													DV_TEXT matches {*}
+												}
+											}
+											ELEMENT[at0006] occurrences matches {0..1} matches {	-- Body site
+												value matches {
+													DV_TEXT matches {*}
+												}
+											}
+										}
+									}
+									ELEMENT[at0007] occurrences matches {0..1} matches {	-- Diagnostic service
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {[local::]}
+											}
+										}
+									}
+									CLUSTER[at0017] occurrences matches {0..1} matches {	-- Speciifc result
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0008] occurrences matches {0..1} matches {*}
+										}
+									}
+									CLUSTER[at0009] occurrences matches {0..1} matches {	-- Comment
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0010] occurrences matches {0..1} matches {	-- Path
+												value matches {
+													DV_URI matches {*}
+												}
+											}
+											ELEMENT[at0011] occurrences matches {0..1} matches {	-- Comment
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {[local::]}
+													}
+												}
+											}
+										}
+									}
+									ELEMENT[at0012] occurrences matches {0..1} matches {	-- Overall Comment
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {[local::]}
+											}
+										}
+									}
+									CLUSTER[at0013] occurrences matches {0..1} matches {	-- Quality
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0015] occurrences matches {0..1} matches {	-- Issue
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {[local::]}
+													}
+												}
+											}
+											ELEMENT[at0016] occurrences matches {0..1} matches {	-- Rating
+												value matches {
+													DV_COUNT matches {
+														magnitude matches {|0..10|}
+													}
+												}
+											}
+											ELEMENT[at0014] occurrences matches {0..1} matches {	-- Comment
+												value matches {
+													DV_TEXT matches {*}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Generic diagnostic result archetype to allow terminology driven results on a generic framework">
+					text = <"Diagnostic result">
+				>
+				["at0001"] = <
+					description = <"@ internal @">
+					text = <"Event Series">
+				>
+				["at0002"] = <
+					description = <"*">
+					text = <"Any event">
+				>
+				["at0003"] = <
+					description = <"@ internal @">
+					text = <"Tree">
+				>
+				["at0004"] = <
+					description = <"*">
+					text = <"Test">
+				>
+				["at0005"] = <
+					description = <"Description of the test">
+					text = <"Description">
+				>
+				["at0006"] = <
+					description = <"The site of the body where the specimen was collected">
+					text = <"Body site">
+				>
+				["at0007"] = <
+					description = <"The type of diagnostic service">
+					text = <"Diagnostic service">
+				>
+				["at0008"] = <
+					description = <"Generic result - data type is not set">
+					text = <"Any result">
+				>
+				["at0009"] = <
+					description = <"Comments relating to a specific result @Path">
+					text = <"Comment">
+				>
+				["at0010"] = <
+					description = <"The path of the result to which the comment relates">
+					text = <"Path">
+				>
+				["at0011"] = <
+					description = <"Comment relating to a specific result at the path indicated">
+					text = <"Comment">
+				>
+				["at0012"] = <
+					description = <"Comment on all results">
+					text = <"Overall Comment">
+				>
+				["at0013"] = <
+					description = <"*">
+					text = <"Quality">
+				>
+				["at0014"] = <
+					description = <"Comment on the quality issue">
+					text = <"Comment">
+				>
+				["at0015"] = <
+					description = <"A description of the quality issue">
+					text = <"Issue">
+				>
+				["at0016"] = <
+					description = <"The degree of the stated issue">
+					text = <"Rating">
+				>
+				["at0017"] = <
+					description = <"*">
+					text = <"Speciifc result">
+				>
+			>
+		>
+	>

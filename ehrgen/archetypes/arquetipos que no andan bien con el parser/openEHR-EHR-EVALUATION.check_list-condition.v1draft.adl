@@ -1,0 +1,111 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-EVALUATION.check_list-condition.v1draft
+specialize
+	openEHR-EHR-EVALUATION.check_list.v1draft
+
+concept
+	[at0000.1]	-- A check list for specific health conditions
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	EVALUATION[at0000.1] matches {	-- A check list for specific health conditions
+		data matches {
+			ITEM_TREE[at0001] matches {	-- Tree
+				items cardinality matches {0..*; unordered} matches {
+					CLUSTER[at0004] occurrences matches {1..*} matches {	-- Question group
+						items cardinality matches {0..*; unordered} matches {
+							CLUSTER[at0002] occurrences matches {1..*} matches {	-- Question
+								items cardinality matches {1..2; unordered} matches {
+									ELEMENT[at0.7] occurrences matches {1..*} matches {	-- Condition
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0003.1] matches {	-- Presence
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- A comment on the answer
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+					}
+					ELEMENT[at0006] occurrences matches {0..1} matches {	-- Summary
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0.7"] = <
+					description = <"One or more health conditions as illustration of a positive answer to the question">
+					text = <"Condition">
+				>
+				["at0000"] = <
+					description = <"A generic archetype for recording questions and answers to allow structured recording. Actual findings are recorded in other structures">
+					text = <"A health oriented check list">
+				>
+				["at0000.1"] = <
+					description = <"A generic archetype for recording questions and about the presence or past occurrence of health conditions to allow structured recording. Actual findings are recorded in other structures!">
+					text = <"A check list for specific health conditions">
+				>
+				["at0001"] = <
+					description = <"@ internal @">
+					text = <"Tree">
+				>
+				["at0002"] = <
+					description = <"The name of the cluster is the question">
+					text = <"Question">
+				>
+				["at0003"] = <
+					description = <"The answer of the question">
+					text = <"Answer">
+				>
+				["at0003.1"] = <
+					description = <"The answer to the question about the condition">
+					text = <"Presence">
+				>
+				["at0004"] = <
+					description = <"A grouping for questions and answers">
+					text = <"Question group">
+				>
+				["at0005"] = <
+					description = <"A comment on the question">
+					text = <"A comment on the answer">
+				>
+				["at0006"] = <
+					description = <"Summary of questions">
+					text = <"Summary">
+				>
+			>
+		>
+	>

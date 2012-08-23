@@ -1,0 +1,72 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-ACTION.procedure.v1draft
+
+concept
+	[at0000]	-- Procedure undertaken
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			author = <
+				["name"] = <"Jasmin Buck,Sebastian Garde">
+				["organisation"] = <"University of Heidelberg, Central Queensland University">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["date"] = <"12/03/2007">
+		["email"] = <"heather.leslie@oceaninformatics.biz">
+	>
+	details = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	ACTION[at0000] matches {	-- Procedure undertaken
+		description matches {
+			allow_archetype ITEM_TREE occurrences matches {0..1} matches {
+				include
+					archetype_id/value matches {/procedure\.v1draft/}
+					archetype_id/value matches {/procedure-procedural_analgesia\.v1draft/}
+				exclude
+					archetype_id/value matches {/.*/}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["de"] = <
+			items = <
+				["at0000"] = <
+					description = <"Die Beschreibung einer durchgeführten Maßnahme">
+					text = <"Durchgeführte Maßnahme">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"The description of a procedure that has been performed">
+					text = <"Procedure undertaken">
+				>
+			>
+		>
+	>

@@ -1,0 +1,52 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-INSTRUCTION.disposition.v1draft
+
+concept
+	[at0000]	-- Disposition
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	INSTRUCTION[at0000] matches {	-- Disposition
+		activities cardinality matches {0..*; unordered} matches {
+			ACTIVITY[at0001] occurrences matches {0..1} matches {	-- new activity
+				action_archetype_id matches {/disposition\.v1draft/}
+				description matches {
+					allow_archetype ITEM_TREE occurrences matches {0..1} matches {
+						include
+							archetype_id/value matches {/disposition\.v1draft/}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record of instruction for disposition">
+					text = <"Disposition">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"new activity">
+				>
+			>
+		>
+	>

@@ -1,0 +1,130 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-CLUSTER.relative_position_abdomen.v1draft
+
+concept
+	[at0000]	-- Size in abdomen
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	CLUSTER[at0000] matches {	-- Size in abdomen
+		items cardinality matches {3; unordered} matches {
+			ELEMENT[at0001] matches {	-- Structure
+				value matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {
+							[local::
+							at0002, 	-- Left costal margin
+							at0003, 	-- Xiphi-sternum
+							at0004, 	-- Pubis
+							at0005, 	-- umbilicus
+							at0012]	-- Right costal margin
+						}
+					}
+				}
+			}
+			ELEMENT[at0006] matches {	-- Relationship to structure
+				value matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {
+							[local::
+							at0007, 	-- below
+							at0008, 	-- at
+							at0009]	-- above
+						}
+					}
+				}
+			}
+			ELEMENT[at0010] occurrences matches {0..1} matches {	-- Distance from structure
+				value matches {
+					C_DV_QUANTITY <
+						property = <[openehr::122]>
+						list = <
+							["1"] = <
+								units = <"cm">
+							>
+						>
+					>
+				}
+			}
+			ELEMENT[at0011] occurrences matches {0..1} matches {	-- Distance in finger breadths
+				value matches {
+					DV_COUNT matches {*}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"*">
+					text = <"Size in abdomen">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"Structure">
+				>
+				["at0002"] = <
+					description = <"The lower border of the rib cage">
+					text = <"Left costal margin">
+				>
+				["at0003"] = <
+					description = <"The lower portion of the sternum (midline)">
+					text = <"Xiphi-sternum">
+				>
+				["at0004"] = <
+					description = <"The superior border of the pubic rami (pelvis)">
+					text = <"Pubis">
+				>
+				["at0005"] = <
+					description = <"The navel or belly button">
+					text = <"umbilicus">
+				>
+				["at0006"] = <
+					description = <"Whether above, below or at the level of the structure">
+					text = <"Relationship to structure">
+				>
+				["at0007"] = <
+					description = <"Inferior to the structure">
+					text = <"below">
+				>
+				["at0008"] = <
+					description = <"at the same level as the structure">
+					text = <"at">
+				>
+				["at0009"] = <
+					description = <"superior to the structure">
+					text = <"above">
+				>
+				["at0010"] = <
+					description = <"The distance in cm from the structure">
+					text = <"Distance from structure">
+				>
+				["at0011"] = <
+					description = <"The distance from the structure in finger breadths">
+					text = <"Distance in finger breadths">
+				>
+				["at0012"] = <
+					description = <"The lower border of the rib cage">
+					text = <"Right costal margin">
+				>
+			>
+		>
+	>

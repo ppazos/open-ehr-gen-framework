@@ -1,0 +1,49 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-INSTRUCTION.patient_information.v1draft
+
+concept
+	[at0000]	-- Patient Information
+language
+	original_language = <[ISO_639-1::en]>
+description
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	INSTRUCTION[at0000] matches {	-- Patient Information
+		activities cardinality matches {0..*; unordered} matches {
+			ACTIVITY[at0001] occurrences matches {0..1} matches {	-- new activity
+				action_archetype_id matches {/patient_information\.v1draft/}
+				description matches {
+					allow_archetype ITEM_TREE occurrences matches {0..1} matches {
+						include
+							archetype_id/value matches {/.*/}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record of instruction to provide patient information">
+					text = <"Patient Information">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"new activity">
+				>
+			>
+		>
+	>

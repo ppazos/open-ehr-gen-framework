@@ -1,0 +1,81 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-INSTRUCTION.monitoring.v1draft
+
+concept
+	[at0000]	-- Monitoring
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	INSTRUCTION[at0000] matches {	-- Monitoring
+		activities cardinality matches {0..*; unordered} matches {
+			ACTIVITY[at0001] occurrences matches {0..*} matches {	-- new activity
+				description matches {
+					ITEM_TREE[at0002] matches {	-- Tree
+						items cardinality matches {0..*; unordered} matches {
+							CLUSTER[at0003] occurrences matches {0..*} matches {	-- Monitoring
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Description
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0005] occurrences matches {0..*} matches {	-- Archetype
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Planned observations and other recordings to monitor the progress of a problem or condition">
+					text = <"Monitoring">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"new activity">
+				>
+				["at0002"] = <
+					description = <"@ internal @">
+					text = <"Tree">
+				>
+				["at0003"] = <
+					description = <"Details of an observation to be monitored">
+					text = <"Monitoring">
+				>
+				["at0004"] = <
+					description = <"Details of the monitoring to be undertaken and rationale">
+					text = <"Description">
+				>
+				["at0005"] = <
+					description = <"The id of the archetype(s) to be filled as part of this.monitoring">
+					text = <"Archetype">
+				>
+			>
+		>
+	>

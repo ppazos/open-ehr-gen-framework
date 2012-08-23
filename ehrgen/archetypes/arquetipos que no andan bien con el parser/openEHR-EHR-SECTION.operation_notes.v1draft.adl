@@ -1,0 +1,163 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-SECTION.operation_notes.v1draft
+
+concept
+	[at0000]	-- Operation notes
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	SECTION[at0000] matches {	-- Operation notes
+		items cardinality matches {0..*; unordered} matches {
+			SECTION[at0001] occurrences matches {0..1} matches {	-- Pre-operative
+				items cardinality matches {0..*; unordered} matches {
+					allow_archetype OBSERVATION occurrences matches {0..*} matches {
+						include
+							archetype_id/value matches {/.*/}
+					}
+					allow_archetype EVALUATION occurrences matches {0..*} matches {
+						include
+							archetype_id/value matches {/.*/}
+					}
+				}
+			}
+			SECTION[at0002] occurrences matches {0..1} matches {	-- Operation
+				items cardinality matches {0..*; unordered} matches {
+					SECTION[at0003] occurrences matches {0..1} matches {	-- Anaesthetic details
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype OBSERVATION occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+					SECTION[at0004] occurrences matches {0..1} matches {	-- Incision
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype OBSERVATION occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+					SECTION[at0010] occurrences matches {0..1} matches {	-- Operation Details
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype OBSERVATION occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+					SECTION[at0006] occurrences matches {0..1} matches {	-- Findings
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype OBSERVATION occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+					SECTION[at0005] occurrences matches {0..1} matches {	-- Diagnosis
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype EVALUATION occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+					SECTION[at0008] occurrences matches {0..1} matches {	-- Closure
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype OBSERVATION occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+					SECTION[at0007] occurrences matches {0..1} matches {	-- Intra-operative issues
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype OBSERVATION occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+				}
+			}
+			SECTION[at0009] occurrences matches {0..1} matches {	-- Post-operative
+				items cardinality matches {0..*; unordered} matches {
+					allow_archetype INSTRUCTION occurrences matches {0..*} matches {
+						include
+							archetype_id/value matches {/.*/}
+					}
+					allow_archetype ACTION occurrences matches {0..*} matches {
+						include
+							archetype_id/value matches {/.*/}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record of all components required for generating an operation report">
+					text = <"Operation notes">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"Pre-operative">
+				>
+				["at0002"] = <
+					description = <"*">
+					text = <"Operation">
+				>
+				["at0003"] = <
+					description = <"*">
+					text = <"Anaesthetic details">
+				>
+				["at0004"] = <
+					description = <"*">
+					text = <"Incision">
+				>
+				["at0005"] = <
+					description = <"*">
+					text = <"Diagnosis">
+				>
+				["at0006"] = <
+					description = <"*">
+					text = <"Findings">
+				>
+				["at0007"] = <
+					description = <"*">
+					text = <"Intra-operative issues">
+				>
+				["at0008"] = <
+					description = <"*">
+					text = <"Closure">
+				>
+				["at0009"] = <
+					description = <"*">
+					text = <"Post-operative">
+				>
+				["at0010"] = <
+					description = <"*">
+					text = <"Operation Details">
+				>
+			>
+		>
+	>

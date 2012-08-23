@@ -1,0 +1,163 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-CLUSTER.health_event.v1
+
+concept
+	[at0000]	-- Health event
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	CLUSTER[at0000] matches {	-- Health event
+		items cardinality matches {0..*; unordered} matches {
+			ELEMENT[at0001] matches {	-- Event
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			CLUSTER[at0015] occurrences matches {0..1} matches {	-- Event details
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0009] occurrences matches {0..1} matches {	-- Clinical description
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					CLUSTER[at0010] occurrences matches {0..1} matches {	-- Occurrence
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0011] occurrences matches {0..1} matches {	-- How long ago
+								value matches {
+									DV_DURATION matches {
+										value matches {PYMWDTHMS}
+									}
+								}
+							}
+						}
+					}
+					CLUSTER[at0004] occurrences matches {0..1} matches {	-- Other parties
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0002] occurrences matches {0..1} matches {	-- Witness
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+							ELEMENT[at0003] occurrences matches {0..*} matches {	-- Perpetrator
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+						}
+					}
+					ELEMENT[at0007] occurrences matches {0..1} matches {	-- Circumstances
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					CLUSTER[at0008] occurrences matches {0..1} matches {	-- Preceding symptoms and events
+						items cardinality matches {0..1; unordered} matches {
+							allow_archetype CLUSTER occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/symptom\.v1/}
+									archetype_id/value matches {/health_event\.v1/}
+							}
+						}
+					}
+					CLUSTER[at0012] occurrences matches {0..1} matches {	-- Associated symptoms and events
+						items cardinality matches {0..1; unordered} matches {
+							allow_archetype CLUSTER occurrences matches {0..*} matches {
+								include
+									archetype_id/value matches {/health_event\.v1/}
+									archetype_id/value matches {/symptom-pain\.v1/}
+									archetype_id/value matches {/symptom\.v1/}
+							}
+						}
+					}
+					CLUSTER[at0013] occurrences matches {0..1} matches {	-- Contributing factors
+						items cardinality matches {0..1; unordered} matches {
+							ELEMENT[at0014] occurrences matches {0..*} matches {	-- Contributing factor
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"A recording about a health related event">
+					text = <"Health event">
+				>
+				["at0001"] = <
+					description = <"The type of event that has occurred">
+					text = <"Event">
+				>
+				["at0002"] = <
+					description = <"Who witnessed the event other than the patient">
+					text = <"Witness">
+				>
+				["at0003"] = <
+					description = <"Any person involved in causing the event">
+					text = <"Perpetrator">
+				>
+				["at0004"] = <
+					description = <"Information about other parties">
+					text = <"Other parties">
+				>
+				["at0007"] = <
+					description = <"Information about the circumstances surrounding the event">
+					text = <"Circumstances">
+				>
+				["at0008"] = <
+					description = <"Symptoms and events which preceded the index event">
+					text = <"Preceding symptoms and events">
+				>
+				["at0009"] = <
+					description = <"A clinical description of what happenned">
+					text = <"Clinical description">
+				>
+				["at0010"] = <
+					description = <"The timing of the event in relation to the observation">
+					text = <"Occurrence">
+				>
+				["at0011"] = <
+					description = <"The time between the event and the observation time">
+					text = <"How long ago">
+				>
+				["at0012"] = <
+					description = <"Grouping of associated symptoms and events">
+					text = <"Associated symptoms and events">
+				>
+				["at0013"] = <
+					description = <"Factors contributing to the event or likelihood of the event">
+					text = <"Contributing factors">
+				>
+				["at0014"] = <
+					description = <"A factor contributing to the event">
+					text = <"Contributing factor">
+				>
+				["at0015"] = <
+					description = <"*">
+					text = <"Event details">
+				>
+			>
+		>
+	>

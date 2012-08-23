@@ -1,0 +1,50 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-ITEM_TREE.patient_designation.v1draft
+
+concept
+	[at0000]	-- Patient designation
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	ITEM_TREE[at0000] occurrences matches {0..*} matches {	-- Patient designation
+		items cardinality matches {0..*; unordered} matches {
+			ELEMENT[at0002] occurrences matches {0..1} matches {	-- Designation
+				value matches {
+					DV_TEXT matches {
+						value matches {"Nil orally", "Fluids only", "Clear fluids only"}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record and instruction about  patient designation">
+					text = <"Patient designation">
+				>
+				["at0002"] = <
+					description = <"Generic statement for instructions and actions">
+					text = <"Designation">
+				>
+			>
+		>
+	>

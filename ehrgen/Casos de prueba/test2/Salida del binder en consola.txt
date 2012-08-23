@@ -1,0 +1,134 @@
+Template: TEST-cluster_obligatorio_multiple esta en cache << templates.tom.Template@408f4 >>
+== bind
+Template: TEST-cluster_obligatorio_multiple esta en cache << templates.tom.Template@408f4 >>
+==== bindArquetipo openEHR-EHR-OBSERVATION.test_cluster_obligatorio_multiple.v1
+====== bindCComplexObject OBSERVATION
+======== bindAttribute data
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject HISTORY
+======== bindAttribute events
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject EVENT
+======== bindAttribute data
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject ITEM_TREE
+======== bindAttribute items
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject CLUSTER
+====== bindCComplexObject -> bindCLUSTER
+======== bindAttribute items
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject ELEMENT
+====== bindCComplexObject -> bindELEMENT
+==============================================
+bindELEMENT pathValor: [/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0006]/value/value:label.boolean.true]
+======== bindAttribute value
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject DV_BOOLEAN
+====== bindCComplexObject -> bindDV_BOOLEAN
+bondElement: rmobjectForValue=[data_types.basic.DvBoolean@1c07472]
+Element Null ERROR Count :0
+rmObjectsForValue.size :1
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject ELEMENT
+====== bindCComplexObject -> bindELEMENT
+==============================================
+bindELEMENT pathValor: [/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0005]/value:aaa]
+======== bindAttribute value
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject DV_TEXT
+====== bindCComplexObject -> bindDV_TEXT
+bondElement: rmobjectForValue=[data_types.text.DvText@93d4c4]
+Element Null ERROR Count :0
+rmObjectsForValue.size :1
+======== bindAttribute items
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject ELEMENT
+====== bindCComplexObject -> bindELEMENT
+==============================================
+bindELEMENT pathValor: [/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0006]/value/value:label.boolean.false]
+======== bindAttribute value
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject DV_BOOLEAN
+====== bindCComplexObject -> bindDV_BOOLEAN
+bondElement: rmobjectForValue=[data_types.basic.DvBoolean@1b78888]
+Element Null ERROR Count :0
+rmObjectsForValue.size :1
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject ELEMENT
+====== bindCComplexObject -> bindELEMENT
+==============================================
+bindELEMENT pathValor: [/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0005]/value:bbb]
+======== bindAttribute value
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject DV_TEXT
+====== bindCComplexObject -> bindDV_TEXT
+bondElement: rmobjectForValue=[data_types.text.DvText@1014924]
+Element Null ERROR Count :0
+rmObjectsForValue.size :1
+======== bindAttribute items
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject ELEMENT
+====== bindCComplexObject -> bindELEMENT
+==============================================
+bindELEMENT pathValor: [/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0006]/value/value:label.boolean.true]
+======== bindAttribute value
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject DV_BOOLEAN
+====== bindCComplexObject -> bindDV_BOOLEAN
+bondElement: rmobjectForValue=[data_types.basic.DvBoolean@12bea0c]
+Element Null ERROR Count :0
+rmObjectsForValue.size :1
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject ELEMENT
+====== bindCComplexObject -> bindELEMENT
+==============================================
+bindELEMENT pathValor: [/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0005]/value:ccc]
+======== bindAttribute value
+======== bindAttribute -> bindCObject
+========== bindCObject
+========== bindCObject -> bindCComplexObject
+====== bindCComplexObject DV_TEXT
+====== bindCComplexObject -> bindDV_TEXT
+bondElement: rmobjectForValue=[data_types.text.DvText@179d3b5]
+Element Null ERROR Count :0
+rmObjectsForValue.size :1
+====== bindCComplexObject -> createITEM_TREE (1)
+====== bindCComplexObject -> createEVENT (1)
+====== bindCComplexObject -> createHISTORY (1)
+====== bindCComplexObject -> createOBSERVATION (1)
+Template: TEST-cluster_obligatorio_multiple esta en cache << templates.tom.Template@408f4 >>
+Template: TEST-cluster_obligatorio_multiple esta en cache << templates.tom.Template@408f4 >>
+-- rmobj se guardo en log.xml
+SALVADO ENTRY O SECTION OK
+SALVADA COMPOSITION OK y muestra show

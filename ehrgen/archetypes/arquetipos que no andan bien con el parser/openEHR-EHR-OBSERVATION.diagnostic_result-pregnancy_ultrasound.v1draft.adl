@@ -1,0 +1,690 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.diagnostic_result-pregnancy_ultrasound.v1draft
+specialize
+	openEHR-EHR-OBSERVATION.diagnostic_result.v1draft
+
+concept
+	[at0000.1]	-- Pregnancy ultrasound result
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["date"] = <"13/04/2007">
+		["email"] = <"heather.leslie@oceaninformatics.biz">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			keywords = <"diagnostic", "result">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+
+definition
+	OBSERVATION[at0000.1] matches {	-- Pregnancy ultrasound result
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									CLUSTER[at0004] occurrences matches {0..1} matches {	-- Test
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0005] occurrences matches {0..1} matches {	-- Description
+												value matches {
+													DV_TEXT matches {*}
+												}
+											}
+											ELEMENT[at0006] occurrences matches {0..1} matches {	-- Body site
+												value matches {
+													DV_TEXT matches {*}
+												}
+											}
+										}
+									}
+									ELEMENT[at0007] occurrences matches {0..1} matches {	-- Diagnostic service
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {[local::]}
+											}
+										}
+									}
+									CLUSTER[at0017] occurrences matches {0..1} matches {	-- Specific result
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0008.1] occurrences matches {0..1} matches {	-- Description
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {[local::]}
+													}
+												}
+											}
+											CLUSTER[at0.50] occurrences matches {0..1} matches {	-- Cervix
+												items cardinality matches {0..*; unordered} matches {
+													ELEMENT[at0.55] occurrences matches {0..1} matches {	-- Description
+														value matches {
+															DV_TEXT matches {*}
+														}
+													}
+													ELEMENT[at0.56] occurrences matches {0..1} matches {	-- Dilation
+														value matches {
+															C_DV_QUANTITY <
+																property = <[openehr::122]>
+																list = <
+																	["1"] = <
+																		units = <"cm">
+																	>
+																	["2"] = <
+																		units = <"in">
+																	>
+																>
+															>
+														}
+													}
+													ELEMENT[at0.62] occurrences matches {0..1} matches {	-- Length
+														value matches {
+															C_DV_QUANTITY <
+																property = <[openehr::122]>
+																list = <
+																	["1"] = <
+																		units = <"mm">
+																	>
+																	["2"] = <
+																		units = <"cm">
+																	>
+																	["3"] = <
+																		units = <"in">
+																	>
+																>
+															>
+														}
+													}
+													use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+												}
+											}
+											CLUSTER[at0.49] occurrences matches {0..1} matches {	-- Placenta
+												items cardinality matches {0..*; unordered} matches {
+													ELEMENT[at0.53] occurrences matches {0..1} matches {	-- Description
+														value matches {
+															DV_TEXT matches {*}
+														}
+													}
+													ELEMENT[at0.51] occurrences matches {0..1} matches {	-- Position
+														value matches {
+															DV_TEXT matches {*}
+														}
+													}
+													ELEMENT[at0.52] occurrences matches {0..1} matches {	-- Shape
+														value matches {
+															DV_TEXT matches {*}
+														}
+													}
+													CLUSTER[at0.54] occurrences matches {0..1} matches {	-- Size
+														items cardinality matches {0..*; unordered} matches {
+															allow_archetype CLUSTER occurrences matches {0..1} matches {
+																include
+																	archetype_id/value matches {/dimensions\.v1/}
+																	archetype_id/value matches {/dimensions-circumference\.v1/}
+																	archetype_id/value matches {/size\.v1/}
+																exclude
+																	archetype_id/value matches {/.*/}
+															}
+														}
+													}
+													use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+												}
+											}
+											CLUSTER[at0.19] occurrences matches {0..1} matches {	-- Fetus
+												items cardinality matches {0..*; unordered} matches {
+													CLUSTER[at0.21] occurrences matches {0..1} matches {	-- Biparietal diameter
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0.18] occurrences matches {0..1} matches {	-- Measurement
+																value matches {
+																	C_DV_QUANTITY <
+																		property = <[openehr::122]>
+																		list = <
+																			["1"] = <
+																				units = <"mm">
+																			>
+																			["2"] = <
+																				units = <"in">
+																			>
+																		>
+																	>
+																}
+															}
+															ELEMENT[at0.20] occurrences matches {0..1} matches {	-- Gestation equivalent
+																value matches {
+																	C_DV_QUANTITY <
+																		property = <[openehr::128]>
+																		list = <
+																			["1"] = <
+																				units = <"wk">
+																			>
+																			["2"] = <
+																				units = <"d">
+																			>
+																			["3"] = <
+																				units = <"mo">
+																			>
+																		>
+																	>
+																}
+															}
+															ELEMENT[at0.36] occurrences matches {0..1} matches {	-- Comment
+																value matches {
+																	DV_TEXT matches {*}
+																}
+															}
+														}
+													}
+													CLUSTER[at0.22] occurrences matches {0..1} matches {	-- Head Circumference
+														items cardinality matches {0..*; unordered} matches {
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.18]
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.20]
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+														}
+													}
+													CLUSTER[at0.23] occurrences matches {0..1} matches {	-- Femur length
+														items cardinality matches {0..*; unordered} matches {
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.18]
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.20]
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+														}
+													}
+													CLUSTER[at0.24] occurrences matches {0..1} matches {	-- Crown rump length
+														items cardinality matches {0..*; unordered} matches {
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.20]
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.18]
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+														}
+													}
+													CLUSTER[at0.25] occurrences matches {0..1} matches {	-- Fetal heart
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0.26] occurrences matches {0..1} matches {	-- Present
+																value matches {
+																	DV_BOOLEAN matches {
+																		value matches {True, False}
+																	}
+																}
+															}
+															ELEMENT[at0.27] occurrences matches {0..1} matches {	-- Rate
+																value matches {
+																	C_DV_QUANTITY <
+																		property = <[openehr::382]>
+																		list = <
+																			["1"] = <
+																				units = <"/min">
+																			>
+																		>
+																	>
+																}
+															}
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+														}
+													}
+													ELEMENT[at0.28] occurrences matches {0..1} matches {	-- Yolk sac present
+														value matches {
+															DV_BOOLEAN matches {
+																value matches {True, False}
+															}
+														}
+													}
+													CLUSTER[at0.29] occurrences matches {0..1} matches {	-- Sac size
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0.30] occurrences matches {0..1} matches {	-- Shape
+																value matches {
+																	DV_CODED_TEXT matches {
+																		defining_code matches {
+																			[local::
+																			at0.31, 	-- Regular
+																			at0.32, 	-- Irregular
+																			at0.33]	-- Collapsed
+																		}
+																	}
+																}
+															}
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.18]
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+														}
+													}
+													CLUSTER[at0.34] occurrences matches {0..1} matches {	-- Anomalies
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0.35] occurrences matches {0..1} matches {	-- Description
+																value matches {
+																	DV_TEXT matches {*}
+																}
+															}
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+														}
+													}
+													CLUSTER[at0.37] occurrences matches {0..1} matches {	-- Liquor volume
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0.38] occurrences matches {0..1} matches {	-- Description
+																value matches {
+																	DV_CODED_TEXT matches {
+																		defining_code matches {
+																			[local::
+																			at0.39, 	-- Reduced
+																			at0.40, 	-- Normal
+																			at0.41, 	-- Anhydramnios
+																			at0.42]	-- Oligohydramnios
+																		}
+																	}
+																}
+															}
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+														}
+													}
+													CLUSTER[at0.43] occurrences matches {0..1} matches {	-- Biophysical profile
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0.44] occurrences matches {0..1} matches {	-- Tone
+																value matches {
+																	DV_TEXT matches {*}
+																}
+															}
+															ELEMENT[at0.45] occurrences matches {0..1} matches {	-- Movements
+																value matches {
+																	DV_TEXT matches {*}
+																}
+															}
+															ELEMENT[at0.46] occurrences matches {0..1} matches {	-- Breathing
+																value matches {
+																	DV_TEXT matches {*}
+																}
+															}
+														}
+													}
+													CLUSTER[at0.47] occurrences matches {0..1} matches {	-- Doppler findings
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0.48] occurrences matches {0..1} matches {	-- Description
+																value matches {
+																	DV_CODED_TEXT matches {
+																		defining_code matches {[local::]}
+																	}
+																}
+															}
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+															use_node ELEMENT /data[at0001]/events[at0002]/data[at0003]/items[at0017]/items[at0.19]/items[at0.21]/items[at0.36]
+														}
+													}
+												}
+											}
+										}
+									}
+									CLUSTER[at0009] occurrences matches {0..1} matches {	-- Comment
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0010] occurrences matches {0..1} matches {	-- Path
+												value matches {
+													DV_URI matches {*}
+												}
+											}
+											ELEMENT[at0011] occurrences matches {0..1} matches {	-- Comment
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {[local::]}
+													}
+												}
+											}
+										}
+									}
+									CLUSTER[at0.60] occurrences matches {0..1} matches {	-- Summary
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0.61] occurrences matches {0..1} matches {	-- Viable
+												value matches {
+													DV_BOOLEAN matches {
+														value matches {True, False}
+													}
+												}
+											}
+											ELEMENT[at0012] occurrences matches {0..1} matches {	-- Overall Comment
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {[local::]}
+													}
+												}
+											}
+											CLUSTER[at0.58] occurrences matches {0..1} matches {	-- Overall estimate of gestation
+												items cardinality matches {0..*; unordered} matches {
+													ELEMENT[at0.57] occurrences matches {0..1} matches {	-- Estimation of gestation
+														value matches {
+															C_DV_QUANTITY <
+																property = <[openehr::128]>
+																list = <
+																	["1"] = <
+																		units = <"mo">
+																	>
+																	["2"] = <
+																		units = <"d">
+																	>
+																	["3"] = <
+																		units = <"wk">
+																	>
+																>
+															>
+														}
+													}
+													ELEMENT[at0.59] occurrences matches {0..1} matches {	-- Margin of error
+														value matches {
+															C_DV_QUANTITY <
+																property = <[openehr::128]>
+																list = <
+																	["1"] = <
+																		units = <"wk">
+																	>
+																	["2"] = <
+																		units = <"d">
+																	>
+																>
+															>
+														}
+													}
+												}
+											}
+										}
+									}
+									CLUSTER[at0013] occurrences matches {0..1} matches {	-- Quality
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0015] occurrences matches {0..1} matches {	-- Issue
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {[local::]}
+													}
+												}
+											}
+											ELEMENT[at0016] occurrences matches {0..1} matches {	-- Rating
+												value matches {
+													DV_COUNT matches {
+														magnitude matches {|0..10|}
+													}
+												}
+											}
+											ELEMENT[at0014] occurrences matches {0..1} matches {	-- Comment
+												value matches {
+													DV_TEXT matches {*}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0.18"] = <
+					description = <"*">
+					text = <"Measurement">
+				>
+				["at0.19"] = <
+					description = <"*">
+					text = <"Fetus">
+				>
+				["at0.20"] = <
+					description = <"*">
+					text = <"Gestation equivalent">
+				>
+				["at0.21"] = <
+					description = <"*">
+					text = <"Biparietal diameter">
+				>
+				["at0.22"] = <
+					description = <"*">
+					text = <"Head Circumference">
+				>
+				["at0.23"] = <
+					description = <"*">
+					text = <"Femur length">
+				>
+				["at0.24"] = <
+					description = <"*">
+					text = <"Crown rump length">
+				>
+				["at0.25"] = <
+					description = <"*">
+					text = <"Fetal heart">
+				>
+				["at0.26"] = <
+					description = <"*">
+					text = <"Present">
+				>
+				["at0.27"] = <
+					description = <"*">
+					text = <"Rate">
+				>
+				["at0.28"] = <
+					description = <"*">
+					text = <"Yolk sac present">
+				>
+				["at0.29"] = <
+					description = <"*">
+					text = <"Sac size">
+				>
+				["at0.30"] = <
+					description = <"*">
+					text = <"Shape">
+				>
+				["at0.31"] = <
+					description = <"*">
+					text = <"Regular">
+				>
+				["at0.32"] = <
+					description = <"*">
+					text = <"Irregular">
+				>
+				["at0.33"] = <
+					description = <"*">
+					text = <"Collapsed">
+				>
+				["at0.34"] = <
+					description = <"*">
+					text = <"Anomalies">
+				>
+				["at0.35"] = <
+					description = <"*">
+					text = <"Description">
+				>
+				["at0.36"] = <
+					description = <"*">
+					text = <"Comment">
+				>
+				["at0.37"] = <
+					description = <"*">
+					text = <"Liquor volume">
+				>
+				["at0.38"] = <
+					description = <"*">
+					text = <"Description">
+				>
+				["at0.39"] = <
+					description = <"*">
+					text = <"Reduced">
+				>
+				["at0.40"] = <
+					description = <"*">
+					text = <"Normal">
+				>
+				["at0.41"] = <
+					description = <"*">
+					text = <"Anhydramnios">
+				>
+				["at0.42"] = <
+					description = <"*">
+					text = <"Oligohydramnios">
+				>
+				["at0.43"] = <
+					description = <"*">
+					text = <"Biophysical profile">
+				>
+				["at0.44"] = <
+					description = <"*">
+					text = <"Tone">
+				>
+				["at0.45"] = <
+					description = <"*">
+					text = <"Movements">
+				>
+				["at0.46"] = <
+					description = <"*">
+					text = <"Breathing">
+				>
+				["at0.47"] = <
+					description = <"*">
+					text = <"Doppler findings">
+				>
+				["at0.48"] = <
+					description = <"*">
+					text = <"Description">
+				>
+				["at0.49"] = <
+					description = <"*">
+					text = <"Placenta">
+				>
+				["at0.50"] = <
+					description = <"*">
+					text = <"Cervix">
+				>
+				["at0.51"] = <
+					description = <"*">
+					text = <"Position">
+				>
+				["at0.52"] = <
+					description = <"*">
+					text = <"Shape">
+				>
+				["at0.53"] = <
+					description = <"*">
+					text = <"Description">
+				>
+				["at0.54"] = <
+					description = <"*">
+					text = <"Size">
+				>
+				["at0.55"] = <
+					description = <"*">
+					text = <"Description">
+				>
+				["at0.56"] = <
+					description = <"*">
+					text = <"Dilation">
+				>
+				["at0.57"] = <
+					description = <"*">
+					text = <"Estimation of gestation">
+				>
+				["at0.58"] = <
+					description = <"*">
+					text = <"Overall estimate of gestation">
+				>
+				["at0.59"] = <
+					description = <"*">
+					text = <"Margin of error">
+				>
+				["at0.60"] = <
+					description = <"*">
+					text = <"Summary">
+				>
+				["at0.61"] = <
+					description = <"*">
+					text = <"Viable">
+				>
+				["at0.62"] = <
+					description = <"*">
+					text = <"Length">
+				>
+				["at0000"] = <
+					description = <"Generic diagnostic result archetype to allow terminology driven results on a generic framework">
+					text = <"Diagnostic result">
+				>
+				["at0000.1"] = <
+					description = <"Record of pregnancy ultrasound result">
+					text = <"Pregnancy ultrasound result">
+				>
+				["at0001"] = <
+					description = <"@ internal @">
+					text = <"Event Series">
+				>
+				["at0002"] = <
+					description = <"*">
+					text = <"Any event">
+				>
+				["at0003"] = <
+					description = <"@ internal @">
+					text = <"Tree">
+				>
+				["at0004"] = <
+					description = <"*">
+					text = <"Test">
+				>
+				["at0005"] = <
+					description = <"Description of the test">
+					text = <"Description">
+				>
+				["at0006"] = <
+					description = <"The site of the body where the specimen was collected">
+					text = <"Body site">
+				>
+				["at0007"] = <
+					description = <"The type of diagnostic service">
+					text = <"Diagnostic service">
+				>
+				["at0008"] = <
+					description = <"Generic result - data type is not set">
+					text = <"Any result">
+				>
+				["at0008.1"] = <
+					description = <"Generic result - data type is not set">
+					text = <"Description">
+				>
+				["at0009"] = <
+					description = <"Comments relating to a specific result @Path">
+					text = <"Comment">
+				>
+				["at0010"] = <
+					description = <"The path of the result to which the comment relates">
+					text = <"Path">
+				>
+				["at0011"] = <
+					description = <"Comment relating to a specific result at the path indicated">
+					text = <"Comment">
+				>
+				["at0012"] = <
+					description = <"Comment on all results">
+					text = <"Overall Comment">
+				>
+				["at0013"] = <
+					description = <"*">
+					text = <"Quality">
+				>
+				["at0014"] = <
+					description = <"Comment on the quality issue">
+					text = <"Comment">
+				>
+				["at0015"] = <
+					description = <"A description of the quality issue">
+					text = <"Issue">
+				>
+				["at0016"] = <
+					description = <"The degree of the stated issue">
+					text = <"Rating">
+				>
+				["at0017"] = <
+					description = <"*">
+					text = <"Specific result">
+				>
+			>
+		>
+	>

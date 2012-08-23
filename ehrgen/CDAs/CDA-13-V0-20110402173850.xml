@@ -1,0 +1,2455 @@
+<ClinicalDocument xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:hl7-org:v3 CDA/CDA/CDA.xsd' xmlns='urn:hl7-org:v3' xmlns:voc='urn:hl7-org:v3/voc'>
+  <typeId extension='POCD_HD000040' root='2.16.840.1.113883.1.3' />
+  <templateId extension='EHRv1.0' root='2.16.858.1.1.1.1.1.2' />
+  <id extension='13' root='2.16.858.1.1.1.1.1.3' />
+  <code code='11111-1' codeSystem='2.16.858.1.1.1.1.1.4' codeSystemName='HCET' displayName='Episodio de Trauma' />
+  <title>Hospital Maciel - Episodio de Trauma</title>
+  <effectiveTime value='20110402' />
+  <confidentialityCode code='N' codeSystem='2.16.858.1.1.1.1.1.5' />
+  <languageCode code='es-UY' />
+  <versionNumber value='0' />
+  <recordTarget>
+    <patientRole>
+      <id extension='1234567' root='2.16.840.1.113883.2.14.2.1' />
+      <patient>
+        <name>
+          <given>Pablo</given>
+          <family>Pazos</family>
+        </name>
+        <administrativeGenderCode code='M' codeSystem='2.16.858.1.1.1.1.1.8' />
+        <birthTime value='19811024' />
+      </patient>
+    </patientRole>
+  </recordTarget>
+  <author>
+    <time value='20110402' />
+    <assignedAuthor>
+      <id extension='6667778' root='2.16.840.1.113883.4.330.858' />
+      <assignedPerson>
+        <name>
+          <prefix></prefix>
+          <given>Marta</given>
+          <family>Stewart</family>
+        </name>
+      </assignedPerson>
+      <representedOrganization>
+        <id root='2.16.858.1.1.1.1.1.6' />
+        <name>Hospital Maciel</name>
+      </representedOrganization>
+    </assignedAuthor>
+  </author>
+  <custodian>
+    <assignedCustodian>
+      <representedCustodianOrganization>
+        <id root='2.16.858.1.1.1.1.1.7' />
+        <name>Hospital Maciel</name>
+      </representedCustodianOrganization>
+    </assignedCustodian>
+  </custodian>
+  <legalAuthenticator>
+    <time value='20110402173849' />
+    <signatureCode code='S' />
+    <assignedEntity>
+      <id root='2.16.840.1.113883.4.330.858' extension='6667778' />
+      <assignedPerson>
+        <name>
+          <given>Marta</given>
+          <family>Stewart</family>
+        </name>
+      </assignedPerson>
+      <representedOrganization>
+        <id root='2.16.858.1.1.1.1.1.9' />
+        <name>Hospital Maciel</name>
+      </representedOrganization>
+    </assignedEntity>
+  </legalAuthenticator>
+  <component>
+    <nonXMLBody>
+      <text mediaType='text/html'><![CDATA[
+
+    <div>
+      <table cellpadding="0" cellspacing="3">
+        <tr>
+          <td>
+            
+              
+              
+<!-- Locatable -->
+
+
+
+
+
+
+<!-- Evaluation -->
+
+  
+
+
+<div class="EVALUATION">
+  
+  
+  <span class="label">
+    Triage de trauma:
+  </span>
+  <span class="content">
+    
+
+
+
+
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DvOrdinal">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Evaluación de triage
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+  
+  
+  
+
+
+
+
+
+  estable
+
+
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Justificación de evaluación
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  iuuiuiu
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_DATE_TIME">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Fecha y Hora de evaluación
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+  2011-04-02 17:30:00
+
+ 
+    </span>
+  </div>
+
+  
+
+  </span>
+</div>
+            
+              
+              
+<!-- Locatable -->
+
+
+
+
+
+
+<!-- Section -->
+
+
+  
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+<div class="ACTION">
+  
+  
+  
+  
+  <span class="label">
+    Prehospitalario:
+  </span>
+  <span class="content">
+
+    
+      
+
+
+
+
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_BOOLEAN">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Oxígeno con MFL
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  
+    Si
+  
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_BOOLEAN">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Apoyo ventilatorio con B-V-M
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  
+    Si
+  
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_BOOLEAN">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Intubación orotraqueal
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  
+    No
+  
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_BOOLEAN">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Máscara laringea
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  
+    No
+  
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      Sedación prehospitalaria
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Sedación
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Ketoprofeno
+
+
+ 
+    </span>
+  </div>
+
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Otras drogas
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  vxcbxcv
+
+
+ 
+    </span>
+  </div>
+
+      
+    </span>
+  
+</div>
+  
+
+    
+  </span>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+<div class="ACTION">
+  
+  
+  
+  
+  <span class="label">
+    Resumen de actuación:
+  </span>
+  <span class="content">
+
+    
+      
+
+
+
+
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Diagnóstico / Actuación
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  xbvcbxc
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_DATE_TIME">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Fecha y Hora de evaluación
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+  2011-04-02 17:31:00
+
+ 
+    </span>
+  </div>
+
+  
+
+    
+  </span>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+<div class="ACTION">
+  
+  
+  
+  
+  <span class="label">
+    Reposición prehospitalaria:
+  </span>
+  <span class="content">
+
+    
+      
+
+
+
+
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      Reposición prehospitalaria
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DvQuantity">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Duración
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  2.0
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    h
+  
+ 
+    </span>
+  </div>
+
+      
+        
+        
+        
+        
+        
+        
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      Tipo
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DvQuantity">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Suero SF
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  200.0
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+      ml
+    
+  
+ 
+    </span>
+  </div>
+
+      
+    </span>
+  
+</div>
+      
+    </span>
+  
+</div>
+  
+
+    
+  </span>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+<div class="ACTION">
+  
+  
+  
+  
+  <span class="label">
+    Vias venosas prehospitalario:
+  </span>
+  <span class="content">
+
+    
+      
+
+
+
+
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      VVPs
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_COUNT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Número de vías
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  1
+
+ 
+    </span>
+  </div>
+
+      
+        
+        
+        
+        
+        
+        
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      VVP
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Topografía
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Antebrazo derecho
+
+
+ 
+    </span>
+  </div>
+
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DvOrdinal">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Calibre
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+  
+  
+  
+
+
+
+
+
+  18
+
+
+
+
+ 
+    </span>
+  </div>
+
+      
+    </span>
+  
+</div>
+      
+    </span>
+  
+</div>
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      VVCs
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      VVC
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Yugular interna
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Derecha
+
+
+ 
+    </span>
+  </div>
+
+      
+    </span>
+  
+</div>
+      
+    </span>
+  
+</div>
+  
+
+    
+  </span>
+</div>
+
+
+
+            
+              
+              
+<!-- Locatable -->
+
+
+
+
+
+
+
+
+<!-- Observation -->
+
+
+  
+
+
+
+
+
+
+
+<div class="OBSERVATION">
+  
+  
+  
+  
+  <span class="label">
+    Resumen clínico:
+  </span>
+  <span class="content">
+    
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Motivo de consulta
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Traumatizado por colisión vehicular
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Motivo de consulta
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Precipitado
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      AMPLE
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      Alergias
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Opciones
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Penicilina
+
+
+ 
+    </span>
+  </div>
+
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Otros
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  mhmnmbn
+
+
+ 
+    </span>
+  </div>
+
+      
+    </span>
+  
+</div>
+      
+        
+        
+        
+        
+        
+        
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      Medicamentos usados actualmente
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Opciones
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Warfarina
+
+
+ 
+    </span>
+  </div>
+
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Otros
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  mnbbm,b
+
+
+ 
+    </span>
+  </div>
+
+      
+    </span>
+  
+</div>
+      
+    </span>
+  
+</div>
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Resumen clínico
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  cfgcvbcvbcb
+
+
+ 
+    </span>
+  </div>
+
+  
+
+
+  </span>
+</div>
+
+            
+              
+              
+<!-- Locatable -->
+
+
+
+
+
+
+
+
+<!-- Observation -->
+
+
+  
+
+
+
+
+
+
+
+<div class="OBSERVATION">
+  
+  
+  
+  
+  <span class="label">
+    Diagnosticos de trauma:
+  </span>
+  <span class="content">
+    
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Diagnostico codificado
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  AMPUTACION TRAUMATICA DE AMBAS PIERNAS [CUALQUIER NIVEL]
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Diagnostico codificado
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  TRAUMATISMOS MULTIPLES DE LA PIERNA
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Diagnostico codificado
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  TRAUMATISMO DE LA CABEZA, NO ESPECIFICADO
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Descripción
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+  fgsdfgsfg
+
+
+ 
+    </span>
+  </div>
+
+  
+
+
+
+  </span>
+</div>
+
+            
+              
+              
+<!-- Locatable -->
+
+
+
+
+
+
+
+
+<!-- Instruction -->
+
+
+  
+
+
+
+
+<div class="INSTRUCTION">
+  
+  
+  
+  
+  <span class="label">
+    Pedido de examenes imagenologicos:
+  </span>
+  <span class="content">
+
+    
+      
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Radiografía de raquis cervical
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Frente
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Radiografía de tórax
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Perfil
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_BOOLEAN">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Radiografía de columna
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  
+    No
+  
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_BOOLEAN">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Radiografía de abdomen
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  
+    Si
+  
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_BOOLEAN">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Radiografía de pelvis
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  
+    No
+  
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Radiografía de miembro
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Inferior
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      Ecografía / Ultrasonografía
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_BOOLEAN">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Ecografía abdominal
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  
+    No
+  
+
+ 
+    </span>
+  </div>
+
+      
+        
+        
+        
+        
+        
+        
+
+<div class="CLUSTER">
+  
+  
+  
+    <span class="label">
+      Ecodopler
+    </span>
+    <span class="content">
+      
+        
+        
+        
+        
+        
+        
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Arteria miembro inferior
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Izquierda
+
+
+ 
+    </span>
+  </div>
+
+      
+    </span>
+  
+</div>
+      
+    </span>
+  
+</div>
+  
+
+
+
+    
+
+    
+      
+      
+        <span class="label">
+          
+          Otros detalles
+        </span>
+      
+    
+  
+    <div class="INSTRUCTION_narrative">
+      
+
+
+
+  cvbxcvbxvc
+
+
+
+    </div>
+  </span>
+</div>
+          
+            
+              
+              
+<!-- Locatable -->
+
+
+
+
+
+
+
+
+<!-- Instruction -->
+
+
+  
+
+
+
+
+<div class="INSTRUCTION">
+  
+  
+  
+  
+  <span class="label">
+    movimientos del paciente:
+  </span>
+  <span class="content">
+
+    
+      
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_CODED_TEXT">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Destino
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+
+
+
+  Traslado
+
+
+ 
+    </span>
+  </div>
+
+  
+    
+    
+    
+    
+    
+    
+  
+    
+
+
+
+
+  
+  
+  
+  
+  <div class="ELEMENT ELEMENT_DV_DATE_TIME">
+  
+  
+  
+    
+    
+  
+    
+  <span class="label">
+    Fecha y Hora de movimiento
+  </span>
+  <span class="content">
+    
+   
+    
+    
+
+
+  2011-04-02 17:37:00
+
+ 
+    </span>
+  </div>
+
+  
+
+
+
+    
+
+    
+      
+      
+        <span class="label">
+          
+          Instrucciones
+        </span>
+      
+    
+  
+    <div class="INSTRUCTION_narrative">
+      
+
+
+
+  cvbcvbcbv
+
+
+
+    </div>
+  </span>
+</div>
+          
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+]]></text>
+    </nonXMLBody>
+  </component>
+</ClinicalDocument>

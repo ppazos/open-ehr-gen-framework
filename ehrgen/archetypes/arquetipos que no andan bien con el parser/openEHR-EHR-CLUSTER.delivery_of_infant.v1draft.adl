@@ -1,0 +1,237 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-CLUSTER.delivery_of_infant.v1draft
+
+concept
+	[at0000]	-- Delivery of infant
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			author = <
+				["name"] = <"Jasmin Buck, Sebastian Garde">
+				["organisation"] = <"University of Heidelberg, Central Queensland University">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["date"] = <"13/04/2007">
+		["email"] = <"heather.leslie@oceaninformatics.biz">
+	>
+	details = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			purpose = <"">
+			use = <"">
+			keywords = <"Neugeborenes", "Entbindung", "Plazenta">
+			misuse = <"">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			keywords = <"infant", "delivery", "placenta">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+
+definition
+	CLUSTER[at0000] matches {	-- Delivery of infant
+		items cardinality matches {0..*; unordered} matches {
+			ELEMENT[at0001] occurrences matches {0..1} matches {	-- Presentation
+				value matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::]}
+					}
+				}
+			}
+			ELEMENT[at0002] occurrences matches {0..1} matches {	-- Position
+				value matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::]}
+					}
+				}
+			}
+			CLUSTER[at0006] occurrences matches {0..1} matches {	-- Delivery details
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0005] occurrences matches {0..1} matches {	-- Description
+						value matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {[local::]}
+							}
+						}
+					}
+					ELEMENT[at0004] occurrences matches {0..1} matches {	-- Difficult delivery
+						value matches {
+							DV_BOOLEAN matches {
+								value matches {True, False}
+							}
+						}
+					}
+					CLUSTER[at0007] occurrences matches {0..1} matches {	-- Assisted extraction
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0003] occurrences matches {0..1} matches {	-- Method
+								value matches {
+									DV_TEXT matches {
+										value matches {"Non-rotational forceps", "Rotational forceps", "Suction extraction"}
+									}
+								}
+							}
+							ELEMENT[at0008] occurrences matches {0..1} matches {	-- Details of method used
+								value matches {
+									DV_CODED_TEXT matches {
+										defining_code matches {[local::]}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			CLUSTER[at0009] occurrences matches {0..1} matches {	-- Placenta
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0010] occurrences matches {0..1} matches {	-- Delivery method
+						value matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {
+									[local::
+									at0011, 	-- Controlled cord traction
+									at0012, 	-- Manual removal
+									at0013]	-- Not removed
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["de"] = <
+			items = <
+				["at0000"] = <
+					description = <"Zur Dokumentation von Einzelheiten zur Entbindung eines Kindes">
+					text = <"Entbindung eines Kindes">
+				>
+				["at0001"] = <
+					description = <"Einstellung bei der Entbindung">
+					text = <"Einstellung">
+				>
+				["at0002"] = <
+					description = <"Lage bei der Entbindung">
+					text = <"Lage">
+				>
+				["at0003"] = <
+					description = <"Methode der Geburtshilfe">
+					text = <"Verfahren">
+				>
+				["at0004"] = <
+					description = <"*">
+					text = <"Schwere Entbindung">
+				>
+				["at0005"] = <
+					description = <"Beschreibung der Entbindung">
+					text = <"Beschreibung">
+				>
+				["at0006"] = <
+					description = <"*">
+					text = <"Einzelheiten zur Entbindung">
+				>
+				["at0007"] = <
+					description = <"*">
+					text = <"Geburtshilfe">
+				>
+				["at0008"] = <
+					description = <"Detaillierte Beschreibung der angewendeten Entbindungsmethode">
+					text = <"Einzelheiten zur angewendeten Methoden">
+				>
+				["at0009"] = <
+					description = <"*">
+					text = <"Plazenta">
+				>
+				["at0010"] = <
+					description = <"Entbindungsmethode der Plazenta">
+					text = <"Entbindungsmethode">
+				>
+				["at0011"] = <
+					description = <"*">
+					text = <"kontrollierte Nabelschnurdistraktion">
+				>
+				["at0012"] = <
+					description = <"*">
+					text = <"Manuelle Entfernung">
+				>
+				["at0013"] = <
+					description = <"*">
+					text = <"Nicht entfernt">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record of details related to delivery of infant">
+					text = <"Delivery of infant">
+				>
+				["at0001"] = <
+					description = <"Presentation at delivery">
+					text = <"Presentation">
+				>
+				["at0002"] = <
+					description = <"Position at delivery">
+					text = <"Position">
+				>
+				["at0003"] = <
+					description = <"Method of assisted extraction">
+					text = <"Method">
+				>
+				["at0004"] = <
+					description = <"*">
+					text = <"Difficult delivery">
+				>
+				["at0005"] = <
+					description = <"Description of delivery">
+					text = <"Description">
+				>
+				["at0006"] = <
+					description = <"*">
+					text = <"Delivery details">
+				>
+				["at0007"] = <
+					description = <"*">
+					text = <"Assisted extraction">
+				>
+				["at0008"] = <
+					description = <"Detailed description of extraction method use">
+					text = <"Details of method used">
+				>
+				["at0009"] = <
+					description = <"*">
+					text = <"Placenta">
+				>
+				["at0010"] = <
+					description = <"Method of delivery of placenta">
+					text = <"Delivery method">
+				>
+				["at0011"] = <
+					description = <"*">
+					text = <"Controlled cord traction">
+				>
+				["at0012"] = <
+					description = <"*">
+					text = <"Manual removal">
+				>
+				["at0013"] = <
+					description = <"*">
+					text = <"Not removed">
+				>
+			>
+		>
+	>

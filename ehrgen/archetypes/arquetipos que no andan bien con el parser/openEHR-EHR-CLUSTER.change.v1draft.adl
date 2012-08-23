@@ -1,0 +1,162 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-CLUSTER.change.v1draft
+
+concept
+	[at0000]	-- Change
+language
+	original_language = <[ISO_639-1::en]>
+description
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"">
+			use = <"">
+			misuse = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+
+definition
+	CLUSTER[at0000] matches {	-- Change
+		items cardinality matches {0..*; unordered} matches {
+			ELEMENT[at0001] occurrences matches {0..1} matches {	-- Readiness to change
+				value matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {
+							[local::
+							at0012, 	-- Not ready (Precontemplation)
+							at0013, 	-- Unsure (Contemplation)
+							at0014, 	-- Ready (Preparation)
+							at0015, 	-- Action
+							at0016]	-- Maintenance
+						}
+					}
+				}
+			}
+			ELEMENT[at0002] occurrences matches {0..1} matches {	-- Reasons for current use of substance
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			ELEMENT[at0003] occurrences matches {0..1} matches {	-- Triggers for use
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			CLUSTER[at0004] occurrences matches {0..1} matches {	-- Perceptions about current use
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0005] occurrences matches {0..1} matches {	-- Positive
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0006] occurrences matches {0..1} matches {	-- Negative
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+			CLUSTER[at0007] occurrences matches {0..1} matches {	-- Perceptions about ceasing current use
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0008] occurrences matches {0..1} matches {	-- Positive
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0009] occurrences matches {0..1} matches {	-- Negative
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+			ELEMENT[at0010] occurrences matches {0..1} matches {	-- Barriers to ceasing use
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			ELEMENT[at0011] occurrences matches {0..1} matches {	-- Comment
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record details about readiness to change current status">
+					text = <"Change">
+				>
+				["at0001"] = <
+					description = <"Record person's inclination to change current status">
+					text = <"Readiness to change">
+				>
+				["at0002"] = <
+					description = <"Record person's reasons for current use of substance">
+					text = <"Reasons for current use of substance">
+				>
+				["at0003"] = <
+					description = <"Identify triggers for person to use substance">
+					text = <"Triggers for use">
+				>
+				["at0004"] = <
+					description = <"Person's perceptions about their use of the substance">
+					text = <"Perceptions about current use">
+				>
+				["at0005"] = <
+					description = <"Record why the person likes to use substance">
+					text = <"Positive">
+				>
+				["at0006"] = <
+					description = <"Record why the person doesn't like to use substance">
+					text = <"Negative">
+				>
+				["at0007"] = <
+					description = <"Person's perceptions about stopping use of substance">
+					text = <"Perceptions about ceasing current use">
+				>
+				["at0008"] = <
+					description = <"Record why the person would like to cease their use of substance">
+					text = <"Positive">
+				>
+				["at0009"] = <
+					description = <"Record why the person would not like to cease their use of substance">
+					text = <"Negative">
+				>
+				["at0010"] = <
+					description = <"Identify barriers which prevent person from ceasing use">
+					text = <"Barriers to ceasing use">
+				>
+				["at0011"] = <
+					description = <"Comment about person's preparedness for changing their status">
+					text = <"Comment">
+				>
+				["at0012"] = <
+					description = <"These people are not seriously considering changing in the next 6 months.">
+					text = <"Not ready (Precontemplation)">
+				>
+				["at0013"] = <
+					description = <"These perople are seriously considering changing in the next 6 months.">
+					text = <"Unsure (Contemplation)">
+				>
+				["at0014"] = <
+					description = <"These people are planning to change in the next 30 days">
+					text = <"Ready (Preparation)">
+				>
+				["at0015"] = <
+					description = <"Includes former users who have changed in the last 6 months">
+					text = <"Action">
+				>
+				["at0016"] = <
+					description = <"These are users who changed over 6 months ago.">
+					text = <"Maintenance">
+				>
+			>
+		>
+	>

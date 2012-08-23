@@ -1,0 +1,20 @@
+{
+    "templateId":"TEST-cluster_obligatorio_multiple",
+    "field_621":["label.boolean.true",
+        "label.boolean.false",
+        "label.boolean.true"
+    ],
+    "doit":"Guardar",
+    "field_622":["aaa",
+        "bbb",
+        "ccc"
+    ],
+    "action":"save",
+    "controller":"guiGen"
+}
+
+
+FieldPathList:
+
+    * openEHR-EHR-OBSERVATION.test_cluster_obligatorio_multiple.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0006]/value/value: field_621
+    * openEHR-EHR-OBSERVATION.test_cluster_obligatorio_multiple.v1/data[at0001]/events[at0002]/data[at0003]/items[at0004]/items[at0005]/value: field_622
