@@ -1,13 +1,11 @@
-/**
- * 
- */
 
-import java.util.Locale;
+import java.util.Locale
 
-import org.openehr.am.archetype.Archetype;
+import org.openehr.am.archetype.Archetype
 
-import support.identification.TerminologyID;
+import support.identification.TerminologyID
 import archetype_repository.ArchetypeManager
+import binding.CtrlTerminologia
 
 import grails.converters.*
 
@@ -180,7 +178,7 @@ class ArchetypeManagerController {
              // http://grails.org/doc/latest/guide/single.html#6.1.12%20Simple%20Type%20Converters
              paths = params.list('paths')
              
-             println paths
+//             println paths
              
 //             if (params.paths.getClass().isArray())
 //             {
@@ -189,6 +187,7 @@ class ArchetypeManagerController {
 //                params.paths.each{ pth ->
                 paths.each{ pth ->
                    
+                   // FIXME: cuando no se use mas datatypes en XML, aqui no se usará más el XStream
                    // Necesario para comparar el dato codificado como XML en la base
                    def startTimeFilter = new data_types.quantity.date_time.DvDateTime(value: ((params.fromDate)?params.fromDate:'1900-01-01 00:00:00') )
                    com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream()
@@ -270,6 +269,194 @@ class ArchetypeManagerController {
     }
     
     /**
+     * 
+     * @param data lista de elements con value DvQuantity
+     * @param agg tipo de agrgacion a realizar
+     * @param aggregator map de salida con el restulado
+     * @param names nombres correspondientes a cada agregacion en aggregator
+     */
+    private void aggregateDvQuantity(List data, String agg,
+                                     Archetype archetype, Object constraint, CtrlTerminologia terms,
+                                     Map aggregator, Map names)
+    {
+	   // Promedio
+       if (data.size() > 0)
+       {
+          // Hay un solo agregador de promedio (los agregadores de los demas tipos
+          // lo que hacen es contar ocurrencias de un valor, eso para DvQuantity no
+          // tiene mucho sentido).
+          aggregator['promedio'] = 0
+        
+          // Calculo de agregacion AVG en magnitude (sin considerar units distintas!!!)
+          // data es List<Element>
+          data.each {
+          
+             //println it.value.magnitude
+             aggregator['promedio'] += it.value.magnitude
+          }
+        
+          aggregator['promedio'] = aggregator['promedio'] / data.size()
+        
+          // labels (hay solo una porque es un promedio)
+          names['promedio'] = 'promedio' // TODO: I18N
+       }
+    }
+    
+	
+	/**
+	 * Agregacion del tipo basico dentro de DvCount.
+	 */
+	private void aggregateInteger(List data, String agg,
+                                     Archetype archetype, Object constraint, CtrlTerminologia terms,
+                                     Map aggregator, Map names)
+    {
+	   // Promedio
+       if (data.size() > 0)
+       {
+          // Hay un solo agregador de promedio (los agregadores de los demas tipos
+          // lo que hacen es contar ocurrencias de un valor, eso para DvQuantity no
+          // tiene mucho sentido).
+          aggregator['promedio'] = 0
+        
+          // Calculo de agregacion AVG en magnitude (sin considerar units distintas!!!)
+          // data es List<Element>
+          data.each {
+          
+             //println it.value.magnitude // it.value ~ DvCount, it.value.magnitude ~ Integer
+             aggregator['promedio'] += it.value.magnitude
+          }
+        
+          aggregator['promedio'] = aggregator['promedio'] / data.size()
+        
+          // labels (hay solo una porque es un promedio)
+          names['promedio'] = 'promedio' // TODO: I18N
+       }
+	}
+	
+	
+    private void aggregateDvOrdinal(List data, String agg,
+                                    Archetype archetype, Object constraint, CtrlTerminologia terms,
+                                    Map aggregator, Map names)
+    {
+       //println 'DvOrdinal: ' + constraint.list // constraint.list lista de org.openehr.am.openehrprofile.datatypes.quantity.Ordinal
+       
+       // Inicializacion de valores de agregacion
+       // Ordinal.symbol es CodePhrase, y .codeString tengo el codigo de la restriccion.
+       constraint.list.each {
+          
+          aggregator[it.symbol.codeString] = 0
+       }
+       
+       // Calculo de agregacion
+       data.each {
+          
+          //println it.value // DvOrdinal, .symbol es DvCodedText, .definingCode es CodePhrase
+          aggregator[it.value.symbol.definingCode.codeString] ++
+       }
+	   
+	   def terminologyId = TerminologyID.create('local', null) // Para sacar el nombre del concepto de la ontologia del arquetipo
+       
+       // labels
+       aggregator.each {
+          
+          names[it.key] = terms.getTermino(terminologyId, it.key, archetype, session.locale) // at0000 es el id de la raiz del arquetipo
+       }
+    }
+    
+	
+    private void aggregateCodePhrase(List data, String agg,
+                                    Archetype archetype, Object constraint, CtrlTerminologia terms,
+                                    Map aggregator, Map names)
+    {
+       //println 'CodePhrase: ' + constraint.codeList
+       
+       // Inicializacion de valores de agregacion
+       constraint.codeList.each{
+          
+          aggregator[it] = 0
+       }
+
+       // Calculo de agregacion
+       data.each {
+          
+         println it.value.definingCode.codeString
+         
+         aggregator[it.value.definingCode.codeString] ++
+       }
+       
+	   def terminologyId = TerminologyID.create('local', null) // Para sacar el nombre del concepto de la ontologia del arquetipo
+	   
+       // labels
+       aggregator.each {
+          
+          names[it.key] = terms.getTermino(terminologyId, it.key, archetype, session.locale) // at0000 es el id de la raiz del arquetipo
+       }
+    }
+    
+    
+    private void aggregateDvBoolean(List data, String agg,
+                                    Archetype archetype, Object constraint, CtrlTerminologia terms,
+                                    Map aggregator, Map names)
+    {
+       // Inicializacion de valores de agregacion
+       aggregator['true'] = 0
+       aggregator['false'] = 0
+       //aggregator['null'] = 0 // No responde ***
+       
+       // Calculo de agregacion
+       data.each {
+         
+         // it Element, it.value DvBoolean, it.value.value Boolean
+         //println it.value.value
+         aggregator[it.value.value.toString()] ++
+       }
+       
+       // labels
+       names['true'] = 'Si'
+       names['false'] = 'No'
+       //names['null'] = 'NR' ***
+    }
+    
+    
+    private void aggregateDV_TEXT(List data, String agg,
+                                  Archetype archetype, Object constraint, CtrlTerminologia terms,
+                                  Map aggregator, Map names)
+    {
+       def values = params.aggKeys.split(',')
+       
+       //println values
+       
+       values.each{ aggValue ->
+         
+         aggregator[aggValue] = 0
+         names[aggValue] = aggValue // Uso el valor del usuario como label
+       }
+       
+       //println aggregator
+       
+       // La agregacios es viendo por si el aggValue esta incluido en el DvText, si esta cuenta 1.
+       
+       // Calculo de agregacion
+       data.each {
+         
+          // it Element, it.value DvText, it.value.value String
+          //println it.value.value
+
+          values.each() { search ->
+             
+             // TODO: case insensitive
+             // TODO: trim de espacios en search
+             if (it.value.value.contains(search))
+             {
+                println "match "+ it.value.value +" contains "+ search
+                aggregator[search] ++
+             }
+          }
+       }
+    }
+    
+    
+    /**
      * archetypeId
      * chart_path del ELEMENT :: y del CDvOrdinal o CCodePhrase donde estan los valores para clasificar
      * TODO: dateFrom
@@ -293,7 +480,7 @@ class ArchetypeManagerController {
       com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream()
       xstream.omitField(data_types.basic.DataValue.class, "errors");
       def codedStartTimeFilter = xstream.toXML(startTimeFilter)
-       
+      
       // Esta consulta se podria hacer igual con withCriteria
       data = hce.core.common.archetyped.Locatable.findAll( "FROM Locatable p WHERE p.archetypeDetails.archetypeId = ? AND p.path = ? AND EXISTS( SELECT c.id FROM Composition c WHERE c.id = p.parentCompositionId AND c.context.codedStartTime > ?)", [params.archetypeId, elemPath, codedStartTimeFilter] )
        
@@ -306,8 +493,8 @@ class ArchetypeManagerController {
        
       // Codigos de agregacion -> nombres correspondientes (label para mostrar)
       def names = [:]
-      def terms = binding.CtrlTerminologia.getInstance()
-      def terminologyId = TerminologyID.create('local', null) // Para sacar el nombre del concepto de la ontologia del arquetipo
+      def terms = CtrlTerminologia.getInstance()
+      
        
        
       // ============================================================================================
@@ -316,44 +503,46 @@ class ArchetypeManagerController {
       // ============================================================================================
       
       
-      /**
-       * TODO: que cada agregador por datatype se haga en una funcion aparte para no hacer if ... 
-       */
+      String agg_ftn = "aggregate" + constraint.rmTypeName
+      
+      // TODO: distintas funciones de agregacion por tipo de dato
+      "$agg_ftn"(data, null, archetype, constraint, terms, aggregator, names)
       
       // FIXME:
       // DvQuantity tiene el problema de que depende de las unidades,
       // ej. hacer promedios de magnitudes con distintas unidades da cualquier cosa.
       // eso ahora no lo considero.
+      /*
       if (constraint.rmTypeName == 'DvQuantity')
       {
-		 // list de org.openehr.am.openehrprofile.datatypes.quantity.CDvQuantityItem
-		 // Puedo usar las constraints para hacer promedios solo en la misma unidad
-         println 'DvQuantity: ' + constraint.list
+         // list de org.openehr.am.openehrprofile.datatypes.quantity.CDvQuantityItem
+         // Puedo usar las constraints para hacer promedios solo en la misma unidad
+         //println 'DvQuantity: ' + constraint.list
        
-		 if (data.size() > 0)
+         if (data.size() > 0)
          {
-	        // Hay un solo agregador de promedio (los agregadores de los demas tipos
-	        // lo que hacen es contar ocurrencias de un valor, eso para DvQuantity no
-	        // tiene mucho sentido).
-	        aggregator['promedio'] = 0
-	       
-	       
-	        // Calculo de agregacion AVG en magnitude (sin considerar units distintas!!!)
-			// data es List<Element>
-	        data.each {
-	         
-	           println it.value.magnitude
-	         
-	           aggregator['promedio'] += it.value.magnitude
-	        }
-			 
+            // Hay un solo agregador de promedio (los agregadores de los demas tipos
+            // lo que hacen es contar ocurrencias de un valor, eso para DvQuantity no
+            // tiene mucho sentido).
+            aggregator['promedio'] = 0
+          
+            // Calculo de agregacion AVG en magnitude (sin considerar units distintas!!!)
+            // data es List<Element>
+            data.each {
+            
+               //println it.value.magnitude
+               aggregator['promedio'] += it.value.magnitude
+            }
+          
             aggregator['promedio'] = aggregator['promedio'] / data.size()
-	       
-	        // labels (hay solo una porque es un promedio)
-	        names['promedio'] = 'promedio' // TODO: I18N
+          
+            // labels (hay solo una porque es un promedio)
+            names['promedio'] = 'promedio' // TODO: I18N
          }
       }
+      */
       
+      /*
       if (constraint.rmTypeName == 'DvOrdinal')
       {
          println 'DvOrdinal: ' + constraint.list // constraint.list lista de org.openehr.am.openehrprofile.datatypes.quantity.Ordinal
@@ -379,7 +568,8 @@ class ArchetypeManagerController {
             names[it.key] = terms.getTermino(terminologyId, it.key, archetype, session.locale) // at0000 es el id de la raiz del arquetipo
          }
       }
-      
+      */
+      /*
       if (constraint.rmTypeName == 'CodePhrase')
       {
          println 'CodePhrase: ' + constraint.codeList
@@ -404,7 +594,8 @@ class ArchetypeManagerController {
             names[it.key] = terms.getTermino(terminologyId, it.key, archetype, session.locale) // at0000 es el id de la raiz del arquetipo
          }
       }
-	  
+      */
+      /*
       if (constraint.rmTypeName == 'DvBoolean')
       {
           // ***
@@ -428,7 +619,8 @@ class ArchetypeManagerController {
           names['false'] = 'No'
           //names['null'] = 'NR' ***
       }
-       
+      */
+      /*
       if (constraint.rmTypeName == 'DV_TEXT')
       {
           //println 'DV_TEXT'
@@ -466,22 +658,12 @@ class ArchetypeManagerController {
           }
           
           //println aggregator
-      }
-       
-       
+       }
+       */
        
        //println data
        //println aggregator // code -> cantidad (el codigo deberia usarlo para obtener el nombre segun el servicio terminologico y el locale seleccionado
        //println names
-       
-       // TODO: tengo que pasar aggregator y names como JSON
-       
-       //render "opa"
-       /*
-       render(contentType: "text/json") {
-          names
-       }
-       */
        
        def r = [ names: names, aggregator: aggregator ]
        
