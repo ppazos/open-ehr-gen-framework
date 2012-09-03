@@ -4,7 +4,7 @@ import data_types.quantity.DvAmount
 
 class DvDuration  extends DvAmount {
 
-    String value
+    String value // Duration String
 
     /*
     static mapping = {
