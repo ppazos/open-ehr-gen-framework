@@ -207,7 +207,7 @@ class ArchetypeManager {
        // FIXME: no uso el type porque para guardar los arquetipos no lo uso,
        //        seria una optimizacion para buscar.
        Archetype archetype = null
-       def p = Pattern.compile( ".*"+idMatchingKey+".*" )
+       def p = Pattern.compile( ".*"+idMatchingKey+".*\\.adl" ) // agrego .adl porque si hay .adls de ADL1.5 en el dir, intenta cargarlo.
        
        // Busca en los arquetipos cargados:
        def iter = this.cache.keySet().iterator()
