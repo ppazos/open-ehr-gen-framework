@@ -1,40 +1,46 @@
 package hce.core.datastructure.history
 
-import data_types.quantity.date_time.DvDateTime
-import hce.core.datastructure.itemstructure.ItemStructure
-import hce.core.common.archetyped.Locatable
+import data_types.quantity.date_time.DvDuration
+import data_types.text.DvCodedText
 
 // TEST: para serializar DataValue a string y ahorrar joins
 import com.thoughtworks.xstream.XStream
 import data_types.basic.DataValue
 
-class Event extends Locatable { // abstract // representa PointEvent
+class IntervalEvent extends Event { // abstract // representa PointEvent
 
-    DvDateTime time
-    ItemStructure data
-    //ItemStructure state // TODO
+    DvDuration width         // 1..1
+    int sampleCount          // 0..1
+    DvCodedText mathFunction // 1..1
 
-    String codedTime
-    static transients = ['time']
+    String codedWidth
+    String codedMathFunction
+    static transients = ['width', 'mathFunction']
 
     // Nuevo para calcular codedValue
     def beforeInsert() {
        // Para generar XML en una sola linea sin pretty print: http://stackoverflow.com/questions/894625/how-to-disable-pretty-printingwhite-space-newline-in-xstream
        // Interesante: http://www.xml.com/pub/a/2001/06/20/databases.html
        XStream xstream = new XStream()
-       xstream.omitField(DataValue.class, "errors");
-       codedTime = xstream.toXML(time)
+       xstream.omitField(DataValue.class, "errors")
+       codedWidth = xstream.toXML(width)
+       codedMathFunction = xstream.toXML(mathFunction)
+       codedTime = xstream.toXML(time) // event
        codedName = xstream.toXML(name) // atributo de locatable
     }
     def beforeUpdate() {
        XStream xstream = new XStream()
-       xstream.omitField(DataValue.class, "errors");
-       codedTime = xstream.toXML(time)
+       xstream.omitField(DataValue.class, "errors")
+       codedWidth = xstream.toXML(width)
+       codedMathFunction = xstream.toXML(mathFunction)
+       codedTime = xstream.toXML(time) // event
        codedName = xstream.toXML(name) // atributo de locatable
     }
     // Al reves
     def afterLoad() {
        XStream xstream = new XStream()
+       if (codedWidth) width = xstream.fromXML(codedWidth)
+       if (codedMathFunction) mathFunction = xstream.fromXML(codedMathFunction)
        if (codedTime) time = xstream.fromXML(codedTime)
        if (codedName) name = xstream.fromXML(codedName)
     }
