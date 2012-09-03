@@ -304,24 +304,24 @@ class GuiGenController {
       def sections = this.getSections()
       def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
       
-	  
-	  // Igual que Records.show
-	  // Necesario para verificar permisos sobre el menu
-	  def completeSections = [:] // secciones con sus templates
-	  def domainTemplates = this.getDomainTemplates()
-	  domainTemplates.keySet().each { sectionPrefix ->
-		  domainTemplates."$sectionPrefix".each { section ->
-		   
-			  if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
-			
-			  // Tiro la lista de esto para cada "section prefix" que son los templates
-			  // de las subsecciones de la seccion principal.
-			  //println sectionPrefix + "-" + section
-			  completeSections[sectionPrefix] << sectionPrefix + "-" + section
-		  }
-	  }
-	  
-	  
+     
+     // Igual que Records.show
+     // Necesario para verificar permisos sobre el menu
+     def completeSections = [:] // secciones con sus templates
+     def domainTemplates = this.getDomainTemplates()
+     domainTemplates.keySet().each { sectionPrefix ->
+        domainTemplates."$sectionPrefix".each { section ->
+         
+           if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
+         
+           // Tiro la lista de esto para cada "section prefix" que son los templates
+           // de las subsecciones de la seccion principal.
+           //println sectionPrefix + "-" + section
+           completeSections[sectionPrefix] << sectionPrefix + "-" + section
+        }
+     }
+     
+     
       // Genera GUI solo si el registro esta abierto
       if ( hceService.isIncompleteComposition( composition ) )
       {
@@ -415,23 +415,23 @@ class GuiGenController {
       def sections = this.getSections()
       def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
       
-	  // Igual que Records.show
-	  // Necesario para verificar permisos sobre el menu
-	  def completeSections = [:] // secciones con sus templates
-	  def domainTemplates = this.getDomainTemplates()
-	  domainTemplates.keySet().each { sectionPrefix ->
-		  domainTemplates."$sectionPrefix".each { section ->
-		   
-			  if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
-			
-			  // Tiro la lista de esto para cada "section prefix" que son los templates
-			  // de las subsecciones de la seccion principal.
-			  //println sectionPrefix + "-" + section
-			  completeSections[sectionPrefix] << sectionPrefix + "-" + section
-		  }
-	  }
-	  
-	  
+     // Igual que Records.show
+     // Necesario para verificar permisos sobre el menu
+     def completeSections = [:] // secciones con sus templates
+     def domainTemplates = this.getDomainTemplates()
+     domainTemplates.keySet().each { sectionPrefix ->
+        domainTemplates."$sectionPrefix".each { section ->
+         
+           if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
+         
+           // Tiro la lista de esto para cada "section prefix" que son los templates
+           // de las subsecciones de la seccion principal.
+           //println sectionPrefix + "-" + section
+           completeSections[sectionPrefix] << sectionPrefix + "-" + section
+        }
+     }
+     
+     
       Template template = TemplateManager.getInstance().getTemplate( templateId )
       
       
@@ -525,7 +525,7 @@ class GuiGenController {
                      templateId: templateId, // FIXME: este incluye la version y el id del template no, deberian ser iguales.
                      sections: sections,
                      subsections: subsections,
-					 completeSections: completeSections,
+                     completeSections: completeSections,
                      episodeId: session.traumaContext?.episodioId,
                      //userId: session.traumaContext.userId,
                      allSubsections: this.getDomainTemplates(),
@@ -1587,21 +1587,21 @@ class GuiGenController {
       def sections = this.getSections()
       //def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
       
-	  // Igual que Records.show
-	  // Necesario para verificar permisos sobre el menu
-	  def completeSections = [:] // secciones con sus templates
-	  def domainTemplates = this.getDomainTemplates()
-	  domainTemplates.keySet().each { sectionPrefix ->
-		  domainTemplates."$sectionPrefix".each { section ->
-		   
-			  if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
-			
-			  // Tiro la lista de esto para cada "section prefix" que son los templates
-			  // de las subsecciones de la seccion principal.
-			  //println sectionPrefix + "-" + section
-			  completeSections[sectionPrefix] << sectionPrefix + "-" + section
-		  }
-	  }
+     // Igual que Records.show
+     // Necesario para verificar permisos sobre el menu
+     def completeSections = [:] // secciones con sus templates
+     def domainTemplates = this.getDomainTemplates()
+     domainTemplates.keySet().each { sectionPrefix ->
+        domainTemplates."$sectionPrefix".each { section ->
+         
+           if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
+         
+           // Tiro la lista de esto para cada "section prefix" que son los templates
+           // de las subsecciones de la seccion principal.
+           //println sectionPrefix + "-" + section
+           completeSections[sectionPrefix] << sectionPrefix + "-" + section
+        }
+     }
       
       return [composition: composition,
               // userId: session.traumaContext.userId,
@@ -1609,7 +1609,7 @@ class GuiGenController {
               episodeId: session.traumaContext?.episodioId,
               sections: sections, // necesario para el menu
               allSubsections: this.getDomainTemplates(),
-			  completeSections: completeSections
+              completeSections: completeSections
              ]
    }
 }
