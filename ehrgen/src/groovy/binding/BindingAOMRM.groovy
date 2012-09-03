@@ -1245,18 +1245,24 @@ class BindingAOMRM {
             if (item.type == "String")
             {
                 idMatchingKey = ((CString)(item)).pattern
-                type = (((CString)(item)).pattern - "openEHR-EHR-").split()[0]
+                
+                //  CLUSTER\.level_of_exertion(-[a-zA-Z0-9_]+)*\.v1
+                println "  xxx> "+ (((CString)(item)).pattern - "openEHR-EHR-")
+                println "  zzz> "+ (((CString)(item)).pattern - "openEHR-EHR-").replace("\\", "").split("\\.")
+                
+                type = (((CString)(item)).pattern - "openEHR-EHR-").replace("\\", "").split("\\.")[0]
                 // Me quedo con el tipo del arquetipo. (openEHR-EHR-OBSERVATION.prueba6.v1 -> OBSERVATION)
                 // siendo ((CString)(item)).pattern igual a openEHR-EHR-OBSERVATION.prueba6.v1
                 // Le quito el comienzo: "openEHR-EHR-"
                 // Luego me queda OBSERVATION.prueba6.v1
+                // .replace("\\", "") porque hay caracteres escapados, el . esta como \.
                 // A esto le hago un split por el "." y me quedo con el primer string: OBSERVATION
             }
         }
 
         // FIXME: Que pasa si no encuentra type y matchingKey?
         
-        //println "==== Slot Type: " + type
+        println "==== Slot Type: " + type
         //println "==== IdMatchingKey: " + idMatchingKey
         //println "==============================================="
         //println ""
@@ -1272,7 +1278,12 @@ class BindingAOMRM {
         // FIXME: podria obtener varios arquetipos.
         def arqRef = manager.getArchetype(type, idMatchingKey) // Obtengo el arquetipo que machea con idMatchingKey siendo de tipo type
 
+        
         // FIXME: que pasa si no encuentra arqRef?
+        // Sino hay arqRef es porque no hay un arquetipo en el repo de arquetipos que matchee
+        // con la referencia, entonces no se puede crear un objeto para ese arquetipo
+        if (!arqRef) return null
+        
         
         // Obtengo el rmTypeName de la raiz del arquetipo
         CComplexObject cco = arqRef.getDefinition()
@@ -1282,8 +1293,6 @@ class BindingAOMRM {
         
         // Creo un objeto del RM del tipo indicado por rmTypeName
         // FIXME: para que se crea un objeto vacio? no alcanza con guardar la path? o path y tipo?
-        //Locatable rmObject = rmFactory.createLOCATABLE(tipoRM)
-        //def rmObject = rmFactory.createLOCATABLE(tipoRM)
         def rmObject = rmFactory.createLOCATABLE(tipoRM, cco.nodeID, arqRef, tempId, cco) // Ahora le paso los datos para que pueda completar el locatable con los archetypeDetails, los datos son del arquetipo referenciado, no del que estoy recorriendo.
 
         //println "==== guardo slot a: " + rmObject

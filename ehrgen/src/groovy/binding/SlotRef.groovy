@@ -7,7 +7,6 @@ import org.openehr.am.archetype.Archetype
 import hce.core.common.archetyped.Locatable
 import org.openehr.am.archetype.constraintmodel.ArchetypeSlot
 
-
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
  *

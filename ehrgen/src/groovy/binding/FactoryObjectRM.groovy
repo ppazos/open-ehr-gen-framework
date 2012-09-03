@@ -462,7 +462,11 @@ class FactoryObjectRM {
         return table
     }
     
-
+    
+    // =================================================================================
+    // Soportar POINT e INTERVAL EVENT
+    // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=53
+    
     def createEVENT(List<Object> listaListRMO, Archetype arquetipo, String archNodeId, String tempId, CObject co)
     {
         //println "== createEVENT"
@@ -472,8 +476,11 @@ class FactoryObjectRM {
         List<Object> listaItems = listaListRMO[0]
         if (listaItems.size() == 1)
         {
-            e = new Event()
-            e.data = listaItems[0]
+            e = new Event() // FIXME: deberia ser POINT_EVENT, EVENT es abstracta
+            e.data = listaItems[0] // ItemStructure
+            
+            // TODO: tambien esta el e.state ItemStructre (ver Blod Pressure que lo usa)
+            
             // FIXME: OJO con el formato! para crear la composition estoy usando iso8601ExtendedDateTimeFromParams
             // que deja yyyy-mm-dd, y esta de hl7 es yyyymmdd !!!!
             e.time = new DvDateTime(value: DateConverter.toHL7DateFormat(new Date()) )
@@ -485,6 +492,61 @@ class FactoryObjectRM {
         
         return e
     }
+    
+    // Si en el arquetipo aparece EVENT que es abstracta, el evento por defecto es POINT_EVENT
+    // FIXME: hay que implementar la clase POINT_EVENT en el RM
+    def createPOINT_EVENT(List<Object> listaListRMO, Archetype arquetipo, String archNodeId, String tempId, CObject co)
+    {
+       return createEVENT(listaListRMO, arquetipo, archNodeId, tempId, co)
+    }
+    
+    // La dejo asi por ahora para que no tire excepcion de que falta el metodo cuando un arquetipo tiene un interval event
+    // FIXME: hay que implementar la clase INTERVAL_EVENT en el RM
+    def createINTERVAL_EVENT(List<Object> listaListRMO, Archetype arquetipo, String archNodeId, String tempId, CObject co)
+    {
+       println "createINTERVAL_EVENT " + listaListRMO
+       // createINTERVAL_EVENT
+       // [[],
+       //  [data_types.quantity.date_time.DvDuration@1986321],
+       //  [ItemTree-> [at0003] name: *blood pressure(en)],
+       //  [ItemTree-> [at0007] name: *state structure(en)]
+       // ]
+       //
+       // el elemento vacio no se que es, puede ser el interval event.mathFunction?
+       // la duration es el blood pressure.interval event.width
+       // 0003 es el blood pressure.data (referencia desde el event de 24h al point event)
+       // 0007 es el blood pressure.state (referencia desde el event de 24h al point event)
+       // falta el interval event.sample count
+       
+       //return createEVENT(listaListRMO, arquetipo, archNodeId, tempId, co)
+       Event e
+       List<Object> listaItems = listaListRMO[0]
+       //if (listaItems.size() == 1)
+       //{
+           e = new IntervalEvent()
+           
+           //e.mathFunction // TODO
+           e.width = listaItems[1] //DvDuration
+           e.data = listaItems[2] // ItemStructure
+           //e.state = listaItems[3] // TODO: no esta implementado el binding de Event.state
+           
+           // TODO: tambien esta el e.state ItemStructre (ver Blod Pressure que lo usa)
+           
+           // FIXME: OJO con el formato! para crear la composition estoy usando iso8601ExtendedDateTimeFromParams
+           // que deja yyyy-mm-dd, y esta de hl7 es yyyymmdd !!!!
+           e.time = new DvDateTime(value: DateConverter.toHL7DateFormat(new Date()) )
+           completarLocatable(e, archNodeId, arquetipo, tempId)
+       //}
+       
+       //println "==== return event: " + e
+       //println "=================================================="
+       
+       return e
+    }
+    
+    // ==========================================================================================
+    // ==========================================================================================
+    
 
     def createHISTORY(List<Object> listaListRMO, Archetype arquetipo, String archNodeId, String tempId, CObject co)
     {
@@ -1067,6 +1129,11 @@ class FactoryObjectRM {
     {
         // TODO
         DvDuration d = new DvDuration()
+        
+        // println "Duration: " + pathValor
+        // viene vacio porque no se generan los campos en la UI
+        // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=70
+        
         return d
     }
 
