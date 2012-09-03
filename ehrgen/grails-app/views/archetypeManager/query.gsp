@@ -414,11 +414,15 @@
                         def path1 = archetype.physicalPaths().findAll{ pt -> pt.startsWith(paths[i]) }.max{ pt -> pt.length() }
                         //print path1
                         %>
-                        
-                        ${archetype.node(path1).rmTypeName}
+						
+						${archetype.node(path1).rmTypeName}
                         
                         <g:if test="${archetype.node(path1).rmTypeName == 'DvQuantity'}">
                           <%-- DvOrdinal: valores para clasificacion ${archetype.node(path1).list} --%>
+                          <input type="checkbox" name="chart_path" value="${paths[i]+'::'+path1}" />
+                        </g:if>
+						<g:if test="${archetype.node(path1).rmTypeName == 'Integer'}">
+                          <%-- Tipo basico dentro de DvCount --%>
                           <input type="checkbox" name="chart_path" value="${paths[i]+'::'+path1}" />
                         </g:if>
                         <g:if test="${archetype.node(path1).rmTypeName == 'DvOrdinal'}">
