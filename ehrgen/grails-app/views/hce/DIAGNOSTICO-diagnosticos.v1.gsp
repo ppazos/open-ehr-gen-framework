@@ -1,5 +1,4 @@
 <%@ page import="com.thoughtworks.xstream.XStream" %><%@ page import="tablasMaestras.Cie10Trauma" %>
-<?xml version="1.0" encoding="ISO-8859-1" ?>
 <html>
   <head>
     <meta name="layout" content="ehr" />
@@ -37,106 +36,99 @@
         font-size: 11px;
       }
     </style>
-    <g:javascript library="prototype" />
+    <g:javascript library="jquery-1.8.2.min" />
     <g:javascript>
     
       var codigos;
+      
+      $(document).ready(function() {
+		  
+		  $('#search').submit( function() {
+		   
+		    //console.log('action: ' + this.action);
+		    //console.log('text: ' + $('input[name=text]').val());
+		   
+		    $.post(
+            this.action,
+            {
+              text: $('input[name=text]').val()
+            },
+		      function(json) { // success
+		   
+			     codigos = json.codigos;
+			        
+			     var odd = 0;
+			     html = '';
+			        
+			     // Si no se encuentran codigos para el texto ingresado.
+			     if (codigos.length == 0)
+			     {
+			       html += '<g:message code="section.DIAGNOSTICO-diagnosticos.label.emptySearchResult" />';
+			     }
+			     else
+			     {
+			       html = '<table cellpadding="3" cellspacing="1">';
+			       $(codigos).each( function(i, c) {
+			            
+			         if (!c.codigo) html += '<tr class="group">';
+			         else html += '<tr'+ ((odd)?' class="odd"':' class="even"') +'>';
+			            
+			         html += '<td>' + c.subgrupo + '</td>';
+			         html += '<td>' + ((c.codigo) ? c.codigo : '') + '</td>'; // si no muestra 'null'
+			         html += '<td class="name">' + c.nombre + '</td>';
+			         html += '<td class="select_code">';
+			         html += '<a href="javascript:select(\'' + c.id + '\');">[seleccionar]</a>';
+			         html += '</td>';
+			         html += '</tr>';
+			            
+			         odd = (odd+1)%2;
+			       });
+			       html += '</table>'
+			          
+			     } // si hay algun resultado
+
+			     $('#result').html(html);
+
+		      },      // success
+		      'json'  // post dataType
+		       
+		    );        // ajax
+	       
+	       return false; // do not submit
+	       
+	     }); // search submit
+		}); // document ready
+      
     
       function select( id )
       {
-        //alert('select id:'+id);
+        //console.log('select id:'+id);
       
         var code = null;
         
         // codigos es global
-        codigos.each( function(c) {
+        $(codigos).each( function(i, c) {
           if (c.id == id) code = c;
         });
         
         if (code)
         {
-          //alert(code.id + ' ' + code.nombre);
-          
-          // TODO: esto deberia ser un form con campos hidden con los
-          //       ids de los codigos seleccionados para diagnosticos.
-          //
-          $('seleccionados').innerHTML += '<div id="selected_'+code.id+'">' +
-                                          '<input type="hidden" name="codes" value="'+ code.id +'||'+ code.nombre +'" />'+
-                                          '('+ ((code.codigo) ? code.codigo : code.subgrupo) + ') ' + code.nombre + // si no es un codigo, para que no muestre null
-                                          ' <a href="javascript:unselect(\'' + code.id + '\');">[borrar]</a> ' +
-                                          '</div>';
+          //console.log(code.id + ' ' + code.nombre);
+
+          $('#seleccionados').append(
+            '<div id="selected_'+code.id+'">' +
+             '<input type="hidden" name="codes" value="'+ code.id +'||'+ code.nombre +'" />' +
+             '('+ ((code.codigo) ? code.codigo : code.subgrupo) + ') ' + code.nombre + // si no es un codigo, para que no muestre null
+             ' <a href="javascript:unselect(\'' + code.id + '\');">[borrar]</a> ' +
+            '</div>'
+          );
         }
-        else
-          alert('code es null');
+        else console.log('code es null');
       }
-      
       
       function unselect( id )
       {
-         $('selected_'+id).remove();
-      }
-      
-    
-      function _after(response)
-      {
-        //alert( response.responseText );
-        
-        /* para el JSON hecho a mano
-        
-        var json = eval('(' + response.responseText + ')')
-        //alert( codigos );
-        
-        alert( json.codigos.size() ); 
-        
-        json.codigos.each( function(c) { alert(c.codigo.id) } );
-        */
-        
-        // variable global
-        var json = eval('(' + response.responseText + ')'); // con JSON hecho por mi
-        codigos = json.codigos
-        
-        //codigos = eval('(' + response.responseText + ')'); // con as JSON
-        //codigos.each( function(c) { alert(c.id) } );
-        
-        var odd = 0;
-        html = '';
-        
-        // Si no se encuentran codigos para el texto ingresado.
-        if (codigos.length == 0)
-        {
-           html += '<g:message code="section.DIAGNOSTICO-diagnosticos.label.emptySearchResult" />';
-        }
-        else
-        {
-          html = '<table cellpadding="3" cellspacing="1">';
-          codigos.each( function(c) {
-            
-            if (!c.codigo)
-            {
-              html += '<tr class="group">';
-            }
-            else
-            {
-              html += '<tr'+ ((odd)?' class="odd"':' class="even"') +'>';
-            }
-            
-            html += '<td>' + c.subgrupo + '</td>';
-            html += '<td>' + ((c.codigo) ? c.codigo : '') + '</td>'; // si no muestra 'null'
-            html += '<td class="name">' + c.nombre + '</td>';
-            html += '<td class="select_code">';
-            html += '<a href="javascript:select(\'' + c.id + '\');">[seleccionar]</a>';
-            html += '</td>';
-            
-            html += '</tr>';
-            
-            odd = (odd+1)%2;
-            
-          } );
-          html += '</table>'
-          
-        } // si hay algun resultado
-
-        $('result').innerHTML = html;
+        $('#selected_'+id).remove();
       }
     </g:javascript>
   </head>
@@ -158,16 +150,19 @@
     <%-- update="[success:'message',failure:'error']" --%>
     <%-- onSuccess="_after(codigos)" --%>
     <div class="ehrform">
-      <g:formRemote url="[controller:'ajaxApi', action:'findCIE10']"
+      <form action="${createLink(controller:'ajaxApi', action:'findCIE10')}" id="search">
+      <%--
+            url="[controller:'ajaxApi', action:'findCIE10']"
                     onSuccess="_after(e)"
                     name="form_diagnosticos">
-                    
+      --%>
+               
         <input type="text" name="text" />
         <input type="submit" value="Buscar" />
         
         p.e: 'traumatismo cuello', 'quemadura cabeza', 'esguince tobillo', ...
         
-      </g:formRemote >
+      </form>
       
       <div id="message"></div>
       <div id="error"></div>
