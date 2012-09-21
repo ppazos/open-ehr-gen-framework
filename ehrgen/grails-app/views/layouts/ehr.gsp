@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <g:set var="startmsec" value="${System.currentTimeMillis()}" />
-    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
     <%-- No quiero paginas cacheadas --%>
     <%--
