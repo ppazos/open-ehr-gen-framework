@@ -2,8 +2,8 @@
 // config files can either be Java properties files or ConfigSlurper scripts
 
 // idiomas disponibles
-langs = ['es','en','es_AR'] // ISO 639-1 Code
-locales = [new Locale('es'), new Locale('en'), new Locale('es', 'AR')]
+langs = ['es','en'] //,'es_AR'] // ISO 639-1 Code
+locales = [new Locale('es'), new Locale('en')] //, new Locale('es', 'AR')]
 
 // donde se buscan con templates en disco, corresponde al domino de la HCE.
 // El framework soporta multiples dominios ofreciendo una pantalla
