@@ -1,19 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
   <head>
     <meta name="layout" content="ehr" />
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
     <title><g:message code="trauma.sign.title" /></title>
-    <g:javascript library="prototype/prototype" />
+    <g:javascript library="jquery-1.8.2.min" />
     <g:javascript>
-      <!--
-        Event.observe(window, 'load', function(event) {
-        
-          // Focus en input nombre de usuario
-          $('user').focus();
-          
-        });
-      -->
+      $(document).ready(function()
+      {
+        $("#user").focus();
+      });
     </g:javascript>
     <style>
       table {      
