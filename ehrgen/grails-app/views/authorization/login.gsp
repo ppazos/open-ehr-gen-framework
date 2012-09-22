@@ -7,8 +7,8 @@
     <g:javascript>
       $(document).ready(function()
       {
-		  $("#user").focus();
-		});
+      $("#user").focus();
+    });
     </g:javascript>
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'ehr.css')}" />
     <style>
@@ -22,7 +22,7 @@
       }      
 
       * {margin:0;padding:0}
-      html,body{height:100%}
+      html,body{height:100%; background-color:#efefef;}
       #wrapper{
         height:100%;
         width:100%;
@@ -38,11 +38,6 @@
         left:50%;
         float:left;
       }
-      #form1 table {
-        width: 270px;
-        margin: 20px;
-        margin-bottom: 0px;
-      }
       #form1 {
         border: 1px solid #000;
         padding: 20px 20px;
@@ -50,7 +45,21 @@
         position: relative;
         text-align: center;
         left: -50%;
-        /*background-color: #aaaaff;*/
+        background-color: #fff;
+        -moz-box-shadow:    2px 3px 5px 1px #ccc;
+        -webkit-box-shadow: 2px 3px 5px 1px #ccc;
+        box-shadow:         2px 3px 5px 1px #ccc;
+        -webkit-border-radius: 5px;
+        -webkit-border-top-left-radius: 0;
+        -moz-border-radius: 5px;
+        -moz-border-radius-topleft: 0;
+        border-radius: 5px;
+        border-top-left-radius: 0;
+      }
+      #form1 table {
+        width: 270px;
+        margin: 20px;
+        margin-bottom: 0px;
       }
       ul.userBar {
         position: relative;
