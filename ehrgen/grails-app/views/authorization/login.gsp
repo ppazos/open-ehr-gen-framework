@@ -1,12 +1,11 @@
-<%@ page import="org.codehaus.groovy.grails.commons.*" %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<%@ page import="org.codehaus.groovy.grails.commons.*" %><%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><g:message code="auth.login.title" /></title>
     <g:javascript library="jquery-1.8.2.min" />
     <g:javascript>
-      $(document).ready(function()
-      {
+    $(document).ready(function() {
       $("#user").focus();
     });
     </g:javascript>
@@ -96,6 +95,12 @@
       img {
         border: 0px;
       }
+      .version {
+        margin-top: 5px;
+        margin-bottom: 10px;
+        text-align: right;
+        width: 50%;
+      }
     </style>
     <!--[if lt IE 8]>
       <style type="text/css">
@@ -151,6 +156,9 @@
             </div>
             --%>
           </g:form>
+          
+          <div class="version">v${ApplicationHolder.application.metadata['app.version']}</div>
+          
         </div>
       </div>
     </div>
