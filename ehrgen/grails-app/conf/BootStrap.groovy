@@ -91,6 +91,7 @@ class BootStrap {
         
         def folder
         def domains = grailsApplication.config.domains
+
         if (Folder.count() == 0) // Si no se crearon los folders...
         {
            domains.each { domain ->
@@ -100,7 +101,7 @@ class BootStrap {
                  //name: new DvText(value: messageSource.getMessage(domain, new Object[2], new Locale('es'))),
                  // para verificar seguridad necesito tambien el codigo en el folder.
                  name: new DvCodedText(
-                   value: messageSource.getMessage(domain, new Object[2], new Locale('es')),
+                   value: messageSource.getMessage(domain, new Object[2], new Locale('es')), // FIXME: I18N
                    definingCode: new CodePhrase(
                      codeString: domain,
                      terminologyId: TerminologyID.create('ehrgen', null)
@@ -155,7 +156,6 @@ class BootStrap {
            }
         }
         // /TEST Folder
-        
         
      
         println " - START: Carga catalogos maestros"
@@ -378,42 +378,7 @@ class BootStrap {
         rMedico.save()
         //
         // =============================================================
-        
-        
-        /*
-        def role1 = new Role(timeValidityFrom:new Date(), type:Role.PACIENTE, performer:paciente)
-        if (!role1.save()) println role1.errors
-            
-        def role2 = new Role(timeValidityFrom:new Date(), type:Role.PACIENTE, performer:pac2)
-        if (!role2.save()) println role2.errors
-            
-        def role3 = new Role(timeValidityFrom:new Date(), type:Role.PACIENTE, performer:persona4)
-        if (!role3.save()) println role3.errors
-            
-        def role4 = new Role(timeValidityFrom:new Date(), type:Role.PACIENTE, performer:persona5)
-        if (!role4.save()) println role4.errors
-            
-        def role5 = new Role(timeValidityFrom:new Date(), type:Role.PACIENTE, performer:persona6)
-        if (!role5.save()) println role5.errors
-
-        // Medico
-        def role6 = new Role(timeValidityFrom:new Date(), type:Role.MEDICO, performer:persona3) 
-        if (!role6.save()) println role6.errors
-        
-        // Enfermera
-        def role_enfermera = new Role(timeValidityFrom:new Date(), type:Role.ENFERMERIA, performer:persona_enfermera)
-        if (!role_enfermera.save()) println role_enfermera.errors
-        
-        // Admin
-        def role_admin = new Role(timeValidityFrom:new Date(), type:Role.ADMIN, performer:persona_admin)
-        if (!role_admin.save()) println role_admin.errors
-        
-        // Administrativo
-        def role_adm = new Role(timeValidityFrom:new Date(), type:Role.ADMINISTRATIVO, performer:persona_administrativo) 
-        if (!role_adm.save()) println role_adm.errors
-        
-        */
-        
+      
         // ====================================================================================
         // LOGINS
         //
@@ -433,7 +398,7 @@ class BootStrap {
         
         // /Creacion de pacientes
         // ====================================================================================
-        
+
         
         // ====================================================================================
         // Caching de formularios de ingreso de datos para todos los templates
@@ -517,11 +482,13 @@ class BootStrap {
                        // FIXME: al template le falta la version en el modelo. Por ahora esta solo en el nombre del archivo.
                        Template template = TemplateManager.getInstance().getTemplate( templateIdV )
                       
-                       int i = 0
-                       
                        // Se genera cada vista para cada locale disponible
-                       grailsApplication.config.langs.each { lang ->
+                       grailsApplication.config.langs.eachWithIndex { lang, i ->
                        
+                          // FIX: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=62
+                          //Locale.setDefault( grailsApplication.config.locales[i] ) // No funciona
+                          // DatePIcker usa: new DateFormatSymbols(RCU.getLocale(request))
+                          
                           //println 'lang: '+ lang
                           //println 'locale: '+ grailsApplication.config.locales[i].toString()
                           //println 'template: '+ templateIdV
@@ -531,8 +498,8 @@ class BootStrap {
                           form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
                           //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create_"+ lang +".htm")
                           archivo = new File(pathToGeneratedViews + templateIdV + "_create_"+ lang +".htm")
-                          archivo.write(form);
-                          guiManager.add(templateIdV, "create", form);
+                          archivo.write(form)
+                          guiManager.add(templateIdV, "create", form)
                           
                           // idem para el show
                           //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
@@ -543,8 +510,8 @@ class BootStrap {
                           form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
                           //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
                           archivo = new File(pathToGeneratedViews + templateIdV + "_show_"+ lang +".htm")
-                          archivo.write(form);
-                          guiManager.add(templateIdV, "show", form);
+                          archivo.write(form)
+                          guiManager.add(templateIdV, "show", form)
                           
                           // idem para edit
                           //form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
@@ -552,10 +519,8 @@ class BootStrap {
                           form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
                           //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_edit_"+ lang +".htm")
                           archivo = new File(pathToGeneratedViews + templateIdV + "_edit_"+ lang +".htm")
-                          archivo.write(form);
-                          guiManager.add(templateIdV, "edit", form);
-                          
-                          i++
+                          archivo.write(form)
+                          guiManager.add(templateIdV, "edit", form)
                        }
                     }
                     
@@ -616,7 +581,7 @@ class BootStrap {
                           form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
                           //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
                           archivo = new File(pathToGeneratedViews + templateIdV + "_show_"+ lang +".htm")
-                          archivo.write(form);
+                          archivo.write(form)
                           guiManager.add(templateIdV, "show", form)
                           
                           i++
