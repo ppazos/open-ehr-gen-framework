@@ -33,11 +33,30 @@ class GrailsTemplateEngineService {
             def applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext)
             requestAttributes = grails.util.GrailsWebUtil.bindMockWebRequest(applicationContext)
             unbindRequest = true
+            
+            /*
+            class org.apache.catalina.core.ApplicationContextFacade
+            class org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext
+            class org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
+            class org.springframework.mock.web.MockHttpServletRequest
+            class org.springframework.mock.web.MockServletContext
+            
+            println servletContext.class
+            println applicationContext.class
+            println requestAttributes.class
+            println requestAttributes.request.class
+            println requestAttributes.request.servletContext.class
+            */
         }
-
+        
         def servletContext = requestAttributes.request.servletContext
-        def request = requestAttributes.request
+        def request = requestAttributes.request // org.springframework.mock.web.MockHttpServletRequest
+        
+        
+        // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=62
+        request.addPreferredLocale( model.locale )
 
+        
         def grailsAttributes = new DefaultGrailsApplicationAttributes(servletContext)
         
         // See if the application has the view for it
