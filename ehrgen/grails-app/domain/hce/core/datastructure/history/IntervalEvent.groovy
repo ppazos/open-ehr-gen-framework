@@ -11,7 +11,11 @@ class IntervalEvent extends Event { // abstract // representa PointEvent
 
     DvDuration width         // 1..1
     int sampleCount          // 0..1
-    DvCodedText mathFunction // 1..1
+    
+    // "maximum", "mean", "minimum" (es un agregador de valorres en event.data, que indica que los valores corresponden al maximo, promedio, minimo, etc. de la lectura en este periodo de tiempo)
+    // Esta codificado en la terminologia de openEHR
+    // TODO: se debe crear un control en la GUI para ingresar este valor, la restriccion de los valores posibles se pone en el arquetipo. Si hay una sola opcion, hacer lo mismo que con las unidades de quantity, mostrar una label.
+    DvCodedText mathFunction // 1..1 
 
     String codedWidth
     String codedMathFunction
