@@ -472,7 +472,7 @@ class FactoryObjectRM {
         //println "== createEVENT"
         //println "==== listaList: " + listaListRMO
         
-        Event e
+        Event e // Event representa PointEvent porque PointEvent no agrega mas informacion a la clase Event
         List<Object> listaItems = listaListRMO[0]
         if (listaItems.size() == 1)
         {
@@ -525,7 +525,7 @@ class FactoryObjectRM {
        //{
            e = new IntervalEvent()
            
-           //e.mathFunction // TODO
+           //e.mathFunction // TODO: se debe crear un control en la GUI para ingresar este valor
            e.width = listaItems[1] //DvDuration
            e.data = listaItems[2] // ItemStructure
            //e.state = listaItems[3] // TODO: no esta implementado el binding de Event.state
