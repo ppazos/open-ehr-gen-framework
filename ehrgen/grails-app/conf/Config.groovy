@@ -1,6 +1,12 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
+
+// Ruta independiente del SO
+// http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+String PS = System.getProperty("file.separator")
+
+
 // idiomas disponibles
 langs = ['es','en'] //,'es_AR'] // ISO 639-1 Code
 locales = [new Locale('es'), new Locale('en')] //, new Locale('es', 'AR')]
@@ -16,6 +22,7 @@ locales = [new Locale('es'), new Locale('en')] //, new Locale('es', 'AR')]
 
 // Nuevo para organizar los registros por domain
 // ver http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=12
+/*
 domains = [
            '/domain.prehospitalario_same_uy',
            '/domain.prehospitalario',
@@ -28,6 +35,18 @@ domains = [
            '/domain.internacion_cti',
            '/domain.tests'
            ]
+*/
+// Ahora se usa solo nomnbre de dominio, TODO: i18n
+domains = [
+  'Prehospitalario SAME-UY',
+  'Prehospitalario',
+  'Emergencia',
+  'Emergencia de Trauma',
+  //'Ambulatorio',
+  //'Internacion domiciliaria',
+  //'Internacion en sala',
+  'Tests'
+]
 
 // FIXME: no deberia ir a buscar los templates a distintos directorios,
 //        distintos dominios pueden compartir templates.
@@ -35,16 +54,21 @@ domains = [
 //domain = 'hce/emergencia'
 
 // Configuracion nueva, para usar con dominios
+// Se va a cargar desde el bootstrap en el modelo de templates
+// persistentes y no se va a usar directamente esta estructura.
 templates2 {
-   path = 'hce' // Path en disco de los templates, no debe empezar ni terminar en / porque TemplateManager poner las /
+   //path = 'hce' // Path en disco de los templates, no debe empezar ni terminar en / porque TemplateManager poner las /
+   
+   // =======================================================
+   // dominio -> etapa -> template
    
    // Configuracion de templates por dominio,
    // cada dominio tiene un registro distinto
    // formado por multiples templates
-   '/domain.prehospitalario_same_uy' {
+   'Prehospitalario SAME-UY' {
       PREHOSPITALARIO = ['same_uy.v1', 'same_uy_ubicacion.v1']
    }
-   '/domain.trauma' {
+   'Emergencia de Trauma' {
       // en la composition se listan las sections y subsections, si tiene una sola es que no hay subsecciones.
       // con estos nombres se arman los nombres de los templates a pedir para cada registro.
       INGRESO = ['triage.v1'] //,'test_body_weight'] //, 'test_a1_a2', 'test_cluster', 'test_dates']
@@ -63,11 +87,11 @@ templates2 {
       // decisiones terapeuticas evolutivas, ISS
       COMUNES = ['movimiento_paciente.v1']
    }
-   '/domain.emergencia' {
+   'Emergencia' {
       ACCIONES = ['adm_sust.v1']
       DIAGNOSTICO = ['diagnosticos.v1']
    }
-   '/domain.tests' {
+   'Tests' {
       TEST = [
               //'cluster_obligatorio.v1',
               'cluster_obligatorio.v2',
@@ -81,41 +105,6 @@ templates2 {
    }
 }
 
-/* templates2 es el nuevo
-templates {
-    hce {
-        trauma {
-            // en la composition se listan las sections y subsections, si tiene una sola es que no hay subsecciones.
-            // con estos nombres se arman los nombres de los templates a pedir para cada registro.
-            INGRESO = ['triage'] //,'test_body_weight'] //, 'test_a1_a2', 'test_cluster', 'test_dates']
-            ADMISION = ['prehospitalario', 'contexto_del_evento']
-            ANAMNESIS = ['resumen_clinico']
-            EVALUACION_PRIMARIA = [
-                                   'via_aerea',
-                                   'columna_vertebral',
-                                   'ventilacion',
-                                   'estado_circulatorio',
-                                   'disfuncion_neurologica'
-                                  ]
-            PARACLINICA = ['pedido_imagenes', 'pedido_laboratorio']
-            EVALUACION_SECUNDARIA = ['exposicion_corporal_total']
-            DIAGNOSTICO = ['diagnosticos']
-            // decisiones terapeuticas evolutivas, ISS
-            COMUNES = ['movimiento_paciente']
-        }
-        emergencia {
-            ACCIONES = ['adm_sust']
-            DIAGNOSTICO = ['diagnosticos']
-        }
-        ambulatorio {
-            
-        }
-        quirurgica {
-            
-        }
-    }
-}
-*/
 
 hce {
     patient_administration {
@@ -127,15 +116,13 @@ hce {
          save_rm_structure = true // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=61
     }
     close_record_job_on = false
+    
+    template_repo = 'templates'+ PS   // luego se pone la path del tipo y el templateId
+    archetype_repo = 'archetypes'+ PS + 'ehr'+ PS // luego se pone la path del tipo y el archetypeId
 }
 
 openEHR.RMVersion = '1.0.2'
 
-// ==============================================================
-// Ruta a directorio en donde se almacenan los CDAs generados
-// Independiente del SO
-// http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
-String PS = System.getProperty("file.separator")
 hce.rutaDirCDAs = '.'+ PS + 'CDAs'
 
 // grails.config.locations = [ "classpath:${appName}-config.properties",
