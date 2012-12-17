@@ -1,7 +1,0 @@
-<template>
-  <id>TEST-blood_pressure_liotta</id>
-  <name>Test del arquetipo de blood pressure editado por Domingo Liotta</name>
-  <root_archetype>
-    <archetype type="observation" id="openEHR-EHR-OBSERVATION.blood_pressure.v1spFinal" pageZone="content" includeAll="true" />
-  </root_archetype>
-</template>

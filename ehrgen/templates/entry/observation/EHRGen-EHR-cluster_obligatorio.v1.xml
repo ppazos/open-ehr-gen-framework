@@ -1,0 +1,7 @@
+<template>
+  <id>EHRGen-EHR-cluster_obligatorio.v1</id>
+  <name>Test de validacion de cluster obligatorio</name>
+  <root_archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.test_cluster_obligatorio.v1" pageZone="content" includeAll="true" />
+  </root_archetype>
+</template>

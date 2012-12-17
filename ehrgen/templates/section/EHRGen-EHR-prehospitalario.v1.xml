@@ -1,0 +1,21 @@
+<template>
+  <id>EHRGen-EHR-prehospitalario.v1</id>
+  <name>Atención prehospitalaria</name>
+  <root_archetype>
+    <archetype type="section" id="openEHR-EHR-SECTION.prehospitalario.v2" pageZone="none" />
+  </root_archetype>
+  <included_archetypes>
+    <archetype type="action" id="openEHR-EHR-ACTION.prehospitalario.v2" pageZone="left">
+      <field path="/description[at0001]"><!-- incluye todos los nodos, y a uno le cambia el control a radioGroup -->
+        <control type="radioGroup" path="/description[at0001]/items[at0058]/items[at0051]/value/defining_code" /><!-- CCodePhrase -->
+      </field>
+    </archetype>
+    <archetype type="action" id="openEHR-EHR-ACTION.reposicion_prehospitalaria.v1" pageZone="right">
+      <field path="/description[at0001]" />
+    </archetype>
+    <archetype type="action" id="openEHR-EHR-ACTION.vias_venosas_prehospitalario.v1" pageZone="right">
+      <field path="/description[at0001]" />
+    </archetype>
+    <archetype type="action" id="openEHR-EHR-ACTION.resumen_actuacion.v1" includeAll="true" pageZone="left" />
+  </included_archetypes>
+</template>

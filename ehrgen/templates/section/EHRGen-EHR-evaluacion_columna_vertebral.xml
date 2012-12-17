@@ -1,0 +1,28 @@
+<template>
+  <id>EHRGen-EHR-evaluacion_columna_vertebral.v1</id>
+  <name>Evaluacion y acciones de columna vertebral</name>
+
+  <!-- Arquetipo raiz (el principal) -->
+  <root_archetype>
+    <archetype type="section" id="openEHR-EHR-SECTION.evaluacion_columna_vertebral.v1" pageZone="none" />
+  </root_archetype>
+  
+  <!--
+  Lista de arquetipos incluidos, deben estar en algun slot del arquetipo raiz.
+  -->
+  <included_archetypes>
+    <archetype type="evaluation" id="openEHR-EHR-EVALUATION.columna_vertebral.v1" includeAll="true" pageZone="left">
+       <!-- 
+      <field path="/data[at0001]/items[at0002]/value/value" />
+      <field path="/data[at0001]/items[at0003]/value/defining_code" /> -->
+    </archetype>
+    <archetype type="action" id="openEHR-EHR-ACTION.columna_vertebral.v1" includeAll="true" pageZone="right">
+      <!--
+      <field path="/description[at0001]/items[at0002]/value/defining_code" />
+      <field path="/description[at0001]/items[at0003]/value/defining_code" /> -->
+    </archetype>
+    <archetype type="action" id="openEHR-EHR-ACTION.resumen_actuacion.v1" includeAll="true" pageZone="bottom">
+      <!-- <field path="/description[at0001]" /> -->
+    </archetype>
+  </included_archetypes>
+</template>

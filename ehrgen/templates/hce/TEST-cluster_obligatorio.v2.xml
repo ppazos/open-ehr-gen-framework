@@ -1,8 +1,0 @@
-<template>
-  <!-- prueba de tener templates con versiones distintas, este hace referencia a una nueva version del arquetipo -->
-  <id>TEST-cluster_obligatorio</id>
-  <name>Test de validacion de cluster obligatorio</name>
-  <root_archetype>
-    <archetype type="observation" id="openEHR-EHR-OBSERVATION.test_cluster_obligatorio.v2" pageZone="content" includeAll="true" />
-  </root_archetype>
-</template>

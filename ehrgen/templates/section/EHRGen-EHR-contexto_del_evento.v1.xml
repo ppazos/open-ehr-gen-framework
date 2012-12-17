@@ -1,0 +1,25 @@
+<template>
+  <id>EHRGen-EHR-contexto_del_evento.v1</id>
+  <name>Contexto del evento traumatico</name>
+  <root_archetype>
+    <archetype type="section" id="openEHR-EHR-SECTION.contexto_del_evento_traumatico.v1" pageZone="none" />
+  </root_archetype>
+  <included_archetypes>
+    <archetype type="admin_entry" id="openEHR-EHR-ADMIN_ENTRY.contexto_del_evento_traumatico.v1" pageZone="left">
+      <field path="/">
+        <control type="radioGroup" path="/data[at0001]/items[at0018]/items[at0019]/value/defining_code" /><!-- tipo de ubicacion -->
+        <control type="smallText" path="/data[at0001]/items[at0032]/items[at0033]/items[at0035]/items[at0036]/value" /><!-- medico actuante nombre -->
+        <control type="smallText" path="/data[at0001]/items[at0032]/items[at0033]/items[at0035]/items[at0037]/value" /><!-- medico CI -->
+        <control type="radioGroup" path="/data[at0001]/items[at0032]/items[at0033]/items[at0034]/value/defining_code" /><!-- empresa movil -->
+      </field>
+    </archetype>
+    <archetype type="admin_entry" id="openEHR-EHR-ADMIN_ENTRY.ubicacion_geografica.v1" pageZone="right">
+      <field path="/">
+        <control type="smallText" path="/data[at0001]/items[at0002]/items[at0004]/value" /><!-- localidad -->
+        <control type="smallText" path="/data[at0001]/items[at0002]/items[at0005]/items[at0006]/value" /><!-- nombre via -->
+        <control type="radioGroup" path="/data[at0001]/items[at0002]/items[at0005]/items[at0007]/value/defining_code" /><!-- tipo via -->
+        <control type="smallText" path="/data[at0001]/items[at0002]/items[at0015]/items[at0016]/value" /><!-- nombre cruce -->
+      </field>
+    </archetype>
+  </included_archetypes>
+</template>

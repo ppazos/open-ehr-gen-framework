@@ -1,0 +1,7 @@
+<template>
+  <id>EHRGen-EHR-pedido_imagenes.v1</id>
+  <name>Pedido de estudios imagenologicos</name>
+  <root_archetype>
+    <archetype type="instruction" id="openEHR-EHR-INSTRUCTION.pedido_imagenes.v1" includeAll="true" />
+  </root_archetype>
+</template>

@@ -1,0 +1,16 @@
+<template>
+  <id>EHRGen-EHR-same_uy_ubicacion.v1</id>
+  <name>Prehospitalario SAME 911 Uruguay - Ubicacion del evento</name>
+  <root_archetype>
+    <archetype type="admin_entry" id="openEHR-EHR-ADMIN_ENTRY.ubicacion_geografica.v1" pageZone="content">
+      <field path="/data[at0001]">
+        <control type="smallText" path="/data[at0001]/items[at0002]/items[at0004]/value" /><!-- localidad -->
+        <control type="smallText" path="/data[at0001]/items[at0002]/items[at0005]/items[at0006]/value" /><!-- nombre via -->
+        <control type="radioGroup" path="/data[at0001]/items[at0002]/items[at0005]/items[at0007]/value/defining_code" /><!-- tipo via -->
+        <control type="smallText" path="/data[at0001]/items[at0002]/items[at0015]/items[at0016]/value" /><!-- nombre cruce -->
+      </field>
+    </archetype>
+  </root_archetype>
+  <included_archetypes>
+  </included_archetypes>
+</template>

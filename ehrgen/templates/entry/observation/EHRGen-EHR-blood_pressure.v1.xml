@@ -1,0 +1,7 @@
+<template>
+  <id>EHRGen-EHR-blood_pressure.v1</id>
+  <name>Test del arquetipo de blood pressure bajado del CKM</name>
+  <root_archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.blood_pressure.v1" pageZone="content" includeAll="true" />
+  </root_archetype>
+</template>
