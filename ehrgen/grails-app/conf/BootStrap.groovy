@@ -12,8 +12,10 @@ import hce.core.common.change_control.Version
 import hce.HceService
 import tablasMaestras.*
 
-// TEST Folder
-import hce.core.common.directory.Folder
+//import hce.core.common.directory.Folder
+import domain.Domain
+import workflow.WorkFlow
+import workflow.Stage
 import data_types.text.*
 import hce.core.common.archetyped.Archetyped
 import org.springframework.web.context.support.WebApplicationContextUtils
@@ -23,8 +25,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils
 import converters.DateConverter
 import data_types.quantity.date_time.*
 
-import templates.TemplateManager
-import templates.tom.* // Template
+// Template
+import templates.*
+import templates.constraints.*
+import templates.controls.*
 
 // Para hacer un MOCK de una sesion para setear el locale temporalmente, para generar las pantallas correctamente.
 import org.springframework.web.context.request.RequestContextHolder
@@ -32,7 +36,11 @@ import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.springframework.web.context.support.WebApplicationContextUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+
 import gui.GuiManager
+
+import com.thoughtworks.xstream.XStream
 
 class BootStrap {
 
@@ -59,6 +67,10 @@ class BootStrap {
         TimeZone.'default' = TimeZone.getTimeZone('America/Montevideo') // Con este considera daylight savings (cambios de +/- una hora por anio)
         
         
+        
+        def templateManager = TemplateManager.getInstance()
+        
+        
         // Parece que no puedo definir el locale sin estar en una sesion de verdad
         // Una SOLUCION podria ser que no se genere la GUI desde el bootstrap, sino que se genere desde una GUI de administracion.
         // ===================================================
@@ -83,63 +95,73 @@ class BootStrap {
         //
         // ===================================================
         
+        // ==============
+        // FIXME: aqui se crean folders por defecto, pero se debe permitir
+        //        crear folders desde pantallas de config del framework.
+        //        para los folders creados desde UI el nombre va a ser
+        //        ingresado pero tambien se necesita ingresar un codigo
+        //        unico para el dominio porque se usa para verificar autorizacion.
+        // --------------
         
-        // TEST Folder
+		
+        // Dominios y compositions por defecto
         //def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
-        def appContext = WebApplicationContextUtils.getWebApplicationContext( servletContext )
-        def messageSource = appContext.getBean( 'messageSource' )
-        
-        def folder
-        def domains = grailsApplication.config.domains
+        //def appContext = WebApplicationContextUtils.getWebApplicationContext( servletContext )
+        //def messageSource = appContext.getBean( 'messageSource' )
 
-        if (Folder.count() == 0) // Si no se crearon los folders...
+        def config_domains = grailsApplication.config.domains
+
+        if (Domain.count() == 0) // Si no se crearon los folders...
         {
-           domains.each { domain ->
+           config_domains.each { config_domain ->
               
-              folder = new Folder(
-                 //name: new DvText(value: g.message(code: domain)),
-                 //name: new DvText(value: messageSource.getMessage(domain, new Object[2], new Locale('es'))),
-                 // para verificar seguridad necesito tambien el codigo en el folder.
-                 name: new DvCodedText(
-                   value: messageSource.getMessage(domain, new Object[2], new Locale('es')), // FIXME: I18N
-                   definingCode: new CodePhrase(
-                     codeString: domain,
-                     terminologyId: TerminologyID.create('ehrgen', null)
-                   )
-                 ),
-                 path: domain,
-                 archetypeNodeId: "at0001",         // FIXME: Inventado
-                 archetypeDetails: new Archetyped(  // FIXME: Inventado
-                   archetypeId: 'ehr.domain',
-                   templateId: 'ehr.domain',
-                   rmVersion: '1.0.2' // FIXME: deberia ser variable global de config
-                 )
+              def domain = new Domain(
+                 name: config_domain,
+                 userDefined: false
               )
               
-              // FIXME: no esta salvando...
-              // TODO: setear atributos de Locatable
-              
-              if (!folder.save())
+              /*
+                 folder = new Folder(
+                    // para verificar seguridad necesito tambien el codigo en el folder.
+                    name: new DvCodedText(
+                      value: messageSource.getMessage(domain, new Object[2], new Locale('es')), // FIXME: I18N
+                      definingCode: new CodePhrase(
+                        codeString: domain,
+                        terminologyId: TerminologyID.create('ehrgen', null) // Deberia haber alguna terminologia identificado con ehrgen en el CtrlTerminologia al cual pueda pedir codigos y este codigo este incluido.
+                      )
+                    ),
+                    path: domain,
+                    archetypeNodeId: "at0001",        // FIXME: Inventado. Consultar si sirve de algo arquetipar un Folder... (no tiene estructura)
+                    archetypeDetails: new Archetyped( // FIXME: Inventado
+                      archetypeId: 'ehr.domain',
+                      templateId: 'ehr.domain',
+                      rmVersion: '1.0.2' // FIXME: deberia ser variable global de config
+                    )
+                 )
+              */
+                 
+              if (!domain.save(flush:true))
               {
-                 println folder.errors
-                 //println folder.name.errors
-                 println folder.archetypeDetails.errors
+                 println domain.errors
               }
-              
+                 
               // =====================================================================================
               // Crea registro de prueba para cada dominio
               def startDate = DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
               def composition = hceService.createComposition( startDate, "bla bla bla" )
+                 
+              // ============================================================================
+              // FIXME: no se usa la referencia desde el domain a la composition? VERIFICAR.
+              // ============================================================================
               
               // Set parent
-              //Folder domain = Folder.findByPath( session.traumaContext.domainPath )
-              composition.padre = folder           
-   
+              composition.padre = domain           
+      
               if (!composition.save())
               {
                   println "Error: " + composition.errors
               }
-              
+                 
               // Crea la version inicial
               def version = new Version(
                 data: composition,
@@ -147,21 +169,21 @@ class BootStrap {
                   value: DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
                 )
               )
-              
+                 
               if (!version.save())
               {
-                  println "ERROR: " + version.errors
+                     println "ERROR: " + version.errors
               }
               // =====================================================================================
            }
         }
-        // /TEST Folder
+        // /Dominios y compositions por defecto
         
      
         println " - START: Carga catalogos maestros"
         
         // saco para acelerar la carga
-        
+        /*
         println "   - CIE 10..."
         if (Cie10Trauma.count() == 0)
         {
@@ -174,7 +196,7 @@ class BootStrap {
         {
            println "      ya estan cargados"
         }
-        
+        */
         
         println "   - OpenEHR Concepts..."
         if (OpenEHRConcept.count() == 0)
@@ -215,6 +237,8 @@ class BootStrap {
            println "      ya estan cargados"
         }
         
+        /*
+		  // TODO: Se usa?
         if (EmergenciaMovil.count() == 0)
         {
            println "   - Empresas emergencia movil..."
@@ -227,6 +251,7 @@ class BootStrap {
         {
            println "      ya estan cargados"
         }
+        */
         
         if (DepartamentoUY.count() == 0)
         {
@@ -412,180 +437,186 @@ class BootStrap {
         
         //List domains = grailsApplication.config.domains // Ya esta definida mas arriba
         GuiManager guiManager = GuiManager.getInstance()
-        Map domainTemplates
+        
         
         String PS = System.getProperty("file.separator")
         
-        domains.each { domain ->
+        
+        // Arma workflows para cada domain
+        Template template
+        WorkFlow workflow
+        Stage stage
+        
+        // Auxiliares para la generacion del HTML
+        String templateId
+        String form
+        File archivo
+        
+        
+        // Carga del repo todos los templates
+        // Se usan para generar todas las guis de todos los dominios
+        templateManager.loadAll()
+        
+        // ====================================================================
+        // Generacion de gui
+        def templates = templateManager.getLoadedTemplates() // Map templateId -> template
+        
+        String pathToStaticViews
+        
+        // dentro del directorio /grails-app/views al template _generarCreate.gsp
+        String pathToGuiGenCreate   = 'guiGen'+ PS +'create'+ PS +'_generarCreate' // dentro del directorio /grails-app/views al template _generarCreate.gsp
+        String pathToGuiGenShow     = 'guiGen'+ PS +'show'  + PS +'_generarShow'
+        String pathToGuiGenEdit     = 'guiGen'+ PS +'edit'  + PS +'_generarEdit'
+        String pathToGeneratedViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
+        
+        
+        templates.values().each { tpl ->
+        
+           println "GUIGEN TEMPLATE: " + tpl.templateId
+           
+           pathToStaticViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'hce'+ PS + tpl.templateId +'.gsp'
+           
+           // Si no existe la vista estatica, genero create, show y edit.
+           // Si existe, solo genero show
+           if (!new File(pathToStaticViews).exists())
+           {
+              // Se genera cada vista para cada locale disponible
+              grailsApplication.config.langs.eachWithIndex { lang, i ->
+              
+                 // FIX: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=62
+                 //Locale.setDefault( grailsApplication.config.locales[i] ) // No funciona
+                 // DatePIcker usa: new DateFormatSymbols(RCU.getLocale(request))
+                 
+                 //println 'lang: '+ lang
+                 //println 'locale: '+ grailsApplication.config.locales[i].toString()
+                 
+                 //form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
+                 form = guiCachingService.template2String(pathToGuiGenCreate, [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
+                 form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
+                 //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_create_"+ lang +".htm")
+                 archivo = new File(pathToGeneratedViews + tpl.templateId + "_create_"+ lang +".htm")
+                 archivo.write(form)
+                 guiManager.add(tpl.templateId, "create", form)
+                 
+                 // idem para el show
+                 //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
+                 form = guiCachingService.template2String(pathToGuiGenShow, [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
+                 
+                 // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=59
+                 //form = form.replaceAll('<label class="(.*?)"(/s)/>', '<label class="$1"> </label>')
+                 form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
+                 //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_show_"+ lang +".htm")
+                 archivo = new File(pathToGeneratedViews + tpl.templateId + "_show_"+ lang +".htm")
+                 archivo.write(form)
+                 guiManager.add(tpl.templateId, "show", form)
+                 
+                 // idem para edit
+                 //form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
+                 form = guiCachingService.template2String(pathToGuiGenEdit, [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
+                 form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
+                 //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_edit_"+ lang +".htm")
+                 archivo = new File(pathToGeneratedViews + tpl.templateId + "_edit_"+ lang +".htm")
+                 archivo.write(form)
+                 guiManager.add(tpl.templateId, "edit", form)
+              }
+           }
+           else // Genera solo show
+           {       
+              // Se genera cada vista para cada locale disponible
+              grailsApplication.config.langs.eachWithIndex { lang, i ->
+              
+                 // idem para el show
+                 //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: i18n
+                 form = guiCachingService.template2String(pathToGuiGenShow, [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
+                 form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
+                 //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_show_"+ lang +".htm")
+                 archivo = new File(pathToGeneratedViews + tpl.templateId + "_show_"+ lang +".htm")
+                 archivo.write(form)
+                 guiManager.add(tpl.templateId, "show", form)
+              }
+           }
+        }
+        // /Generacion de gui
+        // ====================================================================
+        
+        // Stage ->* Templates
+        Map domainTemplates
+        
+        Domain.list().each { domain ->
+           
+           // Por defecto todo domain tiene un workflow y el
+           //medico tiene acceso a ese workflow en todos los domains
+           workflow = new WorkFlow(
+              forRoles: [rMedico],
+              owner: domain
+           )
+           
+           // Agrego el workflow al domain
+           domain.addToWorkflows( workflow )
+           
+           // Falta agregar las stages al workflow
+           // y los templates a cada stage
+           
+           
            
            //println "Domain: $domain"
-           domainTemplates = grailsApplication.config.templates2."$domain"
+           domainTemplates = grailsApplication.config.templates2."$domain.name"
+           
+           println "Domain: "+ domain.name
+           //println "domainTemplates: " + domainTemplates
+           
            domainTemplates.each{ entry ->
               
-              //println " - "+ entry.key + ":"+entry.value // EVALUACION_PRIMARIA:[via_aerea, columna_vertebral, ...]
+              // entry.key es stage.name
+              //println " - "+ entry.key
+              //println " - entry.value: "+ entry.value // ['prehospitalario.v1', 'contexto_del_evento.v1']
               
-              String templateId
-              String form
-              File archivo
-              entry.value.each { subsection -> // via_aerea
-                 
-                 templateId = entry.key + "-" + subsection // 'EVALUACION_PRIMARIA-via_aerea.v1'
-                 
-                 println "templateId: " + templateId
-                 //println "split . " + templateId.split('\\.')
-                 
-                 
-                 // Path independiente del OS
-                 // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
-                 // '.\\grails-app\\views\\hce\\'+templateId+'.gsp'
-                 //
-                 String pathToStaticViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'hce'+ PS + templateId +'.gsp'
-                 //pathToStaticViews = pathToStaticViews.replaceAll("\\\\", "\\\\\\\\")
-                 
-                 
-                 // Path independiente del OS
-                 // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
-                 // '.\\templates\\hce'
-                 //
-                 String pathToTemplates = '.'+ PS +'templates'+ PS +'hce'
-                 
-                 String pathToGuiGenCreate   = 'guiGen'+ PS +'create'+ PS +'_generarCreate' // dentro del directorio /grails-app/views al template _generarCreate.gsp
-                 String pathToGuiGenShow     = 'guiGen'+ PS +'show'  + PS +'_generarShow'
-                 String pathToGuiGenEdit     = 'guiGen'+ PS +'edit'  + PS +'_generarEdit'
-                 String pathToGeneratedViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
-                 
-                 
-                 // FIXME: deberia generar para todas las versiones del template,
-                 //        o sea: EVALUACION_PRIMARIA-via_aerea.vX, para toda X.
-                 // Para ver todas las versiones del template, tengo que ir a buscar al disco.
+              // Crea stages en el workflow por defecto del domain
+              stage = new Stage(
+                 name: entry.key // EVALUACION_PRIMARIA
+              )
+              // Agrego la stage al workflow
+              workflow.addToStages( stage )
+              
+              // Falta agregar los templates de cada stage
 
-                 // Para todas las versiones del template
-                 String templatePrefix = templateId.split('\\.')[0] // 'EVALUACION_PRIMARIA-via_aerea', El nombre DEBE tener .vX
-                 
-                 
-                 
-                 // Si no existe la vista estatica, genero create, show y edit.
-                 // Para la estatica solo genero el show.
-                 //
-                 //if (!new File('.\\grails-app\\views\\hce\\'+templateId+'.gsp').exists())
-                 if (!new File(pathToStaticViews).exists())
+
+              // Cada template dentro de una stage
+              entry.value.each { subsection -> // via_aerea
+
+                 templateId = "EHRGen-EHR-" + subsection // 'EHRGen-EHR-via_aerea.v1'
+                 //println "templateId: " + templateId
+
+                 template = templateManager.getTemplate( templateId )
+                
+                 if (!template)
                  {
-                    // http://pleac.sourceforge.net/pleac_groovy/directories.html
-                    //new File('.\\templates\\hce').eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
-                    new File(pathToTemplates).eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
-                       
-                       // Template id del versionado.
-                       String templateIdV = f.name - '.xml'
-                       
-                       //if (f.isFile()) println f.canonicalPath
-                       
-                       // FIXME: al template le falta la version en el modelo. Por ahora esta solo en el nombre del archivo.
-                       Template template = TemplateManager.getInstance().getTemplate( templateIdV )
-                      
-                       // Se genera cada vista para cada locale disponible
-                       grailsApplication.config.langs.eachWithIndex { lang, i ->
-                       
-                          // FIX: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=62
-                          //Locale.setDefault( grailsApplication.config.locales[i] ) // No funciona
-                          // DatePIcker usa: new DateFormatSymbols(RCU.getLocale(request))
-                          
-                          //println 'lang: '+ lang
-                          //println 'locale: '+ grailsApplication.config.locales[i].toString()
-                          //println 'template: '+ templateIdV
-                          
-                          //form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
-                          form = guiCachingService.template2String(pathToGuiGenCreate, [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
-                          form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
-                          //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_create_"+ lang +".htm")
-                          archivo = new File(pathToGeneratedViews + templateIdV + "_create_"+ lang +".htm")
-                          archivo.write(form)
-                          guiManager.add(templateIdV, "create", form)
-                          
-                          // idem para el show
-                          //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
-                          form = guiCachingService.template2String(pathToGuiGenShow, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
-                          
-                          // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=59
-                          //form = form.replaceAll('<label class="(.*?)"(/s)/>', '<label class="$1"> </label>')
-                          form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
-                          //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
-                          archivo = new File(pathToGeneratedViews + templateIdV + "_show_"+ lang +".htm")
-                          archivo.write(form)
-                          guiManager.add(templateIdV, "show", form)
-                          
-                          // idem para edit
-                          //form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
-                          form = guiCachingService.template2String(pathToGuiGenEdit, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
-                          form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
-                          //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_edit_"+ lang +".htm")
-                          archivo = new File(pathToGeneratedViews + templateIdV + "_edit_"+ lang +".htm")
-                          archivo.write(form)
-                          guiManager.add(templateIdV, "edit", form)
-                       }
-                    }
-                    
-                    
-                    /* Generacion sin considerar version del template, genera solo para el que esta configurado.
-                     * 
-                    Template template = TemplateManager.getInstance().getTemplate( templateId )
-                    //form = guiCachingService.template2String('.\\grails-app\\views\\guiGen\\_generarCreate.gsp', [template:template])
-                    form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:template, lang:'es']) // FIXME: hacerlo para todos los locales
-                    form = form.replace('x</textarea>', '</textarea>')
-                    def archivo = new File(".\\grails-app\\views\\genViews\\" + templateId + "_create.htm")
-                    archivo.write(form);
-                    
-                    // No hago cache para ver los tiempos de carga de disco
-                    guiManager.add(templateId, "create", form);
-                    
-                    // idem para el show
-                    form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:'es'])
-                    
-                    archivo = new File(".\\grails-app\\views\\genViews\\" + templateId + "_show.htm")
-                    archivo.write(form);
-                    
-                    guiManager.add(templateId, "show", form);
-                    
-                    
-                    // idem para edit
-                    form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:template, lang:'es'])
-                    form = form.replace('x</textarea>', '</textarea>')
-                    archivo = new File(".\\grails-app\\views\\genViews\\" + templateId + "_edit.htm")
-                    archivo.write(form);
-                    
-                    guiManager.add(templateId, "edit", form);
-                    
-                    */
+                    println "ERROR: Verifique que el template $templateId esta en el repositorio"
+                    return
                  }
-                 else // para la vista estatica genero el show igual
-                 {
-                    // http://pleac.sourceforge.net/pleac_groovy/directories.html
-                    //new File('.\\templates\\hce').eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
-                    new File(pathToTemplates).eachFileMatch(~(templatePrefix+'\\.v\\d+\\.xml')) { f ->
-                       
-                       // Template id del versionado.
-                       String templateIdV = f.name - '.xml'
-                       
-                       //if (f.isFile()) println f.canonicalPath
-                       
-                       // FIXME: al template le falta la version en el modelo. Por ahora esta solo en el nombre del archivo.
-                       Template template = TemplateManager.getInstance().getTemplate( templateIdV )
-                      
-                       int i = 0
-                       
-                       // Se genera cada vista para cada locale disponible
-                       grailsApplication.config.langs.each { lang ->
-                       
-                          // idem para el show
-                          //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:template, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: i18n
-                          form = guiCachingService.template2String(pathToGuiGenShow, [template:template, lang:lang, locale:grailsApplication.config.locales[i]])
-                          form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
-                          //archivo = new File(".\\grails-app\\views\\genViews\\" + templateIdV + "_show_"+ lang +".htm")
-                          archivo = new File(pathToGeneratedViews + templateIdV + "_show_"+ lang +".htm")
-                          archivo.write(form)
-                          guiManager.add(templateIdV, "show", form)
-                          
-                          i++
-                       }
+                
+                 // TEST
+                 //def xstream = new XStream()
+                 //def tlog = new File('template.log')
+                 //tlog.append( xstream.toXML(template) + "\n\n" )
+                 
+                 
+                 // Agrega el template a la stage actual del workflow
+                 stage.addToRecordDefinitions( template )
+              }
+           }
+           
+           
+           // Guarda en cascada workflow, stages y templates del domain
+           if (!domain.save())
+           {
+              println domain.errors
+              domain.workflows.each { wf ->
+                 println wf.errors
+                 wf.stages.each { stg ->
+                    println stg.errors
+                    stg.recordDefinitions.each { tpl ->
+                       println tpl.errors
                     }
                  }
               }
