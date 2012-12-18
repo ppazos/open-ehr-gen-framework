@@ -15,8 +15,10 @@ import java.util.regex.Pattern
 
 import org.openehr.am.archetype.constraintmodel.ArchetypeConstraint
 
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+
 /**
- * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
+ * @author Pablo Pazos Gutierrez (pablo.pazos@cabolabs.com)
  * @version 1.0
  */
 class ArchetypeManager {
@@ -31,7 +33,7 @@ class ArchetypeManager {
     * Directorio donde estan los arquetipos.
     * FIXME: deberia ser un parametro de la aplicacion en un .properties
     */
-   private String archetypeRepositoryPath = "archetypes"+ PS +"ehr"
+   //private String archetypeRepositoryPath = "archetypes"+ PS +"ehr"
     
    // Cache: archetypeId => Archetype
    private static Map<String, Archetype> cache = [:]
@@ -40,7 +42,7 @@ class ArchetypeManager {
    // Sirve para saber si un arquetipo no fue utilizado por mucho tiempo, y bajarlo del cache par optimizar espacio en memoria.
    private static Map<String, Date> timestamps = [:]
     
-   // SINGLETON
+   // SINGLETON: FIXME usar singleton de groovy
    private static ArchetypeManager instance = null
     
    private ArchetypeManager() {}
@@ -57,8 +59,8 @@ class ArchetypeManager {
     */
    public void loadAll()
    {
-      def path = this.archetypeRepositoryPath
-      loadAllRecursive( path )
+      //def path = this.archetypeRepositoryPath
+      loadAllRecursive( ApplicationHolder.application.config.hce.archetype_repo )
    }
     
    private loadAllRecursive( String path )
@@ -67,9 +69,10 @@ class ArchetypeManager {
       def root = new File( path )
 
       // FIXME: deberia filtrar solo archivos adl
-      root.eachFile { f ->
+      // eachFile tambien recorre subdirectorios!!! para eso se usa FILES
+      root.eachFileMatch (groovy.io.FileType.FILES, ~/.*\.adl/) { f ->
 
-         println "LOAD: [" + f.name + "]"
+         //println "LOAD: [" + f.name + "]"
 
          // PARSEAR ARQUETIPO
          ADLParser parser = null;
@@ -118,80 +121,81 @@ class ArchetypeManager {
     */
    public Archetype getArchetype( String archetypeId )
    {
-       // FIXME: PROBLEMAS DE CARGAR EL ARQUETIPO: openEHR-EHR-COMPOSITION.prescription.v1
+      // FIXME: PROBLEMAS DE CARGAR EL ARQUETIPO: openEHR-EHR-COMPOSITION.prescription.v1
        
-       // Si no esta cargado, lo intenta cargar
-       if (!this.cache[archetypeId])
-       {
-           println "No se encuentra el arquetipo " + archetypeId + ", se intenta cargarlo"
-           def id = new ArchetypeID( archetypeId ) // a partir del ID saco la ruta que tengo que cargar
-           def type = id.rmEntity // cluster, entry, composition, etc...
+      // Si no esta cargado, lo intenta cargar
+      if (!this.cache[archetypeId])
+      {
+         //println "No se encuentra el arquetipo " + archetypeId + ", se intenta cargarlo"
+         def id = new ArchetypeID( archetypeId ) // a partir del ID saco la ruta que tengo que cargar
+         def type = id.rmEntity // cluster, entry, composition, etc...
            
-           // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
+         // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
            
-           // archetypes/ehr/type/archId.adl
-           println "Carga desde: " + this.archetypeRepositoryPath+ PS +getTypePath(type)+ PS +archetypeId+".adl"
-           def adlFile = new File( this.archetypeRepositoryPath+ PS +getTypePath(type)+ PS +archetypeId+".adl" )
+         // archetypes/ehr/type/archId.adl
+         //println "Carga desde: " + this.archetypeRepositoryPath+ PS +getTypePath(type)+ PS +archetypeId+".adl"
+         //def adlFile = new File( this.archetypeRepositoryPath+ PS +getTypePath(type)+ PS +archetypeId+".adl" )
+         println "Carga desde: " + ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) + PS + archetypeId +".adl"
+         def adlFile = new File( ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) + PS + archetypeId +".adl" )
            
-           // PARSEAR ARQUETIPO
-           ADLParser parser = null;
-           try { parser = new ADLParser( adlFile ) }
-           catch (IOException e) { print e.message }
+         // PARSEAR ARQUETIPO
+         ADLParser parser = null;
+         try { parser = new ADLParser( adlFile ) }
+         catch (IOException e) { print e.message }
            
-           Archetype archetype = null;
-           try { archetype = parser.archetype() }
-           catch (Exception e) { print e.message }
-           // /PARSEAR ARQUETIPO
+         Archetype archetype = null;
+         try { archetype = parser.archetype() }
+         catch (Exception e) { print e.message }
+         // /PARSEAR ARQUETIPO
                
-           if (archetype)
-           {
-              log.debug("Cargado el arquetipo: " + adlFile.name + " de " + adlFile.path)
-              cache[archetype.archetypeId.value] = archetype
-              timestamps[archetype.archetypeId.value] = new Date()
-           }
-           else
-           {
-              log.error("No se pudo cargar el arquetipo: " + adlFile.name + " de " + adlFile.path)
-           }
-       }
-       else
-       {
-           this.timestamps[archetypeId] = new Date() // actualizo timestamp
-       }
+         if (archetype)
+         {
+            log.debug("Cargado el arquetipo: " + adlFile.name + " de " + adlFile.path)
+            cache[archetype.archetypeId.value] = archetype
+            timestamps[archetype.archetypeId.value] = new Date()
+         }
+         else
+         {
+            log.error("No se pudo cargar el arquetipo: " + adlFile.name + " de " + adlFile.path)
+         }
+      }
+      else
+      {
+         println "Carga $archetypeId desde cache"
+         this.timestamps[archetypeId] = new Date() // actualizo timestamp
+      }
        
-       return this.cache[archetypeId]
+      return this.cache[archetypeId]
    }
    
    private String getTypePath( String type )
    {
-       type = type.toLowerCase()
-       switch (type)
-       {
-           case 'cluster':
-           case 'composition':
-           case 'element':
-           case 'section':
-           case 'structure':
-               return type
-           break
-           case 'item_tree':
-           case 'item_single':
-           case 'item_list':
-           case 'item_table':
-               return 'structure'
-           break
-           case 'action':
-           case 'evaluation':
-           case 'instruction':
-           case 'observation':
-               return 'entry'+ PS + type
-           break
-           case 'admin_entry':
-               return 'entry'+ PS + type
-           break
-           default:
-               throw new Exception('Tipo no conocido ['+ type +'], se espera uno de: cluster, composition, element, section, item_tree, item_single, item_list, item_table, action, observation, instruction, evaluation' )
-       }
+      type = type.toLowerCase()
+      switch (type)
+      {  // FIXME: cluster y element deberian estar en /item/cluster o /item/element
+         case 'cluster':
+         case 'composition':
+         case 'element':
+         case 'section':
+         case 'structure':
+            return type
+         break
+         case 'item_tree':
+         case 'item_single':
+         case 'item_list':
+         case 'item_table':
+            return 'structure'
+         break
+         case 'action':
+         case 'evaluation':
+         case 'instruction':
+         case 'observation':
+         case 'admin_entry':
+            return 'entry'+ PS + type
+         break
+         default:
+            throw new Exception('Tipo no conocido ['+ type +'], se espera uno de: cluster, composition, element, section, item_tree, item_single, item_list, item_table, action, observation, instruction, evaluation, admin_entry' )
+      }
    }
    
    /**
@@ -201,75 +205,77 @@ class ArchetypeManager {
     */
    public Archetype getArchetype( String type, String idMatchingKey )
    {
-       println "=== getArchetype( "+type+", "+idMatchingKey+" ) ==="
-       //type = type.toLowerCase()
+      println "=== getArchetype( "+type+", "+idMatchingKey+" ) ==="
+      //type = type.toLowerCase()
        
-       // FIXME: no uso el type porque para guardar los arquetipos no lo uso,
-       //        seria una optimizacion para buscar.
-       Archetype archetype = null
-       def p = Pattern.compile( ".*"+idMatchingKey+".*\\.adl" ) // agrego .adl porque si hay .adls de ADL1.5 en el dir, intenta cargarlo.
+      // FIXME: no uso el type porque para guardar los arquetipos no lo uso,
+      //        seria una optimizacion para buscar.
+      Archetype archetype = null
+      def p = Pattern.compile( ".*"+idMatchingKey+".*\\.adl" ) // agrego .adl porque si hay .adls de ADL1.5 en el dir, intenta cargarlo.
        
-       // Busca en los arquetipos cargados:
-       def iter = this.cache.keySet().iterator()
-       def archetypeId
-       while( iter.hasNext() )
-       {
-           archetypeId = iter.next()
-           if ( p.matcher(archetypeId).matches() )
-           {
-               println "   Encuentra arquetipo en cache: " + archetypeId
-               this.timestamps[archetypeId] = new Date()
-               return this.cache[archetypeId]
-           }
-           //else println "NO ES"
-       }
+      // Busca en los arquetipos cargados:
+      def iter = this.cache.keySet().iterator()
+      def archetypeId
+      while( iter.hasNext() )
+      {
+         archetypeId = iter.next()
+         if ( p.matcher(archetypeId).matches() )
+         {
+            println "   Encuentra arquetipo en cache: " + archetypeId
+            this.timestamps[archetypeId] = new Date()
+            return this.cache[archetypeId]
+         }
+         //else println "NO ES"
+      }
    
-       // TODO: Si no esta, tendria que ir a cargarlo... ahi uso type.
-       println "   No se encuentra el arquetipo que corresponda con " + idMatchingKey + ", se intenta cargarlo"
+      // TODO: Si no esta, tendria que ir a cargarlo... ahi uso type.
+      println "   No se encuentra el arquetipo que corresponda con " + idMatchingKey + ", se intenta cargarlo"
        
-       // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
+      // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
        
-       // archetypes/ehr/type/archId.adl
-       def root = new File( this.archetypeRepositoryPath + PS + getTypePath(type) ) // Abre el directorio donde supuestamente esta el arquetipo
+      // archetypes/ehr/type/archId.adl
+      // Abre el directorio donde supuestamente esta el arquetipo
+      def root = new File( ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) )
        
-       // FIXME: varios pueden matchear!
-       def adlFile = null
-       root.eachFile { f ->
        
-           if ( p.matcher(f.name).matches() )
-           {
-               adlFile = f
-           }
-       }
+      // FIXME: varios pueden matchear!
+      def adlFile = null
+      root.eachFile { f ->
        
-       if (!adlFile) println "   ERROR: No se encuentra el archivo que matchee con " + "[.*"+type+".*"+idMatchingKey+".*]" + " desde " + root.path
-       else
-       {
-           println "   Carga desde: " + adlFile.path
+         if ( p.matcher(f.name).matches() )
+         {
+            adlFile = f
+         }
+      }
+       
+      if (!adlFile) println "   ERROR: No se encuentra el archivo que matchee con " + "[.*"+type+".*"+idMatchingKey+".*]" + " desde " + root.path
+      else
+      {
+         println "   Carga desde: " + adlFile.path
 
-           // PARSEAR ARQUETIPO
-           ADLParser parser = null;
-           try { parser = new ADLParser( adlFile ) }
-           catch (IOException e) { print e.message }
+         // PARSEAR ARQUETIPO
+         ADLParser parser = null;
+         try { parser = new ADLParser( adlFile ) }
+         catch (IOException e) { print e.message }
            
-           //Archetype archetype = null;
-           try { archetype = parser.archetype() }
-           catch (Exception e) { print e.message }
-           // /PARSEAR ARQUETIPO
+         //Archetype archetype = null;
+         try { archetype = parser.archetype() }
+         catch (Exception e) { print e.message }
+         // /PARSEAR ARQUETIPO
                
-           if (archetype)
-           {
-              println "   Cargado el arquetipo: " + adlFile.name + " de " + adlFile.path
-              cache[archetype.archetypeId.value] = archetype
-              timestamps[archetype.archetypeId.value] = new Date()
-           }
-           else
-           {
-              println "   ERROR: No se pudo cargar el arquetipo: " + adlFile.name + " de " + adlFile.path
-           }
-       }
+         if (archetype)
+         {
+            println "   Cargado el arquetipo: " + adlFile.name + " de " + adlFile.path
+            cache[archetype.archetypeId.value] = archetype
+            timestamps[archetype.archetypeId.value] = new Date()
+         }
+         else
+         {
+            println "   ERROR: No se pudo cargar el arquetipo: " + adlFile.name + " de " + adlFile.path
+         }
+      }
        
-       return archetype
+      return archetype
    }
    
    /**
@@ -294,18 +300,18 @@ class ArchetypeManager {
    
    public Map getLoadedArchetypes()
    {
-       return this.cache
+      return this.cache
    }
    
    public Map getLastUse()
    {
-       return this.timestamps
+      return this.timestamps
    }
    
    public void unloadAll()
    {
-       // FIXME: debe estar sincronizada
-       this.cache.clear()
-       this.timestamps.clear()
+      // FIXME: debe estar sincronizada
+      this.cache.clear()
+      this.timestamps.clear()
    }
 }
