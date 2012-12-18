@@ -23,11 +23,17 @@ a:link, a:visited, a:hover {
     text-decoration: none;
 } 
 
-h1 {
-    color: #006dba;
-    font-weight: normal;
-    font-size: 16px;
-    margin: .8em 0 .3em 0;
+h1, h2, h3 {
+  color: #006dba;
+  font-weight: bold;
+  font-size: 2em;
+  margin: .5em 0 .8em 0;
+}
+h2 {
+  font-size: 1.8em;
+}
+h3 {
+  font-size: 1.6em;
 }
 
 ul {
@@ -96,6 +102,11 @@ input:focus, select:focus, textarea:focus {
 }
 .menuButton a.create {
     background: url(../images/skin/database_add.png) center left no-repeat;
+    color: #333;
+    padding-left: 25px;
+}
+.menuButton a.edit {
+    background: url(../images/skin/database_edit.png) center left no-repeat;
     color: #333;
     padding-left: 25px;
 }
