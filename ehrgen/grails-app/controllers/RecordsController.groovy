@@ -9,12 +9,13 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 import cda.*
 import util.*
 
-import hce.core.common.directory.Folder
+//import hce.core.common.directory.Folder
+import domain.Domain
 import support.identification.ObjectID
 import support.identification.ObjectRef
 
 /**
- * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
+ * @author Pablo Pazos Gutierrez (pablo.pazos@cabolabs.com)
  */
 class RecordsController {
 
@@ -22,73 +23,11 @@ class RecordsController {
     def authorizationService
     def hceService
     
-    // FIXME: tambien esta implementadas en GuiGenController
-    
-    /**
-     * Devuelve un Map con los templates configurados para el dominio actual.
-     *
-     * this.getDomainTemplates()
-     *
-     * @return Map
-     */
-    private Map getDomainTemplates()
-    {
-        //def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
-        //def domainTemplates = grailsApplication.config.templates
-        //routes.each{
-        //    domainTemplates = domainTemplates[it]
-        //}
-        //println domainTemplates
-        
-        // =============================================================
-        // Nuevo: para devolver los templates del dominio seleccionado
-        def domain = session.traumaContext.domainPath
-        def domainTemplates = grailsApplication.config.templates2."$domain"
-        // =============================================================
-
-        return domainTemplates
-    }
-    
-    /**
-     * Devuelve todos los prefijos de identificadores de templates del domino actual.
-     * @return
-     */
-    private List getSections()
-    {
-        def sections = []
-        this.getDomainTemplates().keySet().each {
-            sections << it
-        }
-        
-        return sections
-    }
-    
-    /**
-     * Obtiene las subsecciones de una seccion dada.
-     *
-     * this.getSubsections('EVALUACION_PRIMARIA')
-     *
-     * @param section es el prefijo del id de un template
-     * @return List
-     */
-    private List getSubsections( String section )
-    {
-        // Lista de ids de templates
-        def subsections = []
-
-        this.getDomainTemplates()."$section".each { subsection ->
-           subsections << section + "-" + subsection
-        }
-        
-        return subsections
-    }
-    
-    
     def index = {
 
        redirect(action:'list')
     }
-	
+    
     
     // TODO: vista
     // Pantalla 2.1- Escritorio Medico-Administrativo
@@ -97,7 +36,7 @@ class RecordsController {
        def compos = []
        
        // FIXME: esto deberia hacerse con filters?
-       if (!session.traumaContext || !session.traumaContext.domainPath) // puede pasar si caduca la session
+       if (!session.traumaContext || !session.traumaContext.domainId) // puede pasar si caduca la session
        {
           // TODO: flash.message
           redirect(controller:'domain', action:'list')
@@ -105,11 +44,13 @@ class RecordsController {
        }
          
        // ==========================================================================
-       // TODO: filtrar registros por dominio (session.traumaContext.domainPath)
-       println "dominio: " + session.traumaContext.domainPath
-       Folder domain = Folder.findByPath( session.traumaContext.domainPath )
+       // TODO: filtrar registros por dominio (session.traumaContext.domainId)
+       println "dominio: " + session.traumaContext.domainId
+       def domain = Domain.get( session.traumaContext.domainId )
          
-       println "domain items objectId: " + domain.items.objectId.value
+       
+       // domain.compositions equivale a folder.items
+       //println "domain compositions: " + domain.compositions
          
        // FIXME: si no coincide ningun criterio, devuelve todas las compos.
        // esto se resuelve teniendo la referencia inversa desde las compos
@@ -173,7 +114,6 @@ class RecordsController {
         if (params.doit)
         {
             def startDate = DateConverter.iso8601ExtendedDateTimeFromParams( params, 'startDate_' )
-            
             println "Startdate: " + startDate
             
             def composition = hceService.createComposition( startDate, params.otherContext )
@@ -187,7 +127,7 @@ class RecordsController {
             //        deberia estar en EHRSession.
             if (params.root && params.extension) // si viene el id del paciente
             {
-                println "Se crea un episodio para el paciente seleccionado"
+                println "Se crea un registro para el paciente seleccionado"
                 def partySelf = hceService.createPatientPartysSelf(params.root, params.extension)
                 def participation = hceService.createParticipationToPerformer( partySelf )
                 composition.context.addToParticipations( participation )
@@ -195,7 +135,7 @@ class RecordsController {
             
             
             // Set parent
-            Folder domain = Folder.findByPath( session.traumaContext.domainPath )
+            def domain = Domain.get( session.traumaContext.domainId )
             composition.padre = domain
             
             
@@ -247,6 +187,8 @@ class RecordsController {
             redirect(action:'show', id:composition.id)
             return
         }
+        
+        render(template:"create")
     }
     
     def show = {
@@ -259,8 +201,8 @@ class RecordsController {
        // FIXME: esto deberia estar en un pre-filter
        if (!session.traumaContext)
        {
-           redirect(action:'list')
-           return
+          redirect(action:'list')
+          return
        }
        
        // Actualizacion de contexto, esta seleccionado un unico episodio
@@ -278,11 +220,13 @@ class RecordsController {
        //println "Patient from composition: " + patient
 
        // NECESARIO PARA EL MENU
-       def sections = this.getSections()
-       //def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
+       def sections = util.TemplateUtils.getSections(session)
+       //println "sections: " + sections
        
        def completeSections = [:] // secciones con sus templates
-       def domainTemplates = this.getDomainTemplates()
+       def domainTemplates = util.TemplateUtils.getDomainTemplates(session)
+       
+       // FIXME: esto se hace en util.TemplateUtils.getSections(session)
        domainTemplates.keySet().each { sectionPrefix ->
            domainTemplates."$sectionPrefix".each { section ->
             
@@ -291,7 +235,7 @@ class RecordsController {
                // Tiro la lista de esto para cada "section prefix" que son los templates
                // de las subsecciones de la seccion principal.
                //println sectionPrefix + "-" + section
-               completeSections[sectionPrefix] << sectionPrefix + "-" + section
+               completeSections[sectionPrefix] << "EHRGen-EHR-" + section
            }
        }
 
@@ -300,9 +244,8 @@ class RecordsController {
        return [composition: composition,
                patient: patient,
                episodeId: session.traumaContext?.episodioId,
-               //userId: session.traumaContext.userId, // no se usa
                sections: sections, // necesario para el menu
-               allSubsections: this.getDomainTemplates(),
+               allSubsections: util.TemplateUtils.getDomainTemplates(session),
                completeSections: completeSections
               ]
     }
@@ -320,8 +263,10 @@ class RecordsController {
        }
        
        def section = params.section
-       def subsections = this.getSubsections(section) // this.getSubsections('EVALUACION_PRIMARIA')
+       def subsections = util.TemplateUtils.getSubsections(section, session) // this.getSubsections('EVALUACION_PRIMARIA')
 	   
+       println "subsections: " + subsections // [INGRESO-triage.v1]
+      
 	   // FIXME: mostrar la primer seccion para la que tenga permisos, sino tiene permisos para
 	   //        la primer seccion, tiene permisos para otra dentro de la misma etapa asistencial.
 	   
@@ -329,7 +274,7 @@ class RecordsController {
 	   
 	   for (String templateId : subsections)
 	   {
-	      g.hasDomainPermit(domain:session.traumaContext.domainPath, templateId:templateId) {
+	      g.hasDomainPermit(domain:Domain.get(session.traumaContext.domainId), templateId:templateId) {
 			  println "tiene permisos para $templateId"
 			  
 			  firstSubSection = templateId
@@ -439,7 +384,7 @@ class RecordsController {
 
 
         // Es necesario para mostrar el menu
-        def sections = this.getSections()
+        def sections = util.TemplateUtils.getSections(session)
         def subsections = [] // No hay porque estoy firmando el registro
 
 
@@ -453,7 +398,7 @@ class RecordsController {
                      patient: patient,
                      sections: sections,
                      subsections: subsections,
-                     allSubsections: this.getDomainTemplates()
+                     allSubsections: util.TemplateUtils.getDomainTemplates(session)
                     ]
         
         
@@ -567,7 +512,7 @@ class RecordsController {
                 sections << sectionPrefix
             }
             */
-            def sections = this.getSections()
+            def sections = util.TemplateUtils.getSections(session)
             def subsections = [] // No hay porque estoy firmando el registro
 
             //------------------------------------------------------------------
@@ -590,7 +535,7 @@ class RecordsController {
                             patient: patient,
                             sections: sections,
                             subsections: subsections,
-                            allSubsections: this.getDomainTemplates()
+                            allSubsections: util.TemplateUtils.getDomainTemplates(session)
                            ]
                 }
 
@@ -614,7 +559,7 @@ class RecordsController {
                             patient: patient,
                             sections: sections,
                             subsections: subsections,
-                            allSubsections: this.getDomainTemplates()
+                            allSubsections: util.TemplateUtils.getDomainTemplates(session)
                            ]
                 }
 
@@ -632,7 +577,7 @@ class RecordsController {
                             patient: patient,
                             sections: sections,
                             subsections: subsections,
-                            allSubsections: this.getDomainTemplates()
+                            allSubsections: util.TemplateUtils.getDomainTemplates(session)
                            ]
                 }
 
@@ -721,7 +666,7 @@ class RecordsController {
                         patient: patient,
                         sections: sections,
                         subsections: subsections,
-                        allSubsections: this.getDomainTemplates()
+                        allSubsections: util.TemplateUtils.getDomainTemplates(session)
                        ]
             }
 
@@ -731,7 +676,7 @@ class RecordsController {
                     //userId: session.traumaContext.userId, // no se usa
                     sections: sections, // necesario para el menu
                     subsections: subsections, // necesario para el menu
-                    allSubsections: this.getDomainTemplates()
+                    allSubsections: util.TemplateUtils.getDomainTemplates(session)
                    ]
         }
         else
