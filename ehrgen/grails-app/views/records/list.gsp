@@ -4,29 +4,60 @@
     <meta name="layout" content="ehr-modal" />
     <title><g:message code="episodio.list.title" /></title>
     <style>
-        table #list {
-          background-color: #ffffdd;
-          width: 100%;
-          font-size: 12px;
-          border: 1px solid #000;
-        }
-         #list th {
-          background-color: #ccccdd;
-        }
-        #list td {
-          text-align: center;
-        }
+      table #list {
+        background-color: #ffffdd;
+        width: 100%;
+        font-size: 12px;
+        border: 1px solid #000;
+      }
+       #list th {
+        background-color: #ccccdd;
+      }
+      #list td {
+        text-align: center;
+      }
     
-        /* paginacion */
-        .step, .currentStep, .nextLink, .prevLink {
-          padding-right: 5px;
-          padding-top: 7px;
-          display: inline-block;
-        }
-        .currentStep {
-          font-weight: bold;
-        }
-      </style>
+      /* paginacion */
+      .step, .currentStep, .nextLink, .prevLink {
+        padding-right: 5px;
+        padding-top: 7px;
+        display: inline-block;
+      }
+      .currentStep {
+        font-weight: bold;
+      }
+      #create_record {
+        display: none;
+      }
+    </style>
+    <g:javascript library="jquery-1.8.2.min" />
+    <g:javascript src="jquery.blockUI.js" />
+    <g:javascript>
+    
+      $(document).ready(function() {
+      
+        // TODO: cuando se lanza crear un registro,
+        //       abrir create.gsp en la modal de blockUI
+        $('a.create').click( function(evt) {
+          
+          evt.preventDefault();
+          
+          $.blockUI({
+             message: $('#create_record'),
+             css: {
+               width: '500px',
+               height: '280px',
+               top:  ($(window).height() - 400) /2 + 'px', 
+               left: ($(window).width() - 500) /2 + 'px', 
+               padding: '10px',
+               textAlign: 'left'
+             },
+             onOverlayClick: $.unblockUI
+           });
+        });
+      });
+    
+    </g:javascript>
   </head>
   <body>
     <h1><g:message code="episodio.list.title" /></h1>
@@ -36,6 +67,10 @@
         <g:link action="create" class="create"><g:message code="trauma.list.action.crearEpisodio" /></g:link>
       </li>
     </ul>
+    
+    <div id="create_record">
+      <g:include action="create" />
+    </div>
     
     <table id="list">
       <tr>
@@ -92,19 +127,9 @@
       </g:each>
     </table>
     
-    <%-- creo que esto estaba de test
-    <ul>
-      <g:each in="${templateNames}" var="template">
-        <li><g:link action="generarTemplate" params="[templateId:template]">${template}</g:link></li>
-      </g:each>
-    </ul>
-    --%>
-    
     <g:paginate next="Siguiente" prev="Previo"
-                maxsteps="5"
+                maxsteps="5" max="15"
                 controller="records" action="list"
-                max="15"
                 total="${Composition.countByRmParentId(domain.id)}" />
-    
   </body>
 </html>
