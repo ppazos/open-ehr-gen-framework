@@ -1,6 +1,6 @@
 package templates
 
-import archetype_repository.ArchetypeManager
+import archetype.ArchetypeManager
 import org.openehr.am.archetype.Archetype
 import org.openehr.am.archetype.constraintmodel.ArchetypeConstraint
 

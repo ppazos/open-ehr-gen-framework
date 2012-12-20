@@ -6,7 +6,7 @@ package hce
 // TODO: ver si esto se usa porque es solo ir al archetypemanager...
 
 import org.openehr.am.archetype.Archetype
-import archetype_repository.ArchetypeManager 
+import archetype.ArchetypeManager 
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
