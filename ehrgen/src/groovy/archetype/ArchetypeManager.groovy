@@ -2,7 +2,7 @@
  * Clase SINGLETON para el manejo de arquetipos y medio de acceso al repositorio de arquetipos local.
  * Tiene un cache que carga los arquetipos presentes en el repostorio local a medida que estos son utilizados.
  */
-package archetype_repository
+package archetype
 
 import org.openehr.am.archetype.Archetype
 import org.openehr.rm.support.identification.ArchetypeID
@@ -59,7 +59,7 @@ class ArchetypeManager {
     */
    public void loadAll()
    {
-      //def path = this.archetypeRepositoryPath
+      //def path = ApplicationHolder.application.config.hce.archetype_repo
       loadAllRecursive( ApplicationHolder.application.config.hce.archetype_repo )
    }
     
@@ -133,8 +133,8 @@ class ArchetypeManager {
          // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
            
          // archetypes/ehr/type/archId.adl
-         //println "Carga desde: " + this.archetypeRepositoryPath+ PS +getTypePath(type)+ PS +archetypeId+".adl"
-         //def adlFile = new File( this.archetypeRepositoryPath+ PS +getTypePath(type)+ PS +archetypeId+".adl" )
+         //println "Carga desde: " + ApplicationHolder.application.config.hce.archetype_repo+ PS +getTypePath(type)+ PS +archetypeId+".adl"
+         //def adlFile = new File( ApplicationHolder.application.config.hce.archetype_repo+ PS +getTypePath(type)+ PS +archetypeId+".adl" )
          println "Carga desde: " + ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) + PS + archetypeId +".adl"
          def adlFile = new File( ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) + PS + archetypeId +".adl" )
            
@@ -168,7 +168,7 @@ class ArchetypeManager {
       return this.cache[archetypeId]
    }
    
-   private String getTypePath( String type )
+   public String getTypePath( String type )
    {
       type = type.toLowerCase()
       switch (type)
@@ -257,8 +257,7 @@ class ArchetypeManager {
          ADLParser parser = null;
          try { parser = new ADLParser( adlFile ) }
          catch (IOException e) { print e.message }
-           
-         //Archetype archetype = null;
+         
          try { archetype = parser.archetype() }
          catch (Exception e) { print e.message }
          // /PARSEAR ARQUETIPO
@@ -277,6 +276,106 @@ class ArchetypeManager {
        
       return archetype
    }
+   
+   // FIXME: deberia buscar primero en el cache, luego en disco?
+   // Correccion para devolver muchos
+   public List<Archetype> getArchetypes( String type, String idMatchingKey )
+   {
+       //println "=== getArchetypes( "+type+", "+idMatchingKey+" ) ==="
+       //type = type.toLowerCase()
+       
+       def archetypes = []
+       
+       // FIXME: no uso el type porque para guardar los arquetipos no lo uso,
+       //        seria una optimizacion para buscar.
+       //Archetype archetype = null
+       
+       // Puede ser tan complicada como:
+       // openEHR-EHR-ITEM_TREE\.medication\.v1|openEHR-EHR-ITEM_TREE\.medication-formulation\.v1|openEHR-EHR-ITEM_TREE\.medication-vaccine\.v1
+       def p = Pattern.compile( ".*"+idMatchingKey+".*\\.adl" ) // agrego .adl porque si hay .adls de ADL1.5 en el dir, intenta cargarlo.
+       
+       /* Saco busqueda en cache porque cuando son varios es mas compleja:
+        *  1. buscar en cache y ver todos los que matchean
+        *  2. ver los archivos que matchean la regex pero que no esten ya en lo que se cargo en el cache, y cargarlos desde los archivos
+        *  3. tal vez esta deberia solo buscar en cache y no cargar de disco
+       // Busca en los arquetipos cargados:
+       def iter = this.cache.keySet().iterator()
+       def archetypeId
+       while( iter.hasNext() )
+       {
+           archetypeId = iter.next()
+           if ( p.matcher(archetypeId).matches() )
+           {
+               println "   Encuentra arquetipo en cache: " + archetypeId
+               this.timestamps[archetypeId] = new Date()
+               return this.cache[archetypeId]
+           }
+           //else println "NO ES"
+       }
+       
+       */
+   
+       // TODO: Si no esta, tendria que ir a cargarlo... ahi uso type.
+       //println "   No se encuentra el arquetipo que corresponda con " + idMatchingKey + ", se intenta cargarlo"
+       
+       // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
+       
+       // archetypes/ehr/type/archId.adl
+       def root = new File( ApplicationHolder.application.config.hce.archetype_repo + PS + getTypePath(type) ) // Abre el directorio donde supuestamente esta el arquetipo
+       
+       // FIXME: varios pueden matchear!
+       def adlFiles = []
+       //root.eachFile { f ->
+       root.eachFileMatch(p) { f ->
+          //println f.name
+          //println f.name - '.adl' archetypes\adl_source\structure\openEHR-EHR-ITEM_TREE.medication-formulation.v1.adl - .adl
+          //if ( p.matcher(f.name - '.adl').matches() )
+          //{
+             adlFiles << f
+          //}
+       }
+       
+       //println "adlFiles: "+ adlFiles
+       
+       if (adlFiles.size() == 0) println "   ERROR: No se encuentra el archivo que matchee con " + "[.*"+idMatchingKey+".*]" + " desde " + root.path
+       else
+       {
+          def archetype = null
+          adlFiles.each { adlFile ->
+              
+              //println "   Carga desde: " + adlFile.path
+   
+              // PARSEAR ARQUETIPO
+              ADLParser parser = null;
+              try { parser = new ADLParser( adlFile ) }
+              catch (IOException e) { print e.message }
+              
+              //Archetype archetype = null;
+              try { archetype = parser.archetype() }
+              catch (Exception e) { print e.message }
+              // /PARSEAR ARQUETIPO
+                  
+              if (archetype)
+              {
+                 //println "   Cargado el arquetipo: " + adlFile.name + " de " + adlFile.path
+                 
+                 // Saco el cacheo
+                 //cache[archetype.archetypeId.value] = archetype
+                 //timestamps[archetype.archetypeId.value] = new Date()
+                 
+                 archetypes << archetype
+              }
+              else
+              {
+                 //println "   ERROR: No se pudo cargar el arquetipo: " + adlFile.name + " de " + adlFile.path
+              }
+          }
+       }
+       
+       return archetypes
+   }
+   
+   
    
    /**
     * La path incluye el id del arquetipo:
@@ -313,5 +412,49 @@ class ArchetypeManager {
       // FIXME: debe estar sincronizada
       this.cache.clear()
       this.timestamps.clear()
+   }
+   
+   /**
+    * Busca ids de arquetipos que contengan el substring.
+    * @param substring
+    * @return
+    */
+   public List<String> findArchetypeIds(String substring)
+   {
+      //println "=== fingArchetypeIds( "+substring+" ) ==="
+      
+      def ret = []
+
+      // Transformo el substring en una regex
+      def pattern = Pattern.compile( ".*"+substring+".*", Pattern.CASE_INSENSITIVE )
+      def dir = new File( ApplicationHolder.application.config.hce.archetype_repo )
+ 
+      fingArchetypeIdsRecursive(pattern, dir, ret)
+      
+      return ret
+   }
+    
+   /**
+    * 
+    * @param pattern
+    * @param path
+    * @param ret in/out
+    * @return
+    */
+   private fingArchetypeIdsRecursive(Pattern pattern, File currentDir, List ret)
+   {
+      //println "fingArchetypeIdsRecursive: " + currentDir.path
+      
+      //dir.eachFileMatch(~/foo\d\.txt/) { f ->
+      // FILES para que no ponga directorios
+      currentDir.eachFileMatch(groovy.io.FileType.FILES, pattern) { f ->
+      
+         ret << f.name - ".adl"
+      }
+      
+      // Recursiva por directorios
+      currentDir.eachDir { d ->
+         fingArchetypeIdsRecursive( pattern, d, ret )
+      }
    }
 }
