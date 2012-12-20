@@ -1,54 +1,144 @@
 
-import java.util.Locale
-
 import org.openehr.am.archetype.Archetype
-
 import support.identification.TerminologyID
 import archetype_repository.ArchetypeManager
 import binding.CtrlTerminologia
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.converters.JSON
+import se.acode.openehr.parser.ADLParser
 
-import grails.converters.*
-
-/**
- * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
- *
- */
 class ArchetypeManagerController {
-    
-    def index = {
-        redirect(action:'list')
-    }
-    
-    def list = {
-            
-        def manager = ArchetypeManager.getInstance()
-        def archetypes = manager.getLoadedArchetypes()
-        def actualizaciones = manager.getLastUse()
-        
-        //println "Arquetipos: " + archetypes.values()
-        
-        return [archetypeMap: archetypes, lastUseList: actualizaciones]
-    }
-    
-    def unloadAll = {
-        def manager = ArchetypeManager.getInstance()
-        manager.unloadAll()
-        redirect(action:'list')
-    }
-    
-    /*
-    def unload = {
-            
-        def manager = TemplateManager.getInstance()
-        manager.unload(params.id)
-        
-        println "UNLOAD: " + params.id
-        
-        redirect(action:'list')
-    }
+
+   def manager = archetype_repository.ArchetypeManager.getInstance()
+
+   /**
+    * Lista arquetipos cargados en el cache con su ultima fecha de uso.
     */
-    
-    /**
+   def list = {
+      
+      def archetypes = manager.getLoadedArchetypes()
+      def actualizaciones = manager.getLastUse()
+
+      return [archetypeMap: archetypes, lastUseList: actualizaciones]
+   }
+   
+   /**
+    * Carga todos los arquetipos en memoria desde el repo local.
+    */
+   def loadAll = {
+      // TODO: crear archetypeIndex sino existe en la db
+      manager.loadAll()
+      redirect(action:'list')
+   }
+   
+   /**
+    * Vacia el cache de arquetipos en memoria.
+    */
+   def unloadAll = {
+
+      manager.unloadAll()
+      redirect(action:'list')
+   }
+   
+   /**
+    * Sube un archivo ADL al repositorio local en el file system.
+    */
+   def uploadArchetype = {
+   
+      if (params.doit)
+      {
+         // TODO: verificar permisos de escritura en el directorio destino
+         // TODO: verificar que no haya un arquetipo con el mismo id en el repo,
+         //       si lo hay preguntar si lo quiere sobre escribir (esto implica
+         //       que no deberian haber registros para el arquetipo anterior,
+         //       lo puedo dejar en DEV pero no deberia dejarlo en PROD, ahi deberia versionar)
+         // TODO: verificar que el ADL se parsea ok
+         // TODO: mover el archivo del repo temporal al repo de arquetipos de la aplicacion
+         // TODO: log de la subida y resultado del procesamiento (me sirve para listar, ver que errores se dieron y corregirlos)
+      
+         // CommonsMultipartFile
+         def upAdlFile = request.getFile('adl')
+         
+         //println upAdlFile.getContentType()       // application/octet-stream
+         //println upAdlFile.getName()              // adl (nombre del campo del form)
+         //println upAdlFile.getOriginalFilename()  // openEHR-EHR-....adl
+         //println upAdlFile.getSize()              // 1234
+         
+         if (upAdlFile.isEmpty())
+         {
+            flash.message = "El contenido del archivo es vacio, intente subirlo de nuevo"
+            return
+         }
+         
+         def tmp_destination = ApplicationHolder.application.config.hce.uploaded_archetypes_repo
+         
+         //def sctx = org.codehaus.groovy.grails.web.context.ServletContextHolder.servletContext
+         //def storagePath = sctx.getRealPath( tmp_destination )
+         
+         
+         // el getRealPath me da adentro de web-app ... pruebo usar solo el uploaded_archetypes_repo (en dev funciona pero en prod no se...)
+         def storagePath = tmp_destination
+         
+         def storagePathDir = new File(storagePath)
+         if (!storagePathDir.exists())
+         {
+            throw new Exception("El directorio $storagePath no existe")
+         }
+         
+         def storageFilePath = storagePath + upAdlFile.getOriginalFilename()
+         def adlFile = new File(storageFilePath)
+         upAdlFile.transferTo( adlFile )
+         
+         
+         // ----------------------------------------------------
+         // Intenta parsear el ADL
+         ADLParser parser = null;
+         try { parser = new ADLParser( adlFile ) }
+         catch (IOException e)
+         {
+            flash.message = "No se pudo abrir el archivo ADL "+ e.message
+            println e.message
+            return
+         }
+           
+         Archetype archetype = null;
+         try { archetype = parser.archetype() }
+         catch (Exception e)
+         {
+            flash.message = "El ADL no es valido "+ e.message
+            println e.message
+            return
+         }
+         
+         if (!archetype)
+         {
+            flash.message = "No se pudo abrir el archivo ADL "+ e.message
+            println e.message
+            return
+         }
+         // ----------------------------------------------------
+         
+         // Mover el archivo al repo local
+         def type = archetype.archetypeId.rmEntity.toLowerCase()
+         def path = manager.getTypePath( type ) // path destino definitivo del arquetipo (repo local)
+         def repo_path = ApplicationHolder.application.config.hce.archetype_repo + path + System.getProperty("file.separator")
+         
+         println "repo_path $repo_path"
+
+         if (!adlFile.renameTo( new File(repo_path + adlFile.getName()) ))
+         {
+            flash.message = "No se pudo guardar el archivo ADL en el repositorio local, verifique que tiene permisos de escritura"
+            return
+         }
+         
+         
+         flash.message = "Archivo adl guardado en $repo_path"
+         return
+      }
+   }
+   
+   
+   /**
      * Consultas semanticas:
      * 
      * 1. Ingreso:
@@ -456,11 +546,11 @@ class ArchetypeManagerController {
     }
     
     
-    /**
-     * archetypeId
-     * chart_path del ELEMENT :: y del CDvOrdinal o CCodePhrase donde estan los valores para clasificar
-     * TODO: dateFrom
-     */
+   /**
+    * archetypeId
+    * chart_path del ELEMENT :: y del CDvOrdinal o CCodePhrase donde estan los valores para clasificar
+    * TODO: dateFrom
+    */
    def aggregate = {
        
       println params
@@ -668,6 +758,5 @@ class ArchetypeManagerController {
        def r = [ names: names, aggregator: aggregator ]
        
        render r as JSON
-    }
-    
+   }
 }
