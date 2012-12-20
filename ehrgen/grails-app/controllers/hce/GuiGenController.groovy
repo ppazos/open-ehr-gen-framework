@@ -112,7 +112,7 @@ class GuiGenController {
       * /
 
       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
-      if (!session.traumaContext?.episodioId)
+      if (!session.ehrSession?.episodioId)
       {
          flash.message = 'trauma.list.error.noEpisodeSelected'
          redirect(controller:'records', action:'list')
@@ -124,7 +124,7 @@ class GuiGenController {
       def templateId = params.templateId // es el nombre del archivo
 
       // Model: Paciente del episodio seleccionado
-      def composition = Composition.get( session.traumaContext.episodioId )
+      def composition = Composition.get( session.ehrSession.episodioId )
 
       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
       def patient = hceService.getPatientFromComposition( composition )
@@ -171,8 +171,8 @@ class GuiGenController {
                         template: template,
                         sections: sections,
                         subsections: subsections,
-                        episodeId: session.traumaContext?.episodioId,
-                        userId: session.traumaContext.userId,
+                        episodeId: session.ehrSession?.episodioId,
+                        userId: session.ehrSession.userId,
                         allSubsections: this.getDomainTemplates()
                        ] )
             return
@@ -195,8 +195,8 @@ class GuiGenController {
                   patient: patient,
                   sections: sections,
                   subsections: subsections,
-                  episodeId: session.traumaContext?.episodioId,
-                  userId: session.traumaContext.userId,
+                  episodeId: session.ehrSession?.episodioId,
+                  userId: session.ehrSession.userId,
                   allSubsections:  this.getDomainTemplates()
                  ]
          }
@@ -204,7 +204,7 @@ class GuiGenController {
       else
       {
          flash.message = "registroClinico.warning.noHayRegistroParaLaSeccion"
-         redirect( controller: 'records', action: 'show', id: session.traumaContext?.episodioId)
+         redirect( controller: 'records', action: 'show', id: session.ehrSession?.episodioId)
          return
       }
       
@@ -218,7 +218,7 @@ class GuiGenController {
    def generarTemplate = {
 
       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
-      if (!session.traumaContext?.episodioId)
+      if (!session.ehrSession?.episodioId)
       {
          flash.message = 'trauma.list.error.noEpisodeSelected'
          redirect(controller:'records', action:'list')
@@ -244,13 +244,13 @@ class GuiGenController {
       {
          // FIXME: el id del temaplate es de uso interno, no se lo deberia mostrar al usuario. Queda asi para debuggear.
          flash.message = "Seccion de registro no encontrada " + params.templateId
-         redirect(controller:'records', action:'show', id:session.traumaContext?.episodioId)
+         redirect(controller:'records', action:'show', id:session.ehrSession?.episodioId)
          return
       }
       
 
       // Model: Paciente del episodio seleccionado
-      def composition = Composition.get( session.traumaContext.episodioId )
+      def composition = Composition.get( session.ehrSession.episodioId )
 
       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
       def patient = hceService.getPatientFromComposition( composition )
@@ -298,12 +298,12 @@ class GuiGenController {
                      template: template,
                      sections: sections,
                      subsections: subsections,
-                     episodeId: session.traumaContext?.episodioId,
-                     // userId: session.traumaContext.userId, // no se usa
+                     episodeId: session.ehrSession?.episodioId,
+                     // userId: session.ehrSession.userId, // no se usa
                      allSubsections: util.TemplateUtils.getDomainTemplates(session),
                      form: guiManager.get(templateId, 'create', session.locale.toString()),
                      completeSections: completeSections,
-					 domain: Domain.get(session.traumaContext.domainId)
+					 domain: Domain.get(session.ehrSession.domainId)
                     ] )
             return
          }
@@ -317,11 +317,11 @@ class GuiGenController {
                      template: template,
                      sections: sections,
                      subsections: subsections,
-                     episodeId: session.traumaContext?.episodioId,
-                     //userId: session.traumaContext.userId,
+                     episodeId: session.ehrSession?.episodioId,
+                     //userId: session.ehrSession.userId,
                      allSubsections: util.TemplateUtils.getDomainTemplates(session),
                      completeSections: completeSections,
-					 domain: Domain.get(session.traumaContext.domainId)
+					 domain: Domain.get(session.ehrSession.domainId)
                     ] )
             return
          }
@@ -330,7 +330,7 @@ class GuiGenController {
       else
       {
          flash.message = "registroClinico.warning.noHayRegistroParaLaSeccion"
-         redirect( controller: 'records', action: 'show', id: session.traumaContext?.episodioId)
+         redirect( controller: 'records', action: 'show', id: session.ehrSession?.episodioId)
          return
       }
       
@@ -342,7 +342,7 @@ class GuiGenController {
    def generarShow = {
       
       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
-      if (!session.traumaContext?.episodioId)
+      if (!session.ehrSession?.episodioId)
       {
          flash.message = 'trauma.list.error.noEpisodeSelected'
          redirect(controller:'records', action:'list')
@@ -364,7 +364,7 @@ class GuiGenController {
       def templateId = rmNode.archetypeDetails.templateId
       
       // Model: Paciente del episodio seleccionado
-      def composition = Composition.get( session.traumaContext.episodioId )
+      def composition = Composition.get( session.ehrSession.episodioId )
 
       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
       def patient = hceService.getPatientFromComposition( composition )
@@ -483,12 +483,12 @@ class GuiGenController {
            subsections: subsections,
            completeSections: completeSections,
            allSubsections: util.TemplateUtils.getDomainTemplates(session),
-           episodeId: session.traumaContext?.episodioId,
+           episodeId: session.ehrSession?.episodioId,
            
            // content es para el generateShow, para generateEdit se usa form
            //content: guiManager.get(templateId, "edit", session.locale.toString()),
            data: pv.params as JSON,
-           domain: Domain.get(session.traumaContext.domainId),
+           domain: Domain.get(session.ehrSession.domainId),
            id: params.id,
            
            // Para el edit, copiado del edit de correccion de errores de validacion en el save
@@ -499,9 +499,9 @@ class GuiGenController {
            /*
            rmNode:    rmNode,
            index:     hceService.getRMRootsIndex(template, rmNode),
-           episodeId: session.traumaContext?.episodioId, // necesario para el layout
+           episodeId: session.ehrSession?.episodioId, // necesario para el layout
            patient:   patient,
-           userId:    session.traumaContext.userId,
+           userId:    session.ehrSession.userId,
            */
          ])
          return
@@ -518,13 +518,13 @@ class GuiGenController {
             sections: sections,
             subsections: subsections,
             completeSections: completeSections,
-            //userId: session.traumaContext.userId,
+            //userId: session.ehrSession.userId,
             allSubsections: util.TemplateUtils.getDomainTemplates(session),
-            episodeId: session.traumaContext?.episodioId,
+            episodeId: session.ehrSession?.episodioId,
             //content: f.getText(),
             content: guiManager.get(templateId, "show", session.locale.toString()),
             data: pv.params as JSON,
-            domain: Domain.get(session.traumaContext.domainId),
+            domain: Domain.get(session.ehrSession.domainId),
             id: params.id
          ])
          return
@@ -541,7 +541,7 @@ class GuiGenController {
     */
    def save = {
       
-      if (!session.traumaContext?.episodioId)
+      if (!session.ehrSession?.episodioId)
       {
          flash.message = 'trauma.list.error.noEpisodeSelected'
          redirect(controller:'records', action:'list')
@@ -549,7 +549,7 @@ class GuiGenController {
       }
       
       // Episodio seleccionado para el cual se está registrando
-      Composition comp = Composition.get(session.traumaContext.episodioId)
+      Composition comp = Composition.get(session.ehrSession.episodioId)
 
       // TODO: verificar que el estado del registro es 'incomplete', de lo contrario no puedo editarlo.
 
@@ -640,7 +640,7 @@ class GuiGenController {
       {
          // FIXME: el id del temaplate es de uso interno, no se lo deberia mostrar al usuario. Queda asi para debuggear.
          flash.message = "Seccion de registro no encontrada " + params.templateId
-         redirect(controller:'records', action:'show', id:session.traumaContext?.episodioId)
+         redirect(controller:'records', action:'show', id:session.ehrSession?.episodioId)
          return
       }
       
@@ -905,11 +905,11 @@ class GuiGenController {
                 model: [
                   template: template,
                   form: guiManager.get(params.templateId, "create", session.locale.toString()),
-                  episodeId: session.traumaContext?.episodioId, // necesario para el layout
-                  //userId: session.traumaContext.userId,
+                  episodeId: session.ehrSession?.episodioId, // necesario para el layout
+                  //userId: session.ehrSession.userId,
                   subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
                   allSubsections: util.TemplateUtils.getDomainTemplates(session),
-				      domain: Domain.get(session.traumaContext.domainId)
+				      domain: Domain.get(session.ehrSession.domainId)
                 ]
                )
          return
@@ -945,11 +945,11 @@ class GuiGenController {
                 model: [
                   template: template,
                   form: guiManager.get(params.templateId, "create", session.locale.toString()),
-                  episodeId: session.traumaContext?.episodioId, // necesario para el layout
-                  //userId: session.traumaContext.userId,
+                  episodeId: session.ehrSession?.episodioId, // necesario para el layout
+                  //userId: session.ehrSession.userId,
                   subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
                   allSubsections: util.TemplateUtils.getDomainTemplates(session),
-				      domain: Domain.get(session.traumaContext.domainId)
+				      domain: Domain.get(session.ehrSession.domainId)
                 ]
                )
          return
@@ -1016,10 +1016,10 @@ class GuiGenController {
                   form: guiManager.get(params.templateId, "edit", session.locale.toString()),
                   errors: errors as JSON,
                   errors2: bindingAOMRM.errors as JSON,
-                  episodeId: session.traumaContext?.episodioId, // necesario para el layout
+                  episodeId: session.ehrSession?.episodioId, // necesario para el layout
                   subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
                   allSubsections: util.TemplateUtils.getDomainTemplates(session),
-				      domain: Domain.get(session.traumaContext.domainId)
+				      domain: Domain.get(session.ehrSession.domainId)
                 ]
                )
          return
@@ -1139,7 +1139,7 @@ class GuiGenController {
       
       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
       // Se necesita para mostrar el layout con el resumen del episodio arriba.
-      if (!session.traumaContext?.episodioId)
+      if (!session.ehrSession?.episodioId)
       {
          flash.message = 'trauma.list.error.noEpisodeSelected'
          redirect(controller:'records', action:'list')
@@ -1147,7 +1147,7 @@ class GuiGenController {
       }
       
       // Episodio seleccionado para el cual se está registrando
-      Composition comp = Composition.get(session.traumaContext.episodioId)
+      Composition comp = Composition.get(session.ehrSession.episodioId)
 
       // TODO: verificar que el estado del registro es 'incomplete', de lo contrario no puedo editarlo.
 
@@ -1353,8 +1353,8 @@ class GuiGenController {
                      template: template,
                      mode: 'edit',
                      //errors: bindingAOMRM.getErrors(), // FIXME: esto creo que ya no se usa...
-                     episodeId: session.traumaContext?.episodioId, // necesario para el layout
-                     userId: session.traumaContext.userId,
+                     episodeId: session.ehrSession?.episodioId, // necesario para el layout
+                     userId: session.ehrSession.userId,
                      subsections: subsections,
                      allSubsections: this.getDomainTemplates() 
                      //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
@@ -1425,7 +1425,7 @@ class GuiGenController {
 
       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
       // Se necesita para mostrar el layout con el resumen del episodio arriba.
-      if (!session.traumaContext?.episodioId)
+      if (!session.ehrSession?.episodioId)
       {
          flash.message = 'trauma.list.error.noEpisodeSelected'
          redirect(controller:'records', action:'list')
@@ -1439,7 +1439,7 @@ class GuiGenController {
       // FIXME: if !params.id
       // FIXME: if !rmNode (creo que esto seria chequear si existe el registro para el template y la composition, si no es asi, tambien lo deberia verificar)
 
-      def composition = Composition.get( session.traumaContext?.episodioId )
+      def composition = Composition.get( session.ehrSession?.episodioId )
 
       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
       def patient = hceService.getPatientFromComposition( composition )
@@ -1477,9 +1477,9 @@ class GuiGenController {
          rmNode:   rmNode,
          template:  template,
          index:    hceService.getRMRootsIndex(template, rmNode),
-         episodeId: session.traumaContext?.episodioId, // necesario para el layout
+         episodeId: session.ehrSession?.episodioId, // necesario para el layout
          mode: ((params.mode)?params.mode:'show'),
-         userId: session.traumaContext.userId,
+         userId: session.ehrSession.userId,
          sections: sections,
          subsections: subsections,
          allSubsections: grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
@@ -1509,9 +1509,9 @@ class GuiGenController {
                template: template,
                sections: sections,
                subsections: subsections,
-               episodeId: session.traumaContext?.episodioId,
+               episodeId: session.ehrSession?.episodioId,
                mode: params.mode,
-               userId: session.traumaContext.userId,
+               userId: session.ehrSession.userId,
                allSubsections: this.getDomainTemplates()
                ] )
          return
@@ -1536,9 +1536,9 @@ class GuiGenController {
               rmNode:    rmNode,
               template:  template,
               index:     hceService.getRMRootsIndex(template, rmNode),
-              episodeId: session.traumaContext?.episodioId, // necesario para el layout
+              episodeId: session.ehrSession?.episodioId, // necesario para el layout
               patient:   patient,
-              userId:    session.traumaContext.userId,
+              userId:    session.ehrSession.userId,
               sections:  sections,
               subsections: subsections,
               allSubsections: this.getDomainTemplates(),
@@ -1551,9 +1551,9 @@ class GuiGenController {
            rmNode:   rmNode,
            template:  template,
            index:    hceService.getRMRootsIndex(template, rmNode),
-           episodeId: session.traumaContext?.episodioId, // necesario para el layout
+           episodeId: session.ehrSession?.episodioId, // necesario para el layout
            patient:patient,
-           userId: session.traumaContext.userId,
+           userId: session.ehrSession.userId,
            sections: sections,
            subsections: subsections,
            allSubsections: this.getDomainTemplates(),
@@ -1567,14 +1567,14 @@ class GuiGenController {
       
       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
       // Se necesita para mostrar el layout con el resumen del episodio arriba.
-      if (!session.traumaContext?.episodioId)
+      if (!session.ehrSession?.episodioId)
       {
          flash.message = 'trauma.list.error.noEpisodeSelected'
          redirect(controller:'records', action:'list')
          return
       }
       
-      def composition = Locatable.get(session.traumaContext?.episodioId)
+      def composition = Locatable.get(session.ehrSession?.episodioId)
       if (!composition)
       {
          flash.message = 'trauma.list.error.noEpisodeSelected' // FIXME: el error es otro...
@@ -1608,9 +1608,9 @@ class GuiGenController {
       }
       
       return [composition: composition,
-              // userId: session.traumaContext.userId,
+              // userId: session.ehrSession.userId,
               patient: patient,
-              episodeId: session.traumaContext?.episodioId,
+              episodeId: session.ehrSession?.episodioId,
               sections: sections, // necesario para el menu
               allSubsections: util.TemplateUtils.getDomainTemplates(session),
               completeSections: completeSections

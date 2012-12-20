@@ -27,7 +27,7 @@ class AuthorizationFilters {
         {
             before = {
                
-               if ( !session.traumaContext?.domainId )
+               if ( !session.ehrSession?.domainId )
                {
                   flash.message = 'Seleccione un dominio'
                   redirect(controller:'domain', action:'list')

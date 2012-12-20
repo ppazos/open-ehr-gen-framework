@@ -36,7 +36,7 @@ class RecordsController {
        def compos = []
        
        // FIXME: esto deberia hacerse con filters?
-       if (!session.traumaContext || !session.traumaContext.domainId) // puede pasar si caduca la session
+       if (!session.ehrSession || !session.ehrSession.domainId) // puede pasar si caduca la session
        {
           // TODO: flash.message
           redirect(controller:'domain', action:'list')
@@ -44,9 +44,9 @@ class RecordsController {
        }
          
        // ==========================================================================
-       // TODO: filtrar registros por dominio (session.traumaContext.domainId)
-       println "dominio: " + session.traumaContext.domainId
-       def domain = Domain.get( session.traumaContext.domainId )
+       // TODO: filtrar registros por dominio (session.ehrSession.domainId)
+       println "dominio: " + session.ehrSession.domainId
+       def domain = Domain.get( session.ehrSession.domainId )
          
        
        // domain.compositions equivale a folder.items
@@ -92,16 +92,16 @@ class RecordsController {
          
        // ==========================================================================
          
-       // TODO: filtrar registros por paciente, si hay un paciente en session.traumaContext.patientId
+       // TODO: filtrar registros por paciente, si hay un paciente en session.ehrSession.patientId
        
        // deselecciona el episodio y el paciente que este seleccionado
-       session.traumaContext.episodioId = null
-       //session.traumaContext.patient = null // FIXME: todavia no lo puedo hacer porque no puedo poner domain objects en session
+       session.ehrSession.episodioId = null
+       //session.ehrSession.patient = null // FIXME: todavia no lo puedo hacer porque no puedo poner domain objects en session
        
        
        // Antes se devolvian todas las compositions, ahora se filtra por dominio.
        return [compositions: compos,
-               //userId: session.traumaContext.userId, // no se usa
+               //userId: session.ehrSession.userId, // no se usa
                domain: domain ]
     }
     
@@ -135,7 +135,7 @@ class RecordsController {
             
             
             // Set parent
-            def domain = Domain.get( session.traumaContext.domainId )
+            def domain = Domain.get( session.ehrSession.domainId )
             composition.padre = domain
             
             
@@ -199,14 +199,14 @@ class RecordsController {
        
        // Si expira la sesion tengo que volver al listado para crearla de nuevo
        // FIXME: esto deberia estar en un pre-filter
-       if (!session.traumaContext)
+       if (!session.ehrSession)
        {
           redirect(action:'list')
           return
        }
        
        // Actualizacion de contexto, esta seleccionado un unico episodio
-       session.traumaContext.episodioId = Integer.parseInt(params.id)
+       session.ehrSession.episodioId = Integer.parseInt(params.id)
        
        
        def composition = Composition.get( params.id )
@@ -243,7 +243,7 @@ class RecordsController {
        // p.e. si la atencion es de urgencia, se atiente primero y luego se identifica al paciente.
        return [composition: composition,
                patient: patient,
-               episodeId: session.traumaContext?.episodioId,
+               episodeId: session.ehrSession?.episodioId,
                sections: sections, // necesario para el menu
                allSubsections: util.TemplateUtils.getDomainTemplates(session),
                completeSections: completeSections
@@ -255,7 +255,7 @@ class RecordsController {
     // Pantalla 5.1- Registro Clinico
     def registroClinico2 = {
     
-       if (!session.traumaContext?.episodioId)
+       if (!session.ehrSession?.episodioId)
        {
            flash.message = 'trauma.list.error.noEpisodeSelected'
            redirect(action:'list')
@@ -274,7 +274,7 @@ class RecordsController {
 	   
 	   for (String templateId : subsections)
 	   {
-	      g.hasDomainPermit(domain:Domain.get(session.traumaContext.domainId), templateId:templateId) {
+	      g.hasDomainPermit(domain:Domain.get(session.ehrSession.domainId), templateId:templateId) {
 			  println "tiene permisos para $templateId"
 			  
 			  firstSubSection = templateId
@@ -292,7 +292,7 @@ class RecordsController {
        //println "section: " + section
        //println "firstSubSection: " + firstSubSection
         
-       def composition = Composition.get( session.traumaContext?.episodioId )
+       def composition = Composition.get( session.ehrSession?.episodioId )
 
        // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
        //def patient = hceService.getPatientFromComposition( composition )
@@ -300,7 +300,7 @@ class RecordsController {
        // FIXME: mismo codigo que en GuiGen generarTemplate
        if ( hceService.isIncompleteComposition( composition ) )
        {
-           //g.hasContentItemForTemplate( episodeId: session.traumaContext?.episodioId, templateId: section+'-'+firstSubSection)
+           //g.hasContentItemForTemplate( episodeId: session.ehrSession?.episodioId, templateId: section+'-'+firstSubSection)
            def item = hceService.getCompositionContentItemForTemplate(composition, section+'-'+firstSubSection)
             
            // FIXME:
@@ -314,9 +314,9 @@ class RecordsController {
                redirect(controller: 'guiGen',
                         action: 'generarShow',
                         params: [templateId: firstSubSection, //section+'-'+firstSubSection,
-                                 //episodeId: session.traumaContext?.episodioId,
+                                 //episodeId: session.ehrSession?.episodioId,
                                  //patient:patient,
-                                 //userId: session.traumaContext.userId,
+                                 //userId: session.ehrSession.userId,
                                  id: item.id])
                return
            }
@@ -325,9 +325,9 @@ class RecordsController {
                redirect(controller: 'guiGen',
                         action: 'generarTemplate',
                         params: [templateId: firstSubSection, //section+'-'+firstSubSection,
-                                 //episodeId: session.traumaContext?.episodioId,
+                                 //episodeId: session.ehrSession?.episodioId,
                                  //patient:patient,
-                                 //userId: session.traumaContext.userId
+                                 //userId: session.ehrSession.userId
                                 ])
                return
            }
@@ -335,7 +335,7 @@ class RecordsController {
        else
        {
            flash.message = "registroClinico.warning.noHayRegistroParaLaSeccion"
-           redirect( action: 'show', id: session.traumaContext?.episodioId)
+           redirect( action: 'show', id: session.ehrSession?.episodioId)
            return
        }
     }
@@ -369,7 +369,7 @@ class RecordsController {
      */
     def signRecord = {
         
-        // FIXME: se tiene el id en session.traumaContext?.episodioId
+        // FIXME: se tiene el id en session.ehrSession?.episodioId
         def composition = Composition.get( params.id )
 
         if (!composition)
@@ -392,8 +392,8 @@ class RecordsController {
         flash.error = null
         
         // Para retornarle a la vista
-        def model = [episodeId: session.traumaContext?.episodioId,
-                     //userId: session.traumaContext.userId, // no se usa
+        def model = [episodeId: session.ehrSession?.episodioId,
+                     //userId: session.ehrSession.userId, // no se usa
                      composition: composition,
                      patient: patient,
                      sections: sections,
@@ -529,8 +529,8 @@ class RecordsController {
                 {
                     // TODO: i18n
                     flash.error = "Firma erronea, verifique sus datos"
-                    return [episodeId: session.traumaContext?.episodioId,
-                            //userId: session.traumaContext.userId, // no se usa
+                    return [episodeId: session.ehrSession?.episodioId,
+                            //userId: session.ehrSession.userId, // no se usa
                             composition: composition,
                             patient: patient,
                             sections: sections,
@@ -553,8 +553,8 @@ class RecordsController {
                 if ( !roleKeys.contains(Role.MEDICO) )
                 {
                     flash.error = "Firma erronea, la persona firmante no es medico"
-                    return [episodeId: session.traumaContext?.episodioId,
-                            //userId: session.traumaContext.userId, // no se usa
+                    return [episodeId: session.ehrSession?.episodioId,
+                            //userId: session.ehrSession.userId, // no se usa
                             composition: composition,
                             patient: patient,
                             sections: sections,
@@ -571,8 +571,8 @@ class RecordsController {
                 {
                     // TODO: i18n
                     flash.error = "Ocurrio un error al intentar firmar el registro clinico, intente de nuevo"
-                    return [episodeId: session.traumaContext?.episodioId,
-                            //userId: session.traumaContext.userId, // no se usa
+                    return [episodeId: session.ehrSession?.episodioId,
+                            //userId: session.ehrSession.userId, // no se usa
                             composition: composition,
                             patient: patient,
                             sections: sections,
@@ -660,8 +660,8 @@ class RecordsController {
                     flash.error = "Ocurrio un error al intentar firmar el registro clinico, intente de nuevo"
                 }
                 
-                return [episodeId: session.traumaContext?.episodioId,
-                        //userId: session.traumaContext.userId, // no se usa
+                return [episodeId: session.ehrSession?.episodioId,
+                        //userId: session.ehrSession.userId, // no se usa
                         composition: composition,
                         patient: patient,
                         sections: sections,
@@ -672,8 +672,8 @@ class RecordsController {
 
             return [composition: composition,
                     patient: patient,
-                    episodeId: session.traumaContext?.episodioId,
-                    //userId: session.traumaContext.userId, // no se usa
+                    episodeId: session.ehrSession?.episodioId,
+                    //userId: session.ehrSession.userId, // no se usa
                     sections: sections, // necesario para el menu
                     subsections: subsections, // necesario para el menu
                     allSubsections: util.TemplateUtils.getDomainTemplates(session)

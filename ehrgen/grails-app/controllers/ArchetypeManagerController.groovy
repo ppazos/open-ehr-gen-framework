@@ -1,7 +1,7 @@
 
 import org.openehr.am.archetype.Archetype
 import support.identification.TerminologyID
-import archetype_repository.ArchetypeManager
+import archetype.ArchetypeManager
 import binding.CtrlTerminologia
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import grails.converters.JSON
@@ -9,7 +9,7 @@ import se.acode.openehr.parser.ADLParser
 
 class ArchetypeManagerController {
 
-   def manager = archetype_repository.ArchetypeManager.getInstance()
+   def manager = archetype.ArchetypeManager.getInstance()
 
    /**
     * Lista arquetipos cargados en el cache con su ultima fecha de uso.
@@ -196,7 +196,7 @@ class ArchetypeManagerController {
        def dataByComposition = [:]
        
        // Arquetipos
-       def archs = archetype_repository.ArchetypeManager.getInstance().getLoadedArchetypes()
+       def archs = archetype.ArchetypeManager.getInstance().getLoadedArchetypes()
        
        // Lista de paths seleccionadas dentro de un arqutetipo
        List paths
@@ -556,7 +556,7 @@ class ArchetypeManagerController {
       println params
       
       // Arquetipo seleccionado desde la lista de conceptos
-      def archetype = archetype_repository.ArchetypeManager.getInstance().getArchetype(params.archetypeId)
+      def archetype = archetype.ArchetypeManager.getInstance().getArchetype(params.archetypeId)
        
       // Lista de elementos del RM al filtrar por arquetipo y path
       def data

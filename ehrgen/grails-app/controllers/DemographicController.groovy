@@ -231,7 +231,7 @@ class DemographicController{
         // Cada correccion debe tener un log de quien lo hizo.
         // Vuelve a la pantalla principal del episodio seleccionado (show).
 
-        if (!session.traumaContext?.episodioId) // caso 1)
+        if (!session.ehrSession?.episodioId) // caso 1)
         {
             println "No hay epidosio seleccionado"
             
@@ -250,7 +250,7 @@ class DemographicController{
             println "Hay un episodio seleccionado"
             
             // Pide el episodio a la base para agregarle la participation del paciente
-            def composition = Composition.get( session.traumaContext.episodioId )
+            def composition = Composition.get( session.ehrSession.episodioId )
             
             // PRE: el episodio no deberia tener un paciente asignado.
             // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
@@ -258,7 +258,7 @@ class DemographicController{
             {
                 flash.message = 'trauma.show.feedback.patientAlreadySelectedForThisEpisode'
                 redirect( controller:'records', action:'show',
-                          params: [id: session.traumaContext.episodioId, 'flash.message': 'trauma.show.feedback.patientAlreadySelectedForThisEpisode'] )
+                          params: [id: session.ehrSession.episodioId, 'flash.message': 'trauma.show.feedback.patientAlreadySelectedForThisEpisode'] )
                 return
             }
             
@@ -268,7 +268,7 @@ class DemographicController{
             if (persona.ids.size() == 0) // Debe tener un id!
             {
                 redirect( controller:'records', action:'show',
-                          params: [id: session.traumaContext.episodioId, 'flash.message': 'El paciente seleccionado no tiene identificadores, debe tener por lo menos uno.'] )
+                          params: [id: session.ehrSession.episodioId, 'flash.message': 'El paciente seleccionado no tiene identificadores, debe tener por lo menos uno.'] )
                 return
             }
             
@@ -292,7 +292,7 @@ class DemographicController{
             // Pongo en sesion los datos del paciente seleccionado
             // La idea es que la sesion sirva de cache para no tener que hacer la consulta cada vez
             // FIXME: todavia no puedo poner domain objects en session...
-            //session.traumaContext.patient = persona
+            //session.ehrSession.patient = persona
             
             
             // Ejecuta eventos cuando el paciente seleccionado con exito.
@@ -309,7 +309,7 @@ class DemographicController{
             //        episodio.
             
             redirect( controller:'records', action:'show',
-                      params: [id: session.traumaContext.episodioId] )
+                      params: [id: session.ehrSession.episodioId] )
         }
         
         
@@ -318,7 +318,7 @@ class DemographicController{
         EventManager.getInstance().handle("paciente_seleccionado",
           [
             patient: persona,
-            episodeId: session.traumaContext?.episodioId // puede ser null
+            episodeId: session.ehrSession?.episodioId // puede ser null
           ]
         )
         
@@ -456,8 +456,8 @@ class DemographicController{
         // Si no viene el id, vuelvo a un punto seguro.
         if (!params.id)
         {
-            if (session.traumaContext.episodioId)
-                redirect(controller:'records', action:'show', id:session.traumaContext.episodioId)
+            if (session.ehrSession.episodioId)
+                redirect(controller:'records', action:'show', id:session.ehrSession.episodioId)
             else
                 redirect(controller:'records', action:'list')
             return
@@ -476,8 +476,8 @@ class DemographicController{
                 return [patient:patient, pn:pn, tiposIds:tiposIds]
             }
             
-            if (session.traumaContext.episodioId)
-                redirect(controller:'records', action:'show', id:session.traumaContext.episodioId)
+            if (session.ehrSession.episodioId)
+                redirect(controller:'records', action:'show', id:session.ehrSession.episodioId)
             else
                 redirect(controller:'records', action:'list')
             return

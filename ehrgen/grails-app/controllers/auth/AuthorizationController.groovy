@@ -16,10 +16,10 @@ class AuthorizationController {
             if (login)
             {
                 // Pone al usuario en session
-                session.traumaContext = new EHRSession( userId: login.id )
+                session.ehrSession = new EHRSession( userId: login.id )
                
                 // FIXME: no puedo poner domain objects en session: http://grails.1312388.n4.nabble.com/Best-way-to-cache-some-domain-objects-in-a-user-session-td3820978.html
-                //session.traumaContext = new EHRSession( login: login )
+                //session.ehrSession = new EHRSession( login: login )
                 
                 //redirect(controller:'records', action:'list')
                 redirect(controller:'domain', action:'list')
@@ -36,7 +36,7 @@ class AuthorizationController {
     
     def logout = {
         
-        session.traumaContext = null
+        session.ehrSession = null
         redirect(action:'login')
     }
     
