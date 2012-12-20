@@ -54,7 +54,7 @@ class FactoryObjectRM {
     {
         this.session = session
         // Guardar la composicion en los objetos del RM me da un error en backred entre Composition y Section.
-        //this.composition = Composition.get(session.traumaContext.episodioId)
+        //this.composition = Composition.get(session.ehrSession.episodioId)
     }
 
     /**
@@ -73,7 +73,7 @@ class FactoryObjectRM {
         // Guardar la composicion en los objetos del RM me da un error en backred entre Composition y Section.
         // Voy a guardar solo el id de la composition, eso es suficiente.
         //locatable.parentComposition = this.composition
-        locatable.parentCompositionId = session.traumaContext.episodioId
+        locatable.parentCompositionId = session.ehrSession.episodioId
          
        
         String rmV = ApplicationHolder.application.config.openEHR.RMVersion

@@ -15,8 +15,8 @@ class TemplateUtils {
     */
    static Map getDomainTemplates(session)
    {  
-      //def domain = session.traumaContext.domainId
-      def workflow = WorkFlow.get( session.traumaContext.workflowId )
+      //def domain = session.ehrSession.domainId
+      def workflow = WorkFlow.get( session.ehrSession.workflowId )
       //def domainTemplates = grailsApplication.config.templates2."$domain"
       
       // TODO: devolver el workflow directamente

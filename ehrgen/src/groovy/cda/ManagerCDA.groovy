@@ -81,7 +81,7 @@ class ManagerCDA {
       def clidoc_templateId_extension = "EHRv1.0" // En extension iría el nombre del template que se usó para generar la Composition, como usamos en realidad templates para generar las Sections, acá ponele duro extension="TRAUMAv1.0"
       
       def clidoc_templateId_root = "2.16.858.1.1.1.1.1.2" // 2.16.858 es el OID de uruguay, el resto es invento
-      def clidoc_id_extension = comp.id //session.traumaContext?.episodioId// TODO, deberia ser: comp.uid.getExtension(), pero uid esta comentado en composition
+      def clidoc_id_extension = comp.id //session.ehrSession?.episodioId// TODO, deberia ser: comp.uid.getExtension(), pero uid esta comentado en composition
       def clidoc_id_root = "2.16.858.1.1.1.1.1.3"// TODO, deberia ser: comp.uid.getRoot(), pero uid esta comentado en composition
       def clidoc_code_displayName = "Episodio de Trauma"
       def clidoc_code_codeSystemName = "HCET"

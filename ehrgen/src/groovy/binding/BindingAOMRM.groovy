@@ -14,7 +14,7 @@ import org.openehr.am.openehrprofile.datatypes.quantity.*
 import org.openehr.am.openehrprofile.datatypes.text.CCodePhrase
 import hce.core.datastructure.itemstructure.representation.*
 
-import archetype_repository.ArchetypeManager
+import archetype.ArchetypeManager
 import templates.TemplateManager
 
 import data_types.quantity.date_time.*
@@ -1247,8 +1247,8 @@ class BindingAOMRM {
                 idMatchingKey = ((CString)(item)).pattern
                 
                 //  CLUSTER\.level_of_exertion(-[a-zA-Z0-9_]+)*\.v1
-                println "  xxx> "+ (((CString)(item)).pattern - "openEHR-EHR-")
-                println "  zzz> "+ (((CString)(item)).pattern - "openEHR-EHR-").replace("\\", "").split("\\.")
+                //println "  xxx> "+ (((CString)(item)).pattern - "openEHR-EHR-")
+                //println "  zzz> "+ (((CString)(item)).pattern - "openEHR-EHR-").replace("\\", "").split("\\.")
                 
                 type = (((CString)(item)).pattern - "openEHR-EHR-").replace("\\", "").split("\\.")[0]
                 // Me quedo con el tipo del arquetipo. (openEHR-EHR-OBSERVATION.prueba6.v1 -> OBSERVATION)
