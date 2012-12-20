@@ -1,17 +1,13 @@
-/**
- * 
- */
 package templates
 
-import templates.tom.*
-import templates.tom.constraints.*
-import templates.tom.controls.*
+import templates.*
+import templates.constraints.*
+import templates.controls.*
 
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 /**
- * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
- *
+ * @author Pablo Pazos Gutierrez (pablo.pazos@cabolabs.com)
  */
 class TemplateManager {
     
@@ -44,15 +40,21 @@ class TemplateManager {
         
         Template template = new Template()
         
-        template.id = xmlTemplate.id.text()
+        // El id incluye la version, ej. PARACLINICA-pedido_imagenes.v1
+        template.templateId = xmlTemplate.id.text()
         template.name = xmlTemplate.name.text()
         
         template.rootArchetype = new ArchetypeReference()
         
         // <archetype type="cluster" id="openEHR-EHR-CLUSTER.a1.v1" includeAll="false">
         template.rootArchetype.type       = ArchetypeTypeEnum.fromValue( xmlTemplate.root_archetype.archetype.'@type'.text() )
-        template.rootArchetype.id         = xmlTemplate.root_archetype.archetype.'@id'.text()
+        template.rootArchetype.refId      = xmlTemplate.root_archetype.archetype.'@id'.text()
         template.rootArchetype.includeAll = (xmlTemplate.root_archetype.archetype.'@includeAll'.text() == "true")
+        
+        // TEST
+        println "-----"
+        println "roorArchetype: " + template.templateId + " " + template.rootArchetype.type
+        println "-----"
         
         def pageZone = xmlTemplate.root_archetype.archetype.'@pageZone'.text()
         if (pageZone) template.rootArchetype.pageZone = pageZone
@@ -71,14 +73,14 @@ class TemplateManager {
 
           def field = new ArchetypeField( path: xmlField.'@path'.text(),
                                           owner: template.rootArchetype,
-                                          constraints: parseFieldConstraints( xmlField ),
+                                          fieldConstraints: parseFieldConstraints( xmlField ),
                                           controls: parseFieldControls( xmlField )
                                         )
           
 //          println "Controls: " + field.controls
 
           // Asociaciones constraint->field
-          field.constraints.each { constraint ->
+          field.fieldConstraints.each { constraint ->
              constraint.owner = field
           }
           
@@ -96,8 +98,8 @@ class TemplateManager {
            def ref = new ArchetypeReference()
            
            // <archetype type="cluster" id="openEHR-EHR-CLUSTER.a1.v1" includeAll="false">
-           ref.type       = ArchetypeTypeEnum.fromValue( xmlTemplate.root_archetype.archetype.'@type'.text() )
-           ref.id         = xmlArchetypeNode.'@id'.text()
+           ref.type       = ArchetypeTypeEnum.fromValue( xmlArchetypeNode.'@type'.text() )
+           ref.refId      = xmlArchetypeNode.'@id'.text()
            ref.includeAll = (xmlArchetypeNode.'@includeAll'.text() == "true")
            
            pageZone = xmlArchetypeNode.'@pageZone'.text()
@@ -117,13 +119,14 @@ class TemplateManager {
 
              def field = new ArchetypeField( path: xmlField.'@path'.text(),
                                              owner: ref,
-                                             constraints: parseFieldConstraints( xmlField ),
+                                             fieldConstraints: parseFieldConstraints( xmlField ),
                                              controls: parseFieldControls( xmlField )
                                            )
 //             println "Controls: " + field.controls
 
              // Asociaciones constraint->field
-             field.constraints.each { constraint ->
+             field.fieldConstraints.each { constraint ->
+			 
                 constraint.owner = field
              }
 
@@ -133,7 +136,6 @@ class TemplateManager {
            
            template.includedArchetypes << ref
         }
-        
         
         return template
     }
@@ -155,129 +157,252 @@ class TemplateManager {
         return constraints
     }
     
-    def parseFieldControls( xml_field )
-    {
-        def controls = []
-        xml_field.control?.each { xml_control ->
-           controls << new Control(
-                                path: xml_control.'@path'.text(),
-                                type: xml_control.'@type'.text() )
-        }
-        return controls
-    }
+   def parseFieldControls( xml_field )
+   {
+      def controls = []
+      xml_field.control?.each { xml_control ->
+         controls << new Control(
+                           path: xml_control.'@path'.text(),
+                           type: xml_control.'@type'.text() )
+      }
+      return controls
+   }
     
-    /*
-    // TODO: implementar!
-    private String getTemplatePath( String templateId )
-    {
-        // TODO:
-        def etapa = "" // EVALUACION_PRIMARIA en EVALUACION_PRIMARIA-via_aerea
-        switch (etapa)
-        {
-            case 'EVALUACION_PRIMARIA':
-                return 'hce/trauma/evaluacion/evaluacion_primaria'
-            break;
-            case 'composition':
-            case 'element':
-            case 'section':
-            case 'structure':
-                return type
-            break
-            case 'item_tree':
-                return 'structure'
-            break
-            break
-            case 'action':
-            case 'evaluation':
-            case 'instruction':
-            case 'observation':
-                return 'entry/'+type
-            break
-
-            //default:
-            //    throw new Exception('Tipo no conocido ['+ type +'], se espera uno de cluster, composition, element, section, structure, action, observation, instruction, evaluation' )
-        }
-    }
-   */
+   public Map getLoadedTemplates()
+   {
+      return this.cache
+   }
     
-    public Map getLoadedTemplates()
-    {
-        return this.cache
-    }
+   public Map getLastUse()
+   {
+      return this.timestamps
+   }
     
-    public Map getLastUse()
-    {
-        return this.timestamps
-    }
-    
-    public void unloadAll()
-    {
+   public void unloadAll()
+   {
       // FIXME: debe estar sincronizada
-        this.cache.clear()
-        this.timestamps.clear()
-    }
-    public void unload( String templateId )
-    {
-        // FIXME: debe estar sincronizada
-        this.cache.remove(templateId)
-        this.timestamps.remove(templateId)
-    }
+      this.cache.clear()
+      this.timestamps.clear()
+   }
+   
+   public void unload( String templateId )
+   {
+      // FIXME: debe estar sincronizada
+      this.cache.remove(templateId)
+      this.timestamps.remove(templateId)
+   }
+   
+   /**
+    * Fuerza el cacheo de un template desde afuera.
+    */
+   public void cacheTemplate(Template template)
+   {
+      cache[template.templateId] = template
+      timestamps[template.templateId] = new Date()
+   }
+   
+   public Template getTemplate( String templateId )
+   {
+      println "getTemplate: " + templateId
     
-    public Template getTemplate( String templateId )
-    {
-        // Ruta independiente del SO
-        // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
-        String PS = System.getProperty("file.separator")
+      // Ruta independiente del SO
+      // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+      String PS = System.getProperty("file.separator")
        
-        // Si no esta cargado, lo intenta cargar
-        if (!this.cache[templateId])
-        {
-            println "No se encuentra el template " + templateId + ", se intenta cargarlo"
-            //def id = new templateID( templateId ) // a partir del ID saco la ruta que tengo que cargar
-            //def type = id.rmEntity // cluster, entry, composition, etc...
-            
-            // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
-            
-            // TODO: poder agrupar arquetipos en subdirectorios donde cada directorio es por cada seccion del hospital.
-            // templates/templateId.xml
-            //println "Carga desde: " + this.templateRepositoryPath+"/"+templateId+".xml"
-            //def templateFile = new File( this.templateRepositoryPath+"/"+templateId+".xml" )
-            
-            //ApplicationHolder.application.config.domain // "templates/hce/trauma"
-            //println "  Carga desde: "+ "templates/" + ApplicationHolder.application.config.domain +"/"+ templateId +".xml"
-            //def templateFile = new File( "templates/" + ApplicationHolder.application.config.domain +"/"+ templateId +".xml" )
-            
-            // Nuevo!
-            println "  Intenta cargar archivo: templates" + PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml"
-            File templateFile = new File( "templates"+ PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml" )
-            
-            if (!templateFile.exists())
-            {
-               println "  No se encuentra el archivo: templates" + PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml"
-               return null
-            }
-            
-            // PARSEAR template
-            Template template = parseTemplate( templateFile )
-            // /PARSEAR template
-                
+      // Si no esta cargado, lo intenta cargar
+      if (!this.cache[templateId])
+      {
+         println "No se encuentra el template " + templateId + ", se intenta cargarlo"
+         //def id = new templateID( templateId ) // a partir del ID saco la ruta que tengo que cargar
+         //def type = id.rmEntity // cluster, entry, composition, etc...
+         
+         // Nuevo!
+         //println "  Intenta cargar archivo: templates" + PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml"
+         //File templateFile = new File( "templates"+ PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml" )
+         //File templateFile = new File( ApplicationHolder.application.config.hce.template_repo + getTypePath(type) + PS + templateId +".xml" )
+         
+         Template template
+         
+         // Se busca la path usando el templateId porque no se tiene el type del template.
+         String templatePath = this.findTemplatePath(templateId)
+         if (!templatePath)
+         {
+            // Verifica si el template esta en la base de datos pero no ha sido serializada a XML
+            template = Template.findByTemplateId( templateId )
             if (template)
             {
-               println "    Cargado el template: " + templateFile.name + " de " + templateFile.path
+               println "    Cargado el template: $templateId desde la base de datos"
                cache[templateId] = template
                timestamps[templateId] = new Date()
+               
+               // Ver si esto se hace en DomainController.createTemplate o aca
+               // TODO: serializar a XML
+               // TODO: generar GUI
+               
+               return template
             }
             else
             {
-               println "    No se pudo cargar el template: " + templateFile.name + " de " + templateFile.path
+               println "  No se la path del template: $templateId ni tampoco esta en la base de datos"
+               return null
             }
-        }
-        else
-        {
-            println "Template: ${templateId} esta en cache << " + this.cache[templateId] + " >>"
-            this.timestamps[templateId] = new Date() // actualizo timestamp
-        }
+         }
+         
+         println " -> hay que buscar el template $templateId en: " + templatePath
+         
+         
+         File templateFile = new File( templatePath )
+         
+         /* templatePath sino es null existe siempre porque se crea consultando el filesystem
+         if (!templateFile.exists())
+         {
+            //println "  No se encuentra el archivo: templates" + PS + ApplicationHolder.application.config.templates2.path + PS + templateId +".xml"
+            println "  No se encuentra el archivo: " + ApplicationHolder.application.config.hce.template_repo + getTypePath(type) + PS + templateId +".xml"
+            return null
+         }
+         */
+         
+         // Verifica que hay permisos de lectura
+         if (!templateFile.canRead())
+         {
+            throw new Exception("No se puede leer " + templateFile.getCanonicalPath())
+         }
+         
+         
+         template = parseTemplate( templateFile )
+
+         if (template)
+         {
+            println "    Cargado el template: " + templateFile.name + " de " + templateFile.path
+            cache[templateId] = template
+            timestamps[templateId] = new Date()
+         }
+         else
+         {
+            println "    No se pudo cargar el template $templateId desde " + templateFile.path
+         }
+      }
+      else
+      {
+         println "Template: ${templateId} esta en cache << " + this.cache[templateId] + " >>"
+         this.timestamps[templateId] = new Date() // actualizo timestamp
+      }
         
-        return this.cache[templateId]
-    }
+      return this.cache[templateId]
+   }
+   
+   
+   private String getTypePath( String type )
+   {
+      type = type.toLowerCase()
+      switch (type)
+      {
+         case 'composition':
+         case 'section':
+            return type
+         break
+         case 'action':
+         case 'evaluation':
+         case 'instruction':
+         case 'observation':
+         case 'admin_entry':
+            return 'entry'+ PS + type
+         break
+         default:
+            throw new Exception('Tipo no conocido ['+ type +'], se espera uno de: composition, section, action, observation, instruction, evaluation, admin_entry' )
+      }
+   }
+   
+   /**
+    * Carga todos los teplates del repo local.
+    * Incluso distintas versiones del mismo template (necesario para mostrar registros viejos).
+    */
+   public void loadAll()
+   {
+      loadAllRecursive( ApplicationHolder.application.config.hce.template_repo )
+   }
+   
+   /**
+    * Carga templates recursivamente segun la path en el filesystem.
+    */
+   private loadAllRecursive( String path )
+   {
+      println " --- loadAllRecursive: " + path
+      def root = new File( path )
+      
+      //String templateId
+      Template template
+      
+      // Filtra solo archivos xml
+      // eachFile tambien recorre subdirectorios!!! para eso se usa FILES
+      root.eachFileMatch (groovy.io.FileType.FILES, ~/.*\.xml/) { f ->
+      
+         //println " ---- template file: " + f.name // EHRGen-EHR-adm_sust.v1.xml
+         println " ---- template path: " + f.path // templates\entry\action\EHRGen-EHR-adm_sust.v1.xml
+         
+         
+         // Carga de disco, parsea y cachea
+         // No es necesario tomar el template que devuelve, luego se
+         // pueden pedir todos los templates usando getLoadedTemplates()
+         //templateId = f.name - '.xml'
+         //getTemplate(templateId)
+         
+         template = parseTemplate( f )
+         if (template)
+         {
+            println " ---- Cargado el template: " + f.path
+            cache[template.templateId] = template
+            timestamps[template.templateId] = new Date()
+         }
+         else
+         {
+            println " ---- No se pudo cargar el template: " + f.path
+         }
+      }
+      
+      // Recursiva por directorios
+      root.eachDir { d ->
+         loadAllRecursive( d.path )
+      }
+   }
+   
+   /**
+    * Ubica la path en el repo sabiendo su templateId,
+    * buscando recursivamente por la estructura de directorios.
+    */
+   public String findTemplatePath(String templateId)
+   {
+      return findTemplatePathRecursive( templateId, ApplicationHolder.application.config.hce.template_repo )
+   }
+   
+   private String findTemplatePathRecursive( String templateId, String path )
+   {
+      // FIXME: utilizar loops for
+      //if (f.isFile()) println f.canonicalPath
+      String fpath
+      
+      def root = new File( path )
+      root.eachFile { f ->
+      
+         println " > " + f.path
+      
+         if (templateId == (f.name - '.xml'))
+         {
+            println "encuentra $templateId en "+ f.path
+            fpath = f.path
+            // Aunque se ponga return, sigue con el each loop
+         }
+      }
+      
+      if (fpath) return fpath
+      
+      // Recursiva por directorios
+      def dpath
+      root.eachDir { d ->
+         dpath = findTemplatePathRecursive( templateId, d.path )
+         if (dpath) fpath = dpath // Aunque se ponga return, sigue con el each loop
+      }
+      
+      if (fpath) return fpath
+   }
 }
