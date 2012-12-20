@@ -11,77 +11,105 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder;
 class GuiCachingService {
 
    //def groovyPagesTemplateEngine
-   def grailsTemplateEngineService
+   def grailsTemplateEngineService // FIXME: poner las operaciones de este servicio dentro de esta clase
    //def ctx = ApplicationHolder.getApplication().getMainContext()
    
-   /*
-   // view is a path relative to the grails-app/views/ directory
-   String view2String(view, model)
+   /**
+    * Genera todos los HTML los templates dados.
+    * Este codigo antes estaba en el bootstrap.
+    */
+   def generateGUI(List templates)
    {
-      // Get a template of the view gsp
-      def tmpl = groovyPagesTemplateEngine.createTemplate(view);
+      // Se debe hacer un templateManager.loadAll() antes!!!
       
-      //def path = ApplicationHolder.getApplication().getParentContext().getServletContext().getRealPath(".");
-      //println "path $path"
+      def guiManager = gui.GuiManager.getInstance()
+      String PS = System.getProperty("file.separator")
       
-//      if (!tmpl)
-//      {
-//         println "A"
-//         tmpl = groovyPagesTemplateEngine.createTemplate('.\\guiGen\\_generarCreate.gsp');
-//      }
-//      if (!tmpl)
-//      {
-//         println "B"
-//         tmpl = groovyPagesTemplateEngine.createTemplate('.\\views\\guiGen\\_generarCreate.gsp');
-//      }
-//      if (!tmpl)
-//      {
-//         println "C"
-//         tmpl = groovyPagesTemplateEngine.createTemplate('.\\grails-app\\views\\guiGen\\_generarCreate.gsp');
-//      }
-//      
-//      if (!tmpl)
-//      {
-//         println "D"
-//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/guiGen/_generarCreate');
-//      }
-//      if (!tmpl)
-//      {
-//         println "E"
-//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/views/guiGen/_generarCreate');
-//      }
-//      if (!tmpl)
-//      {
-//         println "F"
-//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'/grails-app/views/guiGen/_generarCreate');
-//      }
-//      
-//      if (!tmpl)
-//      {
-//         println "G"
-//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'guiGen/_generarCreate.gsp');
-//      }
-//      if (!tmpl)
-//      {
-//         println "H"
-//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'views/guiGen/_generarCreate.gsp');
-//      }
-//      if (!tmpl)
-//      {
-//         println "I"
-//         tmpl = groovyPagesTemplateEngine.createTemplate(path+'grails-app/views/guiGen/_generarCreate.gsp');
-//      }
-   
-      // Provide a place to store the processed gsp
-      def out = new StringWriter();
+      String form
+      File archivo
+      String pathToStaticViews
         
-      // Process the gsp with the given model and write to the StringWriter
-      tmpl.make(model).writeTo(out);
+      // dentro del directorio /grails-app/views al template _generarCreate.gsp
+      // Si le pongo el . antes al pathToGuiGenXXXX genera path dentro de WEB-INF!:
+      // grails-app\views\WEB-INF\grails-app\views\grails-app\views\guiGen\create\_generarCreate.gsp
+      String pathToGuiGenCreate   = 'guiGen'+ PS +'create'+ PS +'_generarCreate' // dentro del directorio /grails-app/views al template _generarCreate.gsp
+      String pathToGuiGenShow     = 'guiGen'+ PS +'show'  + PS +'_generarShow'
+      String pathToGuiGenEdit     = 'guiGen'+ PS +'edit'  + PS +'_generarEdit'
+      String pathToGeneratedViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
+      
         
-      return out.toString();
+      templates.each { tpl ->
+        
+         //println "GUIGEN TEMPLATE: " + tpl.templateId
+           
+         pathToStaticViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'hce'+ PS + tpl.templateId +'.gsp'
+           
+         // Si no existe la vista estatica, genero create, show y edit.
+         // Si existe, solo genero show
+         if (!new File(pathToStaticViews).exists())
+         {
+            // Se genera cada vista para cada locale disponible
+            ApplicationHolder.application.config.langs.eachWithIndex { lang, i ->
+              
+                // FIX: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=62
+               //Locale.setDefault( grailsApplication.config.locales[i] ) // No funciona
+               // DatePIcker usa: new DateFormatSymbols(RCU.getLocale(request))
+                 
+               //println 'lang: '+ lang
+               //println 'locale: '+ grailsApplication.config.locales[i].toString()
+               
+               // create
+               //form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
+               form = this.template2String(pathToGuiGenCreate, [template:tpl, lang:lang, locale:ApplicationHolder.application.config.locales[i]]) // FIXME: hacerlo para todos los locales
+               form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
+               //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_create_"+ lang +".htm")
+               archivo = new File(pathToGeneratedViews + tpl.templateId + "_create_"+ lang +".htm")
+               archivo.write(form)
+               guiManager.add(tpl.templateId, "create", form)
+                 
+               // show
+               //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
+               form = this.template2String(pathToGuiGenShow, [template:tpl, lang:lang, locale:ApplicationHolder.application.config.locales[i]])
+                 
+               // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=59
+               //form = form.replaceAll('<label class="(.*?)"(/s)/>', '<label class="$1"> </label>')
+               form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
+               //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_show_"+ lang +".htm")
+               archivo = new File(pathToGeneratedViews + tpl.templateId + "_show_"+ lang +".htm")
+               archivo.write(form)
+               guiManager.add(tpl.templateId, "show", form)
+                 
+               // edit
+               //form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
+               form = this.template2String(pathToGuiGenEdit, [template:tpl, lang:lang, locale:ApplicationHolder.application.config.locales[i]])
+               form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
+               //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_edit_"+ lang +".htm")
+               archivo = new File(pathToGeneratedViews + tpl.templateId + "_edit_"+ lang +".htm")
+               archivo.write(form)
+               guiManager.add(tpl.templateId, "edit", form)
+            }
+         }
+         else // Genera solo show
+         {       
+            // Se genera cada vista para cada locale disponible
+            ApplicationHolder.application.config.langs.eachWithIndex { lang, i ->
+              
+               // idem para el show
+               //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: i18n
+               form = this.template2String(pathToGuiGenShow, [template:tpl, lang:lang, locale:ApplicationHolder.application.config.locales[i]])
+               form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
+               //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_show_"+ lang +".htm")
+               archivo = new File(pathToGeneratedViews + tpl.templateId + "_show_"+ lang +".htm")
+               archivo.write(form)
+               guiManager.add(tpl.templateId, "show", form)
+            }
+         }
+      }
    }
-   */
    
+   /**
+    * FIXME: template es un strig que tiene la path donde se va a guardar el html, no es el template ni el nombre del template.
+    */
    String template2String(template, model)
    {
       //def tagLib = ctx.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
