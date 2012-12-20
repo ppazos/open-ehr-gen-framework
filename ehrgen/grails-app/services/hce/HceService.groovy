@@ -23,7 +23,10 @@ import support.identification.*
 
 import demographic.party.Person
 
-import templates.tom.Template
+import domain.Domain
+import workflow.WorkFlow
+import workflow.Stage
+import templates.Template
 import hce.core.common.archetyped.Locatable
 import hce.core.composition.content.ContentItem
 import hce.core.common.change_control.Version
@@ -586,9 +589,28 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
      * Sirve para saber si un determinado dominio tiene templates definidos,
      * o sea si se puede registrar informacion clinica para ese dominio.
      */
-    boolean domainHasTemplates( String domainPath )
+    boolean domainHasTemplates( Domain domain )
     {
-       return (ApplicationHolder.application.config.templates2."${domainPath}".size() > 0)
+       //return (ApplicationHolder.application.config.templates2."${domainPath}".size() > 0)
+	   
+	    // Sino tiene algun workflow, no puede tener templates
+	    if (domain.workflows.size() == 0) return false
+	   
+	    // Todos los workflows con stages
+	    def wfs = domain.workflows.findAll{ it.stages.size() > 0 }
+
+	    // Si ningun workflow tiene stages, no puede tener templates
+	    if (!wfs) return false
+	   
+	    // Dentro de los wfs se fija si alguna stage tiene algun template
+	    // TODO: verificar si solo con esto evito todos los if de arriba
+       def wf = wfs.find{ wf ->
+	     wf.stages.find{ stg -> 
+		   stg.recordDefinitions.size() > 0
+		 }
+	   }
+	   
+	   return wf != null
     }
     
     

@@ -1,7 +1,7 @@
 
 import java.util.Locale;
 
-import archetype_repository.ArchetypeManager
+import archetype.ArchetypeManager
 import org.openehr.am.archetype.Archetype
 import org.openehr.am.archetype.constraintmodel.*
 import binding.CtrlTerminologia
@@ -81,98 +81,8 @@ class ArchetypeTagLib {
        
        // Ya escala, si no encuentra devuelve un texto
        out << CtrlTerminologia.getInstance().getTermino(TerminologyID.create('local', null), code, archetype, locale)
-       
-       /* esto hace lo mismo que la linea de codigo de arriba
-       def archetypeTerm = archetype.ontology.termDefinition(locale.toString().toLowerCase().replaceAll("_", "-"), code)
-       
-       
-       // FIXME: si el locale es "es" no deberia escalar.
-       // FIXME: si el locale es "es_AR" el primer y segundo intento son lo mismo, el tema es que el primero intenta con la variante y si no tiene variante, es lo mismo.
-       
-       
-       // pido para el idioma y pais
-       if (!archetypeTerm)
-       {
-           println "No encuentra termino para intento: " + locale.toString().toLowerCase().replaceAll("_", "-")
-           archetypeTerm = archetype.ontology.termDefinition(locale.language+'-'+locale.country.toLowerCase(), code)
-       }
-       
-       // pido para el idioma
-       if (!archetypeTerm)
-       {
-          println "No encuentra termino para intento: " + locale.language+'-'+locale.country.toLowerCase()
-          archetypeTerm = archetype.ontology.termDefinition(locale.language, code)
-       }
-       
-       if (archetypeTerm)
-       {
-          println "Se encuentra termino !!! " + archetypeTerm.getText()
-          //out << archetypeTerm.items.text
-          out << archetypeTerm.getText() // Tambien esta el getDescription!!!
-       }
-       else
-       {
-          println "No encuentra termino luego de escalar a: " + locale.language
-          
-          // FIXME: deberia hacer una de dos cosas> 1. dejar el termino en el idioma por defecto (garantiza que siempre muestra texto),
-          //        2. tirar una excepcion y pedirle al diseniador de arquetipos que agregue los terminos faltantes.
-          
-          println archetype.ontology.getTermDefinitionsList().language // hay que ver los idiomas para ver el formato porque no esta coincidiendo!
-          out << 'displayTerm: No hay traduccion para el arquetipo '+ archetype.archetypeId.value + ', codigo ' + code + ' y locale ' + locale.toString()
-       }
-       */
     }
     
-    /** esto es lo mismo que // Ya escala, si no encuentra devuelve un texto CtrlTerminologia.getInstance().getTermino(TerminologyID.create('local', null), code, archetype, locale)
-    private String getTerm(Archetype archetype, String code, Locale locale)
-    {
-       if (!archetype) throw new Exception("Parametro 'archetype' es obligatorio")
-       
-       if (!code) throw new Exception("Parametro 'code' es obligatorio")
-       
-       if (!locale) throw new Exception("Parametro 'locale' es obligatorio")
-       
-       def archetypeTerm = archetype.ontology.termDefinition(locale.toString().toLowerCase().replaceAll("_", "-"), code)
-       
-       
-       // FIXME: si el locale es "es" no deberia escalar.
-       // FIXME: si el locale es "es_AR" el primer y segundo intento son lo mismo, el tema es que el primero intenta con la variante y si no tiene variante, es lo mismo.
-       
-       
-       // pido para el idioma y pais
-       if (!archetypeTerm)
-       {
-           //println "No encuentra termino para intento: " + locale.toString().toLowerCase().replaceAll("_", "-")
-           archetypeTerm = archetype.ontology.termDefinition(locale.language+'-'+locale.country.toLowerCase(), code)
-       }
-       
-       // pido para el idioma
-       if (!archetypeTerm)
-       {
-          //println "No encuentra termino para intento: " + locale.language+'-'+locale.country.toLowerCase()
-          archetypeTerm = archetype.ontology.termDefinition(locale.language, code)
-       }
-       
-       if (archetypeTerm)
-       {
-          //println "Se encuentra termino !!! " + archetypeTerm.getText()
-          //out << archetypeTerm.items.text
-          return archetypeTerm.getText() // Tambien esta el getDescription!!!
-       }
-       else
-       {
-          //println "No encuentra termino luego de escalar a: " + locale.language
-          
-          // FIXME: deberia hacer una de dos cosas> 1. dejar el termino en el idioma por defecto (garantiza que siempre muestra texto),
-          //        2. tirar una excepcion y pedirle al diseniador de arquetipos que agregue los terminos faltantes.
-          
-          //println archetype.ontology.getTermDefinitionsList().language // hay que ver los idiomas para ver el formato porque no esta coincidiendo!
-          //println 'displayTerm: No hay traduccion para el arquetipo '+ archetype.archetypeId.value + ', codigo ' + code + ' y locale ' + locale.toString()
-       }
-       
-       return null
-    }
-    */
     
     // Devuelve una lista de textos en el locale especificado, para cada uno
     // de los codigos en la lista de codigos que se definen dentro de un arquetipo.
@@ -210,13 +120,11 @@ class ArchetypeTagLib {
           if (node.nodeID)
           {
              //println "nodeId: " + node.nodeID + " " + session.locale.language
-             /*
-             def archetypeTerm = archetype.ontology.termDefinition(session.locale.language, node.nodeID) // podria ser null si el termino no esta definido en el arquetipo
-             if (!archetypeTerm) return null // FIXME: deberia seguir recursiva
-             */
              
              // Cuidado el locale tiene formato: es_AR
              // Pero el arquetipo tiene formato: es-ar
+             
+             // FIXME: esto ya lo hace CtrlTerminologia
              
              // pido para todo el locale
              def archetypeTerm = archetype.ontology.termDefinition(session.locale.toString().toLowerCase().replaceAll("_", "-"), node.nodeID) // podria ser null si el termino no esta definido en el arquetipo
