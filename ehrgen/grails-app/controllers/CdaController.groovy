@@ -3,7 +3,6 @@ import hce.core.composition.*
 import util.RMLoader
 import cda.*
 import com.thoughtworks.xstream.XStream
-//import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class CdaController {
 
