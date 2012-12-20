@@ -10,6 +10,7 @@ String PS = System.getProperty("file.separator")
 // idiomas disponibles
 langs = ['es','en'] //,'es_AR'] // ISO 639-1 Code
 locales = [new Locale('es'), new Locale('en')] //, new Locale('es', 'AR')]
+default_locale_string = 'es'
 
 // donde se buscan con templates en disco, corresponde al domino de la HCE.
 // El framework soporta multiples dominios ofreciendo una pantalla
@@ -118,7 +119,8 @@ hce {
     close_record_job_on = false
     
     template_repo = 'templates'+ PS   // luego se pone la path del tipo y el templateId
-    archetype_repo = 'archetypes'+ PS + 'ehr'+ PS // luego se pone la path del tipo y el archetypeId
+    archetype_repo = 'archetypes'+ PS +'ehr'+ PS // luego se pone la path del tipo y el archetypeId
+    uploaded_archetypes_repo = 'archetypes'+ PS +'uploaded'+ PS
 }
 
 openEHR.RMVersion = '1.0.2'
