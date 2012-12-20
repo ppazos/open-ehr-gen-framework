@@ -31,7 +31,9 @@ import templates.constraints.*
 import templates.controls.*
 
 import archetype.ArchetypeIndex
-import archetype_repository.ArchetypeManager
+import archetype.ArchetypeManager
+import archetype.walkthrough.*
+import archetype.walkthrough.actions.SlotResolution
 
 // Para hacer un MOCK de una sesion para setear el locale temporalmente, para generar las pantallas correctamente.
 import org.springframework.web.context.request.RequestContextHolder
@@ -450,7 +452,7 @@ class BootStrap {
         
         // ====================================================================
         // Generacion de gui
-        guiCachingService.generateGUI( templateManager.getLoadedTemplates().values() as List )
+//        guiCachingService.generateGUI( templateManager.getLoadedTemplates().values() as List )
         //
         // ====================================================================
         
@@ -596,6 +598,9 @@ class BootStrap {
    def createArchetypeIndexes()
    {
       def index
+      def slot_index
+      def walk
+      def result
       def man = ArchetypeManager.getInstance()
       def archetypes = man.getLoadedArchetypes() // Map archetypeId -> archetype
       archetypes.each { archetypeId, archetype ->
@@ -605,7 +610,35 @@ class BootStrap {
             type: archetype.archetypeId.rmEntity.toLowerCase()
          )
          
-         // TODO: buscar slots usando el archetype walkthrough
+         
+         // Busca slots usando el archetype walkthrough
+         walk = new ArchetypeWalkthrough()
+         walk.walthroughInit(archetype)
+         walk.walthroughStart(
+            [
+               (walk.EVENT_SLOT): [new SlotResolution()]
+            ],
+            new WalkthroughResult())
+
+         result = walk.walthroughResult()
+
+         //println result as grails.converters.XML
+         //println result.loadedArchetypes
+         //println result.references [archId::path : [archId,...]] // Slots en el arquetipo raiz con los ids referenciados en cada path
+         //println result.cache
+         
+         result.loadedArchetypes.each { archId, arch ->
+         
+            if (archId != archetypeId)
+            {
+               slot_index = new ArchetypeIndex(
+                  archetypeId: archId,
+                  type: arch.archetypeId.rmEntity.toLowerCase()
+               )
+               
+               index.addToSlots( slot_index )
+            }
+         }
          
          // Guardo solo si valida, ej. no guarda indices de tipos structure o item
          if (index.validate())
