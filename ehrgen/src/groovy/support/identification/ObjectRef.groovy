@@ -4,6 +4,7 @@ import support.identification.ObjectID
 
 class ObjectRef {
 
+    // Identificador del servicio que gestiona instancias de clases del tipo 'type'
     String namespace // local, unknown, demographic, ...
     
     /* 
