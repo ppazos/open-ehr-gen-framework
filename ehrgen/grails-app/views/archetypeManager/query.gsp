@@ -252,7 +252,8 @@
   </head>
   <body>
     <div class="nav">
-      <g:link action="query">Reiniciar</g:link>
+      <span class="menuButton"><g:link controller="domain" action="list" class="list">Dominios</g:link></span>
+      <span class="menuButton"><g:link action="query">Reiniciar</g:link></span>
     </div>
     <div class="body">
      
@@ -352,7 +353,8 @@
                       <g:link action="query" params="[path: path, archetypeId: params.archetypeId, conceptName: params.conceptName]">[seleccionar path]</g:link>
                       -->
                       <!-- Si es un nodo interno no puedo seleccionarlo -->
-                      <g:if test="${archetype.node(path).nodeID}">
+                      <%--<g:if test="${archetype.node(path).nodeID}">--%>
+                      <g:if test="${archetype.node(path).rmTypeName == 'ELEMENT'}">
                         <%-- <g:checkBox name="path" value="${path}" checked="${(params.path instanceof String && params.path == path) || (params.path.getClass().isArray() && (params.path as List).contains(path))}" /> --%>
                         <g:checkBox name="paths" value="${path}" checked="${(paths?.contains(path))}" />
                       </g:if>

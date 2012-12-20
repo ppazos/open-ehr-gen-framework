@@ -31,11 +31,11 @@
                   <tbody>
                   <g:each in="${templateMap.values()}" status="i" var="template">
                     <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                      <td>${template.id}</td>
+                      <td>${template.templateId}</td>
                       <td>${template.name}</td>
-                      <td>${lastUseList[template.id]}</td>
+                      <td>${lastUseList[template.templateId]}</td>
                       <td>
-                        <g:link class="delete" action="unload" id="${template.id}">[bajar]</g:link>
+                        <g:link class="delete" action="unload" id="${template.templateId}">[bajar]</g:link>
                       </td>
                     </tr>
                   </g:each>

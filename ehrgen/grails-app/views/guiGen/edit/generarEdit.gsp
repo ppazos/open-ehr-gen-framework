@@ -13,7 +13,7 @@
       var errors = ${errors};
       var errors2 = ${errors2};
       var booleans = {'label.boolean.false':'No', 'label.boolean.true':'Si'}; // TODO: Si y No debe ser i18n
-      var templateId = '${template.id}';
+      var templateId = '${template.templateId}';
       //
       // ======================================================
     
@@ -341,7 +341,7 @@
       <div id="navbar">
         <ul>
           <g:each in="${subsections}" var="subsection">
-            <li ${((template.id==subsection)?'class="active"':'')}>
+            <li ${((template.templateId==subsection)?'class="active"':'')}>
 	          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
 	            <g:if test="${it.hasItem}">
 	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
@@ -359,7 +359,8 @@
     </g:if>
     <%-- Form cacheado --%>
     <g:form url="[controller:'guiGen', action:'save']" class="ehrform" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="templateId" value="${params.templateId}" />
+      <input type="hidden" name="templateId" value="${template.templateId}" />
+      <input type="hidden" name="mode" value="edit" />
       ${form}
       <br/>
       <div class="bottom_actions">

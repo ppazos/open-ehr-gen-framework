@@ -21,11 +21,12 @@
             // es solo uno por como genero el show.
             var elems = $("label."+path);
     
+    /*
     console.group("ELEMS");
             console.log('elems para path: label.'+path);
             console.log(elems);
     console.groupEnd();
-
+    */
             // Cuando la path es a un campo que es parte de una date, elems es siempre vacio
             // y para mostrar la date tengo que esperar al campo que contiene todas las partes.
             if (elems.size()==0) continue;
@@ -202,7 +203,7 @@
                   </g:link>
                   --%>
                   
-                  <g:hasDomainPermit domain="${session.traumaContext.domainPath}" templateId="${subsection}">
+                  <g:hasDomainPermit domain="${domain}" templateId="${subsection}">
                     <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
                       <g:message code="${'section.'+subsection}" />
                     </g:link>
@@ -221,6 +222,15 @@
     <div class="ehrform">
       <%-- Contenido cacheado --%>
       ${content}
+    </div>
+    <br/>
+    
+    <div class="bottom_actions">
+      <g:isNotSignedRecord episodeId="${episodeId}">
+        <%-- show --%>
+        <g:link action="generarShow" id="${id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link> |
+      </g:isNotSignedRecord>
+      <g:link controller="records" action="show" id="${episodeId}"><g:message code="trauma.show.action.back" /></g:link>
     </div>
   </body>
 </html>

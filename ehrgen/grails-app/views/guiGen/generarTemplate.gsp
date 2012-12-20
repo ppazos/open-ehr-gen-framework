@@ -18,7 +18,7 @@ NO SE USA MAS
 	            </g:if>
 	            <g:else>
 	              
-	              <g:hasDomainPermit domain="${folder.name.definingCode.codeString}" templateId="${subsection}">
+	              <g:hasDomainPermit domain="${domain}" templateId="${subsection}">
 		             <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">-${subsection}-
 		               <g:message code="${'section.'+subsection}" />
 		             </g:link>
@@ -37,7 +37,7 @@ NO SE USA MAS
     
     <g:form action="save" class="ehrform" method="post" enctype="multipart/form-data">
     
-      <input type="hidden" name="templateId" value="${template.id}" />
+      <input type="hidden" name="templateId" value="${template.templateId}" />
 	  <!-- TODO: sacar, es solo para test -->
       <%-- TemplateId: ${template.id}<br/> --%>
       <table class="container" cellpadding="0" cellspacing="3">

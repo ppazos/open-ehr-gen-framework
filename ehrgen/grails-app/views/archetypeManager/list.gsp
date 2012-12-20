@@ -57,6 +57,7 @@
   </head>
   <body>
     <div class="nav">
+      <span class="menuButton"><g:link controller="domain" action="list" class="list">Dominios</g:link></span>
       <span class="menuButton"><g:link action="loadAll">Load all</g:link></span>
       <span class="menuButton"><g:link action="unloadAll">Unload all</g:link></span>
       <span class="menuButton"><g:link action="query">Query</g:link></span>

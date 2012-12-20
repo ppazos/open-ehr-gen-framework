@@ -1,4 +1,4 @@
-<%@ page import="archetype_repository.ArchetypeManager" %>
+<%@ page import="archetype.ArchetypeManager" %>
     <div>
       <table cellpadding="0" cellspacing="3">
         <tr>

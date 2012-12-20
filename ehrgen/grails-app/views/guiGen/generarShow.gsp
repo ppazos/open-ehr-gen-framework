@@ -37,7 +37,7 @@
     </g:if>
     <g:form action="save" class="ehrform" method="post" enctype="multipart/form-data">
     
-      <input type="hidden" name="templateId" value="${template.id}" />
+      <input type="hidden" name="templateId" value="${template.templateId}" />
       <input type="hidden" name="mode" value="${mode}" />
       
       <table class="container" cellpadding="0" cellspacing="3">
