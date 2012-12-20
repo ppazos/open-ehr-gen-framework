@@ -3,7 +3,6 @@
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 import org.springframework.util.StringUtils // Para poder parsear strings y obtener locales
                                             // Locale locale = StringUtils.parseLocaleString( it );
