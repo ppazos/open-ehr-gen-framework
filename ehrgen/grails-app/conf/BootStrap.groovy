@@ -30,13 +30,14 @@ import templates.*
 import templates.constraints.*
 import templates.controls.*
 
+import archetype.ArchetypeIndex
+import archetype_repository.ArchetypeManager
+
 // Para hacer un MOCK de una sesion para setear el locale temporalmente, para generar las pantallas correctamente.
 import org.springframework.web.context.request.RequestContextHolder
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.springframework.web.context.support.WebApplicationContextUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
-
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 import gui.GuiManager
 
@@ -44,31 +45,35 @@ import com.thoughtworks.xstream.XStream
 
 class BootStrap {
 
-    def hceService
-    def guiCachingService
+   def hceService
+   def guiCachingService
+   
+   // Reference to Grails application. Lo inyecta.
+   def grailsApplication
     
-    // Reference to Grails application. Lo inyecta.
-    def grailsApplication
-    
-    def init = { servletContext ->
+   def init = { servletContext ->
      
-        println ""
-        println "======= +++++++++ ======="
-        println "======= Bootstrap ======="
-        println "======= +++++++++ ======="
-        println ""
+      println ""
+      println "======= +++++++++ ======="
+      println "======= Bootstrap ======="
+      println "======= +++++++++ ======="
+      println ""
         
         
-        println "- correccion de la TimeZone a la de Montevideo/Buenos Aires"
-        // Correccion de reloj segun uso horario
-        // http://groovy.codehaus.org/JN0545-Dates
-        // Esto si lo corrige!!!!
-        //TimeZone.'default' = TimeZone.getTimeZone('GMT-03:00') //set the default time zone
-        TimeZone.'default' = TimeZone.getTimeZone('America/Montevideo') // Con este considera daylight savings (cambios de +/- una hora por anio)
+      println "- correccion de la TimeZone a la de Montevideo/Buenos Aires"
+      // Correccion de reloj segun uso horario
+      // http://groovy.codehaus.org/JN0545-Dates
+      // Esto si lo corrige!!!!
+      //TimeZone.'default' = TimeZone.getTimeZone('GMT-03:00') //set the default time zone
+      TimeZone.'default' = TimeZone.getTimeZone('America/Montevideo') // Con este considera daylight savings (cambios de +/- una hora por anio)
         
         
         
-        def templateManager = TemplateManager.getInstance()
+      def templateManager = TemplateManager.getInstance()
+      def archetypeManager = ArchetypeManager.getInstance()
+      
+      // Para crear los ARchetypeIndex necesito todos los arquetipos cargados
+      archetypeManager.loadAll()
         
         
         // Parece que no puedo definir el locale sin estar en una sesion de verdad
@@ -117,7 +122,7 @@ class BootStrap {
               
               def domain = new Domain(
                  name: config_domain,
-                 userDefined: false
+                 userDefined: true
               )
               
               /*
@@ -272,7 +277,7 @@ class BootStrap {
         
         // ----------------------------------------------------------------------------
         
-        println " - Creacion de pacientes de prueba"
+        println " - Creacion de personas de prueba"
         
         
         //
@@ -421,25 +426,12 @@ class BootStrap {
         def login_admin = new LoginAuth(user:'admin', pass:'admin', person: persona_admin)
         if (!login_admin.save()) println login_admin.errors
         
-        // /Creacion de pacientes
+        // /Creacion de personas
         // ====================================================================================
 
         
-        // ====================================================================================
-        // Caching de formularios de ingreso de datos para todos los templates
-        
-        // Problema: la generacion de formularios depende del locale (los templates llaman a session.locale.language)
-        //  - opcion 1: que se fije un locale en la config y se genere todo para ese
-        //  - opcion 2: generar vistas para todos los locales que haya en la config
-        
-        // no parece funcar si le paso un session de mentira...
-        //def session = [locale:[language:"es"]]
-        
         //List domains = grailsApplication.config.domains // Ya esta definida mas arriba
-        GuiManager guiManager = GuiManager.getInstance()
-        
-        
-        String PS = System.getProperty("file.separator")
+        //String PS = System.getProperty("file.separator")
         
         
         // Arma workflows para cada domain
@@ -449,8 +441,7 @@ class BootStrap {
         
         // Auxiliares para la generacion del HTML
         String templateId
-        String form
-        File archivo
+        
         
         
         // Carga del repo todos los templates
@@ -459,85 +450,10 @@ class BootStrap {
         
         // ====================================================================
         // Generacion de gui
-        def templates = templateManager.getLoadedTemplates() // Map templateId -> template
-        
-        String pathToStaticViews
-        
-        // dentro del directorio /grails-app/views al template _generarCreate.gsp
-        String pathToGuiGenCreate   = 'guiGen'+ PS +'create'+ PS +'_generarCreate' // dentro del directorio /grails-app/views al template _generarCreate.gsp
-        String pathToGuiGenShow     = 'guiGen'+ PS +'show'  + PS +'_generarShow'
-        String pathToGuiGenEdit     = 'guiGen'+ PS +'edit'  + PS +'_generarEdit'
-        String pathToGeneratedViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
-        
-        
-        templates.values().each { tpl ->
-        
-           println "GUIGEN TEMPLATE: " + tpl.templateId
-           
-           pathToStaticViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'hce'+ PS + tpl.templateId +'.gsp'
-           
-           // Si no existe la vista estatica, genero create, show y edit.
-           // Si existe, solo genero show
-           if (!new File(pathToStaticViews).exists())
-           {
-              // Se genera cada vista para cada locale disponible
-              grailsApplication.config.langs.eachWithIndex { lang, i ->
-              
-                 // FIX: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=62
-                 //Locale.setDefault( grailsApplication.config.locales[i] ) // No funciona
-                 // DatePIcker usa: new DateFormatSymbols(RCU.getLocale(request))
-                 
-                 //println 'lang: '+ lang
-                 //println 'locale: '+ grailsApplication.config.locales[i].toString()
-                 
-                 //form = guiCachingService.template2String('guiGen\\create\\_generarCreate', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
-                 form = guiCachingService.template2String(pathToGuiGenCreate, [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: hacerlo para todos los locales
-                 form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
-                 //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_create_"+ lang +".htm")
-                 archivo = new File(pathToGeneratedViews + tpl.templateId + "_create_"+ lang +".htm")
-                 archivo.write(form)
-                 guiManager.add(tpl.templateId, "create", form)
-                 
-                 // idem para el show
-                 //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
-                 form = guiCachingService.template2String(pathToGuiGenShow, [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
-                 
-                 // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=59
-                 //form = form.replaceAll('<label class="(.*?)"(/s)/>', '<label class="$1"> </label>')
-                 form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
-                 //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_show_"+ lang +".htm")
-                 archivo = new File(pathToGeneratedViews + tpl.templateId + "_show_"+ lang +".htm")
-                 archivo.write(form)
-                 guiManager.add(tpl.templateId, "show", form)
-                 
-                 // idem para edit
-                 //form = guiCachingService.template2String('guiGen\\edit\\_generarEdit', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
-                 form = guiCachingService.template2String(pathToGuiGenEdit, [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
-                 form = form.replace('x</textarea>', '</textarea>') // reemplaza todo, pero sin usar regex
-                 //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_edit_"+ lang +".htm")
-                 archivo = new File(pathToGeneratedViews + tpl.templateId + "_edit_"+ lang +".htm")
-                 archivo.write(form)
-                 guiManager.add(tpl.templateId, "edit", form)
-              }
-           }
-           else // Genera solo show
-           {       
-              // Se genera cada vista para cada locale disponible
-              grailsApplication.config.langs.eachWithIndex { lang, i ->
-              
-                 // idem para el show
-                 //form = guiCachingService.template2String('guiGen\\show\\_generarShow', [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]]) // FIXME: i18n
-                 form = guiCachingService.template2String(pathToGuiGenShow, [template:tpl, lang:lang, locale:grailsApplication.config.locales[i]])
-                 form = form.replaceAll('<label class="(.*?)"(\\s*?)/>', '<label class="$1"> </label>')
-                 //archivo = new File(".\\grails-app\\views\\genViews\\" + tpl.templateId + "_show_"+ lang +".htm")
-                 archivo = new File(pathToGeneratedViews + tpl.templateId + "_show_"+ lang +".htm")
-                 archivo.write(form)
-                 guiManager.add(tpl.templateId, "show", form)
-              }
-           }
-        }
-        // /Generacion de gui
+        guiCachingService.generateGUI( templateManager.getLoadedTemplates().values() as List )
+        //
         // ====================================================================
+        
         
         // Stage ->* Templates
         Map domainTemplates
@@ -660,13 +576,46 @@ class BootStrap {
         // /Creacion de episodio
         */
         
+        println "Create Archetype Indexes"
+        createArchetypeIndexes()
+        
         println ""
         println "======= +++++++++ ======="
         println "======= /Bootstrap ======="
         println "======= +++++++++ ======="
         println ""
         
-     }
-     def destroy = {
-     }
+   }
+   def destroy = {
+   }
+   
+   /**
+    * Los indices a arquetipos en la db se usan para editar templates desde la gui.
+    * Luego se usaran para otras tareas de gestion de arquetipos desde la gui.
+    */
+   def createArchetypeIndexes()
+   {
+      def index
+      def man = ArchetypeManager.getInstance()
+      def archetypes = man.getLoadedArchetypes() // Map archetypeId -> archetype
+      archetypes.each { archetypeId, archetype ->
+
+         index = new ArchetypeIndex(
+            archetypeId: archetypeId,
+            type: archetype.archetypeId.rmEntity.toLowerCase()
+         )
+         
+         // TODO: buscar slots usando el archetype walkthrough
+         
+         // Guardo solo si valida, ej. no guarda indices de tipos structure o item
+         if (index.validate())
+         {
+            index.save()
+         }
+         else
+         {
+            //println index.errors
+         }
+      }
+   }
 } 
