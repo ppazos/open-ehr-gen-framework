@@ -15,7 +15,7 @@ in: template
                 <g:if test="${node}">
                   <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
                   <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                  <g:render template="guiGen/edit/${templateName}"
+                  <g:render template="/guiGen/edit/${templateName}"
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
@@ -36,7 +36,7 @@ in: template
                 <g:if test="${node}">
                   <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
                   <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                  <g:render template="guiGen/edit/${templateName}"
+                  <g:render template="/guiGen/edit/${templateName}"
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
@@ -55,7 +55,7 @@ in: template
                 <g:if test="${node}">
                   <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
                   <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                  <g:render template="guiGen/edit/${templateName}"
+                  <g:render template="/guiGen/edit/${templateName}"
                             model="[(templateName): node,
                                     archetype: archRef.getReferencedArchetype(),
                                     archetypeService: archetypeService,
@@ -75,7 +75,7 @@ in: template
               <g:each in="${archRef.getReferencedConstraints()}" var="node">
                 <g:set var="strclass" value='${node.getClass().getSimpleName()}'/>
                 <g:set var="templateName" value="${strclass[0].toLowerCase()+strclass.substring(1)}" />
-                <g:render template="guiGen/edit/${templateName}"
+                <g:render template="/guiGen/edit/${templateName}"
                           model="[(templateName): node,
                                   archetype: archRef.getReferencedArchetype(),
                                   archetypeService: archetypeService,

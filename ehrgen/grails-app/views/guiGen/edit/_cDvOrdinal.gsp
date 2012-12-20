@@ -38,7 +38,7 @@ if (values.size()>0)
 
 <g:if test="${control && control.type=='radioGroup'}">
   <g:each in="${values2}" var="entry">
-    <label class="${template.id}_${entry.key.split(/\|\|/)[0]}"><!-- necesita id por el CSS, ojo si es un nodo multiple, no puede repetirse el id-->
+    <label class="${template.templateId}_${entry.key.split(/\|\|/)[0]}"><!-- necesita id por el CSS, ojo si es un nodo multiple, no puede repetirse el id-->
       <input type="radio" value="${entry.key}" name="${fields.getField(path)}" />
       ${entry.value}
     </label>

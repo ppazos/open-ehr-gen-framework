@@ -23,7 +23,7 @@
       <div id="navbar">
         <ul>
           <g:each in="${subsections}" var="subsection">
-            <li ${((template.id==subsection)?'class="active"':'')}>
+            <li ${((template.templateId==subsection)?'class="active"':'')}>
               <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
                 <g:if test="${it.hasItem}">
                   <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
@@ -41,7 +41,7 @@
     </g:if>
     <g:form action="save" class="ehrform" method="post" enctype="multipart/form-data">
     
-      <input type="hidden" name="templateId" value="${template.id}" />
+      <input type="hidden" name="templateId" value="${template.templateId}" />
       <input type="hidden" name="mode" value="${mode}" />
       
       <table class="container" cellpadding="0" cellspacing="3">

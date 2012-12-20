@@ -40,22 +40,7 @@ if (refPath) _refPath = refPath
   <div class="${cComplexObject.rmTypeName} ${class1} ${class2} ${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())} ${((cComplexObject.occurrences.isUpperUnbounded())?'multiple':'')}"><%-- FIXME: no quiero mostrar esto para campos simples, solo para sections, clusters y elements --%>
     <!-- PATH: ${archetype.archetypeId.value +_refPath+ cComplexObject.path()} -->
     <g:if test="${cComplexObject.nodeID}">
-      <!-- Si es item structure no pone el titulo -->
-      <%--
-      <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, cComplexObject.nodeID)}" />
-      <g:if test="${!archetypeTerm}">
-         < % - - Si es un nodo hoja, siempre cae aca porque no tiene ID - - % >
-         El termino con codigo [${cComplexObject.nodeID}] no esta definido en el arquetipo, 
-         posiblemente el termino no esta definido para el lenguaje ${lang}.
-         <br/><br/>
-         Puedo hacer Term Bindings a terminilogias externas, usando path based bindins (adl.pdf pag 100).
-      </g:if>
-      <g:else>
-         <span class="label">
-           ${archetypeTerm.text}:
-         </span>
-      </g:else>
-      --%>
+      <!-- Si es item structure no muestra el titulo -->
         
       <span class="label">
         <g:displayTerm archetype="${archetype}" code="${cComplexObject.nodeID}" locale="${locale}" />:

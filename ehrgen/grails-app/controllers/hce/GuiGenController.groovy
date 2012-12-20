@@ -13,10 +13,11 @@ import org.openehr.am.openehrprofile.datatypes.text.CCodePhrase
 
 import hce.HceService
 
-import archetype_repository.ArchetypeManager
+import domain.Domain
+import archetype.ArchetypeManager
 import hce.ArchetypeService
 import templates.TemplateManager
-import templates.tom.* // Template
+import templates.* // Template
 
 import events.*
 
@@ -36,6 +37,10 @@ import grails.converters.*
 
 import util.FieldNames
 import gui.GuiManager
+
+import domain.Domain
+import workflow.WorkFlow
+import workflow.Stage
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -66,67 +71,6 @@ class GuiGenController {
     */
    // ============================= GESTION DE GUIS generadas ======================================
    
-   
-   
-   /**
-    * Devuelve un Map con los templates configurados para el dominio actual.
-    * 
-    * this.getDomainTemplates()
-    * 
-    * @return Map
-    */
-   private Map getDomainTemplates()
-   {
-      //def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
-      //def domainTemplates = grailsApplication.config.templates
-      //routes.each{
-      //   domainTemplates = domainTemplates[it]
-      //}
-      
-      // =============================================================
-      // Nuevo: para devolver los templates del dominio seleccionado
-      def domain = session.traumaContext.domainPath
-      def domainTemplates = grailsApplication.config.templates2."$domain"
-      
-      // =============================================================
-      
-      return domainTemplates
-   }
-   
-   /**
-    * Devuelve todos los prefijos de identificadores de templates del domino actual.
-    * @return
-    */
-   private List getSections()
-   {
-      def sections = []
-      this.getDomainTemplates().keySet().each {
-
-         sections << it
-      }
-      
-      return sections
-   }
-   
-   /**
-    * Obtiene las subsecciones de una seccion dada.
-    * 
-    * this.getSubsections('EVALUACION_PRIMARIA')
-    * 
-    * @param section es el prefijo del id de un template
-    * @return List
-    */
-   private List getSubsections( String section )
-   {
-      // Lista de ids de templates
-      def subsections = []
-
-      this.getDomainTemplates()."$section".each { subsection ->
-         subsections << section + "-" + subsection
-      }
-      
-      return subsections
-   }
    
    def index = {
       redirect(action:'listarTemplates')
@@ -281,6 +225,16 @@ class GuiGenController {
          return
       }
 
+      /**
+       * FIXME: el id del template no deberia depender del nombre de la seccion/etapa
+       *        donde se va a usar, ej. dos dominios pueden usar el mismo template en
+       *        etapas que se llaman distinto.
+       *        Ej. teniendo una etapa llamada "primer etapa" y un template llamado
+       *        "INGRESO-triage.v1" busca cargar el template "primer etapa-triage.v1".
+       *        Antes INGRESO era el nombre de la seccion/etapa y estaba duro en el
+       *        id del template, pero reduce reusabilidad del template.
+       */
+      
       def templateId = params.templateId // es el nombre del archivo
       Template template = TemplateManager.getInstance().getTemplate( templateId )
       
@@ -301,14 +255,15 @@ class GuiGenController {
       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
       def patient = hceService.getPatientFromComposition( composition )
 
-      def sections = this.getSections()
-      def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
+      def sections = util.TemplateUtils.getSections(session)
+      def subsections = util.TemplateUtils.getSubsections(templateId.split("-")[0], session) // this.getSubsections('EVALUACION_PRIMARIA')
       
      
      // Igual que Records.show
      // Necesario para verificar permisos sobre el menu
      def completeSections = [:] // secciones con sus templates
-     def domainTemplates = this.getDomainTemplates()
+     def domainTemplates = util.TemplateUtils.getDomainTemplates(session)
+     
      domainTemplates.keySet().each { sectionPrefix ->
         domainTemplates."$sectionPrefix".each { section ->
          
@@ -345,9 +300,10 @@ class GuiGenController {
                      subsections: subsections,
                      episodeId: session.traumaContext?.episodioId,
                      // userId: session.traumaContext.userId, // no se usa
-                     allSubsections: this.getDomainTemplates(),
+                     allSubsections: util.TemplateUtils.getDomainTemplates(session),
                      form: guiManager.get(templateId, 'create', session.locale.toString()),
-                     completeSections: completeSections
+                     completeSections: completeSections,
+					 domain: Domain.get(session.traumaContext.domainId)
                     ] )
             return
          }
@@ -363,8 +319,9 @@ class GuiGenController {
                      subsections: subsections,
                      episodeId: session.traumaContext?.episodioId,
                      //userId: session.traumaContext.userId,
-                     allSubsections: this.getDomainTemplates(),
-                     completeSections: completeSections
+                     allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                     completeSections: completeSections,
+					 domain: Domain.get(session.traumaContext.domainId)
                     ] )
             return
          }
@@ -412,13 +369,14 @@ class GuiGenController {
       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
       def patient = hceService.getPatientFromComposition( composition )
 
-      def sections = this.getSections()
-      def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
+      def sections = util.TemplateUtils.getSections(session)
+      def subsections = util.TemplateUtils.getSubsections(templateId.split("-")[0], session) // this.getSubsections('EVALUACION_PRIMARIA')
       
      // Igual que Records.show
      // Necesario para verificar permisos sobre el menu
      def completeSections = [:] // secciones con sus templates
-     def domainTemplates = this.getDomainTemplates()
+     def domainTemplates = util.TemplateUtils.getDomainTemplates(session)
+     
      domainTemplates.keySet().each { sectionPrefix ->
         domainTemplates."$sectionPrefix".each { section ->
          
@@ -443,9 +401,9 @@ class GuiGenController {
       //println f.getText()
       GuiManager guiManager = GuiManager.getInstance()
       
-      println "-----------------------------------------"
+      //println "-----------------------------------------"
       //println guiManager.get(templateId, "show") // OK
-      println "pathValores: " + pv.params
+      //println "pathValores: " + pv.params
       
       // ===============================================================================
       // FIXED: el problema se resolvio en AjaxApiController.save porque para los coded
@@ -514,25 +472,61 @@ class GuiGenController {
       }
       */
       
+      if (params.mode=='edit')
+      {
+         render(view:'edit/generarEdit', model:
+         [
+           patient:   patient,
+           template:  template,
+           //templateId: templateId,
+           sections:  sections,
+           subsections: subsections,
+           completeSections: completeSections,
+           allSubsections: util.TemplateUtils.getDomainTemplates(session),
+           episodeId: session.traumaContext?.episodioId,
+           
+           // content es para el generateShow, para generateEdit se usa form
+           //content: guiManager.get(templateId, "edit", session.locale.toString()),
+           data: pv.params as JSON,
+           domain: Domain.get(session.traumaContext.domainId),
+           id: params.id,
+           
+           // Para el edit, copiado del edit de correccion de errores de validacion en el save
+           form: guiManager.get(templateId, "edit", session.locale.toString()),
+           errors: [] as JSON,   // No hay errores, estoy editando algo ya validado y guardado
+           errors2: [] as JSON,  // No hay errores, estoy editando algo ya validado y guardado
+           
+           /*
+           rmNode:    rmNode,
+           index:     hceService.getRMRootsIndex(template, rmNode),
+           episodeId: session.traumaContext?.episodioId, // necesario para el layout
+           patient:   patient,
+           userId:    session.traumaContext.userId,
+           */
+         ])
+         return
+      }
       
       //if ( f.exists() )
       //{
          //println 'vista cacheada!'
-         render( view: 'show/generarShow',
-               model: [
-                     patient: patient,
-                     template: template,
-                     templateId: templateId, // FIXME: este incluye la version y el id del template no, deberian ser iguales.
-                     sections: sections,
-                     subsections: subsections,
-                     completeSections: completeSections,
-                     episodeId: session.traumaContext?.episodioId,
-                     //userId: session.traumaContext.userId,
-                     allSubsections: this.getDomainTemplates(),
-                     //content: f.getText(),
-                     content: guiManager.get(templateId, "show", session.locale.toString()),
-                     data: pv.params as JSON
-                    ] )
+         render( view: 'show/generarShow', model:
+         [
+            patient:    patient,
+            template:   template,
+            templateId: templateId, // FIXME: este incluye la version y el id del template no, deberian ser iguales.
+            sections: sections,
+            subsections: subsections,
+            completeSections: completeSections,
+            //userId: session.traumaContext.userId,
+            allSubsections: util.TemplateUtils.getDomainTemplates(session),
+            episodeId: session.traumaContext?.episodioId,
+            //content: f.getText(),
+            content: guiManager.get(templateId, "show", session.locale.toString()),
+            data: pv.params as JSON,
+            domain: Domain.get(session.traumaContext.domainId),
+            id: params.id
+         ])
          return
       //}
       //else
@@ -583,6 +577,12 @@ class GuiGenController {
             //XStream xstream = new XStream()
             //println "COMPONENT ANTES"
             //println xstream.toXML(comp)
+            
+            // Elimina el cache de valores que tiene una referencia al
+            // item sino salta una restricion de integridad del SQL.
+            def cache = PathValores.findByItem(item)
+            cache.delete(flush:true)
+            
             
             comp.removeFromContent(item)
    
@@ -907,8 +907,9 @@ class GuiGenController {
                   form: guiManager.get(params.templateId, "create", session.locale.toString()),
                   episodeId: session.traumaContext?.episodioId, // necesario para el layout
                   //userId: session.traumaContext.userId,
-                  subsections: this.getSubsections(params.templateId.split("-")[0]),
-                  allSubsections: this.getDomainTemplates()
+                  subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
+                  allSubsections: util.TemplateUtils.getDomainTemplates(session),
+				      domain: Domain.get(session.traumaContext.domainId)
                 ]
                )
          return
@@ -946,8 +947,9 @@ class GuiGenController {
                   form: guiManager.get(params.templateId, "create", session.locale.toString()),
                   episodeId: session.traumaContext?.episodioId, // necesario para el layout
                   //userId: session.traumaContext.userId,
-                  subsections: this.getSubsections(params.templateId.split("-")[0]),
-                  allSubsections: this.getDomainTemplates()
+                  subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
+                  allSubsections: util.TemplateUtils.getDomainTemplates(session),
+				      domain: Domain.get(session.traumaContext.domainId)
                 ]
                )
          return
@@ -1015,8 +1017,9 @@ class GuiGenController {
                   errors: errors as JSON,
                   errors2: bindingAOMRM.errors as JSON,
                   episodeId: session.traumaContext?.episodioId, // necesario para el layout
-                  subsections: this.getSubsections(params.templateId.split("-")[0]),
-                  allSubsections: this.getDomainTemplates()
+                  subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
+                  allSubsections: util.TemplateUtils.getDomainTemplates(session),
+				      domain: Domain.get(session.traumaContext.domainId)
                 ]
                )
          return
@@ -1584,31 +1587,32 @@ class GuiGenController {
 
       
       // NECESARIO PARA EL MENU
-      def sections = this.getSections()
+      def sections = util.TemplateUtils.getSections(session)
       //def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
       
-     // Igual que Records.show
-     // Necesario para verificar permisos sobre el menu
-     def completeSections = [:] // secciones con sus templates
-     def domainTemplates = this.getDomainTemplates()
-     domainTemplates.keySet().each { sectionPrefix ->
-        domainTemplates."$sectionPrefix".each { section ->
+      // Igual que Records.show
+      // Necesario para verificar permisos sobre el menu
+      def completeSections = [:] // secciones con sus templates
+      def domainTemplates = util.TemplateUtils.getDomainTemplates(session)
+     
+      domainTemplates.keySet().each { sectionPrefix ->
+         domainTemplates."$sectionPrefix".each { section ->
          
-           if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
+            if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
          
-           // Tiro la lista de esto para cada "section prefix" que son los templates
-           // de las subsecciones de la seccion principal.
-           //println sectionPrefix + "-" + section
-           completeSections[sectionPrefix] << sectionPrefix + "-" + section
-        }
-     }
+            // Tiro la lista de esto para cada "section prefix" que son los templates
+            // de las subsecciones de la seccion principal.
+            //println sectionPrefix + "-" + section
+            completeSections[sectionPrefix] << sectionPrefix + "-" + section
+         }
+      }
       
       return [composition: composition,
               // userId: session.traumaContext.userId,
               patient: patient,
               episodeId: session.traumaContext?.episodioId,
               sections: sections, // necesario para el menu
-              allSubsections: this.getDomainTemplates(),
+              allSubsections: util.TemplateUtils.getDomainTemplates(session),
               completeSections: completeSections
              ]
    }
