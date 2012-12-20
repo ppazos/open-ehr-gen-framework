@@ -13,6 +13,14 @@ language
 				["organisation"] = <"University of Heidelberg">
 			>
 		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+				["email"] = <"pablo.pazos@cabolabs.com">
+			>
+		>
 	>
 description
 	original_author = <
@@ -30,6 +38,12 @@ description
 		>
 		["en"] = <
 			language = <[ISO_639-1::en]>
+			purpose = <"To record instructions regarding laboratory request">
+			use = <"">
+			misuse = <"">
+		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
 			purpose = <"To record instructions regarding laboratory request">
 			use = <"">
 			misuse = <"">
@@ -70,6 +84,18 @@ ontology
 			>
 		>
 		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Instructions for a laboratory request to be carried out">
+					text = <"Laboratory request">
+				>
+				["at0001"] = <
+					description = <"Individual lab request">
+					text = <"Lab request">
+				>
+			>
+		>
+      ["es"] = <
 			items = <
 				["at0000"] = <
 					description = <"Instructions for a laboratory request to be carried out">

@@ -13,6 +13,14 @@ language
 				["organisation"] = <"University of Heidelberg, Central Queensland University">
 			>
 		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+				["email"] = <"pablo.pazos@cabolabs.com">
+			>
+		>
 	>
 description
 	original_author = <
@@ -28,6 +36,13 @@ description
 		>
 		["en"] = <
 			language = <[ISO_639-1::en]>
+			purpose = <"For recording the instructions relating to transfusion">
+			use = <"">
+			keywords = <"transfusion", "blood">
+			misuse = <"">
+		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
 			purpose = <"For recording the instructions relating to transfusion">
 			use = <"">
 			keywords = <"transfusion", "blood">
@@ -164,6 +179,58 @@ ontology
 			>
 		>
 		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"The instructions for giving a transfusion">
+					text = <"Instructions for transfusion">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"new activity">
+				>
+				["at0002"] = <
+					description = <"@ internal @">
+					text = <"Tree">
+				>
+				["at0003"] = <
+					description = <"The blood product to be administered">
+					text = <"Type of Blood unit">
+				>
+				["at0004"] = <
+					description = <"The number of units to be transfused">
+					text = <"Number of units">
+				>
+				["at0005"] = <
+					description = <"Special requirements for blood product">
+					text = <"Special requirement">
+				>
+				["at0006"] = <
+					description = <"The duration of transfusion for each unit">
+					text = <"Transfusion duration per unit">
+				>
+				["at0007"] = <
+					description = <"A group of special requirements stipulated for the transfusion">
+					text = <"Special requirements">
+				>
+				["at0008"] = <
+					description = <"*">
+					text = <"Rate of transfusion">
+				>
+				["at0009"] = <
+					description = <"*">
+					text = <"Reason for transfusion">
+				>
+				["at0010"] = <
+					description = <"*">
+					text = <"Amount">
+				>
+				["at0011"] = <
+					description = <"The volume of the product to be transfused for paediatric and some specific purposes">
+					text = <"Volume">
+				>
+			>
+		>
+      ["es"] = <
 			items = <
 				["at0000"] = <
 					description = <"The instructions for giving a transfusion">

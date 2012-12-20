@@ -24,13 +24,13 @@ description
 	details = <
 		["de"] = <
 			language = <[ISO_639-1::de]>
-			purpose = <"">
+			purpose = <"dfg">
 			use = <"">
 			misuse = <"">
 		>
 		["en"] = <
 			language = <[ISO_639-1::en]>
-			purpose = <"">
+			purpose = <"sdfgsdfgs">
 			use = <"">
 			misuse = <"">
 		>

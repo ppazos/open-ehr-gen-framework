@@ -5,6 +5,16 @@ concept
 	[at0000]	-- Triage evaluation
 language
 	original_language = <[ISO_639-1::en]>
+   translations = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+				["email"] = <"pablo.pazos@cabolabs.com">
+			>
+		>
+   >
 description
 	original_author = <
 		["name"] = <"Heather Leslie">
@@ -15,6 +25,13 @@ description
 	details = <
 		["en"] = <
 			language = <[ISO_639-1::en]>
+			purpose = <"An evaluative statement for the conclusions or summary by a clinician regarding need for priority of treatment">
+			use = <"">
+			keywords = <"triage", "evaluation", "assessment">
+			misuse = <"">
+		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
 			purpose = <"An evaluative statement for the conclusions or summary by a clinician regarding need for priority of treatment">
 			use = <"">
 			keywords = <"triage", "evaluation", "assessment">
@@ -51,6 +68,46 @@ definition
 ontology
 	term_definitions = <
 		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"The evaluation of need for immediacy of treatment">
+					text = <"Triage evaluation">
+				>
+				["at0001"] = <
+					description = <"@ internal @">
+					text = <"Tree">
+				>
+				["at0002"] = <
+					description = <"Record of need for prioritisation of treatment">
+					text = <"Triage evaluation">
+				>
+				["at0008"] = <
+					description = <"The rationale for the evaluation provided">
+					text = <"Rationale">
+				>
+				["at0014"] = <
+					description = <"*">
+					text = <"Immediate">
+				>
+				["at0015"] = <
+					description = <"*">
+					text = <"Very urgent">
+				>
+				["at0016"] = <
+					description = <"*">
+					text = <"Urgent">
+				>
+				["at0017"] = <
+					description = <"*">
+					text = <"Standard">
+				>
+				["at0018"] = <
+					description = <"*">
+					text = <"Non-urgent">
+				>
+			>
+		>
+      ["es"] = <
 			items = <
 				["at0000"] = <
 					description = <"The evaluation of need for immediacy of treatment">

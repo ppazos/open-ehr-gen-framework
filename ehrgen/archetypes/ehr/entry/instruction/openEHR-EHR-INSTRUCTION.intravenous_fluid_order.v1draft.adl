@@ -13,6 +13,14 @@ language
 				["organisation"] = <"University of Heidelberg">
 			>
 		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+				["email"] = <"pablo.pazos@cabolabs.com">
+			>
+		>
 	>
 description
 	original_author = <
@@ -31,6 +39,13 @@ description
 		>
 		["en"] = <
 			language = <[ISO_639-1::en]>
+			purpose = <"Record an order for intravenous fluids to be administered">
+			use = <"">
+			keywords = <"intravenous", "fluid ", "order", "IV">
+			misuse = <"">
+		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
 			purpose = <"Record an order for intravenous fluids to be administered">
 			use = <"">
 			keywords = <"intravenous", "fluid ", "order", "IV">
@@ -72,6 +87,18 @@ ontology
 			>
 		>
 		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Record of intravenous fluid order">
+					text = <"Intravenous fluid order">
+				>
+				["at0001"] = <
+					description = <"*">
+					text = <"new activity">
+				>
+			>
+		>
+      ["es"] = <
 			items = <
 				["at0000"] = <
 					description = <"Record of intravenous fluid order">

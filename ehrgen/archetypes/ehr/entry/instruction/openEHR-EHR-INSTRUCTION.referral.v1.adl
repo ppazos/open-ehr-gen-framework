@@ -13,6 +13,14 @@ language
 				["organisation"] = <"University of Heidelberg, Central Queensland University">
 			>
 		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+				["email"] = <"pablo.pazos@cabolabs.com">
+			>
+		>
 	>
 description
 	original_author = <
@@ -29,6 +37,13 @@ description
 		>
 		["en"] = <
 			language = <[ISO_639-1::en]>
+			purpose = <"For recording a request for care (referral to) a second health provider">
+			use = <"">
+			keywords = <"refer", "request", "order">
+			misuse = <"">
+		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
 			purpose = <"For recording a request for care (referral to) a second health provider">
 			use = <"">
 			keywords = <"refer", "request", "order">
@@ -70,6 +85,18 @@ ontology
 			>
 		>
 		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"A request for health care from one provider to a second provider">
+					text = <"Referral to second provider">
+				>
+				["at0001"] = <
+					description = <"The activity of referring to a second health provider">
+					text = <"Refer">
+				>
+			>
+		>
+      ["es"] = <
 			items = <
 				["at0000"] = <
 					description = <"A request for health care from one provider to a second provider">

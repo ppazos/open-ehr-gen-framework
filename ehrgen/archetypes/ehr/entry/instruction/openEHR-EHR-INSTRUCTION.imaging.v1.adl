@@ -5,6 +5,16 @@ concept
 	[at0000]	-- Imaging request
 language
 	original_language = <[ISO_639-1::en]>
+   translations = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+				["email"] = <"pablo.pazos@cabolabs.com">
+			>
+		>
+   >
 description
 	original_author = <
 		["name"] = <"Sam Heard">
@@ -15,6 +25,13 @@ description
 	details = <
 		["en"] = <
 			language = <[ISO_639-1::en]>
+			purpose = <"For recording information about a request for diagnostic imaging services.">
+			use = <"For clinicians to order diagnostic imaging services for a person and record this request in the EHR.">
+			keywords = <"Xray", "ultrasound", "scan", "MRI", "CT", "CAT", "nuclear">
+			misuse = <"Not for recording findings - Use openEHR-EHR-OBSERVATION.">
+		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
 			purpose = <"For recording information about a request for diagnostic imaging services.">
 			use = <"For clinicians to order diagnostic imaging services for a person and record this request in the EHR.">
 			keywords = <"Xray", "ultrasound", "scan", "MRI", "CT", "CAT", "nuclear">
@@ -44,6 +61,18 @@ definition
 ontology
 	term_definitions = <
 		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"Request for imaging services">
+					text = <"Imaging request">
+				>
+				["at0001"] = <
+					description = <"Information about the imaging action(s) to be carried out">
+					text = <"Imaging activity">
+				>
+			>
+		>
+      ["es"] = <
 			items = <
 				["at0000"] = <
 					description = <"Request for imaging services">

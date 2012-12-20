@@ -13,6 +13,14 @@ language
 				["organisation"] = <"University of Heidelberg, Central Queensland University">
 			>
 		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+				["email"] = <"pablo.pazos@cabolabs.com">
+			>
+		>
 	>
 description
 	original_author = <
@@ -31,6 +39,13 @@ description
 		>
 		["en"] = <
 			language = <[ISO_639-1::en]>
+			purpose = <"For recording a medication order, which may involve more than one activity, but all have the same structure.">
+			use = <"For recording an instruction about medication.">
+			keywords = <"prescribe", "medication order", "order">
+			misuse = <"Do not use for recording administration, dispensing etc. Use openEHR-EHR-ACTION.medication for these recordings.">
+		>
+      ["es"] = <
+			language = <[ISO_639-1::es]>
 			purpose = <"For recording a medication order, which may involve more than one activity, but all have the same structure.">
 			use = <"For recording an instruction about medication.">
 			keywords = <"prescribe", "medication order", "order">
@@ -74,6 +89,18 @@ ontology
 			>
 		>
 		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"An order or instruction created by a clinician which specifies which medication to take, when, for how long etc.">
+					text = <"Medication order">
+				>
+				["at0001"] = <
+					description = <"Information about the medication action(s) to be carried out">
+					text = <"Medication activity">
+				>
+			>
+		>
+      ["es"] = <
 			items = <
 				["at0000"] = <
 					description = <"An order or instruction created by a clinician which specifies which medication to take, when, for how long etc.">
