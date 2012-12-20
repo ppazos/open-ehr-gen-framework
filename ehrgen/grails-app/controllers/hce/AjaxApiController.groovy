@@ -11,6 +11,7 @@ import com.thoughtworks.xstream.XStream
 // TEST BINDER
 import binding.BindingAOMRM
 
+import domain.Domain
 import hce.core.composition.* // Composition y EventContext
 
 import hce.HceService
@@ -38,68 +39,7 @@ class AjaxApiController {
        //render PathValores.get(1).params as JSON
        render PathValores.list(params).params as JSON
     }
-    
-    
-    // FIXME: tambien esta implementadas en GuiGenController
-    
-    /**
-     * Devuelve un Map con los templates configurados para el dominio actual.
-     *
-     * this.getDomainTemplates()
-     *
-     * @return Map
-     */
-    private Map getDomainTemplates()
-    {
-        //def routes = grailsApplication.config.domain.split('/') // [hce, trauma]
-        //def domainTemplates = grailsApplication.config.templates
-        //routes.each{
-        //    domainTemplates = domainTemplates[it]
-        //}
-        //println domainTemplates
-        
-        // =============================================================
-        // Nuevo: para devolver los templates del dominio seleccionado
-        def domain = session.traumaContext.domainPath
-        def domainTemplates = grailsApplication.config.templates2."$domain"
-        // =============================================================
-        
-        return domainTemplates
-    }
-    
-    /**
-     * Devuelve todos los prefijos de identificadores de templates del domino actual.
-     * @return
-     */
-    private List getSections()
-    {
-        def sections = []
-        this.getDomainTemplates().keySet().each {
-            sections << it
-        }
-        
-        return sections
-    }
-    
-    /**
-     * Obtiene las subsecciones de una seccion dada.
-     *
-     * this.getSubsections('EVALUACION_PRIMARIA')
-     *
-     * @param section es el prefijo del id de un template
-     * @return List
-     */
-    private List getSubsections( String section )
-    {
-        // Lista de ids de templates
-        def subsections = []
 
-        this.getDomainTemplates()."$section".each { subsection ->
-           subsections << section + "-" + subsection
-        }
-        
-        return subsections
-    }
     
     
     // Prueba
@@ -267,7 +207,7 @@ class AjaxApiController {
         //println pathValor.toString()
         //println xstream.toXML(rmobj)
         
-        Composition comp = Composition.get(session.traumaContext.episodioId)
+        Composition comp = Composition.get(session.ehrSession.episodioId)
 
         // Idem al chequeo de GuiGenController.save, si ya existe el ContentItem y
         // es mode=edit, ser borra el viejo y se guarda el nuevo CI.
@@ -301,7 +241,7 @@ class AjaxApiController {
                 
                 // ==============================================================================
                 // Model: Paciente del episodio seleccionado
-                def composition = Composition.get( session.traumaContext.episodioId )
+                def composition = Composition.get( session.ehrSession.episodioId )
 
                 // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
                 def patient = hceService.getPatientFromComposition( composition )
@@ -324,8 +264,8 @@ class AjaxApiController {
                 }
                 */
 
-                def sections = this.getSections()
-                def subsections = this.getSubsections(rmobj.archetypeDetails.templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
+                def sections = util.TemplateUtils.getSections(session)
+                def subsections = util.TemplateUtils.getSubsections(rmobj.archetypeDetails.templateId.split("-")[0], session) // this.getSubsections('EVALUACION_PRIMARIA')
                 
 
                 render( view: '../hce/DIAGNOSTICO-diagnosticos',
@@ -334,13 +274,13 @@ class AjaxApiController {
                            template: template,
                            sections: sections,
                            subsections: subsections,
-                           episodeId: session.traumaContext?.episodioId,
-                           //userId: session.traumaContext.userId, // no se usa
+                           episodeId: session.ehrSession?.episodioId,
+                           //userId: session.ehrSession.userId, // no se usa
                            // Params para edit
                            rmNode: rmobj, // si no pudo guardar no puedo hacer get a la base...
                            index: bindingAOMRM.getRMRootsIndex(),
                            errors: bindingAOMRM.getErrors(),
-                           allSubsections: this.getDomainTemplates()
+                           allSubsections: util.TemplateUtils.getDomainTemplates(session)
                            //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
                        ] )
                 return
