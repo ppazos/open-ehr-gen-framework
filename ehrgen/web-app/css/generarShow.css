@@ -156,6 +156,7 @@ label:hover {
    color: #000;
    padding: 4px 10px 2px 10px;
    width: 100%;
+   white-space:nowrap; /* Para que no corte a la mitad una tab si hay muchas */
 }
 /* no tiene permisos para botones de las tabs del navbar */
 #navbar a.unavailable {
