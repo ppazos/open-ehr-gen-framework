@@ -52,9 +52,9 @@ class TemplateManager {
         template.rootArchetype.includeAll = (xmlTemplate.root_archetype.archetype.'@includeAll'.text() == "true")
         
         // TEST
-        println "-----"
-        println "roorArchetype: " + template.templateId + " " + template.rootArchetype.type
-        println "-----"
+        //println "-----"
+        //println "rootArchetype: " + template.templateId + " " + template.rootArchetype.type
+        //println "-----"
         
         def pageZone = xmlTemplate.root_archetype.archetype.'@pageZone'.text()
         if (pageZone) template.rootArchetype.pageZone = pageZone
