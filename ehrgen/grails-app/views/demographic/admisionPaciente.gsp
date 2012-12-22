@@ -13,12 +13,12 @@
     <h1><g:message code="demographic.admision_paciente.title" /></h1>
     
     <ul class="top_actions">
-      <g:if test="${session.traumaContext.episodioId}">
-        <li><g:link controller="records" action="show" id="${session.traumaContext.episodioId}" class="home"><g:message code="demographic.lista_candidatos.action.backToEpisode" /></g:link></li>
+      <g:if test="${session.ehrSession.episodioId}">
+        <li><g:link controller="records" action="show" id="${session.ehrSession.episodioId}" class="home"><g:message code="demographic.lista_candidatos.action.backToEpisode" /></g:link></li>
       </g:if>
     </ul>
     
-    <g:compositionHasPatient episodeId="${session.traumaContext.episodioId}">
+    <g:compositionHasPatient episodeId="${session.ehrSession.episodioId}">
       <div style="color:red;">
         <g:message code="trauma.show.feedback.patientAlreadySelectedForThisEpisode" />
       </div><br/>

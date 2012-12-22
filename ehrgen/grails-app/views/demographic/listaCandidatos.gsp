@@ -34,8 +34,8 @@
     
     <!-- FIXME: esto deberia ser div class=nav como en party.listpatients -->
     <ul class="top_actions">
-      <g:if test="${session.traumaContext.episodioId}">
-        <li><g:link controller="records" action="show" id="${session.traumaContext.episodioId}" class="home"><g:message code="demographic.lista_candidatos.action.backToEpisode" /></g:link></li>
+      <g:if test="${session.ehrSession.episodioId}">
+        <li><g:link controller="records" action="show" id="${session.ehrSession.episodioId}" class="home"><g:message code="demographic.lista_candidatos.action.backToEpisode" /></g:link></li>
       </g:if>
       <li>
         <% // Pasarle los parametros para que no tenga que vea lo que ya ha ingresado en la busqueda.
