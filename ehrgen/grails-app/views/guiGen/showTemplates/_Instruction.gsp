@@ -1,4 +1,4 @@
-<%@ page import="templates.TemplateManager" %><%@ page import="com.thoughtworks.xstream.XStream" %><%@ page import="archetype_repository.ArchetypeManager" %>
+<%@ page import="templates.TemplateManager" %><%@ page import="com.thoughtworks.xstream.XStream" %><%@ page import="archetype.ArchetypeManager" %>
 <%--
 
 in: rmNode (Instruction)

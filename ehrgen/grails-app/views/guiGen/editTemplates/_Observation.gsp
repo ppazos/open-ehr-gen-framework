@@ -1,4 +1,4 @@
-<%@ page import="templates.TemplateManager" %><%@ page import="archetype_repository.ArchetypeManager" %>
+<%@ page import="templates.TemplateManager" %><%@ page import="archetype.ArchetypeManager" %>
 <%--
 
 in: rmNode (Observation)
