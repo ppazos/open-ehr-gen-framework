@@ -23,6 +23,10 @@ import grails.converters.*
 import cache.PathValores
 import util.FieldNames
 
+import domain.Domain
+import workflow.WorkFlow
+import workflow.Stage
+
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
  *
@@ -265,8 +269,11 @@ class AjaxApiController {
                 */
 
                 def sections = util.TemplateUtils.getSections(session)
-                def subsections = util.TemplateUtils.getSubsections(rmobj.archetypeDetails.templateId.split("-")[0], session) // this.getSubsections('EVALUACION_PRIMARIA')
                 
+                // Templates de la stage actual
+                def workflow = WorkFlow.get(session.ehrSession.workflowId)
+                def stage = workflow.getStage(template)
+                def subsections = stage.recordDefinitions.templateId
 
                 render( view: '../hce/DIAGNOSTICO-diagnosticos',
                         model: [
@@ -274,14 +281,14 @@ class AjaxApiController {
                            template: template,
                            sections: sections,
                            subsections: subsections,
-                           episodeId: session.ehrSession?.episodioId,
+                           //episodeId: session.ehrSession?.episodioId,
                            //userId: session.ehrSession.userId, // no se usa
                            // Params para edit
                            rmNode: rmobj, // si no pudo guardar no puedo hacer get a la base...
                            index: bindingAOMRM.getRMRootsIndex(),
                            errors: bindingAOMRM.getErrors(),
-                           allSubsections: util.TemplateUtils.getDomainTemplates(session)
-                           //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
+                           allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                           workflow: workflow // nuevo
                        ] )
                 return
             }

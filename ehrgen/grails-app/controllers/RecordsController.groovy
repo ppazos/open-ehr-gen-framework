@@ -14,6 +14,8 @@ import domain.Domain
 import support.identification.ObjectID
 import support.identification.ObjectRef
 
+import workflow.WorkFlow
+
 /**
  * @author Pablo Pazos Gutierrez (pablo.pazos@cabolabs.com)
  */
@@ -220,33 +222,17 @@ class RecordsController {
        //println "Patient from composition: " + patient
 
        // NECESARIO PARA EL MENU
+       // Stage names para el workflow actual...
        def sections = util.TemplateUtils.getSections(session)
-       //println "sections: " + sections
        
-       def completeSections = [:] // secciones con sus templates
-       def domainTemplates = util.TemplateUtils.getDomainTemplates(session)
-       
-       // FIXME: esto se hace en util.TemplateUtils.getSections(session)
-       domainTemplates.keySet().each { sectionPrefix ->
-           domainTemplates."$sectionPrefix".each { section ->
-            
-               if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
-             
-               // Tiro la lista de esto para cada "section prefix" que son los templates
-               // de las subsecciones de la seccion principal.
-               //println sectionPrefix + "-" + section
-               completeSections[sectionPrefix] << "EHRGen-EHR-" + section
-           }
-       }
 
        // patient puede ser null si todavia no se selecciono un paciente para el episodio,
        // p.e. si la atencion es de urgencia, se atiente primero y luego se identifica al paciente.
        return [composition: composition,
                patient: patient,
-               episodeId: session.ehrSession?.episodioId,
                sections: sections, // necesario para el menu
                allSubsections: util.TemplateUtils.getDomainTemplates(session),
-               completeSections: completeSections
+               workflow: WorkFlow.get( session.ehrSession.workflowId ) // Nuevo en lugar de completeSections
               ]
     }
     
@@ -255,6 +241,7 @@ class RecordsController {
     // Pantalla 5.1- Registro Clinico
     def registroClinico2 = {
     
+       println "------- registroClinico2 ---------------"
        if (!session.ehrSession?.episodioId)
        {
            flash.message = 'trauma.list.error.noEpisodeSelected'
@@ -262,7 +249,11 @@ class RecordsController {
            return
        }
        
-       def section = params.section
+       def section = params.section // nombre de la etapa
+       //def wf = WorkFlow.get( session.ehrSession.workflowId )
+       //def stg = wf.stages.find{ it.name == section }
+       
+       
        def subsections = util.TemplateUtils.getSubsections(section, session) // this.getSubsections('EVALUACION_PRIMARIA')
 	   
        println "subsections: " + subsections // [INGRESO-triage.v1]
@@ -313,22 +304,16 @@ class RecordsController {
            {
                redirect(controller: 'guiGen',
                         action: 'generarShow',
-                        params: [templateId: firstSubSection, //section+'-'+firstSubSection,
-                                 //episodeId: session.ehrSession?.episodioId,
-                                 //patient:patient,
-                                 //userId: session.ehrSession.userId,
-                                 id: item.id])
+                        params: [templateId: firstSubSection, id: item.id])
                return
            }
            else
            {
+           println "registroClinico2: redirect a generarTemplate: templateId=$firstSubSection"
+               // Muestra create
                redirect(controller: 'guiGen',
                         action: 'generarTemplate',
-                        params: [templateId: firstSubSection, //section+'-'+firstSubSection,
-                                 //episodeId: session.ehrSession?.episodioId,
-                                 //patient:patient,
-                                 //userId: session.ehrSession.userId
-                                ])
+                        params: [templateId: firstSubSection])
                return
            }
        }
@@ -392,7 +377,7 @@ class RecordsController {
         flash.error = null
         
         // Para retornarle a la vista
-        def model = [episodeId: session.ehrSession?.episodioId,
+        def model = [//episodeId: session.ehrSession?.episodioId,
                      //userId: session.ehrSession.userId, // no se usa
                      composition: composition,
                      patient: patient,
@@ -529,7 +514,7 @@ class RecordsController {
                 {
                     // TODO: i18n
                     flash.error = "Firma erronea, verifique sus datos"
-                    return [episodeId: session.ehrSession?.episodioId,
+                    return [//episodeId: session.ehrSession?.episodioId,
                             //userId: session.ehrSession.userId, // no se usa
                             composition: composition,
                             patient: patient,
@@ -553,7 +538,7 @@ class RecordsController {
                 if ( !roleKeys.contains(Role.MEDICO) )
                 {
                     flash.error = "Firma erronea, la persona firmante no es medico"
-                    return [episodeId: session.ehrSession?.episodioId,
+                    return [//episodeId: session.ehrSession?.episodioId,
                             //userId: session.ehrSession.userId, // no se usa
                             composition: composition,
                             patient: patient,
@@ -571,7 +556,7 @@ class RecordsController {
                 {
                     // TODO: i18n
                     flash.error = "Ocurrio un error al intentar firmar el registro clinico, intente de nuevo"
-                    return [episodeId: session.ehrSession?.episodioId,
+                    return [//episodeId: session.ehrSession?.episodioId,
                             //userId: session.ehrSession.userId, // no se usa
                             composition: composition,
                             patient: patient,
@@ -660,7 +645,7 @@ class RecordsController {
                     flash.error = "Ocurrio un error al intentar firmar el registro clinico, intente de nuevo"
                 }
                 
-                return [episodeId: session.ehrSession?.episodioId,
+                return [//episodeId: session.ehrSession?.episodioId,
                         //userId: session.ehrSession.userId, // no se usa
                         composition: composition,
                         patient: patient,
@@ -672,7 +657,7 @@ class RecordsController {
 
             return [composition: composition,
                     patient: patient,
-                    episodeId: session.ehrSession?.episodioId,
+                    //episodeId: session.ehrSession?.episodioId,
                     //userId: session.ehrSession.userId, // no se usa
                     sections: sections, // necesario para el menu
                     subsections: subsections, // necesario para el menu

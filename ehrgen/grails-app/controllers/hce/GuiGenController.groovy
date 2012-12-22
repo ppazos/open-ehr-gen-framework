@@ -96,126 +96,14 @@ class GuiGenController {
    }
    */
    
-   /*
-   // in: templateId
-   def generarTemplate = {
-      
-      EventManager.getInstance().handle("pre_gui_gen", params)
-
-      / *
-      // Test para prevenir cacheo
-      //NO HACE NADA....
-      response.setHeader("Cache-Control", "no-cache, must-revalidate")
-      //response.setHeader("Cache-Control", "no-Store")
-      response.setHeader("Pragma", "no-cache")
-      response.setHeader("Expires", "0")
-      * /
-
-      // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
-      if (!session.ehrSession?.episodioId)
-      {
-         flash.message = 'trauma.list.error.noEpisodeSelected'
-         redirect(controller:'records', action:'list')
-         return
-      }
-   
-      // TODO: verificar que el estado del registro es 'incomplete', de lo contrario no puedo editarlo.
-   
-      def templateId = params.templateId // es el nombre del archivo
-
-      // Model: Paciente del episodio seleccionado
-      def composition = Composition.get( session.ehrSession.episodioId )
-
-      // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
-      def patient = hceService.getPatientFromComposition( composition )
-
-      // FIXME: verificar si ya se hizo registro para este template, y si se hizo ir a show.
-      // def item = hceService.getCompositionContentItemForTemplate(composition, attrs.templateId)
-      // def ContentItem getCompositionContentItemForTemplate( Composition composition, String templateId )
-      
-      def item = hceService.getCompositionContentItemForTemplate(composition, templateId)
-      if (item)
-      {
-         //flash.message = 'trauma.list.error.registryAlreadyDone'
-         redirect( controller:'guiGen', action:'generarShow', id: item.id,
-                   params: ['flash.message': 'trauma.list.error.registryAlreadyDone'] )
-         return
-      }
-
-      def sections = this.getSections()
-      def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
-      
-      // Genera GUI solo si el registro esta abierto
-      if ( hceService.isIncompleteComposition( composition ) )
-      {
-         //println "subSectionPrefix: " + subSectionPrefix
-         //println "subsections: " + subsections
-   
-         Template template = TemplateManager.getInstance().getTemplate( templateId )
-         
-         def fullUri = grailsAttributes.getViewUri('../hce/'+templateId, request)
-         
-         //println fullUri
-         //println grailsAttributes.pagesTemplateEngine.getResourceForUri(fullUri)
-   
-         def resource = grailsAttributes.pagesTemplateEngine.getResourceForUri(fullUri)
-         if ( resource && resource.file && resource.exists() )
-         {
-            println 'vista estatica'
-            
-            EventManager.getInstance().handle("post_gui_gen", params)
-            
-            render( view: '../hce/'+templateId,
-                  model: [
-                        patient: patient,
-                        template: template,
-                        sections: sections,
-                        subsections: subsections,
-                        episodeId: session.ehrSession?.episodioId,
-                        userId: session.ehrSession.userId,
-                        allSubsections: this.getDomainTemplates()
-                       ] )
-            return
-         }
-         else
-         {
-            println 'vista dinamica'
-   
-            EventManager.getInstance().handle("post_gui_gen", params)
-   
-            // OK
-            //XStream xstream = new XStream()
-            //println xstream.toXML(template) + "\n\n"
-            //println "templateID: " + template.id
-            
-            // TODO: buscar si existe la vista para el template, y si no existe ir a la generacion dinamica.
-            
-            return [archetypeService: archetypeService,
-                  template: template,
-                  patient: patient,
-                  sections: sections,
-                  subsections: subsections,
-                  episodeId: session.ehrSession?.episodioId,
-                  userId: session.ehrSession.userId,
-                  allSubsections:  this.getDomainTemplates()
-                 ]
-         }
-      }
-      else
-      {
-         flash.message = "registroClinico.warning.noHayRegistroParaLaSeccion"
-         redirect( controller: 'records', action: 'show', id: session.ehrSession?.episodioId)
-         return
-      }
-      
-   } // generateTemplate
-   */
    
    /**
     * Prueba con la vista cacheada.
     * FIXME: cambiar nombre a create.
     */
    def generarTemplate = {
+   
+      println "== generarTemplate =="
 
       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
       if (!session.ehrSession?.episodioId)
@@ -255,34 +143,39 @@ class GuiGenController {
       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
       def patient = hceService.getPatientFromComposition( composition )
 
+
+     /* complete sections arma los templates como antes:
+     [INGRESO:[INGRESO-triage.v1],
+      ADMISION:[
+        ADMISION-prehospitalario.v1,
+        ADMISION-contexto_del_evento.v1],
+      ANAMNESIS:[ANAMNESIS-resumen_clinico.v1],
+      EVALUACION_PRIMARIA:[
+        EVALUACION_PRIMARIA-via_aerea.v1, 
+        EVALUACION_PRIMARIA-columna_vertebral.v1, 
+        EVALUACION_PRIMARIA-ventilacion.v1, 
+        EVALUACION_PRIMARIA-estado_circulatorio.v1, 
+        EVALUACION_PRIMARIA-disfuncion_neurologica.v1]
+      ...
+     ]
+     */
+     //println "completeSections: " + completeSections
+     
       def sections = util.TemplateUtils.getSections(session)
-      def subsections = util.TemplateUtils.getSubsections(templateId.split("-")[0], session) // this.getSubsections('EVALUACION_PRIMARIA')
       
-     
-     // Igual que Records.show
-     // Necesario para verificar permisos sobre el menu
-     def completeSections = [:] // secciones con sus templates
-     def domainTemplates = util.TemplateUtils.getDomainTemplates(session)
-     
-     domainTemplates.keySet().each { sectionPrefix ->
-        domainTemplates."$sectionPrefix".each { section ->
-         
-           if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
-         
-           // Tiro la lista de esto para cada "section prefix" que son los templates
-           // de las subsecciones de la seccion principal.
-           //println sectionPrefix + "-" + section
-           completeSections[sectionPrefix] << sectionPrefix + "-" + section
-        }
-     }
+      // Templates de la stage actual
+      def workflow = WorkFlow.get(session.ehrSession.workflowId)
+      def stage = workflow.getStage(template)
+      def subsections = stage.recordDefinitions.templateId
+      
+      // getSubsections espera como primer parametro el nombre de la stage
+      //def subsections = util.TemplateUtils.getSubsections(templateId, session) // this.getSubsections('EVALUACION_PRIMARIA')
+      
      
      
       // Genera GUI solo si el registro esta abierto
       if ( hceService.isIncompleteComposition( composition ) )
-      {
-         //println "subSectionPrefix: " + subSectionPrefix
-         //println "subsections: " + subsections
-         
+      {         
          // TODO:
          // Es mas rapido que la generacion y estoy levantando de disco!
          // Si cacheo en memoria es incluso mas rapido! tengo que hacer un handler!!
@@ -299,12 +192,12 @@ class GuiGenController {
                      sections: sections,
                      subsections: subsections,
                      episodeId: session.ehrSession?.episodioId,
-                     // userId: session.ehrSession.userId, // no se usa
-                     allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                     //allSubsections: util.TemplateUtils.getDomainTemplates(session),
                      form: guiManager.get(templateId, 'create', session.locale.toString()),
-                     completeSections: completeSections,
-					 domain: Domain.get(session.ehrSession.domainId)
-                    ] )
+                     //completeSections: completeSections,
+					      domain: Domain.get(session.ehrSession.domainId),
+                     workflow: workflow // nuevo
+                    ])
             return
          }
          else // Si no existe la vista generada, deberia ser una vista estatica
@@ -318,11 +211,11 @@ class GuiGenController {
                      sections: sections,
                      subsections: subsections,
                      episodeId: session.ehrSession?.episodioId,
-                     //userId: session.ehrSession.userId,
-                     allSubsections: util.TemplateUtils.getDomainTemplates(session),
-                     completeSections: completeSections,
-					 domain: Domain.get(session.ehrSession.domainId)
-                    ] )
+                     //allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                     //completeSections: completeSections,
+					      domain: Domain.get(session.ehrSession.domainId),
+                     workflow: workflow // nuevo
+                    ])
             return
          }
          //   println 'dice que no es un recurso valido: '+ path
@@ -340,6 +233,8 @@ class GuiGenController {
     * Prueba con vista cacheada.
     */
    def generarShow = {
+      
+      println "== generarShow =="
       
       // DEBE haber un episodio seleccionado para poder asociar el registro clinico.
       if (!session.ehrSession?.episodioId)
@@ -362,6 +257,8 @@ class GuiGenController {
       // El templateId se saca del objeto del RM guardado, asi si varia la version del template,
       // siempre voy a poder mostrar el contenido guardado con versiones anteriores del mismo.
       def templateId = rmNode.archetypeDetails.templateId
+      Template template = TemplateManager.getInstance().getTemplate( templateId )
+      
       
       // Model: Paciente del episodio seleccionado
       def composition = Composition.get( session.ehrSession.episodioId )
@@ -370,29 +267,14 @@ class GuiGenController {
       def patient = hceService.getPatientFromComposition( composition )
 
       def sections = util.TemplateUtils.getSections(session)
-      def subsections = util.TemplateUtils.getSubsections(templateId.split("-")[0], session) // this.getSubsections('EVALUACION_PRIMARIA')
       
-     // Igual que Records.show
-     // Necesario para verificar permisos sobre el menu
-     def completeSections = [:] // secciones con sus templates
-     def domainTemplates = util.TemplateUtils.getDomainTemplates(session)
      
-     domainTemplates.keySet().each { sectionPrefix ->
-        domainTemplates."$sectionPrefix".each { section ->
-         
-           if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
-         
-           // Tiro la lista de esto para cada "section prefix" que son los templates
-           // de las subsecciones de la seccion principal.
-           //println sectionPrefix + "-" + section
-           completeSections[sectionPrefix] << sectionPrefix + "-" + section
-        }
-     }
-     
-     
-      Template template = TemplateManager.getInstance().getTemplate( templateId )
+      // Templates de la stage actual
+      def workflow = WorkFlow.get(session.ehrSession.workflowId)
+      def stage = workflow.getStage(template)
+      def subsections = stage.recordDefinitions.templateId
       
-      
+
       // TODO:
       // Es mas rapido que la generacion y estoy levantando de disco!
       // Si cacheo en memoria es incluso mas rapido! tengo que hacer un handler!!
@@ -478,14 +360,13 @@ class GuiGenController {
          [
            patient:   patient,
            template:  template,
-           //templateId: templateId,
            sections:  sections,
            subsections: subsections,
-           completeSections: completeSections,
-           allSubsections: util.TemplateUtils.getDomainTemplates(session),
-           episodeId: session.ehrSession?.episodioId,
+           //completeSections: completeSections,
+           //allSubsections: util.TemplateUtils.getDomainTemplates(session),
+           //episodeId: session.ehrSession?.episodioId,
            
-           // content es para el generateShow, para generateEdit se usa form
+           // content es para el generarShow, para generateEdit se usa form
            //content: guiManager.get(templateId, "edit", session.locale.toString()),
            data: pv.params as JSON,
            domain: Domain.get(session.ehrSession.domainId),
@@ -496,6 +377,7 @@ class GuiGenController {
            errors: [] as JSON,   // No hay errores, estoy editando algo ya validado y guardado
            errors2: [] as JSON,  // No hay errores, estoy editando algo ya validado y guardado
            
+           workflow: workflow // nuevo
            /*
            rmNode:    rmNode,
            index:     hceService.getRMRootsIndex(template, rmNode),
@@ -506,33 +388,28 @@ class GuiGenController {
          ])
          return
       }
+
+      render( view: 'show/generarShow', model:
+      [
+         patient:    patient,
+         template:   template,
+         templateId: templateId, // FIXME: este incluye la version y el id del template no, deberian ser iguales.
+         sections: sections,
+         subsections: subsections,
+         //completeSections: completeSections,
+         //userId: session.ehrSession.userId,
+         //allSubsections: util.TemplateUtils.getDomainTemplates(session),
+         //episodeId: session.ehrSession?.episodioId,
+         //content: f.getText(),
+         content: guiManager.get(templateId, "show", session.locale.toString()),
+         data: pv.params as JSON,
+         domain: Domain.get(session.ehrSession.domainId),
+         id: params.id,
+         workflow: workflow // nuevo
+      ])
+      return
       
-      //if ( f.exists() )
-      //{
-         //println 'vista cacheada!'
-         render( view: 'show/generarShow', model:
-         [
-            patient:    patient,
-            template:   template,
-            templateId: templateId, // FIXME: este incluye la version y el id del template no, deberian ser iguales.
-            sections: sections,
-            subsections: subsections,
-            completeSections: completeSections,
-            //userId: session.ehrSession.userId,
-            allSubsections: util.TemplateUtils.getDomainTemplates(session),
-            episodeId: session.ehrSession?.episodioId,
-            //content: f.getText(),
-            content: guiManager.get(templateId, "show", session.locale.toString()),
-            data: pv.params as JSON,
-            domain: Domain.get(session.ehrSession.domainId),
-            id: params.id
-         ])
-         return
-      //}
-      //else
-      //   println 'dice que no es un recurso valido: '+ path
-      
-   } // generarShow2
+   } // generarShow
    
    
    /**
@@ -671,7 +548,7 @@ class GuiGenController {
                //      Preguntar en la lista de OpenEHR si alguien supo resolver esto de una forma que no sea
                //      cambiando el tipo del Quantity por 2 campos individuales en un cluster.
                
-               println "Old: " + oldValue + ", New: " + newValue
+               //println "Old: " + oldValue + ", New: " + newValue
                
                params.(transform.path) = newValue
             }
@@ -860,18 +737,6 @@ class GuiGenController {
          {
             // Para resolverlo en otro loop abajo
             resolverDates << entry.key // field_xxx
-            
-            /*
-            // entry.key es field_xxx
-            // y busco field_xxx_year, field_xxx_month, field_xxx_day, ...
-            // no puedo hacer un each sobre otro each del mismo map
-            def partesFecha = pathValue2.findAll{ e2 -> e2.key.startsWith(entry.key) }
-            partesFecha.each{ p ->
-               // pathValue[path]_year
-               // _year = field_xxx_year - field_xxx
-               pathValue[path+(p.key-entry.key)] = entry.value
-            }
-            */
          }
          
          if (path) pathValue[path] = entry.value
@@ -893,6 +758,12 @@ class GuiGenController {
       //println "pathValue: " + pathValue
       //println ""
       
+      
+      // Templates de la stage actual
+      def workflow = WorkFlow.get(session.ehrSession.workflowId)
+      def stage = workflow.getStage(template)
+      def subsections = stage.recordDefinitions.templateId
+      
       if (!vienenDatos)
       {
          // volver a la pagina y pedirle que ingrese algun dato
@@ -905,13 +776,12 @@ class GuiGenController {
                 model: [
                   template: template,
                   form: guiManager.get(params.templateId, "create", session.locale.toString()),
-                  episodeId: session.ehrSession?.episodioId, // necesario para el layout
-                  //userId: session.ehrSession.userId,
-                  subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
-                  allSubsections: util.TemplateUtils.getDomainTemplates(session),
-				      domain: Domain.get(session.ehrSession.domainId)
-                ]
-               )
+                  sections: util.TemplateUtils.getSections(session),
+                  subsections: subsections,
+                  //allSubsections: util.TemplateUtils.getDomainTemplates(session),
+				      domain: Domain.get(session.ehrSession.domainId),
+                  workflow: workflow // nuevo
+                ])
          return
       }
       
@@ -945,13 +815,12 @@ class GuiGenController {
                 model: [
                   template: template,
                   form: guiManager.get(params.templateId, "create", session.locale.toString()),
-                  episodeId: session.ehrSession?.episodioId, // necesario para el layout
-                  //userId: session.ehrSession.userId,
-                  subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
-                  allSubsections: util.TemplateUtils.getDomainTemplates(session),
-				      domain: Domain.get(session.ehrSession.domainId)
-                ]
-               )
+                  sections: util.TemplateUtils.getSections(session),
+                  subsections: subsections,
+                  //allSubsections: util.TemplateUtils.getDomainTemplates(session),
+				      domain: Domain.get(session.ehrSession.domainId),
+                  workflow: workflow // nuevo
+                ])
          return
       }
       
@@ -1011,17 +880,16 @@ class GuiGenController {
                   rmNode: rmobj, // si no pudo guardar no puedo hacer get a la base...
                   index: bindingAOMRM.getRMRootsIndex(),
                   template: template,
-                  //mode: 'edit',
+                  mode: 'edit',
                   data: paramsCache.params as JSON,
                   form: guiManager.get(params.templateId, "edit", session.locale.toString()),
                   errors: errors as JSON,
                   errors2: bindingAOMRM.errors as JSON,
-                  episodeId: session.ehrSession?.episodioId, // necesario para el layout
-                  subsections: util.TemplateUtils.getSubsections(params.templateId.split("-")[0], session),
-                  allSubsections: util.TemplateUtils.getDomainTemplates(session),
-				      domain: Domain.get(session.ehrSession.domainId)
-                ]
-               )
+                  subsections: subsections,
+                  //allSubsections: util.TemplateUtils.getDomainTemplates(session),
+				      domain: Domain.get(session.ehrSession.domainId),
+                  workflow: workflow // nuevo
+                ])
          return
       }
       
@@ -1074,7 +942,7 @@ class GuiGenController {
    
    
    /**
-    * 
+    * FIXME: Se usa?
     */
    def listarArquetipos = {
    
@@ -1356,7 +1224,7 @@ class GuiGenController {
                      episodeId: session.ehrSession?.episodioId, // necesario para el layout
                      userId: session.ehrSession.userId,
                      subsections: subsections,
-                     allSubsections: this.getDomainTemplates() 
+                     //allSubsections: this.getDomainTemplates() 
                      //grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
                   ]
                  )
@@ -1482,7 +1350,7 @@ class GuiGenController {
          userId: session.ehrSession.userId,
          sections: sections,
          subsections: subsections,
-         allSubsections: grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
+         //allSubsections: grailsApplication.config.hce.emergencia.sections.trauma // Mapa nombre seccion -> lista de subsecciones
          ]
       )
       println a
@@ -1541,7 +1409,7 @@ class GuiGenController {
               userId:    session.ehrSession.userId,
               sections:  sections,
               subsections: subsections,
-              allSubsections: this.getDomainTemplates(),
+              //allSubsections: this.getDomainTemplates(),
               mode:      'edit'
             ])
             return
@@ -1582,38 +1450,21 @@ class GuiGenController {
          return
       }
       
+      // Necesario para mostrar datos del paciente seleccionado
       // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
       def patient = hceService.getPatientFromComposition( composition )
 
       
       // NECESARIO PARA EL MENU
       def sections = util.TemplateUtils.getSections(session)
-      //def subsections = this.getSubsections(templateId.split("-")[0]) // this.getSubsections('EVALUACION_PRIMARIA')
       
-      // Igual que Records.show
-      // Necesario para verificar permisos sobre el menu
-      def completeSections = [:] // secciones con sus templates
-      def domainTemplates = util.TemplateUtils.getDomainTemplates(session)
-     
-      domainTemplates.keySet().each { sectionPrefix ->
-         domainTemplates."$sectionPrefix".each { section ->
-         
-            if (!completeSections[sectionPrefix]) completeSections[sectionPrefix] = []
-         
-            // Tiro la lista de esto para cada "section prefix" que son los templates
-            // de las subsecciones de la seccion principal.
-            //println sectionPrefix + "-" + section
-            completeSections[sectionPrefix] << sectionPrefix + "-" + section
-         }
-      }
+      def workflow = WorkFlow.get(session.ehrSession.workflowId)
+      
       
       return [composition: composition,
-              // userId: session.ehrSession.userId,
               patient: patient,
-              episodeId: session.ehrSession?.episodioId,
               sections: sections, // necesario para el menu
-              allSubsections: util.TemplateUtils.getDomainTemplates(session),
-              completeSections: completeSections
+              workflow: workflow // nuevo
              ]
    }
 }

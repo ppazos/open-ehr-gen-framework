@@ -295,7 +295,7 @@ class DomainController {
       
       if (params.doit)
       {
-         def stage = new Stage(name: params.name)
+         def stage = new Stage(owner: wf, name: params.name)
          
          def templateIds = params.list('templateId')
          def template
