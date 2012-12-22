@@ -25,19 +25,19 @@ class SecurityTagLib {
     def hasDomainPermit = { attrs, body ->
        
        // Si no esta logueado, no tiene permisos
-       if (!session.traumaContext.userId) return
+       if (!session.ehrSession.userId) return
        
        // Login del usuario logueado
-      // Necesito login.person para la consulta
-       LoginAuth login = LoginAuth.get( session.traumaContext.userId )
+       // Necesito login.person para la consulta
+       LoginAuth login = LoginAuth.get( session.ehrSession.userId )
        
        // Criterio:
        // RoleValidity.person = person // quiero la validez del rol para cada rol de esta persona
        // para todas estas, pregunto si su rol tiene un DomainPermit para el dominio que viene como parametro, y opcionalmente considero el templateId.
        
-       String domain = attrs.domain
-       if (!domain) domain = session?.traumaContext?.domainPath
-       if (!domain) throw new Exception('Debe venir un dominio como parametro o haber un dominio seleccionado en la sesion')
+       long domainId = attrs.domain.id
+       if (!domainId) domainId = session?.ehrSession?.domainId
+       if (!domainId) throw new Exception('Debe venir un dominio como parametro con id o haber un dominio seleccionado en la sesion')
        
        //println "Domain: "+ domain
        //println "TemplateId: "+ attrs.templateId
@@ -51,7 +51,7 @@ class SecurityTagLib {
                 
                 // Se verifica solo si no viene templateId porque me indica si puedo o no
                 // ingresar a ese dominio, luego dentro del dominio se chequean otros permisos.
-                eq('domain', domain)
+                eq('domain', domainId)
                 
                 if (attrs.templateId)
                 {
