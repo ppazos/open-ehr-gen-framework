@@ -42,13 +42,18 @@
           
           evt.preventDefault();
           
+          // Tamanios del area visible
+          // $(window).height() es el alto total de la pagina (no sirve para centrar)
+          var viewportHeight = window.innerHeight ? window.innerHeight : $(window).height();
+          var viewportWidth = window.innerWidth ? window.innerWidth : $(window).width();
+          
           $.blockUI({
              message: $('#create_record'),
              css: {
                width: '500px',
                height: '280px',
-               top:  ($(window).height() - 400) /2 + 'px', 
-               left: ($(window).width() - 500) /2 + 'px', 
+               left: (viewportWidth - 500) /2 + 'px',
+               top:  (viewportHeight - 280) /2 + 'px',
                padding: '10px',
                textAlign: 'left'
              },
@@ -112,16 +117,16 @@
           <td>
             <g:link action="show" id="${composition.id}"><g:message code="trauma.list.action.show" /></g:link>
             <br />
-              <g:if test="${(g.stateForComposition(episodeId:composition.id) == Version.STATE_SIGNED)}">
-                <g:set var="version" value="${Version.findByData(composition)}"/>
-                <g:set var="archivoCDA" value="${new File(ApplicationHolder.application.config.hce.rutaDirCDAs + '\\' + version.nombreArchCDA)}"/>
-                <g:if test="${!archivoCDA.exists()}">
-                  <g:link controller="cda" action="create" id="${composition.id}">Crear CDA</g:link>
-                </g:if>
-                <g:else>
-                  <g:message code="Documento Clinico Creado" /> <!-- TODO i18n -->
-                </g:else>
+            <g:if test="${(g.stateForComposition(episodeId:composition.id) == Version.STATE_SIGNED)}">
+              <g:set var="version" value="${Version.findByData(composition)}"/>
+              <g:set var="archivoCDA" value="${new File(ApplicationHolder.application.config.hce.rutaDirCDAs + '\\' + version.nombreArchCDA)}"/>
+              <g:if test="${!archivoCDA.exists()}">
+                <g:link controller="cda" action="create" id="${composition.id}">Crear CDA</g:link>
               </g:if>
+              <g:else>
+                <g:message code="Documento Clinico Creado" /> <!-- TODO i18n -->
+              </g:else>
+            </g:if>
           </td>
         </tr>
       </g:each>

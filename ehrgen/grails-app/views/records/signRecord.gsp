@@ -70,7 +70,7 @@
     <g:form url="[action:'signRecord', id:params.id]" method="post" id="form1" class="ehrform">
       
       <table id="sign_table" align="center">
-        <g:isSignedRecord episodeId="${episodeId}">
+        <g:isSignedRecord episodeId="${session.ehrSession?.episodioId}">
           <tr>
             <td colspan="2" class="message"><g:message code="trauma.sign.registryAlreadySigned" /></td>
           </tr>
@@ -85,7 +85,7 @@
         </tr>
       </table>
       
-      <g:isNotSignedRecord episodeId="${episodeId}">
+      <g:isNotSignedRecord episodeId="${session.ehrSession?.episodioId}">
         <br/>
         <input type="submit" name="doit" value="${message(code:'trauma.sign.action.sign')}" />
       </g:isNotSignedRecord>

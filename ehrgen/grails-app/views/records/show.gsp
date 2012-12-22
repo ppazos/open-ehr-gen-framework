@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<%@ page import="domain.Domain" %><?xml version="1.0" encoding="UTF-8" ?>
 <html>
   <head>
     <meta name="layout" content="ehr" />
@@ -44,17 +44,6 @@
     <g:if test="${flash.message}">
       <div class="message"><g:message code="${flash.message}" /></div>
     </g:if>
-
-  <%-- TEST:
-  <textarea>
-  <%
-    composition.context.participations.each{ it ->
-    
-      println it.performer
-    }
-  %>
-  </textarea>
-  --%>
   
     <div id="show_body">
       <div id="demographic">
@@ -73,84 +62,82 @@
       <g:canFillClinicalRecord>
         <div id="clinical">
           <h2>REGISTRO CLINICO</h2>
-          <%--
-	       ${completeSections}
-	       imprime: {ACCIONES=[ACCIONES-adm_sust], DIAGNOSTICO=[DIAGNOSTICO-diagnosticos]}
-	       --%>
-	      <g:each in="${completeSections.keySet()}" var="section">
-	        <ul><li>
-	        <g:if test="${completeSections[section].size()==1}">
-	          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${completeSections[section][0]}">
-	            <g:if test="${it.hasItem}">
-	              <%-- No va a edit, debe ir a show y si quiere en show hace edit. --%>
-	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+section}" /></g:link>
-	              (*)
-	            </g:if>
-	            <g:else>
-	              <%-- Si el regsitro no esta incompleto, no se puede editar --%>
-	              <g:isIncompleteRecord episodeId="${episodeId}">
-		            <g:if test="${it.answer}">
-		              
-		              <%--
-		              <g:link controller="guiGen" action="generarTemplate" params="[templateId: completeSections[section][0]]"><g:message code="${'section.'+section}" /></g:link>
-		              --%>
-		              
-		              <g:hasDomainPermit domain="${session.traumaContext.domainPath}" templateIds="${completeSections[section]}">
-                      <g:link controller="records" action="registroClinico2" params="[section:section]"><g:message code="${'section.'+section}" /></g:link>
-                    </g:hasDomainPermit>
-                    <g:dontHasDomainPermit>
-                      <div onclick="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${'section.'+section}" /></div>
-                    </g:dontHasDomainPermit>
-		              
-		            </g:if>
-		            <g:else>
-		              <g:message code="${'section.'+section}" />
-		            </g:else>
-	              </g:isIncompleteRecord>
-	            </g:else>
-	          </g:hasContentItemForTemplate>
-	        </g:if>
-	        <g:else>
-	          <g:message code="${'section.'+section}" />:
-	          <ul>
-	            <g:each in="${completeSections[section]}" var="subSection">
-	               <li>
-	                 <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subSection}">
-	                   <%--${it}--%>
-	                   <g:if test="${it.hasItem}">
-	                     <%-- Si el regsitro no esta incompleto, no se puede editar --%>
-	                     <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subSection}" /></g:link>
-	                     (*)
-	                   </g:if>
-	                   <g:else>
-	                     <%-- Si el regsitro no esta incompleto, no se puede editar --%>
-	                     <g:isIncompleteRecord episodeId="${episodeId}">
-	                       <g:if test="${it.answer}">
-	                       
-	                         <%--
-	                         <g:link controller="guiGen" action="generarTemplate" params="[templateId: subSection]"><g:message code="${'section.'+subSection}" /></g:link>
-	                         --%>
-	                                       
-                            <g:hasDomainPermit domain="${session.traumaContext.domainPath}" templateId="${subSection}">
-                              <g:link controller="guiGen" action="generarTemplate" params="[templateId: subSection]"><g:message code="${'section.'+subSection}" /></g:link>
-                            </g:hasDomainPermit>
-                            <g:dontHasDomainPermit>
-                              <div onclick="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${'section.'+subSection}" /></div>
-                            </g:dontHasDomainPermit>
-	                       
-	                       </g:if>
-	                       <g:else>
-	                         <g:message code="${'section.'+subSection}" />
-	                       </g:else>
-	                     </g:isIncompleteRecord>
-	                   </g:else>
-	                 </g:hasContentItemForTemplate>
-	               </li>
-	            </g:each>
-	          </ul>
-	        </g:else>
-	        </li></ul>
-	      </g:each>
+          
+	       <g:each in="${workflow.stages}" var="stage">
+	         <ul>
+              <li>
+                <g:if test="${stage.recordDefinitions.size()==1}">
+                
+                  <%-- ${stage.recordDefinitions[0].templateId} --%>
+                   <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${stage.recordDefinitions[0].templateId}">
+                     <g:if test="${it.hasItem}">
+                       <%-- No va a edit, debe ir a show y si quiere en show hace edit. --%>
+                       <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${stage.name}" /></g:link>
+                       (*)
+                     </g:if>
+                     <g:else>
+                       <%-- Si el regsitro no esta incompleto, no se puede editar --%>
+                       <g:isIncompleteRecord episodeId="${session.ehrSession?.episodioId}">
+                        <g:if test="${it.answer}">
+
+                          <g:hasDomainPermit domain="${Domain.get(session.ehrSession.domainId)}" templateIds="${stage.recordDefinitions.templateId}">
+                            <g:link controller="records" action="registroClinico2" params="[section:stage.name]"><g:message code="${stage.name}" /></g:link>
+                          </g:hasDomainPermit>
+                          <g:dontHasDomainPermit>
+                            <div onclick="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${stage.name}" /></div>
+                          </g:dontHasDomainPermit>
+                          
+                        </g:if>
+                        <g:else>
+                          <g:message code="${stage.name}" />
+                        </g:else>
+                       </g:isIncompleteRecord>
+                     </g:else>
+                   </g:hasContentItemForTemplate>
+                
+                </g:if>
+                <g:else>
+                   <g:message code="${stage.name}" />:
+                   <ul>
+                     <g:each in="${stage.recordDefinitions}" var="template">
+                        <li>
+                          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${template.templateId}">
+                            <%--${it}--%>
+                            <g:if test="${it.hasItem}">
+                              <%-- Si el regsitro no esta incompleto, no se puede editar --%>
+                              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${template.name}" /></g:link>
+                              (*)
+                            </g:if>
+                            <g:else>
+                              <%-- Si el regsitro no esta incompleto, no se puede editar --%>
+                              <g:isIncompleteRecord episodeId="${session.ehrSession?.episodioId}">
+                                <g:if test="${it.answer}">
+                                
+                                  <%--
+                                  <g:link controller="guiGen" action="generarTemplate" params="[templateId: template.templateId]"><g:message code="${template.name}" /></g:link>
+                                  --%>
+                                                
+                                  <g:hasDomainPermit domain="${Domain.get(session.ehrSession.domainId)}" templateId="${template.templateId}">
+                                    <g:link controller="guiGen" action="generarTemplate" params="[templateId: template.templateId]"><g:message code="${template.name}" /></g:link>
+                                  </g:hasDomainPermit>
+                                  <g:dontHasDomainPermit>
+                                    <div onclick="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${template.name}" /></div>
+                                  </g:dontHasDomainPermit>
+                                
+                                </g:if>
+                                <g:else>
+                                  <g:message code="${template.name}" />
+                                </g:else>
+                              </g:isIncompleteRecord>
+                            </g:else>
+                          </g:hasContentItemForTemplate>
+                        </li>
+                     </g:each>
+                   </ul>
+                </g:else>
+	           </li>
+            </ul>
+	       </g:each>
         </div>
       </g:canFillClinicalRecord>
     </div>
@@ -158,12 +145,12 @@
       
     <div class="bottom_actions">
       <%-- Ahora cierre y firma es uno solo: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=9
-      <g:canSignRecord episodeId="${episodeId}">
+      <g:canSignRecord episodeId="${session.ehrSession?.episodioId}">
         <g:link controller="records" action="signRecord" id="${composition.id}"><g:message code="trauma.show.action.sign" /></g:link>
       </g:canSignRecord>
       --%>
-      <g:isSignedRecord episodeId="${episodeId}"><g:message code="trauma.sign.registryAlreadySigned" /></g:isSignedRecord>
-      <g:reabrirEpisodio  episodeId="${episodeId}">
+      <g:isSignedRecord episodeId="${session.ehrSession?.episodioId}"><g:message code="trauma.sign.registryAlreadySigned" /></g:isSignedRecord>
+      <g:reabrirEpisodio episodeId="${session.ehrSession?.episodioId}">
         <g:link controller="records" action="reopenRecord" id="${composition.id}"><g:message code="trauma.show.action.reopenRecord" /></g:link>
       </g:reabrirEpisodio>
       <g:link controller="guiGen" action="showRecord"><g:message code="trauma.list.action.showRecord" /></g:link>

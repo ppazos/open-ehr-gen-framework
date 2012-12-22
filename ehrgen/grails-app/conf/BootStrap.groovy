@@ -452,7 +452,7 @@ class BootStrap {
         
         // ====================================================================
         // Generacion de gui
-//        guiCachingService.generateGUI( templateManager.getLoadedTemplates().values() as List )
+        guiCachingService.generateGUI( templateManager.getLoadedTemplates().values() as List )
         //
         // ====================================================================
         
@@ -491,6 +491,7 @@ class BootStrap {
               
               // Crea stages en el workflow por defecto del domain
               stage = new Stage(
+                 owner: workflow,
                  name: entry.key // EVALUACION_PRIMARIA
               )
               // Agrego la stage al workflow

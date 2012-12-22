@@ -16,7 +16,7 @@
       --%>
       <g:each in="${sections.keySet()}" var="section">
         <g:if test="${sections[section].size()==1}">
-          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${sections[section][0]}">
+          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${sections[section][0]}">
             <g:if test="${it.hasItem}">
               <%-- No deberia ir a edit, deberia ir a show y si quiere en show hace edit.
               <g:link controller="guiGen" action="generarShow" id="${it.itemId}" params="[mode:'edit']">
@@ -27,7 +27,7 @@
             <g:else>
             
               <%-- Si el regsitro no esta incompleto, no se puede editar --%>
-              <g:isIncompleteRecord episodeId="${episodeId}">
+              <g:isIncompleteRecord episodeId="${session.ehrSession?.episodioId}">
 	              <g:if test="${it.answer}">
 	                <g:link controller="guiGen" action="generarTemplate" params="[templateId: sections[section][0]]"><g:message code="${'section.'+section}" /></g:link>
 	              </g:if>
@@ -43,26 +43,26 @@
         <g:else>
           <g:message code="${'section.'+section}" />:
           <ul>
-            <g:each in="${sections[section]}" var="subSection">
+            <g:each in="${sections[section]}" var="templateId">
                <li>
-                 <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subSection}">
+                 <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${templateId}">
                    <%--${it}--%>
                    <g:if test="${it.hasItem}">
                      <%-- No deberia ir a edit, deberia ir a show y si quiere en show hace edit.
                      <g:link controller="guiGen" action="generarShow" id="${it.itemId}" params="[mode:'edit']">
                      --%>
-                     <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subSection}" /></g:link>
+                     <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${templateId}" /></g:link>
                      (*)
                    </g:if>
                    <g:else>
                    
                      <%-- Si el regsitro no esta incompleto, no se puede editar --%>
-                     <g:isIncompleteRecord episodeId="${episodeId}">
+                     <g:isIncompleteRecord episodeId="${session.ehrSession?.episodioId}">
                        <g:if test="${it.answer}">
-                         <g:link controller="guiGen" action="generarTemplate" params="[templateId: subSection]"><g:message code="${'section.'+subSection}" /></g:link>
+                         <g:link controller="guiGen" action="generarTemplate" params="[templateId: templateId]"><g:message code="${templateId}" /></g:link>
                        </g:if>
                        <g:else>
-                         <g:message code="${'section.'+subSection}" />
+                         <g:message code="${templateId}" />
                        </g:else>
                      </g:isIncompleteRecord>
                      
