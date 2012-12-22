@@ -1,4 +1,4 @@
-<%@ page import="java.text.SimpleDateFormat" %><%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %><%@ page import="hce.core.common.directory.Folder" %>
+<%@ page import="domain.Domain" %><%@ page import="workflow.Stage" %><%@ page import="java.text.SimpleDateFormat" %><%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -54,8 +54,8 @@
             <g:link controller="domain" action="list"><g:message code="domain.action.list" /></g:link>
           </li>
           <li>
-           <g:set var="folder" value="${Folder.findByPath(session.traumaContext.domainPath)}" />
-           (${folder.name.value})
+           <g:set var="domain" value="${Domain.get(session.ehrSession.domainId)}" />
+           (${domain.name})
           </li>
           <li ${(['records'].contains(controllerName))?'class="active"':''}>
             <g:link controller="records" action="list"><g:message code="records.action.list" /></g:link>
@@ -78,7 +78,7 @@
       <table cellpadding="0" cellspacing="0">
         <tr>
           <td id="body_table" rowspan="2">
-            <g:resumenEpisodio episodeId="${episodeId}" />
+            <g:resumenEpisodio episodeId="${session.ehrSession?.episodioId}" />
             <g:layoutBody />
           </td>
           <td>
@@ -106,46 +106,54 @@
                   </g:link>
                 </li>
                 <li ${((controllerName=='records'&&['show'].contains(actionName)) ? 'class="active"' : '')}>
-                  <g:link controller="records" action="show" id="${episodeId}">
+                  <g:link controller="records" action="show" id="${session.ehrSession?.episodioId}">
                     <g:message code="trauma.menu.show" />
                   </g:link>
                 </li>
                 
+                <%-- Menu de la derecha para acceder a las etapas de registro clinico --%>
                 <g:canFillClinicalRecord>
                   
                   <%--
                   TODO: desde lo estudios img hasta el registro clinico no puede ser visto por un administrativo.
                   --%>
                   
+                  <%-- Puede ser null sino hay un template --%>
+                  <g:set var="currentStage" value="${workflow.getStage(template)}" />
+                  
                   <g:if test="${( ['guiGen','records','ajaxApi'].contains(controllerName) && ['generarShow','generarTemplate','show','saveDiagnostico','showRecord'].contains(actionName) )}">
-                    
-                    <g:each in="${sections}" var="section">
-                      <li ${(( template?.id?.startsWith(section) ) ? 'class="active"' : '')}>
-                        <%-- allSubsections: ${allSubsections}<br/> --%>
-                        <%-- se fija si el registro ya fue hecho --%>
+                    <%-- nombres de stages dek workflow actual --%>
+                    <g:each in="${workflow.stages}" var="stage">
+                      
+                      <%-- template puede ser null sino estoy en una seccion de registro --%>
+                      <li ${( (currentStage?.name == stage.name) ? 'class="active"' : '')}>
+                      
                         <%
-                        //def subsection = subsections.find{it.startsWith(section)}
-                        def subsection = allSubsections[section][0]
-                        if (!subsection) subsection = " " // para que no sea null o vacia en la llamada a g:hasContentItemForTemplate
+                        def templateId = stage?.recordDefinitions?.getAt(0)?.templateId // allSubsections[stage.name][0]
+                        if (!templateId) templateId = " " // para que no sea null o vacia en la llamada a g:hasContentItemForTemplate
                                                           // que espera no null y no vacio el templateId.
                         %>
-                        <%-- subsection: ${subsection}<br/> --%>
-                        <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${section+'-'+subsection}">
+                        
+                        <%-- se fija si el registro ya fue hecho --%>
+                        <%-- templateId: ${templateId}<br/> --%>
+                        <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${templateId}">
                           <g:if test="${it.hasItem}">
                             <g:link controller="guiGen" action="generarShow" id="${it.itemId}">
-                              <g:message code="${'section.'+section}" /> (+) <%-- + es que se hizo algun registro en la seccion --%>
+                              <g:message code="${stage.name}" /> (+) <%-- + es que se hizo algun registro en la seccion --%>
                             </g:link>
                           </g:if>
                           <g:else>
                             
+                            <g:set var="stage" value="${Stage.findByNameAndOwner(stage.name, workflow)}" />
+                            
                             <%-- Se verifica que el item tenga algun permiso para los templates contenidos en la seccion --%>
-                            <g:hasDomainPermit domain="${folder.name.definingCode.codeString}" templateIds="${completeSections[section]}">
-                              <g:link controller="records" action="registroClinico2" params="[section:section]">
-                                <g:message code="${'section.'+section}" />
+                            <g:hasDomainPermit domain="${domain}" templateIds="${stage.recordDefinitions.templateId}">
+                              <g:link controller="records" action="registroClinico2" params="[section:stage.name]">
+                                <g:message code="${stage.name}" />
                               </g:link>
                             </g:hasDomainPermit>
                             <g:dontHasDomainPermit><%-- Si no tiene permisos, se muestra el boton sin link --%>
-                              <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${'section.'+section}" /></a>
+                              <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${stage.name}" /></a>
                             </g:dontHasDomainPermit>
                             
                           </g:else>
@@ -154,9 +162,9 @@
                     </g:each>
                   </g:if>
                   <li ${((controllerName=='records'&&['signRecord'].contains(actionName)) ? 'class="active"' : '')}>
-                    <g:link controller="records" action="signRecord" id="${episodeId}">
+                    <g:link controller="records" action="signRecord" id="${session.ehrSession?.episodioId}">
                       <g:message code="registro.menu.close" />
-                      <g:isSignedRecord episodeId="${episodeId}">(+)</g:isSignedRecord>
+                      <g:isSignedRecord episodeId="${session.ehrSession?.episodioId}">(+)</g:isSignedRecord>
                     </g:link>
                   </li>
                 </g:canFillClinicalRecord>
