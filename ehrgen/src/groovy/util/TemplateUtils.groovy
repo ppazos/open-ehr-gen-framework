@@ -1,6 +1,8 @@
 package util
 
 import workflow.WorkFlow
+import workflow.Stage
+import templates.Template
 
 // FIXME: deberia ser workflow utils
 class TemplateUtils {
@@ -27,10 +29,7 @@ class TemplateUtils {
          domainTemplates[stage.name] = []
          stage.recordDefinitions.each { template ->
          
-            // ej. template.templateId == EVALUACION_PRIMARIA-via_aerea.v1
-            // assert EHRGen == template.templateId.split('-')[0]
-            // assert EHR == template.templateId.split('-')[1]
-            domainTemplates[stage.name] << template.templateId.split('-')[2]
+            domainTemplates[stage.name] << template.templateId
          }
       }
       
@@ -40,40 +39,77 @@ class TemplateUtils {
    }
    
    /**
+    * Son los nombres de las stages del workflow actual
     * Devuelve todos los prefijos de identificadores de templates del domino actual.
     * @return
     */
    static List getSections(session)
    {
       def sections = []
+      def workflow = WorkFlow.get( session.ehrSession.workflowId )
+      
+      /*
       getDomainTemplates(session).keySet().each {
 
          sections << it
       }
+      */
+      sections = workflow.stages.name
+      
+      println "getSections: " + sections
       
       return sections
    }
    
    /**
-    * FIXME: esto es un get stage by name, igual se necesita el workflowId
+    * FIXME: esto es un get stage templates, igual se necesita el workflowId
     *        de la session, porque los nombres de stage no son unicos.
     * Obtiene las subsecciones de una seccion dada.
     * 
     * this.getSubsections('EVALUACION_PRIMARIA')
     * 
-    * @param section es el prefijo del id de un template
+    * @param templateId
+    * @param session
+    *
     * @return List
     */
-   static List getSubsections( String section, session )
+   static List getSubsections( String stageName, session )
    {
       // Lista de ids de templates
-      def subsections = []
-
+      //def subsections = []
+/*
       getDomainTemplates(session)."$section".each { subsection ->
          subsections << "EHRGen-EHR-" + subsection
       }
+*/
+      def wf = WorkFlow.get( session.ehrSession.workflowId )
       
-      return subsections
+      println "getSubsections $stageName " + wf
+      
+      def stg = Stage.findByNameAndOwner( stageName, wf )
+      
+      println "stage: " + stg
+      
+      return stg.recordDefinitions.templateId
+      /*
+      wf.stages.each { stage ->
+      
+         subsections << stage.name
+      }
+      */
+      //return subsections
+   }
+   
+   static List getSubsectionsByTemplateId( String templateId, session )
+   {
+
+      def wf = WorkFlow.get( session.ehrSession.workflowId )
+      def tpl = Template.findByTemplateId( templateId )
+      
+      println "getSubsectionsByTemplateId $templateId: " + tpl
+      
+      def stg = wf.getStage( tpl )
+      return stg.recordDefinitions.templateId
    }
 
 }
