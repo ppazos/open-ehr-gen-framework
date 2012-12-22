@@ -1,7 +1,7 @@
 <template>
   <id>EHRGen-EHR-via_aerea.v1</id>
-  <name>Evaluacion de vía aérea (a1)</name>
-  
+  <name>(A Vía aérea)</name>
+  <!-- Evaluacion de vía aérea (a1) -->
   <root_archetype>
     <archetype type="section" id="openEHR-EHR-SECTION.evaluacion_via_aerea.v1" pageZone="none" />
   </root_archetype>

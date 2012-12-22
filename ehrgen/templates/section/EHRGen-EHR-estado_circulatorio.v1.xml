@@ -1,6 +1,6 @@
 <template>
   <id>EHRGen-EHR-estado_circulatorio.v1</id>
-  <name>Evaluacion de estado circulatorio (c)</name>
+  <name>(C) Estado circulatorio</name>
   
   <root_archetype>
     <archetype type="section" id="openEHR-EHR-SECTION.evaluacion_estado_cirulatorio.v1" pageZone="none" />

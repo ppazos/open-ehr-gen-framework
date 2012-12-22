@@ -8,7 +8,8 @@ TODO:
 -->
 
   <id>EHRGen-EHR-columna_vertebral.v1</id>
-  <name>Evaluacion de columna vertebral (a2)</name>
+  <name>(B) Columna</name>
+  <!-- Evaluacion de columna vertebral (a2) -->
 
   <!-- Arquetipo raiz (el principal) -->
   <root_archetype>

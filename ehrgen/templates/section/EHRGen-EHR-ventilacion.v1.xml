@@ -1,6 +1,7 @@
 <template>
   <id>EHRGen-EHR-ventilacion.v1</id>
-  <name>Evaluacion de ventilación/respiración (b)</name>
+  <name>(B) Ventilación</name>
+  <!-- Evaluacion de ventilación/respiración (b) -->
   
   <root_archetype>
     <archetype type="section" id="openEHR-EHR-SECTION.ventilacion.v1" pageZone="none" />

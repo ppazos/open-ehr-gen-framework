@@ -1,6 +1,6 @@
 <template>
   <id>EHRGen-EHR-disfuncion_neurologica.v1</id>
-  <name>Evaluacion de disfuncion neurologica (d)</name>
+  <name>(D) Disfunción neurológica</name>
   
   <root_archetype>
     <archetype type="section" id="openEHR-EHR-SECTION.disfuncion_neurologica.v1" pageZone="none" />
