@@ -43,11 +43,15 @@ class GuiCachingService {
          //println "GUIGEN TEMPLATE: " + tpl.templateId
            
          pathToStaticViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'hce'+ PS + tpl.templateId +'.gsp'
-           
+         
+         
+         
          // Si no existe la vista estatica, genero create, show y edit.
          // Si existe, solo genero show
          if (!new File(pathToStaticViews).exists())
          {
+            println "No existe vista estatica: $pathToStaticViews"
+         
             // Se genera cada vista para cada locale disponible
             ApplicationHolder.application.config.langs.eachWithIndex { lang, i ->
               
@@ -90,7 +94,9 @@ class GuiCachingService {
             }
          }
          else // Genera solo show
-         {       
+         {
+            println "Existe vista estatica: $pathToStaticViews"
+            
             // Se genera cada vista para cada locale disponible
             ApplicationHolder.application.config.langs.eachWithIndex { lang, i ->
               
