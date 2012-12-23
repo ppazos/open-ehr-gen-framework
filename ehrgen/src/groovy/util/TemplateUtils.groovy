@@ -45,18 +45,11 @@ class TemplateUtils {
     */
    static List getSections(session)
    {
-      def sections = []
       def workflow = WorkFlow.get( session.ehrSession.workflowId )
+    
+      def sections = workflow.stages.name
       
-      /*
-      getDomainTemplates(session).keySet().each {
-
-         sections << it
-      }
-      */
-      sections = workflow.stages.name
-      
-      println "getSections: " + sections
+      //println "getSections: " + sections
       
       return sections
    }

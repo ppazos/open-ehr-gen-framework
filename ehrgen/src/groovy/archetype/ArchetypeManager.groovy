@@ -161,7 +161,7 @@ class ArchetypeManager {
       }
       else
       {
-         println "Carga $archetypeId desde cache"
+         //println "Carga $archetypeId desde cache"
          this.timestamps[archetypeId] = new Date() // actualizo timestamp
       }
        

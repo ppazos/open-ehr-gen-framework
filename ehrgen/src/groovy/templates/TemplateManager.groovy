@@ -203,7 +203,7 @@ class TemplateManager {
    
    public Template getTemplate( String templateId )
    {
-      println "getTemplate: " + templateId
+      //println "getTemplate: " + templateId
     
       // Ruta independiente del SO
       // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
@@ -212,7 +212,8 @@ class TemplateManager {
       // Si no esta cargado, lo intenta cargar
       if (!this.cache[templateId])
       {
-         println "No se encuentra el template " + templateId + ", se intenta cargarlo"
+         //println "No se encuentra el template " + templateId + ", se intenta cargarlo"
+         
          //def id = new templateID( templateId ) // a partir del ID saco la ruta que tengo que cargar
          //def type = id.rmEntity // cluster, entry, composition, etc...
          
@@ -248,7 +249,7 @@ class TemplateManager {
             }
          }
          
-         println " -> hay que buscar el template $templateId en: " + templatePath
+         //println " -> hay que buscar el template $templateId en: " + templatePath
          
          
          File templateFile = new File( templatePath )
@@ -327,7 +328,7 @@ class TemplateManager {
     */
    private loadAllRecursive( String path )
    {
-      println " --- loadAllRecursive: " + path
+      //println " --- loadAllRecursive: " + path
       def root = new File( path )
       
       //String templateId
@@ -338,7 +339,7 @@ class TemplateManager {
       root.eachFileMatch (groovy.io.FileType.FILES, ~/.*\.xml/) { f ->
       
          //println " ---- template file: " + f.name // EHRGen-EHR-adm_sust.v1.xml
-         println " ---- template path: " + f.path // templates\entry\action\EHRGen-EHR-adm_sust.v1.xml
+         //println " ---- template path: " + f.path // templates\entry\action\EHRGen-EHR-adm_sust.v1.xml
          
          
          // Carga de disco, parsea y cachea
@@ -347,16 +348,16 @@ class TemplateManager {
          //templateId = f.name - '.xml'
          //getTemplate(templateId)
          
-         template = parseTemplate( f )
+         template = parseTemplate( f ) // TODO: probar si tira excepcion cuando lee un XML que no es un template
          if (template)
          {
-            println " ---- Cargado el template: " + f.path
+            //println " ---- Cargado el template: " + f.path
             cache[template.templateId] = template
             timestamps[template.templateId] = new Date()
          }
          else
          {
-            println " ---- No se pudo cargar el template: " + f.path
+            //println " ---- No se pudo cargar el template: " + f.path
          }
       }
       
@@ -384,7 +385,7 @@ class TemplateManager {
       def root = new File( path )
       root.eachFile { f ->
       
-         println " > " + f.path
+         //println " > " + f.path
       
          if (templateId == (f.name - '.xml'))
          {
