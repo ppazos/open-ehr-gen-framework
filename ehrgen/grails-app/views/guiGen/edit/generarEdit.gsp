@@ -342,7 +342,7 @@
         <ul>
           <g:each in="${subsections}" var="subsection">
             <li ${((template.templateId==subsection)?'class="active"':'')}>
-	          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
+	          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${subsection}">
 	            <g:if test="${it.hasItem}">
 	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
 	            </g:if>

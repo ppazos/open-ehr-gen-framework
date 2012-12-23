@@ -12,7 +12,7 @@ NO SE USA MAS
         <ul>
           <g:each in="${subsections}" var="subsection">
             <li ${((params.templateId==subsection)?'class="active"':'')}>
-	          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
+	          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${subsection}">
 	            <g:if test="${it.hasItem}">-${subsection}-
 	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
 	            </g:if>

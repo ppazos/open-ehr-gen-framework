@@ -190,26 +190,26 @@
     <g:if test="${subsections.size()>1}">
       <div id="navbar">
         <ul>
-          <g:each in="${subsections}" var="subsection">
-            <li ${((templateId==subsection)?'class="active"':'')}>
-              <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
+          <g:each in="${subsections}" var="templateId">
+            <li ${((template.templateId==templateId)?'class="active"':'')}>
+              <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${templateId}">
                 <g:if test="${it.hasItem}">
-                  <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
+                  <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${templateId}" /> (*)</g:link>
                 </g:if>
                 <g:else>
                   <%--
-                  <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
-                    <g:message code="${'section.'+subsection}" />
+                  <g:link controller="guiGen" action="generarTemplate" params="[templateId:templateId]">
+                    <g:message code="${templateId}" />
                   </g:link>
                   --%>
                   
-                  <g:hasDomainPermit domain="${domain}" templateId="${subsection}">
-                    <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
-                      <g:message code="${'section.'+subsection}" />
+                  <g:hasDomainPermit domain="${domain}" templateId="${templateId}">
+                    <g:link controller="guiGen" action="generarTemplate" params="[templateId:templateId]">
+                      <g:message code="${templateId}" />
                     </g:link>
                   </g:hasDomainPermit>
                   <g:dontHasDomainPermit>
-                    <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${'section.'+subsection}" /></a>
+                    <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${templateId}" /></a>
                   </g:dontHasDomainPermit>
                   
                 </g:else>
@@ -226,11 +226,11 @@
     <br/>
     
     <div class="bottom_actions">
-      <g:isNotSignedRecord episodeId="${episodeId}">
+      <g:isNotSignedRecord episodeId="${session.ehrSession?.episodioId}">
         <%-- show --%>
         <g:link action="generarShow" id="${id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link> |
       </g:isNotSignedRecord>
-      <g:link controller="records" action="show" id="${episodeId}"><g:message code="trauma.show.action.back" /></g:link>
+      <g:link controller="records" action="show" id="${session.ehrSession?.episodioId}"><g:message code="trauma.show.action.back" /></g:link>
     </div>
   </body>
 </html>

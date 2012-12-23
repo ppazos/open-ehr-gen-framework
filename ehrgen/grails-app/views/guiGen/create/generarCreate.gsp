@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<%@ page import="domain.Domain" %><?xml version="1.0" encoding="UTF-8" ?>
 <html>
   <head>
     <meta name="layout" content="ehr" />
@@ -54,31 +54,25 @@
     </g:javascript>
   </head>
   <body>
-    <%-- SUBMENU DE SECCIONES SI EXISTEn --%>
+    <%-- Tabs: SUBMENU DE REGISTROS SI HAY MAS DE UN TEMPLATE EN LA STAGE ACTUAL --%>
     <g:if test="${subsections.size()>1}">
       <div id="navbar">
         <ul>
-          <g:each in="${subsections}" var="subsection">
-            <li ${((params.templateId==subsection)?'class="active"':'')}>
-	          <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
+          <g:each in="${subsections}" var="templateId">
+            <li ${((params.templateId==templateId)?'class="active"':'')}>
+	          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${templateId}">
 	            <g:if test="${it.hasItem}">
-	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
+	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${templateId}" /> (*)</g:link>
 	            </g:if>
 	            <g:else>
-	            
-	             <%--
-		          <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
-		            <g:message code="${'section.'+subsection}" />
-		          </g:link>
-		          --%>
-		          
-		          <g:hasDomainPermit domain="${session.traumaContext.domainPath}" templateId="${subsection}">
-                   <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
-                     <g:message code="${'section.'+subsection}" />
+
+		          <g:hasDomainPermit domain="${domain}" templateId="${templateId}">
+                   <g:link controller="guiGen" action="generarTemplate" params="[templateId:templateId]">
+                     <g:message code="${templateId}" />
                    </g:link>
                  </g:hasDomainPermit>
                  <g:dontHasDomainPermit>
-                   <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${'section.'+subsection}" /></a>
+                   <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${templateId}" /></a>
                  </g:dontHasDomainPermit>
 		          
 		        </g:else>

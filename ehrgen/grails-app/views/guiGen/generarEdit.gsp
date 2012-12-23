@@ -24,7 +24,7 @@
         <ul>
           <g:each in="${subsections}" var="subsection">
             <li ${((template.templateId==subsection)?'class="active"':'')}>
-              <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
+              <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${subsection}">
                 <g:if test="${it.hasItem}">
                   <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
                 </g:if>
@@ -162,7 +162,7 @@
       </table>
       <br/>
       <div class="bottom_actions">
-        <g:isNotSignedRecord episodeId="${episodeId}">
+        <g:isNotSignedRecord episodeId="${session.ehrSession?.episodioId}">
           <%-- edit --%>
           <g:submitButton name="doit" value="Guardar" /> |
         </g:isNotSignedRecord>

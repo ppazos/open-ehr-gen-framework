@@ -20,7 +20,7 @@
         <ul>
           <g:each in="${subsections}" var="subsection">
             <li ${((template.id==subsection)?'class="active"':'')}>
-              <g:hasContentItemForTemplate episodeId="${episodeId}" templateId="${subsection}">
+              <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${subsection}">
                 <g:if test="${it.hasItem}">
                   <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
                 </g:if>
@@ -126,7 +126,7 @@
       </table>
       <br/>
       <div class="bottom_actions">
-        <g:isNotSignedRecord episodeId="${episodeId}">
+        <g:isNotSignedRecord episodeId="${session.ehrSession?.episodioId}">
           <%-- show --%>
           <g:link action="generarShow" id="${rmNode.id}" params="[mode:'edit']"><g:message code="trauma.show.action.edit" /></g:link> |
         </g:isNotSignedRecord>
