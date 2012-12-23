@@ -19,7 +19,7 @@ description
 			misuse = <"">
 		>
 	>
-	lifecycle_state = <"0">
+	lifecycle_state = <"Draft">
 	other_contributors = <>
 	other_details = <
 		["references"] = <"">
@@ -43,10 +43,10 @@ definition
 										}
 									}
 									ELEMENT[at0005] occurrences matches {0..1} matches {   -- Descripcion
-                                        value matches {
-                                            DV_TEXT matches {*}
-                                        }
-                                    }
+                               value matches {
+                                   DV_TEXT matches {*}
+                               }
+                           }
 								}
 							}
 						}

@@ -176,13 +176,32 @@ class GuiGenController {
       // Genera GUI solo si el registro esta abierto
       if ( hceService.isIncompleteComposition( composition ) )
       {         
-         // TODO:
-         // Es mas rapido que la generacion y estoy levantando de disco!
-         // Si cacheo en memoria es incluso mas rapido! tengo que hacer un handler!!
-         //
+         // Veo si es una vista estatica o dinamica
+         def view = '../hce/'+templateId // estatica
+         def form = '' // es la propia vista estatica
          GuiManager guiManager = GuiManager.getInstance()
          if (guiManager.exists(templateId, 'create', session.locale.toString()))
          {
+            view = 'create/generarCreate' // dinamica
+            form = guiManager.get(templateId, 'create', session.locale.toString())
+         }
+         
+         render( view: view,
+                    model: [
+                     patient: patient,
+                     template: template,
+                     sections: sections,
+                     subsections: subsections,
+                     episodeId: session.ehrSession?.episodioId,
+                     //allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                     form: form,
+                     //completeSections: completeSections,
+					      domain: Domain.get(session.ehrSession.domainId),
+                     workflow: workflow // nuevo
+                    ])
+         return
+         
+/*         
             println 'vista generada'
             
             render( view: 'create/generarCreate',
@@ -218,6 +237,7 @@ class GuiGenController {
                     ])
             return
          }
+*/
          //   println 'dice que no es un recurso valido: '+ path
       }
       else
@@ -356,30 +376,40 @@ class GuiGenController {
       
       if (params.mode=='edit')
       {
-         render(view:'edit/generarEdit', model:
+         // Veo si es una vista estatica o dinamica
+         def view = '../hce/'+templateId // estatica
+         def form = '' // es la propia vista estatica
+         if (guiManager.exists(templateId, 'edit', session.locale.toString()))
+         {
+            view = 'edit/generarEdit' // dinamica
+            form = guiManager.get(templateId, "edit", session.locale.toString())
+         }
+         
+         println pv.params
+         
+         render(view: view, model:
          [
            patient:   patient,
            template:  template,
            sections:  sections,
            subsections: subsections,
-           //completeSections: completeSections,
-           //allSubsections: util.TemplateUtils.getDomainTemplates(session),
-           //episodeId: session.ehrSession?.episodioId,
            
            // content es para el generarShow, para generateEdit se usa form
            //content: guiManager.get(templateId, "edit", session.locale.toString()),
            data: pv.params as JSON,
+           rmNode: rmNode, // necesario para el edit de diagnosticos
            domain: Domain.get(session.ehrSession.domainId),
            id: params.id,
            
            // Para el edit, copiado del edit de correccion de errores de validacion en el save
-           form: guiManager.get(templateId, "edit", session.locale.toString()),
+           form: form,
            errors: [] as JSON,   // No hay errores, estoy editando algo ya validado y guardado
            errors2: [] as JSON,  // No hay errores, estoy editando algo ya validado y guardado
            
+           mode: 'edit', // necesario para edit de diagnosticos
+           
            workflow: workflow // nuevo
            /*
-           rmNode:    rmNode,
            index:     hceService.getRMRootsIndex(template, rmNode),
            episodeId: session.ehrSession?.episodioId, // necesario para el layout
            patient:   patient,
@@ -417,6 +447,8 @@ class GuiGenController {
     * FIXME: deberia estar en recordController.
     */
    def save = {
+      
+      println "GuiGen save params: " + params
       
       if (!session.ehrSession?.episodioId)
       {
@@ -632,6 +664,10 @@ class GuiGenController {
          }
       }
       
+      // Esto se usa SOLO para crear la estructura de PathValores
+      // FIXME: se puede evitar crear aqui para acelerar el proceso
+      //        y se puede calcular luego dentro de PathValores cuando
+      //        necesite ser usado.
       Map pathValue2Filtered = [:] // igual a pathValue2 pero saca items vacios, es para guardar en paramsCache para hacer el show desde JS.
       pathValue2.each{ e->
       
@@ -693,11 +729,13 @@ class GuiGenController {
          }
       }
       
+      /*
       println ""
       println "pathValue2: "+ pathValue2
       println "pathValue2Filtered: "+ pathValue2Filtered
+      */
       
-      /*
+      /* viejo...
       Map pathValue2 = params.findAll { e ->
          
          ( e.value != '' && e.value instanceof String ) ||
@@ -710,6 +748,7 @@ class GuiGenController {
       */
       //println "   -=-=- PATH VALUE: " + pathValue
    
+      // FIXME: Poner archivos solo si vienen
       // Pongo archivos (puede no venir ninguno)
       pathValue2 += files
    
@@ -754,8 +793,8 @@ class GuiGenController {
       
       //println "mapping: " + fields.getMapping()
       //println "inverso: " + fields.getInverseMapping()
-      //println "##############################################################"
-      //println "pathValue: " + pathValue
+      println "##############################################################"
+      println "pathValue (lo que se bindea): " + pathValue
       //println ""
       
       
@@ -803,6 +842,7 @@ class GuiGenController {
       file << xstream.toXML(rmobj)
       */
       
+      // FIXME: tambien puede ser una vista estatica
       if (!rmobj)
       {
          // volver a la pagina y pedirle que ingrese algun dato

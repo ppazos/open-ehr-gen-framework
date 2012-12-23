@@ -137,14 +137,22 @@
   
     <%--
     <g:if test="${rmNode}">
-      ${rmNode.data.events[0].data.items}
+      <textarea style="width: 800px; height: 400px;">${rmNode.data.events[0].data.items}</textarea>
+      <textarea style="width: 800px; height: 400px;">${errors}</textarea>
       <textarea style="width: 800px; height: 400px;">${new XStream().toXML(rmNode.data.events[0].data.errors)}</textarea>
     </g:if>
     --%>
-    <g:if test="${rmNode && rmNode.data.events[0].data.errors.hasErrors()}">
-      <div class="error">
-        <g:renderErrors bean="${rmNode.data.events[0].data}" as="list" />
-      </div>
+    
+    <%-- Va si hay error en algun item: codigos o descripcion --%>
+    <g:if test="${rmNode}">
+      <g:each in="${rmNode.data.events[0].data.items}" var="item">
+        <g:if test="${item.errors.hasErrors()}">
+          <div class="error">
+            <%-- <g:renderErrors bean="${rmNode.data.events[0].data.items}" as="list" /> --%>
+            <g:renderErrors bean="${item}" as="list" />
+          </div>
+        </g:if>
+      </g:each>
     </g:if>
   
     <%-- update="[success:'message',failure:'error']" --%>
@@ -173,7 +181,7 @@
       <g:form controller="ajaxApi" action="saveDiagnostico">
         
         <input type="hidden" name="mode" value="${mode}" />
-        <input type="hidden" name="templateId" value="${params.templateId}" />
+        <input type="hidden" name="templateId" value="${template.templateId}" />
         
         <h3><g:message code="section.DIAGNOSTICO-diagnosticos.label.selectedDiagnoses" /></h3>
         <div id="seleccionados">
@@ -187,28 +195,33 @@
             --%>
             <g:each in="${rmNode.data.events[0].data.items}" var="element">
               <%--x: ${element.value}<br/>--%>
-              <g:if test="${element.value.getClassName() == 'DvCodedText'}">
+              <%-- x: ${element.path}<br/> --%>
+              <g:if test="${element.path == '/data[at0001]/events[at0002]/data[at0003]/items[at0004]'}">
                 <%--
                 ${element.value.value}
                 ${element.value.definingCode.codeString}<br/>
                 --%>
-                <g:set var="code" value="${Cie10Trauma.findByCodigo(element.value.definingCode.codeString)}" />
-                <g:if test="${!code}">
-                  <g:set var="code" value="${Cie10Trauma.findBySubgrupo(element.value.definingCode.codeString)}" />
+                
+                <%-- element.value puede ser null --%>
+                <g:if test="${element.value}">
+                  <g:set var="code" value="${Cie10Trauma.findByCodigo(element?.value.definingCode.codeString)}" />
+                  <g:if test="${!code}">
+                    <g:set var="code" value="${Cie10Trauma.findBySubgrupo(element?.value.definingCode.codeString)}" />
+                  </g:if>
+                
+                  <div id="selected_${code.id}">
+                    <input type="hidden" name="codes" value="${code.id+'||'+code.nombre}" />
+                    ( ${( (code.codigo) ? code.codigo : code.subgrupo )} ) ${code.nombre}
+                    <a href="javascript:unselect('${code.id}');">[borrar]</a>
+                  </div>
+                  <hr/>
                 </g:if>
                 
-                <div id="selected_${code.id}">
-                  <input type="hidden" name="codes" value="${code.id}" />
-                  ( ${( (code.codigo) ? code.codigo : code.subgrupo )} ) ${code.nombre}
-                  <a href="javascript:unselect('${code.id}');">[borrar]</a>
-                </div>
-                <hr/>
-                
               </g:if>
-              <g:else>
+              <g:if test="${element.path == '/data[at0001]/events[at0002]/data[at0003]/items[at0005]'}">
                 <!-- DvText es la description -->
-                <g:set var="descripcion" value="${element.value.value}" />
-              </g:else>
+                <g:set var="descripcion" value="${element?.value?.value}" />
+              </g:if>
             </g:each>
           </g:if>
         </div>
