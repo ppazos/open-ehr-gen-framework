@@ -80,6 +80,10 @@
       td {
         text-align: right;
       }
+      input[type=submit] {
+        margin-top: 3px;
+        padding: 3px 10px;
+      }
       .error {
         /* TODO: meter icono de error ! */
         border: 1px solid #f00;
@@ -150,7 +154,7 @@
                 <td><input type="submit" name="doit" value="${message(code:'auth.login.action.signin')}" /></td>
               </tr>
             </table>
-            <%-- TODO: recordar clave
+            <%-- TODO: recordar clave y permitir registrar al usuario.
             <div align="center">
               <g:link action="forgotPassword"><g:message code="auth.login.action.forgotPass" /></g:link>
             </div>
