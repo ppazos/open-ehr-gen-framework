@@ -606,10 +606,17 @@ class BootStrap {
       def archetypes = man.getLoadedArchetypes() // Map archetypeId -> archetype
       archetypes.each { archetypeId, archetype ->
 
-         index = new ArchetypeIndex(
-            archetypeId: archetypeId,
-            type: archetype.archetypeId.rmEntity.toLowerCase()
-         )
+         // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=100
+         // Garantiza que hay un index por arquetipo
+         index = ArchetypeIndex.findByArchetypeId(archetypeId)
+      
+         if (!index)
+         {
+            index = new ArchetypeIndex(
+               archetypeId: archetypeId,
+               type: archetype.archetypeId.rmEntity.toLowerCase()
+            )
+         }
          
          
          // Busca slots usando el archetype walkthrough
@@ -632,10 +639,17 @@ class BootStrap {
          
             if (archId != archetypeId)
             {
-               slot_index = new ArchetypeIndex(
-                  archetypeId: archId,
-                  type: arch.archetypeId.rmEntity.toLowerCase()
-               )
+               // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=100
+               // Garantiza que hay un index por arquetipo
+               slot_index = ArchetypeIndex.findByArchetypeId(archId)
+               
+               if(!slot_index)
+               {
+                  slot_index = new ArchetypeIndex(
+                     archetypeId: archId,
+                     type: arch.archetypeId.rmEntity.toLowerCase()
+                  )
+               }
                
                index.addToSlots( slot_index )
             }

@@ -19,13 +19,21 @@
       }
     </style>
     <g:javascript library="jquery-1.8.2.min" />
+    <g:javascript library="jquery.tableFilter-1.0.0" />
     <g:javascript>
     $(document).ready(function() {
       
+       $('input[name=archetype_filter]').tableFilter( $('#concepts'), 3 );
     });
     </g:javascript>
   </head>
   <body>
+    <div class="nav">
+      <%-- FIXME: acciones solo para administradores del sistema --%>
+      <span class="menuButton">
+        <g:link controller="domain" action="list" class="list"><g:message code="domain.list.title" /></g:link>
+      </span>
+    </div>
     <div class="body">
     
       <h1><g:message code="template.create.title" /></h1>
@@ -47,10 +55,13 @@
       <input type="text" name="name" placeholder="Evaluaciion de triage de trauma" />
       <br/><br/>
       
-      Seleccion contenido ra&iacute;z:
-      <br/>
+      Seleccion contenido ra&iacute;z:<br/><br/>
+      
+      Filtro por concepto: <input type="text" name="archetype_filter" id="archetype_filter" />
+      
+      <br/><br/>
       <g:set var="grouped" value="${archetypes.groupBy{it.type}}" />
-      <table>
+      <table id="concepts">
         <tr>
           <th>type</th>
           <th>select</th>
@@ -103,7 +114,8 @@
       --%>
       
         <input type="submit" name="doit" value="Crear template" />
-      
+        <g:actionSubmit value="Cancelar" action="list" />
+        
       </g:form>
     </div>
   </body>
