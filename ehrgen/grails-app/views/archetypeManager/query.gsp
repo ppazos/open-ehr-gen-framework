@@ -17,7 +17,7 @@
     <!-- Source file and calendar css -->
     <g:javascript library="yui/calendar/calendar-min" />
     
-    <script type="text/javascript" src="${createLinkTo(dir:'js', file:'jquery-1.6.2.min.js')}"></script>
+    <g:javascript library="jquery-1.8.2.min" />
     <script type="text/javascript" src="${createLinkTo(dir:'js', file:'jquery.form.2_43.js')}"></script>
     <g:javascript library="jquery.scrollTo-1.4.2-min" />
     <g:javascript library="jquery.tableFilter-1.0.0" />
