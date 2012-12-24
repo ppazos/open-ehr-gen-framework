@@ -54,6 +54,16 @@ class GrailsTemplateEngineService {
          */
       }
       
+      
+      // En el contexto de un request, permite guardar el locale actual para reestablecerlo
+      // al terminar de generar la GUI para que no quede cambiado para el siguiente request.
+      // El locale se cambia para poder generar la GUI para distintos locales.
+      //
+      def currentLocale
+      
+      // Donde se setea el locale en el contexto de un request y donde se reestablece el actual.
+      def localeResolver
+      
       def servletContext = requestAttributes.request.servletContext
       def request = requestAttributes.request // org.springframework.mock.web.MockHttpServletRequest
       
@@ -66,11 +76,15 @@ class GrailsTemplateEngineService {
       else
       {
          // Nuevo: soporte de generacion de gui en el contexto de un request (por el usuario)
-         // TEST: desde LocaleFilters
-         LocaleResolver localeResolver = RCU.getLocaleResolver(request)
-         localeResolver.setLocale(request, requestAttributes.response, model.locale)
          
-         // FIXME: al ternimar deberia reestablecer el locale anterior!
+         // Como en LocaleFilters
+         localeResolver = RCU.getLocaleResolver(request) // LocaleResolver http://static.springsource.org/spring/docs/2.0.x/api/org/springframework/web/servlet/support/RequestContextUtils.html
+         
+         // Guarda el locale actual
+         currentLocale = RCU.getLocale(request)
+         
+         // Cambia el locale actual para generar la GUI
+         localeResolver.setLocale(request, requestAttributes.response, model.locale)
       }
 
       
@@ -129,6 +143,12 @@ class GrailsTemplateEngineService {
          if(unbindRequest)
          {
             RequestContextHolder.setRequestAttributes(null)
+         }
+         
+         // Reestablece locale actual si estoy en el contexto de un request
+         if (localeResolver)
+         {
+            localeResolver.setLocale(request, requestAttributes.response, currentLocale)
          }
       }
 
