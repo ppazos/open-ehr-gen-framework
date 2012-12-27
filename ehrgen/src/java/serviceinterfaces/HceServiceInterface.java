@@ -8,7 +8,7 @@ package serviceinterfaces;
 import hce.core.common.archetyped.Locatable;
 import hce.core.common.generic.PartyProxy;
 import hce.core.composition.Composition;
-import templates.tom.Template;
+import templates.Template;
 import demographic.party.Person;
 import hce.core.common.generic.Participation;
 import hce.core.common.generic.PartySelf;
