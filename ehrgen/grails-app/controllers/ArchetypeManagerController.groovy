@@ -101,7 +101,7 @@ class ArchetypeManagerController {
             return
          }
            
-         Archetype archetype = null;
+         Archetype archetype = null
          try { archetype = parser.archetype() }
          catch (Exception e)
          {
@@ -116,20 +116,28 @@ class ArchetypeManagerController {
             println e.message
             return
          }
-         // ----------------------------------------------------
          
+         // ----------------------------------------------------
          // Mover el archivo al repo local
          def type = archetype.archetypeId.rmEntity.toLowerCase()
          def path = manager.getTypePath( type ) // path destino definitivo del arquetipo (repo local)
          def repo_path = ApplicationHolder.application.config.hce.archetype_repo + path + System.getProperty("file.separator")
          
-         println "repo_path $repo_path"
+         //println "repo_path $repo_path"
 
          if (!adlFile.renameTo( new File(repo_path + adlFile.getName()) ))
          {
             flash.message = "No se pudo guardar el archivo ADL en el repositorio local, verifique que tiene permisos de escritura"
             return
          }
+         
+         // ----------------------------------------------------
+         // Cachea el nuevo arquetipo
+         manager.getArchetype( archetype.archetypeId.value )
+         
+         // ----------------------------------------------------
+         // Crea indices
+         manager.createArchetypeIndexes( archetype.archetypeId.value )
          
          
          flash.message = "Archivo adl guardado en $repo_path"
