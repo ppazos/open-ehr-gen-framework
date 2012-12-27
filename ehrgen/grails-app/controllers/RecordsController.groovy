@@ -368,22 +368,17 @@ class RecordsController {
         def patient = hceService.getPatientFromComposition( composition )
 
 
-        // Es necesario para mostrar el menu
-        def sections = util.TemplateUtils.getSections(session)
-        def subsections = [] // No hay porque estoy firmando el registro
-
-
         flash.message = null
         flash.error = null
         
         // Para retornarle a la vista
-        def model = [//episodeId: session.ehrSession?.episodioId,
-                     //userId: session.ehrSession.userId, // no se usa
+        def model = [
                      composition: composition,
                      patient: patient,
-                     sections: sections,
-                     subsections: subsections,
-                     allSubsections: util.TemplateUtils.getDomainTemplates(session)
+                     sections: util.TemplateUtils.getSections(session), // Es necesario para mostrar el menu
+                     subsections: [], // No hay porque estoy firmando el registro
+                     allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                     workflow: WorkFlow.get(session.ehrSession.workflowId) // nuevo
                     ]
         
         
