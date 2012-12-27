@@ -8,6 +8,8 @@ import templates.Template
 class TemplateUtils {
 
    /**
+    * FIXME: esta operacion es innecesaria, solo se necesita el WF actual para recorrer sus stages y templates.
+    *
     * Devuelve un Map con los templates configurados para el dominio actual
     * y el workflow para el rol seleccionado.
     * 
@@ -33,7 +35,7 @@ class TemplateUtils {
          }
       }
       
-      println "domainTemplates: " + domainTemplates
+      //println "domainTemplates: " + domainTemplates
 
       return domainTemplates
    }
@@ -77,11 +79,11 @@ class TemplateUtils {
 */
       def wf = WorkFlow.get( session.ehrSession.workflowId )
       
-      println "getSubsections $stageName " + wf
+      //println "getSubsections $stageName " + wf
       
       def stg = Stage.findByNameAndOwner( stageName, wf )
       
-      println "stage: " + stg
+      //println "stage: " + stg
       
       return stg.recordDefinitions.templateId
       /*
