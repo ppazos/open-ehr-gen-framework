@@ -166,11 +166,7 @@ class GuiGenController {
       // Templates de la stage actual
       def workflow = WorkFlow.get(session.ehrSession.workflowId)
       def stage = workflow.getStage(template)
-      def subsections = stage.recordDefinitions.templateId
-      
-      // getSubsections espera como primer parametro el nombre de la stage
-      //def subsections = util.TemplateUtils.getSubsections(templateId, session) // this.getSubsections('EVALUACION_PRIMARIA')
-      
+      //def subsections = stage.recordDefinitions.templateId
      
      
       // Genera GUI solo si el registro esta abierto
@@ -191,13 +187,14 @@ class GuiGenController {
                      patient: patient,
                      template: template,
                      sections: sections,
-                     subsections: subsections,
+                     //subsections: subsections,
                      episodeId: session.ehrSession?.episodioId,
                      //allSubsections: util.TemplateUtils.getDomainTemplates(session),
                      form: form,
                      //completeSections: completeSections,
 					      domain: Domain.get(session.ehrSession.domainId),
-                     workflow: workflow // nuevo
+                     workflow: workflow, // nuevo
+                     stage: stage // nuevo: etapa actual
                     ])
          return
          
@@ -292,7 +289,7 @@ class GuiGenController {
       // Templates de la stage actual
       def workflow = WorkFlow.get(session.ehrSession.workflowId)
       def stage = workflow.getStage(template)
-      def subsections = stage.recordDefinitions.templateId
+      //def subsections = stage.recordDefinitions.templateId
       
 
       // TODO:
@@ -392,7 +389,7 @@ class GuiGenController {
            patient:   patient,
            template:  template,
            sections:  sections,
-           subsections: subsections,
+           //subsections: subsections,
            
            // content es para el generarShow, para generateEdit se usa form
            //content: guiManager.get(templateId, "edit", session.locale.toString()),
@@ -408,7 +405,8 @@ class GuiGenController {
            
            mode: 'edit', // necesario para edit de diagnosticos
            
-           workflow: workflow // nuevo
+           workflow: workflow, // nuevo
+           stage: stage // nuevo: stage actual
            /*
            index:     hceService.getRMRootsIndex(template, rmNode),
            episodeId: session.ehrSession?.episodioId, // necesario para el layout
@@ -425,7 +423,7 @@ class GuiGenController {
          template:   template,
          templateId: templateId, // FIXME: este incluye la version y el id del template no, deberian ser iguales.
          sections: sections,
-         subsections: subsections,
+         //subsections: subsections,
          //completeSections: completeSections,
          //userId: session.ehrSession.userId,
          //allSubsections: util.TemplateUtils.getDomainTemplates(session),
@@ -435,7 +433,8 @@ class GuiGenController {
          data: pv.params as JSON,
          domain: Domain.get(session.ehrSession.domainId),
          id: params.id,
-         workflow: workflow // nuevo
+         workflow: workflow, // nuevo
+         stage: stage // nuevo: stage actual
       ])
       return
       
@@ -801,7 +800,7 @@ class GuiGenController {
       // Templates de la stage actual
       def workflow = WorkFlow.get(session.ehrSession.workflowId)
       def stage = workflow.getStage(template)
-      def subsections = stage.recordDefinitions.templateId
+      //def subsections = stage.recordDefinitions.templateId
       
       if (!vienenDatos)
       {
@@ -816,10 +815,11 @@ class GuiGenController {
                   template: template,
                   form: guiManager.get(params.templateId, "create", session.locale.toString()),
                   sections: util.TemplateUtils.getSections(session),
-                  subsections: subsections,
+                  //subsections: subsections,
                   //allSubsections: util.TemplateUtils.getDomainTemplates(session),
 				      domain: Domain.get(session.ehrSession.domainId),
-                  workflow: workflow // nuevo
+                  workflow: workflow, // nuevo
+                  stage: stage // nuevo: stage actual
                 ])
          return
       }
@@ -856,10 +856,11 @@ class GuiGenController {
                   template: template,
                   form: guiManager.get(params.templateId, "create", session.locale.toString()),
                   sections: util.TemplateUtils.getSections(session),
-                  subsections: subsections,
+                  //subsections: subsections,
                   //allSubsections: util.TemplateUtils.getDomainTemplates(session),
 				      domain: Domain.get(session.ehrSession.domainId),
-                  workflow: workflow // nuevo
+                  workflow: workflow, // nuevo
+                  stage: stage // nuevo: stage actual
                 ])
          return
       }
@@ -925,10 +926,11 @@ class GuiGenController {
                   form: guiManager.get(params.templateId, "edit", session.locale.toString()),
                   errors: errors as JSON,
                   errors2: bindingAOMRM.errors as JSON,
-                  subsections: subsections,
+                  //subsections: subsections,
                   //allSubsections: util.TemplateUtils.getDomainTemplates(session),
 				      domain: Domain.get(session.ehrSession.domainId),
-                  workflow: workflow // nuevo
+                  workflow: workflow, // nuevo
+                  stage: stage // nuevo: stage actual
                 ])
          return
       }

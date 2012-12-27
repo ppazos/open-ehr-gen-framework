@@ -11,6 +11,7 @@ import demographic.role.*
 import java.text.DecimalFormat;
 import hce.core.common.generic.PartyIdentified // composer
 import support.identification.*
+import templates.Template
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.swp@gmail.com)
@@ -290,7 +291,30 @@ class TraumaTagLib {
         // Mando un boolean como var para que en la vista pueda discutir si hay o no un item en la composition.
         //out << body(item!=null)
         
-        out << body( hasItem:(item!=null), itemId:item?.id)
+        out << body( hasItem:(item!=null), itemId:item?.id, item:item)
+    }
+    
+    /**
+     * in: stage
+     * in: episodeId (composition.id)
+     */
+    def hasContentItemForStage  = { attrs, body ->
+    
+       def composition = Composition.get( attrs.episodeId )
+        if (!composition)
+            throw new Exception("No se encuentra el episodio con id " + attrs.episodeId + " @TraumaTagLib 2")
+        
+        if (!attrs.stage)
+            throw new Exception("La stage es obligatoria @TraumaTagLib 2")
+        
+        def item
+        for (Template template: attrs.stage.recordDefinitions)
+        {
+           item = hceService.getCompositionContentItemForTemplate(composition, template.templateId)
+           if (item) break
+        }
+
+        out << body( hasItem:(item!=null), itemId:item?.id, item:item)
     }
     
     /**

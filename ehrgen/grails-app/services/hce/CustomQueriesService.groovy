@@ -40,8 +40,8 @@ class CustomQueriesService {
      */
     def getTriageClasification( Composition composition )
     {
-        def triageEvaluation = hceService.getCompositionContentItemForTemplate( composition, "INGRESO-triage" )
-
+        def triageEvaluation = hceService.getCompositionContentItemForTemplate( composition, "EHRGen-EHR-triage" )
+        
         // Si no se ha registrado el triage
         if (!triageEvaluation) return null
         
@@ -73,7 +73,7 @@ class CustomQueriesService {
     {
 
         List<String> listaMovimientos = new LinkedList<String>()
-        def movimientoPaciente = hceService.getCompositionContentItemForTemplate( comp, "COMUNES-movimiento_paciente" )
+        def movimientoPaciente = hceService.getCompositionContentItemForTemplate( comp, "EHRGen-EHR-movimiento_paciente" )
 
         // Si no se ha registrado movimiento de Paciente
         if (!movimientoPaciente) return listaMovimientos
@@ -145,7 +145,7 @@ class CustomQueriesService {
     List<String> getDiagnosticosEpisodio(Composition comp)
     {
 
-        def diagnostico = hceService.getCompositionContentItemForTemplate( comp, "DIAGNOSTICO-diagnosticos" )
+        def diagnostico = hceService.getCompositionContentItemForTemplate( comp, "EHRGen-EHR-diagnosticos" )
          
         List<String> listaCIE10 = new LinkedList<String>()
         if (diagnostico != null)
@@ -257,7 +257,7 @@ class CustomQueriesService {
     Double getFrecuenciaRespiratoriaEpisodio(Composition comp)
     {
         // El dato a encontrar esta en sectionVentilacion.items[i].data.events[j].data.item.value.magnitude
-        def sectionVentilacion = hceService.getCompositionContentItemForTemplate( comp, "EVALUACION_PRIMARIA-ventilacion" )
+        def sectionVentilacion = hceService.getCompositionContentItemForTemplate( comp, "EHRGen-EHR-ventilacion" )
         def result = null
         if ((sectionVentilacion != null) && (sectionVentilacion.items != null))
         {
@@ -292,7 +292,7 @@ class CustomQueriesService {
     **/
     Double getPresionArterialSistolicaEpisodio(Composition comp){
         // El dato a encontrar esta en sectionEstadoCirculatorio.items[i].data.events[j].data.item.value.magnitude
-        def sectionEstadoCirculatorio = hceService.getCompositionContentItemForTemplate( comp, "EVALUACION_PRIMARIA-estado_circulatorio" )
+        def sectionEstadoCirculatorio = hceService.getCompositionContentItemForTemplate( comp, "EHRGen-EHR-estado_circulatorio" )
         def result = null
         if ((sectionEstadoCirculatorio != null) && (sectionEstadoCirculatorio.items != null)){
             sectionEstadoCirculatorio.items.each{item ->
@@ -338,7 +338,7 @@ class CustomQueriesService {
     Double getGlasgowComaScaleEpisodio(Composition comp){
 
         // El dato a encontrar esta en sectionDisfuncionNeurologica.items[i].data.events[j].data.items[k].value.magnitude
-        def sectionDisfuncionNeurologica = hceService.getCompositionContentItemForTemplate( comp, "EVALUACION_PRIMARIA-disfuncion_neurologica" )
+        def sectionDisfuncionNeurologica = hceService.getCompositionContentItemForTemplate( comp, "EHRGen-EHR-disfuncion_neurologica" )
         def result = null
         
         if ((sectionDisfuncionNeurologica != null) && (sectionDisfuncionNeurologica.items != null)){
@@ -499,7 +499,7 @@ class CustomQueriesService {
         }
 
         // Busco fecha registrada en la Evaluación Secundaria (creación del episodio)
-        def evalSecSection = hceService.getCompositionContentItemForTemplate( comp, "EVALUACION_SECUNDARIA-exposicion_corporal_total" )
+        def evalSecSection = hceService.getCompositionContentItemForTemplate( comp, "EHRGen-EHR-exposicion_corporal_total" )
         if (evalSecSection){
             evalSecSection.items.each{entry ->
                 if (entry.archetypeNodeId == "openEHR-EHR-ACTION.resumen_actuacion.v1"){
@@ -534,7 +534,7 @@ class CustomQueriesService {
         Date fechaFin = null // Se le asignara fecha registrada en la evaluación secundaria
 
         // Busco fecha registrada en la Evaluación Secundaria (creación del episodio)
-        def evalSecSection = hceService.getCompositionContentItemForTemplate( comp, "EVALUACION_SECUNDARIA-exposicion_corporal_total" )
+        def evalSecSection = hceService.getCompositionContentItemForTemplate( comp, "EHRGen-EHR-exposicion_corporal_total" )
         if (evalSecSection){
             evalSecSection.items.each{entry ->
                 if (entry.archetypeNodeId == "openEHR-EHR-ACTION.resumen_actuacion.v1"){
@@ -547,7 +547,7 @@ class CustomQueriesService {
         }
 
         // Busco movimiento con fecha mas temprana
-        def movInstruction = hceService.getCompositionContentItemForTemplate( comp, "COMUNES-movimiento_paciente" )
+        def movInstruction = hceService.getCompositionContentItemForTemplate( comp, "EHRGen-EHR-movimiento_paciente" )
         if (movInstruction){
             movInstruction.activities.each{act ->
                 def fechaHoraMovInstructionElement = act.description.items.find{ it.archetypeNodeId == "at0012" }
@@ -636,7 +636,7 @@ class CustomQueriesService {
      * @autor Leandro Carrasco
      **/
     List<String> getExamenesImagenologicosEpisodio(Composition comp){
-        return getExamenesEpisodio(comp, "PARACLINICA-pedido_imagenes")
+        return getExamenesEpisodio(comp, "EHRGen-EHR-pedido_imagenes")
     }
 
     //--------------------------------------------------------------------------
@@ -647,7 +647,7 @@ class CustomQueriesService {
      * @autor Leandro Carrasco
      **/
     List<String> getExamenesLaboratorioEpisodio(Composition comp){
-        return getExamenesEpisodio(comp, "PARACLINICA-pedido_laboratorio")
+        return getExamenesEpisodio(comp, "EHRGen-EHR-pedido_laboratorio")
     }
 
     //--------------------------------------------------------------------------

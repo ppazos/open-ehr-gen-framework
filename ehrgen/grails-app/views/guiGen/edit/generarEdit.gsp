@@ -337,18 +337,18 @@
   </head>
   <body>
     <%-- SUBMENU DE SECCIONES SI EXISTEn --%>
-    <g:if test="${subsections.size()>1}">
+    <g:if test="${stage.recordDefinitions.size()>1}">
       <div id="navbar">
         <ul>
-          <g:each in="${subsections}" var="subsection">
-            <li ${((template.templateId==subsection)?'class="active"':'')}>
-	          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${subsection}">
+          <g:each in="${stage.recordDefinitions}" var="template">
+            <li ${((params.templateId==template.templateId)?'class="active"':'')}>
+	          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${template.templateId}">
 	            <g:if test="${it.hasItem}">
-	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${'section.'+subsection}" /> (*)</g:link>
+	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${template.name}" /> (*)</g:link>
 	            </g:if>
 	            <g:else>
-		          <g:link controller="guiGen" action="generarTemplate" params="[templateId:subsection]">
-		            <g:message code="${'section.'+subsection}" />
+		          <g:link controller="guiGen" action="generarTemplate" params="[templateId:template.templateId]">
+		            <g:message code="${template.name}" />
 		          </g:link>
 		        </g:else>
 	          </g:hasContentItemForTemplate>

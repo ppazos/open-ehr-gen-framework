@@ -121,7 +121,7 @@
                   <%-- Puede ser null sino hay un template --%>
                   <g:set var="currentStage" value="${workflow.getStage(template)}" />
                   
-                  <g:if test="${( ['guiGen','records','ajaxApi'].contains(controllerName) && ['generarShow','generarTemplate','show','saveDiagnostico','showRecord'].contains(actionName) )}">
+                  <g:if test="${( ['guiGen','records','ajaxApi'].contains(controllerName) && ['generarShow','generarTemplate','show','saveDiagnostico','showRecord','signRecord'].contains(actionName) )}">
                     <%-- nombres de stages dek workflow actual --%>
                     <g:each in="${workflow.stages}" var="stage">
                       
@@ -136,7 +136,8 @@
                         
                         <%-- se fija si el registro ya fue hecho --%>
                         <%-- templateId: ${templateId}<br/> --%>
-                        <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${templateId}">
+                        <g:hasContentItemForStage episodeId="${session.ehrSession?.episodioId}" stage="${stage}">
+
                           <g:if test="${it.hasItem}">
                             <g:link controller="guiGen" action="generarShow" id="${it.itemId}">
                               <g:message code="${stage.name}" /> (+) <%-- + es que se hizo algun registro en la seccion --%>
@@ -157,7 +158,7 @@
                             </g:dontHasDomainPermit>
                             
                           </g:else>
-                        </g:hasContentItemForTemplate>
+                        </g:hasContentItemForStage>
                       </li>
                     </g:each>
                   </g:if>

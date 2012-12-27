@@ -543,16 +543,23 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
     {
         def iter = composition.content.iterator()
         def item
+        def found
         while (iter.hasNext())
         {
             item = iter.next()
+            
+            //println item.archetypeDetails.templateId +"=?"+ templateId
+            //println item.archetypeDetails.templateId.split('\\.')[0] +"=?"+ templateId.split('\\.')[0]
+            
             //if (item.archetypeDetails.templateId == templateId)
             if (item.archetypeDetails.templateId.split('\\.')[0] == templateId.split('\\.')[0]) // le saca el .vX y compara, asi no considera la version
             {
-                return item
+               found = item
+               break
             }
         }
-        return null
+
+        return found
     }
 
 
