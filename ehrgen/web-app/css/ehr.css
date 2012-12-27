@@ -87,12 +87,14 @@ body {
   width: 180px;
   padding: 10px;
   background-color: #ccccff;
+  border: 1px solid #6666aa;
   min-height: 100px;
+  margin-left: 3px;
 }
 #resumen_episodio {
   padding: 10px;
   background-color: #ccccff;
-  border: 1px solid #000;
+  border: 1px solid #6666aa;
   margin-bottom: 10px;
   overflow: auto;
 }
@@ -180,7 +182,7 @@ textarea {
  #menu li a {
    display: block;
    width: 193px;
-   padding: 7px 0px 7px 7px;
+   padding: 7px 2px 7px 7px;
    text-decoration:none;
    /*text-align:center;*/
    /*
@@ -190,6 +192,7 @@ textarea {
    */
    color: #597a80;
    background-color:#C8EDFF;
+   margin-left: 3px;
  }
  #menu li a:hover {
    color: #000000;
@@ -197,10 +200,12 @@ textarea {
  }
  #menu li.active a {
   color: #000000;
+  padding: 7px 5px 7px 7px;
   background-color: #efefef; /*ADDEE4;*/
   border: 1px solid #aaaaaa;
   border-left: 1px solid #efefef; /* para que lo muestre unido al body */
   margin-left: -1px; /* para que lo muestre unido al body */
+  font-weight:bold;
  }
 #body_table table {
   background-color: #ffffdd;
