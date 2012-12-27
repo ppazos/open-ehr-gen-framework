@@ -14,8 +14,11 @@ import org.apache.log4j.Logger
 import java.util.regex.Pattern
 
 import org.openehr.am.archetype.constraintmodel.ArchetypeConstraint
-
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+
+import archetype.ArchetypeIndex
+import archetype.walkthrough.*
+import archetype.walkthrough.actions.SlotResolution
 
 /**
  * @author Pablo Pazos Gutierrez (pablo.pazos@cabolabs.com)
@@ -139,7 +142,7 @@ class ArchetypeManager {
          def adlFile = new File( ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) + PS + archetypeId +".adl" )
            
          // PARSEAR ARQUETIPO
-         ADLParser parser = null;
+         ADLParser parser = null
          try { parser = new ADLParser( adlFile ) }
          catch (IOException e) { print e.message }
            
@@ -374,6 +377,85 @@ class ArchetypeManager {
        
        return archetypes
    }
+   
+   
+   /**
+    * Carga indices para el archetypeId, o si es null carga
+    * para todos los arquetipos en el repo local.
+    */
+   public void createArchetypeIndexes(String rootArchId = null)
+   {
+      def index
+      def slot_index
+      def walk
+      def result
+      def archetypes
+      
+      if (!rootArchId) archetypes = this.getLoadedArchetypes() // Map archetypeId -> archetype
+      else archetypes = [(rootArchId): this.getArchetype(rootArchId)]
+      
+      archetypes.each { archetypeId, archetype ->
+
+         // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=100
+         // Garantiza que hay un index por arquetipo
+         index = ArchetypeIndex.findByArchetypeId(archetypeId)
+      
+         if (!index)
+         {
+            index = new ArchetypeIndex(
+               archetypeId: archetypeId,
+               type: archetype.archetypeId.rmEntity.toLowerCase()
+            )
+         }
+         
+         
+         // Busca slots usando el archetype walkthrough
+         walk = new ArchetypeWalkthrough()
+         walk.walthroughInit(archetype)
+         walk.walthroughStart(
+            [
+               (walk.EVENT_SLOT): [new SlotResolution()]
+            ],
+            new WalkthroughResult())
+
+         result = walk.walthroughResult()
+
+         //println result as grails.converters.XML
+         //println result.loadedArchetypes
+         //println result.references [archId::path : [archId,...]] // Slots en el arquetipo raiz con los ids referenciados en cada path
+         //println result.cache
+         
+         result.loadedArchetypes.each { archId, arch ->
+         
+            if (archId != archetypeId)
+            {
+               // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=100
+               // Garantiza que hay un index por arquetipo
+               slot_index = ArchetypeIndex.findByArchetypeId(archId)
+               
+               if(!slot_index)
+               {
+                  slot_index = new ArchetypeIndex(
+                     archetypeId: archId,
+                     type: arch.archetypeId.rmEntity.toLowerCase()
+                  )
+               }
+               
+               index.addToSlots( slot_index )
+            }
+         }
+         
+         // Guardo solo si valida, ej. no guarda indices de tipos structure o item
+         if (index.validate())
+         {
+            index.save()
+         }
+         else
+         {
+            //println index.errors
+         }
+      }
+   } // createArchetypeIndexes
    
    
    

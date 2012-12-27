@@ -30,10 +30,10 @@ import templates.*
 import templates.constraints.*
 import templates.controls.*
 
-import archetype.ArchetypeIndex
+//import archetype.ArchetypeIndex
 import archetype.ArchetypeManager
-import archetype.walkthrough.*
-import archetype.walkthrough.actions.SlotResolution
+//import archetype.walkthrough.*
+//import archetype.walkthrough.actions.SlotResolution
 
 // Para hacer un MOCK de una sesion para setear el locale temporalmente, para generar las pantallas correctamente.
 import org.springframework.web.context.request.RequestContextHolder
@@ -74,7 +74,7 @@ class BootStrap {
       def templateManager = TemplateManager.getInstance()
       def archetypeManager = ArchetypeManager.getInstance()
       
-      // Para crear los ARchetypeIndex necesito todos los arquetipos cargados
+      // Para crear los ArchetypeIndex necesito todos los arquetipos cargados
       archetypeManager.loadAll()
         
         
@@ -580,7 +580,7 @@ class BootStrap {
         */
         
         println "Create Archetype Indexes"
-        createArchetypeIndexes()
+        archetypeManager.createArchetypeIndexes()
         
         println ""
         println "======= +++++++++ ======="
@@ -596,6 +596,7 @@ class BootStrap {
     * Los indices a arquetipos en la db se usan para editar templates desde la gui.
     * Luego se usaran para otras tareas de gestion de arquetipos desde la gui.
     */
+   /*
    def createArchetypeIndexes()
    {
       def index
@@ -666,4 +667,5 @@ class BootStrap {
          }
       }
    }
+   */
 } 
