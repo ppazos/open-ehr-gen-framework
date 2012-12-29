@@ -9,18 +9,18 @@ import data_types.text.TermMapping
 
 class DvText extends DataValue {
 
-    String formatting // A format string of the form “name:value; name:value...”, e.g. "font-weight : bold; font-family : Arial; font-size : 12pt;". Values taken from W3C CSS2 properties lists “background” and “font”.
-    DvURI hyperlink // Optional link sitting behind a section of plain text or coded term item.
+    //String formatting // A format string of the form “name:value; name:value...”, e.g. "font-weight : bold; font-family : Arial; font-size : 12pt;". Values taken from W3C CSS2 properties lists “background” and “font”.
+    //DvURI hyperlink // Optional link sitting behind a section of plain text or coded term item.
     String value // Displayable rendition of the item, regardless of its underlying structure. For DV_CODED_TEXT, this is the rubric of the complete term as provided by the terminology service. No carriage returns, line feeds, or other non-printing characters permitted.
 
     //static hasMany = [mappings:TermMapping] // terms from other terminologies most closely matching this term, typically used where the originator (e.g. pathology lab) of information uses a local terminology but also supplies one or more equivalents from wellknown terminologies (e.g. LOINC).
-    List<TermMapping> mappings 
+    //List<TermMapping> mappings no se esta usando
     CodePhrase language
     CodePhrase encoding
 
     def DvText()
     {
-       mappings = []
+       //mappings = []
     }
     
     public boolean validate()
@@ -51,4 +51,9 @@ class DvText extends DataValue {
         hyperlink (nullable:true)
     }
     */
+    
+    String toString()
+    {
+       return "DvText "+ value
+    }
 }

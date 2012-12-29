@@ -37,4 +37,9 @@ class CodePhrase extends DataValue {
     	terminologyId (blank:false)
     }
     */
+    
+    String toString()
+    {
+       return "CodePhrase "+ codeString + " " + terminologyId.name
+    }
 }

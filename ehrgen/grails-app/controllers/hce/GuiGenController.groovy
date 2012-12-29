@@ -447,7 +447,7 @@ class GuiGenController {
     */
    def save = {
       
-      println "GuiGen save params: " + params
+      //println "GuiGen save params: " + params
       
       if (!session.ehrSession?.episodioId)
       {
@@ -509,7 +509,7 @@ class GuiGenController {
          }
          else // Si no es save de edit, esta tratando de salvar de nuevo algo que ya habia salvado.
          {
-            println "Registro ya realizado, se va a show para y no se vuelve a guardar"
+//            println "Registro ya realizado, se va a show para y no se vuelve a guardar"
             // Muestro el registro ya ingresado previamente
             //flash.message = 'trauma.list.error.registryAlreadyDone'
             redirect( controller:'guiGen', action:'generarShow', id: item.id,
@@ -792,8 +792,8 @@ class GuiGenController {
       
       //println "mapping: " + fields.getMapping()
       //println "inverso: " + fields.getInverseMapping()
-      println "##############################################################"
-      println "pathValue (lo que se bindea): " + pathValue
+      //println "##############################################################"
+//      println "pathValue (lo que se bindea): " + pathValue
       //println ""
       
       
@@ -833,14 +833,16 @@ class GuiGenController {
       //println "Params: " + params.toString() + "\n"
       //println "Path value: " + pathValue + "\n"
       
-      /*
+      
+      
       XStream xstream = new XStream()
       xstream.omitField(Locatable.class, "errors");
       xstream.omitField(data_types.basic.DataValue.class, "errors");
       println "-- rmobj se guardo en RM Bindeado para template.xml"
-      File file = new File("RM Bindeado para template.xml")
+      File file = new File("RMObject Binded - "+ template.templateId +".xml")
       file << xstream.toXML(rmobj)
-      */
+      
+      
       
       // FIXME: tambien puede ser una vista estatica
       if (!rmobj)

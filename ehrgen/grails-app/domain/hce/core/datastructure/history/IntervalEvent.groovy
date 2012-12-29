@@ -62,5 +62,6 @@ class IntervalEvent extends Event { // abstract // representa PointEvent
         //time (nullable: false)
         data (nullable: false)
         codedTime (nullable: true, maxSize:4096)
+        codedMathFunction(maxSize:4096)
     }
 }

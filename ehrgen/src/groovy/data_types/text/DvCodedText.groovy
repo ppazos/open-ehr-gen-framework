@@ -38,4 +38,9 @@ class DvCodedText extends DvText {
         definingCode (nullable: false)
     }
     */
+    
+    String toString()
+    {
+       return "DvCodedText "+ value +" "+ definingCode
+    }
 }
