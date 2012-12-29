@@ -123,7 +123,7 @@ class OpenEHRConcept {
         res << new OpenEHRConcept(group:'property',conceptId:'358',rubric:'Fuerza por masa',lang:'es')
         //<concept id="357" rubric="Force, body"/>
         
-        res << new OpenEHRConcept(group:'property',conceptId:'',rubric:'Frecuencia',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'382',rubric:'Frecuencia',lang:'es')
         /*
          * <concept id="586" rubric="Glomerular filtration rate"/>
             <concept id="373" rubric="Heat transfer coefficient"/>
@@ -179,12 +179,6 @@ class OpenEHRConcept {
           */
         res << new OpenEHRConcept(group:'property',conceptId:'129',rubric:'Volumen',lang:'es')
         res << new OpenEHRConcept(group:'property',conceptId:'130',rubric:'Trabajo',lang:'es')
-        /*
-        res << new OpenEHRConcept(group:'property',conceptId:'',rubric:'',lang:'es')
-        res << new OpenEHRConcept(group:'property',conceptId:'',rubric:'',lang:'es')
-        res << new OpenEHRConcept(group:'property',conceptId:'',rubric:'',lang:'es')
-        res << new OpenEHRConcept(group:'property',conceptId:'',rubric:'',lang:'es')
-        */
         
         res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'532',rubric:'Completo',lang:'es')
         res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'553',rubric:'Incompleto',lang:'es')
@@ -322,6 +316,25 @@ class OpenEHRConcept {
         <concept id="522" rubric="increase"/>
         <concept id="640" rubric="actual"/>
     </group>
+    */
+    res << new OpenEHRConcept(group:'event math function',conceptId:'145',rubric:'minimo',lang:'es')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'144',rubric:'maximo',lang:'es')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'267',rubric:'moda',lang:'es')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'268',rubric:'mediana',lang:'es')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'146',rubric:'promedio',lang:'es')
+    
+    // Value of the interval-event is the net change over the period which the interval-event summarises.
+    res << new OpenEHRConcept(group:'event math function',conceptId:'147',rubric:'cambio',lang:'es')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'148',rubric:'total',lang:'es')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'149',rubric:'variacion',lang:'es')
+    
+    res << new OpenEHRConcept(group:'event math function',conceptId:'521',rubric:'disminucion',lang:'es')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'522',rubric:'aumento',lang:'es')
+    
+    // Value of the datum was the value indicated during the entire time of the event, i.e. it is not an averaged or other computed value
+    res << new OpenEHRConcept(group:'event math function',conceptId:'640',rubric:'actual',lang:'es')
+
+    /*  
     <group name="setting">
         <concept id="225" rubric="home"/>
         <concept id="227" rubric="emergency care"/>

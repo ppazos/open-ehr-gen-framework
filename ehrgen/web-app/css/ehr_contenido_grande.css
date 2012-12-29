@@ -251,6 +251,11 @@ ul.lang li {
   font-size: 10px;
 }
 
+/* Link de ENTRY con multiples EVENTs para seleccionar uno */
+a.event.active {
+ font-weight: bold;
+}
+
 .center_td td {
  text-align: center;
 }

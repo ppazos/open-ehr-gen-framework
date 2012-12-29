@@ -10,6 +10,7 @@ def _refPath = ''
 if (refPath) _refPath = refPath
 
 %>
+
 <%-- ATTR REFPATH: ${_refPath}<br/> --%>
   <g:render template="../guiGen/create/cObject"
             var="cObject"

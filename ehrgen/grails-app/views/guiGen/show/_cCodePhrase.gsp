@@ -29,22 +29,9 @@ if (refPath) _refPath = refPath
   </g:if>
   <g:else>
     <g:set var="codes" value="${cCodePhrase.codeList}" />
-    <g:codeListTerms archetype="${archetype}" codeList="${codes}" locale="${locale}">
+    <g:codeListTerms archetype="${archetype}" terminologyId="${cCodePhrase.terminologyId}" codeList="${codes}" locale="${locale}">
       <g:set var="values" value="${it.labels}" />
-    </g:codeListTerms>
-    
-    <%--
-    <g:each in="${codes}" var="code">
-      <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, code)}" />
-      <g:if test="${!archetypeTerm}">
-        El termino con codigo [${code}] no esta definido en el arquetipo ${archetype.archetypeId.value}, ver que el termino este definido para el lenguaje ${lang}.<br/>
-      </g:if>
-      <g:else>
-        <% values << archetypeTerm.items.text %>
-      </g:else>
-    </g:each>
-    --%>
-    
+    </g:codeListTerms>    
   </g:else>
 </g:if>
 <g:else>

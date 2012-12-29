@@ -7,6 +7,14 @@
 #right {
   width: 50%;
 }
+
+span.label.datavalue { /* Para las labels de campos simples de las clases del RM (INTERVAL_EVENT.math_function) */
+  font-size:1em;
+  font-weight: normal;
+  display: inline;
+  padding-right: 5px;
+}
+
 .OBSERVATION .label, .EVALUATION .label, .INSTRUCTION .label, .ACTION .label {
   font-size: 14px;
   font-weight: bold;

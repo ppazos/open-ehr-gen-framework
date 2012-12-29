@@ -30,14 +30,13 @@ if (refPath) _refPath = refPath
 </g:each>
 --%>
 
-
 <%-- Aca values tiene los codigos, es como codes en _cCodePhrase.gsp --%>
 <g:set var="values" value="${cDvOrdinal.list.sort{ it.value }.symbol.codeString}" />
 
-<g:codeListTerms archetype="${archetype}" codeList="${values}" locale="${locale}">
+<%-- cDvOrdinal.list es java.util.Collections$UnmodifiableSet y no tiene getAt() --%>
+<g:codeListTerms archetype="${archetype}" terminologyId="${(cDvOrdinal.list as List)[0].symbol.terminologyId}" codeList="${values}" locale="${locale}">
   <g:set var="labels" value="${it.labels}" />
 </g:codeListTerms>
-
 
 <!-- le pongo el value al code para obtener el value en el show, porque asi se guarda en PathValores -->
 <%-- collectEntries disponible desde Groovy 1.7.9 y grails 1.3.7 tiene Groovy 1.7.8 

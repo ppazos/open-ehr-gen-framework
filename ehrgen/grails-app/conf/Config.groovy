@@ -99,8 +99,8 @@ templates2 {
               'cluster_obligatorio_multiple.v1',
               'cluster_obligatorio_multiple_struct.v1',
               'cluster_oblig_multiple_element_oblig.v1',
-              'blood_pressure.v3',
-              'blood_pressure_liotta.v1'
+              'blood_pressure.v3', // No tiene INTERVAL_EVENT
+              'blood_pressure_liotta.v1' // Tiene INTERVAL_EVENT
              ]
       DEMO = ['demo.v1']
    }

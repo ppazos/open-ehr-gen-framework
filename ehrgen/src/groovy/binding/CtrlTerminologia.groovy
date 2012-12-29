@@ -78,6 +78,9 @@ class CtrlTerminologia {
             // FIXME: throw exception
             if (!term)
             {
+               if (!codigo.startsWith('at'))
+                  println "getTermino ERROR: "+ terminologyId.name +"::"+ codigo
+               
                return 'Termino no encontrado en el arquetipo '+ arquetipo.archetypeId.value +
                       ' codigo ['+codigo+'], y el locale ['+locale.toString()+']'
             }
@@ -91,7 +94,7 @@ class CtrlTerminologia {
             if (!cie10)
                cie10 = Cie10Trauma.findBySubgrupo( codigo ) // Caso de que se selecciona un subgrupo, no tiene codigo.
 
-            return cie10.nombre
+            return cie10?.nombre
          break
          case "openehr":
             def oehconcept = OpenEHRConcept.findByConceptId( codigo )
@@ -103,15 +106,15 @@ class CtrlTerminologia {
          break
          case "motivos_consulta":
             def mc = MotivoConsulta.findByCodigo( codigo )
-            return mc.nombre
+            return mc?.nombre
          break
          case "departamentos_uy":
             def du = DepartamentoUY.findByIso3166_2UY( codigo )
-            return du.nombre
+            return du?.nombre
          break
          case "emergencias_moviles":
             def em = EmergenciaMovil.findByNombre( codigo ) // no tienen codigos, el codigo es el propio nombre
-            return em.nombre
+            return em?.nombre
          break
       }
       

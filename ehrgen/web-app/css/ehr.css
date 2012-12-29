@@ -297,6 +297,11 @@ textarea {
 }
 /* /CSS custom: TRIAGE */
 
+/* Link de ENTRY con multiples EVENTs para seleccionar uno */
+a.event.active {
+ font-weight: bold;
+}
+
 .center_td td {
  text-align: center;
 }

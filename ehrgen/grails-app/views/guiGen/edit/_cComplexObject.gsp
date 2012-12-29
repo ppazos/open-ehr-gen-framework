@@ -25,7 +25,7 @@ if (refPath) _refPath = refPath
   for (i in 1..max) {
 %>
 <%-- Agrego DV_CODED_TEXT y DV_COUNT porque genera un contenedor mas dentro del contenedor ELEMENT porque es modelado con CComplexObject y no es necesario ese contenedor extra (jode el estilo) --%>
-<g:if test="${!['ACTIVITY','HISTORY','EVENT','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE','DV_CODED_TEXT','DV_TEXT','DV_COUNT','DV_BOOLEAN','DV_DATE_TIME'].contains( cComplexObject.rmTypeName )}">
+<g:if test="${!['ACTIVITY','HISTORY','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE','DV_CODED_TEXT','DV_TEXT','DV_COUNT','DV_BOOLEAN','DV_DATE_TIME'].contains( cComplexObject.rmTypeName )}">
 
   <%-- Si es ELEMENT, quiero el tipo de su value para poder ponerlo en el class de la div, y asi poder ajustar la vista con CSS --%>
   <g:if test="${cComplexObject.rmTypeName == 'ELEMENT'}">
@@ -92,6 +92,7 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
       <%-- Verifico que no sea null porque puede serlo. --%>
       <g:if test="${cComplexObject.attributes}">
         <%-- ${cComplexObject.attributes.size()} --%>
+        <%--
         <g:render template="../guiGen/edit/cAttribute"
                   var="cAttribute"
                   collection="${cComplexObject.attributes}"
@@ -99,6 +100,33 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
                           archetypeService: archetypeService,
                           refPath: refPath,
                           params: params, lang: lang, locale: locale, template: template]" />
+        --%>
+                          
+        <g:each in="${cComplexObject.attributes}" var="cAttribute">
+        
+          <%--
+          ${cAttribute.rmAttributeName}
+          --%>
+        
+          <%-- Las ENTRIES tienen protocolo, y si esta definido en el arquetipo quiero mostrar el titulo --%>
+          <g:if test="${['OBSERVATION','EVALUATION','INSTRUCTION','ACTION'].contains(cComplexObject.rmTypeName) && cAttribute.rmAttributeName == 'protocol'}">
+            <span class="label"><g:message code="protocol" /></span>
+          </g:if>
+          <g:if test="${['OBSERVATION'].contains(cComplexObject.rmTypeName) && cAttribute.rmAttributeName == 'state'}">
+            <span class="label"><g:message code="state" /></span>
+          </g:if>
+          <g:if test="${['INTERVAL_EVENT'].contains(cComplexObject.rmTypeName) && cAttribute.rmAttributeName == 'math_function'}">
+            <span class="label datavalue"><g:message code="math_function" /></span>
+          </g:if>
+          
+          <g:render template="../guiGen/create/cObject"
+            var="cObject"
+            collection="${cAttribute.children}"
+            model="[archetype: archetype,
+                    archetypeService: archetypeService,
+                    refPath: refPath,
+                    params: params, lang: lang, locale: locale, template: template]" />
+        </g:each>
       </g:if>
       <g:else><%-- muestra nodos sin restriccion, solo si no tiene atributos para seguir navegando --%>
       
@@ -137,15 +165,7 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
       </g:else>
     </g:else>
 
-<g:if test="${ ! ['ACTIVITY','HISTORY','EVENT','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE','DV_CODED_TEXT','DV_TEXT','DV_COUNT','DV_BOOLEAN','DV_DATE_TIME'].contains( cComplexObject.rmTypeName )}">
-
-<%-- Ahora el boton para agregar nodos multiples se agrega automaticamente desde JS, tambien el scroll se hace desde js, no es mas necesario ponerle un <a name></a>
-      <g:parentElementIsMultiple archetypeId="${archetype.archetypeId.value}" nodePath="${cComplexObject.path()}">
-        <!-- Para que al agregar una entrada no haga scroll al inicio de la pagina -->
-        <g:set var="anchor" value="${UniqueIdIssuer.getId()}" />
-        <a name="${anchor}"></a>
-      </g:parentElementIsMultiple>
---%>
+<g:if test="${ ! ['ACTIVITY','HISTORY','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE','DV_CODED_TEXT','DV_TEXT','DV_COUNT','DV_BOOLEAN','DV_DATE_TIME'].contains( cComplexObject.rmTypeName )}">
 
     </span>
   </div>

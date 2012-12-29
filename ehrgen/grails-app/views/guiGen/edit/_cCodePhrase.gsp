@@ -10,9 +10,7 @@ in: selectedValue si es edit viene con el valor ingresado antes, si no es null.
 CCodePhrase<br/>
 <textarea style="width: 700px; height: 200px;">${new XStream().toXML(cCodePhrase)}</textarea>
 --%>
-
 <g:set var="control" value="${template.getField( archetype.archetypeId.value, cCodePhrase.path() )?.getControlByPath(cCodePhrase.path())}" />
-
 <%
 // refPath es nulo si no viene de un arch internal ref
 
@@ -20,7 +18,6 @@ def _refPath = ''
 if (refPath) _refPath = refPath
 
 %>
-
 <!-- armo lista de valores con textos -->
 <g:set var="values" value="${[]}" />
 <g:set var="codes" value="${[]}" />
@@ -36,36 +33,25 @@ if (refPath) _refPath = refPath
   </g:if>
   <g:else>
     <g:set var="codes" value="${cCodePhrase.codeList}" />
-    <g:codeListTerms archetype="${archetype}" codeList="${codes}" locale="${locale}">
+    <g:codeListTerms archetype="${archetype}" terminologyId="${cCodePhrase.terminologyId}" codeList="${codes}" locale="${locale}">
       <g:set var="values" value="${it.labels}" />
-    </g:codeListTerms>
-    
-    <%--
-    <g:each in="${codes}" var="code">
-      <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, code)}" />
-      <g:if test="${!archetypeTerm}">
-        El termino con codigo [${code}] no esta definido en el arquetipo ${archetype.archetypeId.value}, ver que el termino este definido para el lenguaje ${lang}.<br/>
-      </g:if>
-      <g:else>
-        <% values << archetypeTerm.items.text %>
-      </g:else>
-    </g:each>
-    --%>
-  </g:else>    
-   
+    </g:codeListTerms>    
+  </g:else>
+  
 </g:if>
 <g:else>
   La lista de codigos no tiene elmentos...
+  No deberia pasar: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=105
 </g:else>
 
 <!-- le pongo el value al code para obtener el value en el show, porque asi se guarda en PathValores -->
 <%
-def values2 = [:]
+def mapCodeValue = [:]
 if (values.size()>0)
 {
   for (int i in 0..values.size()-1)
   {
-    values2[codes[i] +'||'+ values[i]] = values[i]
+    mapCodeValue[codes[i] +'||'+ values[i]] = values[i]
   }
 }
 %>
@@ -73,7 +59,7 @@ if (values.size()>0)
 <g:set var="path" value="${archetype.archetypeId.value +_refPath+ cCodePhrase.path()}" />
 
 <g:if test="${control && control.type=='radioGroup'}">
-  <g:each in="${values2}" var="entry">
+  <g:each in="${mapCodeValue}" var="entry">
     <label class="id_${entry.value}"><!-- necesita id por el CSS -->
       <input type="radio" value="${entry.key}" name="${fields.getField(path)}" />
       ${entry.value}
@@ -85,11 +71,18 @@ if (values.size()>0)
   </label>
 </g:if>
 <g:else>
-  <g:select from="${values2.entrySet().value}"
-            keys="${values2.entrySet().key}"
-            name="${fields.getField(path)}"
-            noSelection="${['':'']}"
-            value="${selectedValue}"/>
+  <%-- Si hay un solo elemento no muestra el select y queda seleccionado por defecto --%>
+  <g:if test="${mapCodeValue.size() == 1}">
+    ${values[0]}
+    <input type="hidden" name="${fields.getField(path)}" value="${codes[0] +'||'+ values[0]}" />
+  </g:if>
+  <g:else>
+    <g:select from="${mapCodeValue.entrySet().value}"
+              keys="${mapCodeValue.entrySet().key}"
+              name="${fields.getField(path)}"
+              noSelection="${['':'']}"
+              value="${selectedValue}"/>
+  </g:else>
 </g:else>
 
 <%--

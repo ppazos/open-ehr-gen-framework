@@ -3,7 +3,7 @@
   <head>
     <meta name="layout" content="ehr" />
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'generarTemplate.css')}" />
-    <g:javascript library="jquery-1.6.2.min" />
+    <g:javascript library="jquery-1.8.2.min" />
     <g:javascript library="jquery.scrollTo-1.4.2-min" />
     <g:javascript>
     
@@ -249,6 +249,68 @@
         }
         
         console.groupEnd();
+        
+        
+        // ===================================================================
+        // Nuevo: soporte para varios eventos dentro de OBSERVATION.HISTORY
+        //  http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=53
+        //  http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=74
+        //
+        var events = [];
+        $('div.EVENT').each( function(i, e) { events.push(e) } );
+        $('div.POINT_EVENT').each( function(i, e) { events.push(e) } );
+        $('div.INTERVAL_EVENT').each( function(i, e) { events.push(e) } );
+        
+        console.log( 'events', events );
+        
+        // reverse porque agrega los elementos al reves en el prepend
+        $(events.reverse()).each( function(i, e) {
+        
+          // Etiqueta de cada evento
+          //console.log( $(e).children('span.label') );
+          
+          
+          label = $(e).children('span.label').text();
+          event_selector = $('<a href="#" class="event active">'+ label +'</a>');
+          
+          // Los events que no son el primero se van a mostrar usando el event selector
+          // La condicion deja visible solo el ultimo porque events esta al reves
+          if (i < events.length-1)
+          {
+            $(e).hide();
+            event_selector.removeClass('active'); // solo el primero activo
+          }
+          
+          // Asocia handler del click para seleccionar el registro del event
+          event_selector.click( function (evt) {
+            
+            evt.preventDefault();
+
+            $(events).hide();
+            
+            /*
+             * FIX: hay un problema si el evento es multiple, el boton
+             *      de clone (agregar otro) esta por fuera de la div
+             *      del evento y queda visible al ocultar el evento.
+             */
+            $(events).next('a.cloner').hide();
+            
+            
+            $(e).show(500); // Muestra el evento seleccionado
+            $(e).next('a.cloner').show(); // Muestra el boton de clone del evento si hay
+            
+            
+            // Solo activo el link a event donde se hizo click
+            $('a.event').removeClass('active');
+            $(this).addClass('active');
+          });
+          
+          // Agrega un boton arriba del form de registro
+          if (i > 0) $('.ehrform').prepend( '<span> | </span>' ); // Separador de links
+          
+          $('.ehrform').prepend( event_selector );
+          
+        }); // events
                 
       }); // onload
       

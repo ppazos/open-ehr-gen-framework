@@ -89,9 +89,10 @@ class ArchetypeTagLib {
     // Se utiliza para obtener las descripcioens de los codigos que son restricciones
     // de DvCodedText o DvOrdinal.
     //
-    // archetype
-    // codeList
-    // locale
+    // archetype: Archetype
+    // terminologyId: org.openehr.ehr.support.identification.TerminologyID
+    // codeList: List<String>
+    // locale: Locale
     //
     def codeListTerms = { attrs, body ->
        
@@ -99,10 +100,14 @@ class ArchetypeTagLib {
        
        def terms = CtrlTerminologia.getInstance()
        def list = []
+       
+       //attrs.terminologyId es de java ref impl y terminologyId es de ehrgen
+       def terminologyId = TerminologyID.create(attrs.terminologyId.name, attrs.terminologyId.version)
        attrs.codeList.each { code ->
           
           //list << this.getTerm(attrs.archetype, code, attrs.locale)
-          list << terms.getTermino(TerminologyID.create('local', null), code, attrs.archetype, attrs.locale) // Ya escala, si no encuentra devuelve un texto
+          //list << terms.getTermino(TerminologyID.create('local', null), code, attrs.archetype, attrs.locale) // Ya escala, si no encuentra devuelve un texto
+          list << terms.getTermino(terminologyId, code, attrs.archetype, attrs.locale) // Ya escala, si no encuentra devuelve un texto
        }
        
        //println "list: " + list
