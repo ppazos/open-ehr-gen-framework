@@ -75,10 +75,10 @@ class FactoryObjectRM {
       //locatable.parentComposition = this.composition
       locatable.parentCompositionId = session.ehrSession.episodioId
        
-      
-      String rmV = ApplicationHolder.application.config.openEHR.RMVersion
+      // Saqué rm_version porque siempre va a ser 1.0.2
+      //String rmV = ApplicationHolder.application.config.openEHR.RMVersion
       String archetypeId = archetype.archetypeId.value
-      Archetyped archDetails = new Archetyped(archetypeId: archetypeId, templateId: tempId, rmVersion: rmV)
+      Archetyped archDetails = new Archetyped(archetypeId: archetypeId, templateId: tempId) //, rmVersion: rmV)
 
       // FIXME: para esto se puede usar CtrlTerminologia
       String lang = 'es' // Lenguaje por defecto, FIXME: sacar de config.
@@ -592,14 +592,70 @@ class FactoryObjectRM {
 
    def createACTIVITY(List<Object> listaListRMO, Archetype arquetipo, String archNodeId, String tempId, CObject co)
    {
+      // [[], [ItemTree-> [at0003] name: Arbol]]
+      //println "createACTIVITY: " + listaListRMO
+      
+      /*
+      // Quiero ver donde esta el arction_archetype_id
+      // Cuidado, puede no estar el atributo, esos arquetipos no se deberian dejar subir!
+      println ""
+      println co.attributes.find{ it.rmAttributeName == 'action_archetype_id' } // CSingleAttribute
+      println co.attributes.find{ it.rmAttributeName == 'action_archetype_id' }.children[0] // CPrimitiveObject
+      println co.attributes.find{ it.rmAttributeName == 'action_archetype_id' }.children[0].item // CString
+      println co.attributes.find{ it.rmAttributeName == 'action_archetype_id' }.children[0].item.pattern // String
+      println ""
+      imprimirObjetoXML( co.attributes.find{ it.rmAttributeName == 'action_archetype_id' } )
+      println ""
+      */
+      /*
+      <org.openehr.am.archetype.constraintmodel.CSingleAttribute>
+        <anyAllowed>false</anyAllowed>
+        <path>/activities[at0002]/action_archetype_id</path>
+        <rmAttributeName>action_archetype_id</rmAttributeName>
+        <existence>REQUIRED</existence>
+        <children>
+          <org.openehr.am.archetype.constraintmodel.CPrimitiveObject>
+            <anyAllowed>false</anyAllowed>
+            <path>/activities[at0002]/action_archetype_id</path>
+            <rmTypeName>String</rmTypeName>
+            <occurrences>
+              <lower class="int">1</lower>
+              <upper class="int">1</upper>
+              <lowerIncluded>true</lowerIncluded>
+              <upperIncluded>true</upperIncluded>
+            </occurrences>
+            <item class="org.openehr.am.archetype.constraintmodel.primitive.CString">
+              <pattern>openEHR-EHR-ACTION\.prueba</pattern>
+            </item>
+          </org.openehr.am.archetype.constraintmodel.CPrimitiveObject>
+        </children>
+      </org.openehr.am.archetype.constraintmodel.CSingleAttribute>
+      */
+      
       Activity a = new Activity()
-      List<Object> listaItems = listaListRMO[0]
-      if (listaItems.size() == 1)
+      //List<Object> listaItems = listaListRMO[0]
+      
+      // Deben venir 2 valores para atributos de ACTIVITY:
+      //   action_archerype_id y description
+      //   action_archerype_id viene vacio porque no es un valor de input, se saca del arquetipo
+      //     esto garantiza que siempre hay un valor en el arquetipo: http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=112
+      //
+      //   FIXME: hay que ver de donde sacar el valor para el tercer atributo: timing
+      if (listaListRMO.size() == 2)
       {
-         a.description = listaItems[0]
+         a.description = listaListRMO[1][0] // ItemTree // [[], [ItemTree-> [at0003] name: Arbol]]
+         
          a.timing = new DvParsable(value: "value", formalism: "formalism") // FIXME: de donde sacar los valores?
-         a.action_archetype_id = arquetipo.archetypeId.value
+         
+         //a.action_archetype_id = arquetipo.archetypeId.value // FIXME: action_archetype_id es una regex y es de arquetipos de ACTION, aca setea el propio arquetipo...
+         //                         attribute CSingleAttribute > children[0] CPrimitiveObject > item CString > pattern String
+         a.action_archetype_id = co.attributes.find{ it.rmAttributeName == 'action_archetype_id' }.children[0].item.pattern
+         
          completarLocatable(a, archNodeId, arquetipo, tempId)
+      }
+      else
+      {
+         throw new Exception("Verifique que el arquetipo "+ arquetipo.archetypeId.value +" especifica el atributo ACTIVITY.action_archetype_id")
       }
 
       return a
@@ -662,7 +718,7 @@ class FactoryObjectRM {
 
    def createINSTRUCTION(List<Object> listaListRMO, Archetype arquetipo, String archNodeId, String tempId, CObject co)
    {
-      //println "== createINSTRUCTION"
+      println "== createINSTRUCTION " + listaListRMO
       
       // En listaListRMO viene:
       // - Siempre: un DvText que es el narrative

@@ -300,7 +300,7 @@ class BindingAOMRM {
      */
     def bind(LinkedHashMap<String, Object> pathsValor, String templateId)
     {
-        //println "== bind"
+        //println "== bind " + pathsValor
         //println "   = pathsValor: " + pathsValor
         //println "   = templateId: " + templateId
         //println "======================================================="
@@ -498,6 +498,7 @@ class BindingAOMRM {
     def bindArquetipo(Archetype arquetipo, LinkedHashMap<String, Object> pathValorArquetipo, String tempId)
     {
         //println "==== bindArquetipo " + arquetipo.archetypeId.value
+        //println "==== bindArquetipo " + pathValorArquetipo
         //println "========================================================"
         
         CComplexObject cco = arquetipo.getDefinition()
@@ -646,6 +647,7 @@ class BindingAOMRM {
     def bindCComplexObject(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
         //println "====== bindCComplexObject " + cco.rmTypeName
+        //println "====== bindCComplexObject " + pathValor        
        
 //         println "==== bindCComplexObject"
         //println "   = pathValor: " + pathValor
@@ -751,7 +753,7 @@ class BindingAOMRM {
         // Siempre que tenga atributos, tanto simples como complejos, la lista de atributos
         // no sera null, si esto esta mal, la solucion es preguntar por el tipo de los atributos
         // (CSingleAttribute o CMultipleAttribute)
-        if (cco.getAttributes()) // con atribtos
+        if (cco.getAttributes()) // con atributos
         {
             //println "-------CA>>>> " + cco.rmTypeName
             
@@ -785,6 +787,28 @@ class BindingAOMRM {
                 listRMO = bindAttribute(cattr, pathValorAtribute, arquetipo, tempId)
                 listaListRMO.add(listRMO)
             }
+            
+            
+            // ==============================================================
+            // El atributo INSTRUCTION.narrative no esta en el arquetipo, debo crear la path a mano para que bindee.
+            // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=110
+            if (cco.rmTypeName == 'INSTRUCTION')
+            {
+               //println "factoryRMMethod: " + factoryRMMethod // createINSTRUCTION
+               // La instruction se crea en la llamada de abajo al metodo factoryRMMethod,
+               // tengo que pasarle el valor de /narrative en el listaListRMO
+               
+               // narrative es el primer elemento de la segunda lista
+               // la primera lista es de activities bindeadas
+               // FIXME: esta path es si el arquetipo es de instruction y la instruction
+               //        no esta directamente en un arquetipo de section o composition (plano)
+               if (listaListRMO.size() == 0)
+               {
+                  listaListRMO << [] // no se bindearon activities
+               }
+               listaListRMO << [ new DvText(value: pathValor['/narrative']) ] // createINSTRUCTION espera DvText
+            }
+            // ==============================================================
             
 
              // FIXME: todo este codigo lo dejo para otros casos, no se si para CLUSTERS hay que hacer algo
@@ -962,7 +986,7 @@ class BindingAOMRM {
      */
     def bindAttribute(CAttribute cattr, LinkedHashMap<String, Object> pathValorAttribute, Archetype arquetipo, String tempId)
     {
-        //println "======== bindAttribute "+ cattr.rmAttributeName
+        //println "======== bindAttribute "+ cattr.rmAttributeName +" "+ pathValorAttribute
         
         //println "==== bindAttribute"
         //println "   = name: " + cattr.rmAttributeName
@@ -1056,7 +1080,7 @@ class BindingAOMRM {
      */
     def bindCPrimitiveObject(CPrimitiveObject cpo, LinkedHashMap<String, Object> pathValor, arquetipo, tempId)
     {
-        //println "==== bindCPrimitiveObject"
+        //println "==== bindCPrimitiveObject "+ pathValor
         //println "   = pathValor: " + pathValor
         //println "   = rmType: " + cpo.rmTypeName
         //println "=========================================="
@@ -1941,7 +1965,7 @@ class BindingAOMRM {
 
     def bindCCodePhrase(CCodePhrase ccp, LinkedHashMap<String, Object> pathValorCCodePhrase, Archetype arquetipo, String tempId)
     {
-        //println "==== bindCCodePhrase"
+        println "==== bindCCodePhrase "+ pathValorCCodePhrase
         //println "   = pathValor: " + pathValorCCodePhrase
         //println "   = tipos de valores: "
         //pathValorCCodePhrase.each {
