@@ -4,6 +4,7 @@ import archetype.ArchetypeManager
 import support.identification.TerminologyID
 import binding.CtrlTerminologia
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import demographic.role.Role
 
 class ArchetypeIndex {
 
@@ -14,7 +15,14 @@ class ArchetypeIndex {
    Date lastUpdated
    
    List slots = []
-   static hasMany = [slots: ArchetypeIndex]
+   
+   // Si es un arquetipo de instruction, que roles deben ver
+   // las instrucciones creadas con este arquetipo.
+   // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=106
+   List instructionRoles = []
+   
+   static hasMany = [slots: ArchetypeIndex, instructionRoles: Role]
+   
    
    static constraints = {
       // Pueden haber mas arquetipos pero estos son los tipos soportados por ahora.

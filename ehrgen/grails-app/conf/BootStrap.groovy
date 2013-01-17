@@ -14,6 +14,7 @@ import tablasMaestras.*
 
 //import hce.core.common.directory.Folder
 import domain.Domain
+import domain.Admission
 import workflow.WorkFlow
 import workflow.Stage
 import data_types.text.*
@@ -190,7 +191,7 @@ class BootStrap {
         println " - START: Carga catalogos maestros"
         
         // saco para acelerar la carga
-        
+        /*
         println "   - CIE 10..."
         if (Cie10Trauma.count() == 0)
         {
@@ -203,7 +204,7 @@ class BootStrap {
         {
            println "      ya estan cargados"
         }
-        
+        */
         
         println "   - OpenEHR Concepts..."
         if (OpenEHRConcept.count() == 0)
@@ -283,7 +284,7 @@ class BootStrap {
         
         
         //
-        Permit.createDefault() // controler/action
+        //Permit.createDefault() // controler/action
         //
         DomainPermit.createDefault() // domain/templateId
         //
@@ -312,9 +313,8 @@ class BootStrap {
         
         // Los roleValidity se guardan al guardar las personas
         
-        
+        /*
         def paciente = new Person(primerNombre:'Pablo', primerApellido:'Pazos')
-        
         paciente.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::1234567') )
         paciente.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::6677') )
         paciente.fechaNacimiento = new Date(81, 9, 24) // 24/10/1981
@@ -395,7 +395,88 @@ class BootStrap {
         def validityPac8 = new RoleValidity(performer: persona_admin, role: rAdmin)
         persona_admin.addToRoles(validityPac8)
         if (!persona_admin.save()) println persona_admin.errors
+        */
         
+        // 24/10/1981
+        def paciente = createPerson('Pablo','Pazos',
+                                    '2.16.840.1.113883.2.14.2.1::1234567',
+                                    '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::6677',
+                                    new Date(81, 9, 24), 'M', rPaciente)
+        
+        def pac2 = createPerson('Leandro','Carrasco',
+                                    '2.16.840.1.113883.2.14.2.1::2345678',
+                                    '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::3366',
+                                    new Date(82, 10, 25), 'M', rPaciente)
+        // 24/10/1985
+        def persona4 = createPerson('Pablo','Cardozo',
+                                    '2.16.840.1.113883.2.14.2.1::1234888',
+                                    '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::44556',
+                                    new Date(85, 9, 24), 'M', rPaciente)
+        
+        def persona5 = createPerson('Marcos','Carisma',
+                                    '2.16.840.1.113883.2.14.2.1::45687543',
+                                    '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::2233445',
+                                    new Date(80, 11, 26), 'M', rPaciente)
+        
+        // Paciente con estudios imagenologicos en el CCServer local
+        // id en el CCServer
+        def persona6 = createPerson('CT','Mister',
+                                    '2.16.840.1.113883.4.330.666::2178309',
+                                    null,
+                                    null, 'M', rPaciente)
+        
+        // ex persona3
+        def doctor1 = createPerson('Marta','Doctora',
+                                   '2.16.840.1.113883.4.330.858::6667778',
+                                   null,
+                                   new Date(83, 11, 26), 'F', rMedico)
+
+        def persona_administrativo = createPerson('Charles','Administrativo',
+                                    '2.16.840.1.113883.2.14.2.1::3334442',
+                                    null,
+                                    null, 'M', rAdministrativo)
+
+        def persona_enfermera = createPerson('Juana','Enfermera',
+                                    '2.16.840.1.113883.2.14.2.1::9876456',
+                                    null,
+                                    null, 'F', rEnfermeria)
+        
+        def persona_admin = createPerson('Joe','Admin',
+                                    '2.16.840.1.113883.2.14.2.1::98607521',
+                                    null,
+                                    null, 'M', rAdmin)
+
+        
+        
+        // =============================================================
+        // CREA ADMISION DE LOS PACIENTES AL DOMINIO DE TRAUMA
+        def admissions = []
+        def trauma_domain = Domain.findByName('Emergencia de Trauma') // CUIDADO: nombre en Config.groovy puede cambiar!
+        
+        // Personas con rol paciente
+        def rvs = RoleValidity.withCriteria {
+          role {
+            eq('type', Role.PACIENTE)
+          }
+        }
+        
+        // Para cada persona con rol paciente
+        rvs.performer.each { person ->
+        
+           admissions << new Admission(
+             patientId: person.id,
+             physicianId: doctor1.id,
+             domainId: trauma_domain.id
+           )
+        }
+        
+        // Guarda admisiones
+        admissions.each { admission ->
+           if (!admission.save()) println admission.errors
+        }
+        
+        //
+        // =============================================================
         
         // =============================================================
         // ASIGNACION DE PERMISOS POR DEFECTO
@@ -415,14 +496,14 @@ class BootStrap {
         // LOGINS
         //
         // Login para el medico   
-        def login = new LoginAuth(user:'user', pass:'pass', person: persona3)
+        def login = new LoginAuth(user:'med', pass:'med', person: doctor1)
         if (!login.save()) println login.errors
         
-        // Login para el adminsitrativo
-        def login_adm = new LoginAuth(user:'adm', pass:'1234', person: persona_administrativo)
+        // Login para el administrativo
+        def login_adm = new LoginAuth(user:'adm', pass:'adm', person: persona_administrativo)
         if (!login_adm.save()) println login_adm.errors
         
-        def login_enf = new LoginAuth(user:'enf', pass:'1111', person: persona_enfermera)
+        def login_enf = new LoginAuth(user:'enf', pass:'enf', person: persona_enfermera)
         if (!login_enf.save()) println login_enf.errors
         
         def login_admin = new LoginAuth(user:'admin', pass:'admin', person: persona_admin)
@@ -465,7 +546,7 @@ class BootStrap {
            // Por defecto todo domain tiene un workflow y el
            //medico tiene acceso a ese workflow en todos los domains
            workflow = new WorkFlow(
-              forRoles: [rMedico],
+              forRoles: [rMedico], // Cuidado, este es el rol medico de UN usuario, si se crea mas de un usuario medico aca, se deberian poner todos los roles medicos de cada usuario (el rol es por instancia!)
               owner: domain
            )
            
@@ -552,7 +633,7 @@ class BootStrap {
         def composition = hceService.createComposition( '2010-01-08 01:23:32', 'El paciente ingresa con dolor en el tobillo' )
 
         // Agrego el autor a la composición
-        //def arrayIds = persona3.ids.toArray()
+        //def arrayIds = doctor1.ids.toArray()
         //hceService.setCompositionComposer(composition, arrayIds[0].getRoot(), arrayIds[0].getExtension())
 
         def uidAutor = new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::444')
@@ -590,6 +671,26 @@ class BootStrap {
         
    }
    def destroy = {
+   }
+   
+   def createPerson(String pn, String pa, String id1, String id2, Date dob, String sexo, Role role)
+   {
+      def p = new Person(primerNombre:pn, primerApellido:pa)
+      p.addToIds( new UIDBasedID(value:id1) )
+      
+      if (id2) p.addToIds( new UIDBasedID(value:id2) )
+      
+      p.type = "Persona" // Por defecto se setea Person ...
+      p.sexo = sexo
+      
+      if (dob) p.fechaNacimiento = dob
+      
+      def roleValidity = new RoleValidity(performer: p, role: role)
+      p.addToRoles(roleValidity)
+      
+      if (!p.save()) println p.errors
+      
+      return p
    }
    
    /**

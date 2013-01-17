@@ -826,6 +826,7 @@ class GuiGenController {
       
       // ==========================================================
       // Bind
+      //println "params para bind: " + pathValue
       BindingAOMRM bindingAOMRM = new BindingAOMRM(session)
       def rmobj = bindingAOMRM.bind(pathValue, params.templateId)
       
@@ -834,14 +835,14 @@ class GuiGenController {
       //println "Path value: " + pathValue + "\n"
       
       
-      
+      /*
       XStream xstream = new XStream()
       xstream.omitField(Locatable.class, "errors");
       xstream.omitField(data_types.basic.DataValue.class, "errors");
       println "-- rmobj se guardo en RM Bindeado para template.xml"
       File file = new File("RMObject Binded - "+ template.templateId +".xml")
       file << xstream.toXML(rmobj)
-      
+      */
       
       
       // FIXME: tambien puede ser una vista estatica
@@ -972,7 +973,59 @@ class GuiGenController {
       
       // Llega aca si guardo correctamente el registro bindeado en la composition
       
-      println "SALVADA COMPOSITION OK y muestra show"
+      //println "SALVADA COMPOSITION OK y muestra show"
+      
+      
+      // ==============================================================
+      // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=106
+      // Soporte para cumplimiento de instrucciones
+      //
+      // 1. Buscar si se registro alguna instruction
+      def instructions = []
+      if (rmobj instanceof hce.core.composition.content.entry.Instruction)
+      {
+         instructions << rmobj
+      }
+      else if (rmobj instanceof hce.core.composition.content.navigation.Section)
+      {
+         // Hay que buscar en sus items si hay una instruction
+         // FIXME: esto se podria obviar viendo los nodos bindeados en el binder
+         
+         // FIXME: esto solo funciona si la section no tiene otra section adentro
+         rmobj.items.each { section_item ->
+            if (section_item instanceof hce.core.composition.content.entry.Instruction)
+            {
+               instructions << section_item
+            }
+         }
+      }
+      
+      println "INSTRUCTIONS en rmobj: "+ instructions
+      
+      // 2. Para las instrucciones encontradas, se crea InstructionExecution
+      def instExec
+      instructions.each { instruction ->
+      
+         println "INSTRUCTION activities: " + instruction.activities
+      
+         // La ejecucion es por activity, se puede tener mas de una por instruction
+         instruction.activities.each { activity ->
+            
+            println "action_archetype_id: " + activity.action_archetype_id
+            
+            instExec = new workflow.InstructionExecution(
+               domainId: session.ehrSession.domainId,
+               instructionId: instruction.id,
+               activityId: activity.id,
+               instructionCompositionId: comp.id,
+               instructionArchetypeId: instruction.archetypeDetails.archetypeId
+            )
+            if (!instExec.save())
+            {
+               println instExec.errors
+            }
+         }
+      }
    
       // Hay un handler que se encarga de verificar si se dan
       // las condiciones de cierre del registro.
