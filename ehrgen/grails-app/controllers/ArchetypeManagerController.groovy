@@ -6,6 +6,8 @@ import binding.CtrlTerminologia
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import grails.converters.JSON
 import se.acode.openehr.parser.ADLParser
+import archetype.ArchetypeIndex
+import demographic.role.Role
 
 class ArchetypeManagerController {
 
@@ -123,9 +125,17 @@ class ArchetypeManagerController {
          def path = manager.getTypePath( type ) // path destino definitivo del arquetipo (repo local)
          def repo_path = ApplicationHolder.application.config.hce.archetype_repo + path + System.getProperty("file.separator")
          
-         //println "repo_path $repo_path"
+         //println "repo_path "+ repo_path + adlFile.getName()
+         
+         def dest = new File(repo_path + adlFile.getName())
+         
+         if (dest.exists())
+         {
+            flash.message = "Ya existe el arquetipo en el repositorio"
+            return
+         }
 
-         if (!adlFile.renameTo( new File(repo_path + adlFile.getName()) ))
+         if (!adlFile.renameTo( dest ))
          {
             flash.message = "No se pudo guardar el archivo ADL en el repositorio local, verifique que tiene permisos de escritura"
             return
@@ -140,11 +150,80 @@ class ArchetypeManagerController {
          manager.createArchetypeIndexes( archetype.archetypeId.value )
          
          
+         // ============================================================================
+         // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=106
+         // TEST: ver si viene un arquetipo de instruction o que contenga una instruction
+         def index = ArchetypeIndex.findByArchetypeId(archetype.archetypeId.value)
+         def hayInstruction = false
+         if (index.type == 'instruction')
+         {
+            hayInstruction = true
+         }
+         else if ( index.slots.find{ it.type == 'instruction' } != null )
+         {
+            hayInstruction = true
+         }
+         
+         
+         // Deberia mostrar una segunda pantalla para seleccionar los roles que veran las instrucciones creadas con este arquetipo.
+         // Los roles los guardo mismo en el archetype index, igual como se guardan los roles en el workflow.
+         if (hayInstruction)
+         {
+            flash.message = "Archivo adl guardado en $repo_path"
+            redirect(action:'selectInstructionRoles', id:index.id)
+            return
+         }
+         // ============================================================================
+         
+         
          flash.message = "Archivo adl guardado en $repo_path"
          return
       }
-   }
+   } // uploadArchetype
    
+   
+   /**
+    * Selecciona que roles pueden ver las instrucciones creadas con un arquetipo de instruction.
+    * Viene de uploadArchetype cuando se sube un arquetipo que contenga una instruction.
+    *
+    * @param id identificador del ArchetypeIndex de la instruction
+    */
+   def selectInstructionRoles = {
+   
+      if (!params.id)
+      {
+         println "id de index es obligatorio"
+      }
+      
+      def index = ArchetypeIndex.get(params.id)
+      
+      if (params.doit)
+      {
+         // Con el toList parece que no da concurrent modification en la coleccion
+         // y hace bien el remove de todos los elementos.
+         index.instructionRoles.toList().each { role ->
+            
+            index.removeFromInstructionRoles(role)
+         }
+         
+         // Agrega roles seleccionados
+         def roleIds = params.list('roleId')
+         roleIds.each { id ->
+
+            index.addToInstructionRoles( Role.get(id) )
+         }
+         
+         if (!index.save())
+         {
+            println index.errors
+         }
+         
+         render "Roles establecidos para la instrucction " + index.archetypeId
+         return
+      }
+      
+      return [index: index, roles:Role.list()]
+   }
    
    /**
      * Consultas semanticas:
