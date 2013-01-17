@@ -12,6 +12,10 @@ public enum ArchetypeTypeEnum {
     INSTRUCTION('instruction'),
     ACTION('action'),
     ADMIN_ENTRY('admin_entry'),
+    ITEM_TREE('item_tree'),
+    ITEM_LIST('item_list'),
+    ITEM_SINGLE('item_single'),
+    ITEM_TABLE('item_table'),
     CLUSTER('cluster'),
     ELEMENT('element')
 
@@ -35,6 +39,12 @@ public enum ArchetypeTypeEnum {
             case "instruction": return INSTRUCTION
             case "action": return ACTION
             case "admin_entry": return ADMIN_ENTRY
+            
+            case 'item_tree': return ITEM_TREE
+            case 'item_list': return ITEM_LIST
+            case 'item_single': return ITEM_SINGLE
+            case 'item_table': return ITEM_TABLE
+            
             case "cluster": return CLUSTER
             case "element": return ELEMENT
             default:
@@ -51,6 +61,10 @@ public enum ArchetypeTypeEnum {
       INSTRUCTION,
       ACTION,
       ADMIN_ENTRY,
+      ITEM_TREE,
+      ITEM_LIST,
+      ITEM_SINGLE,
+      ITEM_TABLE,
       CLUSTER,
       ELEMENT
      ]
