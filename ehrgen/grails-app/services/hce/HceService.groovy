@@ -128,8 +128,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
               archetypeNodeId: "trauma.composition.otherContext.item",
               archetypeDetails: new Archetyped(
                 archetypeId: 'composition.otherContext.Element.item',
-                templateId: 'composition.otherContext.template.item',
-                rmVersion: '1.0.2'
+                templateId: 'composition.otherContext.template.item'
               ),
               name: new DvText(
                 value: 'hcet.otherContext.item'
@@ -138,8 +137,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
             archetypeNodeId: "trauma.composition.otherContext",
             archetypeDetails: new Archetyped(
               archetypeId: 'composition.otherContext.Element',
-              templateId: 'composition.otherContext.template',
-              rmVersion: '1.0.2'
+              templateId: 'composition.otherContext.template'
             ),
             name: new DvText(
               value: 'hcet.otherContext'
@@ -148,8 +146,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
           archetypeNodeId: "trauma.composition.context",
           archetypeDetails: new Archetyped(
             archetypeId: 'composition.context.EventContext',
-            templateId: 'composition.context.template',
-            rmVersion: '1.0.2'
+            templateId: 'composition.context.template'
           ),
           name: new DvText(
             value: 'hcet.context'
@@ -161,8 +158,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
         compo.archetypeNodeId = "trauma.composition" // FIXME: no tengo arquetipados los compos
         compo.archetypeDetails = new Archetyped(
           archetypeId: 'trauma.composition',
-          templateId: 'trauma.template',
-          rmVersion: '1.0.2'
+          templateId: 'trauma.template'
         )
         compo.name = new DvText(
           value: 'hcet' // FIXME: depende del dominio
@@ -262,7 +258,8 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
         return composition.composer
     }
 
-        /**
+    /**
+     * Se usa en RecordsController.reopenRecord
      * Le pone la referencia al responsable de la creación de una versión.
      * @param composition
      * @param root
@@ -416,6 +413,8 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
     }
     
     /**
+     * TODO: en el futuro el paciente podra tener varias compositions abieras
+     *       en la misma sesion clinica, lo que importa es la sesion, no los documentos.
      * Devuelve la composition que no tenga fecha de finalizacion
      * para la persona que participe como paciente.
      */
@@ -468,7 +467,7 @@ at net.sf.cglib.proxy.MethodProxy.invoke(MethodProxy.java:149)
     
     /**
      * Devuelve un map<ArchetypeID,Locatable>, con las referencias de los
-     * arquetipos del template a los respectivos nodos del RM.
+     * arquetipos, de un template, a los respectivos nodos del RM.
      * Se usa para que el show y el edit sepan donde mostrar los objetos en
      * la web.
      * Este metodo seria mas un RM_UTILS que un HCEService.

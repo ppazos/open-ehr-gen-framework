@@ -1,6 +1,6 @@
 package hce.core.common.archetyped
 
-import hce.core.*;
+import hce.core.*
 
 /**
  * Archetypes act as the configuration basis for the particular
@@ -19,19 +19,21 @@ import hce.core.*;
  */
 class Archetyped {
 
-    String archetypeId;
-    String templateId;
-    String rmVersion;
+    String archetypeId
+    String templateId
+    //String rmVersion // va a ser siempre 1.0.2
 
     static constraints = {
         archetypeId(nullable: false)
-        rmVersion(nullable: false, blank: false)
+        //rmVersion(nullable: false, blank: false)
     }
 
+    /*
     public boolean equals(Object o) {
         if (o == null) { return false; }
         if (o == this) { return true; }
         if (!( o instanceof Archetyped )) return false;
         return (this.archetypeId == ((Archetyped)o).archetypeId) && (this.templateId  == ((Archetyped)o).templateId) && (this.rmVersion  == ((Archetyped)o).rmVersion)
     }
+    */
 }

@@ -21,6 +21,8 @@ import com.thoughtworks.xstream.XStream
 class Locatable extends Pathable {
 
     //UIDBasedID uid // Optional globally unique object identifier for root points of archetyped structures.
+    String uid = (java.util.UUID.randomUUID() as String)
+
     String archetypeNodeId // Id del nodo (ej. at0001) -->  arquetipo.node(path).nodeID
     DvText name // Termino asociado al archetypeNodeId --> termino pedido a la ontologia en base a archetypeNodeId
     String codedName
@@ -57,6 +59,7 @@ class Locatable extends Pathable {
     static mapping = {
         //name cascade: "save-update"
         archetypeDetails cascade: "save-update"
+        uid column: "locatable_uid" //uid reservado en Oracle
         //table 'locatable' // pab
     }
 
