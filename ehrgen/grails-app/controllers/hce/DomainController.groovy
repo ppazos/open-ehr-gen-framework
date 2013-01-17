@@ -16,6 +16,8 @@ import authorization.DomainPermit
 import demographic.role.Role
 import demographic.role.RoleValidity
 
+import domain.Admission
+
 
 class DomainController {
 
@@ -37,11 +39,13 @@ class DomainController {
          // Si hay un dominio seleccionado, se deselecciona
          session.ehrSession.domainId = null
          session.ehrSession.workflowId = null
+         
+         // Deselecciono el paciente seleccionado dsde su admision (ver issue #22) si es que lo hay
+         session.ehrSession.patientId = null
       }
 
       // Lista de folders creados a partir de los codigos de dominios de la configuracion      
       def domains = Domain.list()
-     
      
       //println session.ehrSession
      
@@ -51,12 +55,8 @@ class DomainController {
           eq('id', session.ehrSession.getLoggedPerson().id) // EHRSession tiene el id del LoginAuth no de la Person
         }
       }
-      
       def roles = roleValidities.role
      
-      //println roleValidities
-      //println roles
-      
       return [domains: domains, roles: roles]
    }
    
@@ -99,11 +99,13 @@ class DomainController {
       // Dentro de un dominio, un rol que esta en un wf no esta en otro,
       // por eso siempre tira como resultado solo UN wf.
       
+      
+      // Viene un solo rol seleccionado desde la lista de dominios
       // Lista con un resultado
       def workflows = WorkFlow.withCriteria {
          eq('owner', domain)
          forRoles {
-          idEq(Long.valueOf(params.roleId))
+            eq('type', params.roleType)
          }
       }
         
@@ -111,9 +113,41 @@ class DomainController {
         
       session.ehrSession.workflowId = workflows[0].id
       
+      // Si seleccione un paciente de admision en el domain list
+      if (params.patientId)
+      {
+         println "patientId "+ params.patientId
+         //def patient = demographic.party.Person.get(params.patientId)
+         //redirect(controller:'records', action:'list', params:[root:patient.ids[0].root, extension:patient.ids[0].extension])
+         
+         // Paciente seleccionado en session
+         session.ehrSession.patientId = Long.parseLong(params.patientId)
+         redirect(controller:'records', action:'list')
+         return
+      }
       
-      redirect(controller: 'records', action: 'list')
+      redirect(controller:'records', action:'list')
    }
+   
+   
+   /**
+    * Lista admisiones para el medico logueado en la vista de seleccion de dominios.
+    */
+   def admissionList = {
+   
+      // Lista para cualquier dominio.
+      def admissions = Admission.withCriteria {
+      
+        or {
+          eq('physicianId', session.ehrSession.getLoggedPerson().id)
+          isNull('physicianId')
+        }
+        eq('status', Admission.STATE_ACTIVE) // Solo quiero las admisiones activas
+      }
+      
+     render(template:'admissionList', model:[admissions:admissions])
+   }
+   
    
    /**
     * Crea un nuevo dominio desde la UI.
@@ -256,6 +290,9 @@ class DomainController {
       {
          def wf = new WorkFlow(owner:domain)
          
+         // FIXME: no deberia ser por role.id, deberia ser por role.type
+         //        cada usuario tiene un rol, y 2 usuarios pueden tener
+         //        roles distintos (instancias) pero del mismo tipo.
          def roleIds = params.list('roleId')
          def role
          roleIds.each {
