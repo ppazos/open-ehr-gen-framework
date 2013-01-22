@@ -34,6 +34,27 @@
     <g:javascript src="jquery.blockUI.js" />
     <g:javascript>
     
+      var showCreateRecord = function() {
+      
+        // Tamanios del area visible
+        // $(window).height() es el alto total de la pagina (no sirve para centrar)
+        var viewportHeight = window.innerHeight ? window.innerHeight : $(window).height();
+        var viewportWidth = window.innerWidth ? window.innerWidth : $(window).width();
+        
+        $.blockUI({
+          message: $('#create_record'),
+          css: {
+            width: '500px',
+            height: '280px',
+            left: (viewportWidth - 500) /2 + 'px',
+            top:  (viewportHeight - 280) /2 + 'px',
+            padding: '10px',
+            textAlign: 'left'
+          },
+          onOverlayClick: $.unblockUI
+        });
+      };
+    
       $(document).ready(function() {
       
         // TODO: cuando se lanza crear un registro,
@@ -42,30 +63,22 @@
           
           evt.preventDefault();
           
-          // Tamanios del area visible
-          // $(window).height() es el alto total de la pagina (no sirve para centrar)
-          var viewportHeight = window.innerHeight ? window.innerHeight : $(window).height();
-          var viewportWidth = window.innerWidth ? window.innerWidth : $(window).width();
-          
-          $.blockUI({
-             message: $('#create_record'),
-             css: {
-               width: '500px',
-               height: '280px',
-               left: (viewportWidth - 500) /2 + 'px',
-               top:  (viewportHeight - 280) /2 + 'px',
-               padding: '10px',
-               textAlign: 'left'
-             },
-             onOverlayClick: $.unblockUI
-           });
+          showCreateRecord();
         });
-      });
-    
+        
+      });      
     </g:javascript>
   </head>
   <body>
     <h1><g:message code="episodio.list.title" /></h1>
+    
+    <%-- si hay un paciente seleccionado, muestro sus datos
+    Ver issue #22
+    --%>
+    <g:if test="${session.ehrSession.patientId}">
+      <g:set var="patient" value="${demographic.party.Person.get(session.ehrSession.patientId)}" />
+       <g:render template="../demographic/Person" model="[person:patient]" />
+    </g:if>
     
     <ul class="top_actions">
       <li>
@@ -133,8 +146,17 @@
     </table>
     
     <g:paginate next="Siguiente" prev="Previo"
-                maxsteps="5" max="15"
+                maxsteps="5" max="10"
                 controller="records" action="list"
-                total="${Composition.countByRmParentId(domain.id)}" />
+                total="${total}" />
+    
+    
+    <%--
+     Lista de instrucciones para algun rol del usuario logueado y el dominio seleccionado.
+     / Por ahora se meustra aca
+    
+     Terminar esto para v0.9
+    <g:include action="listInstructions" />
+    --%>
   </body>
 </html>
