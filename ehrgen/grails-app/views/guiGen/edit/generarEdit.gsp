@@ -65,91 +65,94 @@
         
         console.group('Render data');
           
-	    for (path in data)
-	    {
-	        if (path.match("^field")=="field") // if (path.startsWith('field'))
-	        {
-	          // busca elementos por su class (como es por class devuelve coleccion)
-              // es solo uno por como genero el show.
-	          //var elems = $("label."+path);
+        for (path in data)
+        {
+          if (path.match("^field")=="field") // if (path.startsWith('field'))
+          {
+            // busca elementos por su class (como es por class devuelve coleccion)
+            // es solo uno por como genero el show.
+            //var elems = $("label."+path);
           
-              // La entrada puede ser inpunt, select o textarea
-              /*
+            // La entrada puede ser inpunt, select o textarea
+            /*
               var elems = $("input[name="+path+"]");
               if (elems.length==0) elems = $("select[name="+path+"]");
               if (elems.length==0) elems = $("textarea[name="+path+"]");
-              */
+            */
           
-              // FIXME: tambien puede ser radio button
-              var elems = $(":input[name="+path+"]");
+            // FIXME: tambien puede ser radio button
+            var elems = $(":input[name="+path+"]");
           
-              console.info(elems);
+            //console.info(elems);
     
           
-              // TODO: si el tipo es DvQuantity y tenia una sola unidad en el arquetipo, pasa que no se ingresa como dato, entonces no viene en los field-values y no la puedo mostrar junto con la magnitud.
-              // TODO: resolver valores booleanos a Si/No o Yes/No, etc, segun el idioma elegido en la config.
-              // FIXED: si el valor para path es date.struct, los valores vienen en las keys: path_year, path_month, path_day, path_hour, path_minute.
-              
-              if ($.isArray( data[path] ))
+            // TODO: si el tipo es DvQuantity y tenia una sola unidad en el arquetipo, pasa que no se ingresa como dato, entonces no viene en los field-values y no la puedo mostrar junto con la magnitud.
+            // TODO: resolver valores booleanos a Si/No o Yes/No, etc, segun el idioma elegido en la config.
+            // FIXED: si el valor para path es date.struct, los valores vienen en las keys: path_year, path_month, path_day, path_hour, path_minute.
+            
+            if ($.isArray( data[path] ))
+            {
+              console.log('valores multiples');
+          
+              //alert(path+ ' tiene muchos valores: ' + data[path] );
+              // El elem seleccionado deberia tener su contenedor con class multiple
+              // En realidad no es su contenedor, sino el primer padre con class "multiple"
+              //
+  
+              // El nodo a clonar siempre es el contenedor multiple del elem
+              var nodeToClone = $(elems[0]).closest('.multiple');
+              //nodeToClone.css({'border':'2px solid #f00'}); // OK!
+    
+              // si i es 0, pongo el valor en el nodo, si es mayor que 0 tengo que clonar el nodo para poner el valor en el nodo clonado.
+              var lastSibling = nodeToClone; // el ultimo sibling de nodeToClone
+    
+              //console.info(elems[0]);
+              //console.info(elems.get(0)); // igual que el anterior
+              //console.info($(elems[0])); // esto me tira un array!, pero funca ok
+              //console.info($(elems[0])[0]); // igual que el primero
+                
+              // El array puede no tener valores
+              if ( data[path].length == 0 ) continue;
+          
+              show($(elems[0]), data[path][0]);
+
+
+              // pone el valor para el resto de los nodos
+              for (i=1; i<data[path].length; i++)
               {
-                console.log('valores multiples');
-          
-                //alert(path+ ' tiene muchos valores: ' + data[path] );
-                // El elem seleccionado deberia tener su contenedor con class multiple
-                // En realidad no es su contenedor, sino el primer padre con class "multiple"
-                //
-    
-                // El nodo a clonar siempre es el contenedor multiple del elem
-                var nodeToClone = $(elems[0]).closest('.multiple');
-                //nodeToClone.css({'border':'2px solid #f00'}); // OK!
-    
-                // si i es 0, pongo el valor en el nodo, si es mayor que 0 tengo que clonar el nodo para poner el valor en el nodo clonado.
-                var lastSibling = nodeToClone; // el ultimo sibling de nodeToClone
-    
-                //console.info(elems[0]);
-                //console.info(elems.get(0)); // igual que el anterior
-                //console.info($(elems[0])); // esto me tira un array!, pero funca ok
-                //console.info($(elems[0])[0]); // igual que el primero
-                
-                // El array puede no tener valores
-                if ( data[path].length == 0 ) continue;
-          
-                show($(elems[0]), data[path][0]);
+                // FIXME: si es un tipo estructurado (mas de un valor para el nodo), el nodo
+                //        puede ya estar clonado, solo tengo que meterle el valor. Para saberlo,
+                //        tengo que ver si el numero de elems es 1 o no, si es 1, el nodo no esta
+                //        clonado y lo tengo que clonar.
 
-
-                // pone el valor para el resto de los nodos
-                for (i=1; i<data[path].length; i++)
+                //alert('elems.size: ' + elems.size() + ', data.path.length: ' + data[path].length);
+                    
+                // Si la cantidad de labels donde van los datos es menor que la cantidad de datos,
+                // se que faltan nodos para clonar.
+                if (elems.length < data[path].length)
                 {
-                    // FIXME: si es un tipo estructurado (mas de un valor para el nodo), el nodo puede ya estar clonado, solo tengo que meterle el valor. Para saberlo, tengo que ver si el numero de elems es 1 o no, si es 1, el nodo no esta clonado y lo tengo que clonar.
-
-                    //alert('elems.size: ' + elems.size() + ', data.path.length: ' + data[path].length);
+                  var clonedContainer = nodeToClone.clone(); // Unico caso que clono: cuando los nodos que hay son menos que la cantidad de valores que tengo para mostrar
+                  lastSibling.after( clonedContainer ); // Pone en el dom, luego de lastSibling
+                  lastSibling = clonedContainer; // Ahora es el nuevo lastSibling
                     
-                    // Si la cantidad de labels donde van los datos es menor que la cantidad de datos,
-                    // se que faltan nodos para clonar.
-                    if (elems.length < data[path].length)
-                    {
-                      var clonedContainer = nodeToClone.clone(); // Unico caso que clono: cuando los nodos que hay son menos que la cantidad de valores que tengo para mostrar
-                      lastSibling.after( clonedContainer ); // Pone en el dom, luego de lastSibling
-                      lastSibling = clonedContainer; // Ahora es el nuevo lastSibling
-                    
-                      // Como agrego un container, tengo un nuevo elem (label).
-                      // Es el que tiene class path dentro del clonedContainer.
-                      // Forma de seleccionar la label.path dentro del clonedContainer.
-                      elems.push( $(':input.[name='+path+']', clonedContainer)[0] ); // dentro del cloned container deberia haber un solo elemento con ese name
-                    }
-                
-                    //console.log('pone valor (%d): %s en el control: ', i, data[path][i]);
-                    //console.log(elems[i]);
-                
-                    show($(elems[i]), data[path][i]);
+                  // Como agrego un container, tengo un nuevo elem (label).
+                  // Es el que tiene class path dentro del clonedContainer.
+                  // Forma de seleccionar la label.path dentro del clonedContainer.
+                  elems.push( $(':input.[name='+path+']', clonedContainer)[0] ); // dentro del cloned container deberia haber un solo elemento con ese name
                 }
-                continue;
+                
+                //console.log('pone valor (%d): %s en el control: ', i, data[path][i]);
+                //console.log(elems[i]);
+                
+                show($(elems[i]), data[path][i]);
               }
+              continue;
+            }
 
-              // elemento y valor simple
-              show(elems, data[path]);
-	        }
-	    }
+            // elemento y valor simple
+            show(elems, data[path]);
+          }
+        }
                 
         console.groupEnd();
                 
@@ -160,7 +163,7 @@
                
         // Mostrar errores de edit
         for (var field in errors)
-	    {
+        {
            console.log(field); // field_37
            console.log(errors[field]); // object json (ahora es un array, p.e. si el campo es multiple y mas de un campo tiene error)
            
@@ -176,75 +179,97 @@
            /*
            errors[field] es algo asi:
            
+           {"errors": [
+              {
+               "object":"hce.core.datastructure.itemstructure.representation.Element",
+                "field":"value",
+                "rejected-value":{
+                  "class":"data_types.basic.DvBoolean",
+                  "className":"DvBoolean",
+                  "value":null
+                },
+                "message":"No hay suficientes datos ingresados, el registro de toda la informacion es obligatorio"
+              }
+           ]}
            {
-		     "errors": [
-               {
-		         "object":"hce.core.datastructure.itemstructure.representation.Element",
-		         "field":"value",
-		         "rejected-value":{
-		           "class":"data_types.basic.DvBoolean",
-		           "className":"DvBoolean",
-		           "value":null
-		         },
-		         "message":"No hay suficientes datos ingresados, el registro de toda la informacion es obligatorio"
-		       }
-		     ]
-		   }
-           {
-			    "field_634":{
-			        "0":{
-			            "errors":[{
-			                    "object":"DvQuantity",
-			                    "field":"magnitude",
-			                    "rejected-value":null,
-			                    "message":"Debe ingresar magnitud y unidades"
-			                }
-			            ]
-			        },
-			        "1":{
-			            "errors":[{
-			                    "object":"DvQuantity",
-			                    "field":"magnitude",
-			                    "rejected-value":null,
-			                    "message":"Debe ingresar magnitud y unidades"
-			                }
-			            ]
-			        }
-			    }
-			}
+            "field_634":{
+              "0":{
+                  "errors":[{
+                          "object":"DvQuantity",
+                          "field":"magnitude",
+                          "rejected-value":null,
+                          "message":"Debe ingresar magnitud y unidades"
+                      }
+                  ]
+              },
+              "1":{
+                  "errors":[{
+                          "object":"DvQuantity",
+                          "field":"magnitude",
+                          "rejected-value":null,
+                          "message":"Debe ingresar magnitud y unidades"
+                   }
+                 ]
+               }
+             }
+           }
            */
            
-           
            for (var errIdx in errors[field])
-	       {
-               console.log('errIdx %s', errIdx); 
-               //console.log(errors[field][errIdx]); // Array de errores para un nodo particular
+           {
+             console.log('errIdx %s', errIdx); 
+             //console.log(errors[field][errIdx]); // Array de errores para un nodo particular
                
-               // TODO: verificar que existe el container con class field (que va a ser field_0, field_1, ...)
-               var mensajesError = '';
+             // TODO: verificar que existe el container con class field (que va a ser field_0, field_1, ...)
+             var mensajesError = '';
                 
-	           //for (var err in errors[field].errors) // Varios errores para el mismo nodo
-               for (var err in errors[field][errIdx].errors)
-	           {
-	             //mensajesError += errors[field].errors[err].message + '<br/>';
-	             mensajesError += errors[field][errIdx].errors[err].message + '<br/>';
-	           }
-	           var nodeError = $('<div class="error">'+ mensajesError +'</div>');
-	           
-	           
-	           // Pido containers por la class (en realidad deberia ser id)
-	           var containers = $('.'+field); // Deberia ser uno solo
-	           //var container = $(containers[0]);
-	           var container = $(containers[parseInt(errIdx)]); // Pone el error en el nodo idx, es el caso de nodo multiple y varios nodos tienen errores.
-	           
-	           
-	           // No puedo obtener el nombre de la tag HTML de container...
-	           //console.log(container.type); // undefined
-	           //console.log(container.attr('type')); // undefined
-	           //console.log(container.attr('class')); // field_37 field_y
-	           
-	           // Agrego el nodo con los errores de los campos del container
-	           container.prepend( nodeError );
+             //for (var err in errors[field].errors) // Varios errores para el mismo nodo
+             for (var err in errors[field][errIdx].errors)
+             {
+               //mensajesError += errors[field].errors[err].message + '<br/>';
+               mensajesError += errors[field][errIdx].errors[err].message + '<br/>';
+             }
+             var nodeError = $('<div class="error">'+ mensajesError +'</div>');
+             
+             console.log('field: ', field);
+             
+             // ======================================================================================================
+             // 1. Si el error son de estructura, se pide por class de la div contenedora porque afecta a todo el objeto.
+             // 2. Si el error es de dato, se pide el campo del error por su nombre, y el error se prependea en su contenedor (parent).
+             //    FIXME: creo que el caso 2 no puede pasar porque el binder pone los errores de datos como errores del ELEMENT,
+             //           se podria cambiar eso para que el dato traiga su propio error, ademas se simplifica el binder por no
+             //           tener que estar verificando errores y creando errores en otros objetos.
+             
+             // 1. Pido containers por la class (en realidad deberia ser id)
+             var containers = $('.'+field);
+             
+             if (containers.length > 0)
+             {
+               console.log('nodeError', nodeError);
+             
+               // No puedo obtener el nombre de la tag HTML de container...
+               //console.log(container.type); // undefined
+               //console.log(container.attr('type')); // undefined
+               //console.log(container.attr('class')); // field_37 field_y
+             }
+             else
+             {
+               // Pide por nombre del campo que contiene el dato con error
+               // Puede ser mas de uno con el mismo nombre por campos multiples
+               var errfields = $('input[name='+ field +'],textarea[name='+ field +'],select[name='+ field +']');
+               
+               console.log('errfields', errfields);
+               
+               containers = errfields.parent();
+             }
+             
+             // Pone el error en el nodo idx, es el caso de nodo multiple y varios nodos tienen errores.
+             var container = $(containers[parseInt(errIdx)]);
+             
+             console.log('container', container);
+             
+             // Agrego el nodo con los errores de los campos del container
+             container.prepend( nodeError );
            }
         }
         
@@ -325,8 +350,8 @@
           console.log(field);
            
           // Para CodedText viene "codeString||Texto"
-	      if (value.indexOf("||") > 0)
-	      {
+        if (value.indexOf("||") > 0)
+        {
             console.log('show piped coded text');
             var partes = value.split("||");
             field.addClass(templateId+"_"+partes[0]); // para customizar el estilo, por ejemplo se usa en el triage.
@@ -355,10 +380,10 @@
                });
             }
             else
-	          field.val(value);
+            field.val(value);
            
-	        return;
-	      }
+          return;
+        }
 
           if (value == "label.boolean.true" || value == "label.boolean.false")
           {
@@ -370,16 +395,16 @@
              field.val(value); // Se debe usar label.boolean.x, no Si/No
              return;
           }
-	
-	      if (value == "date.struct")
-	      {
+  
+        if (value == "date.struct")
+        {
             console.log('show date.struct');
            
-	        // FIXME: el formato de la fecha depende del locale
-	        // TODO: verificar si no tengo tiempo, no mostrar " hora:minuto" (ver que hay un espacio entre la fecha y el tiempo.
-	        // Esto muestra: 2011-8-13 21:32 
-	        //field.val(data[path+'_year']+"-"+data[path+'_month']+"-"+data[path+'_day']+" "+data[path+'_hour']+":"+data[path+'_minute']);
-	        
+          // FIXME: el formato de la fecha depende del locale
+          // TODO: verificar si no tengo tiempo, no mostrar " hora:minuto" (ver que hay un espacio entre la fecha y el tiempo.
+          // Esto muestra: 2011-8-13 21:32 
+          //field.val(data[path+'_year']+"-"+data[path+'_month']+"-"+data[path+'_day']+" "+data[path+'_hour']+":"+data[path+'_minute']);
+          
             // FIXME: cuando regreso al edit, pasa que el campo date biene con
             // la fecha, no con "date.struct", y sobreescribe ese valor
             // (que el controller espera), entonces falla el submit.
@@ -388,10 +413,10 @@
             // TODO: lo que hay que mostrar es en cada select el valor de cada campo, y eso creo que ya se hace solo cuando encuentra las keys field_year, field_month, etc.
            
             return;
-	      }
+        }
           
           console.log('show default');
-	      field.val(value);
+        field.val(value);
       }
       // ===================================================
       
@@ -404,17 +429,17 @@
         <ul>
           <g:each in="${stage.recordDefinitions}" var="template">
             <li ${((params.templateId==template.templateId)?'class="active"':'')}>
-	          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${template.templateId}">
-	            <g:if test="${it.hasItem}">
-	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${template.name}" /> (*)</g:link>
-	            </g:if>
-	            <g:else>
-		          <g:link controller="guiGen" action="generarTemplate" params="[templateId:template.templateId]">
-		            <g:message code="${template.name}" />
-		          </g:link>
-		        </g:else>
-	          </g:hasContentItemForTemplate>
-	        </li>
+            <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${template.templateId}">
+              <g:if test="${it.hasItem}">
+                <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${template.name}" /> (*)</g:link>
+              </g:if>
+              <g:else>
+              <g:link controller="guiGen" action="generarTemplate" params="[templateId:template.templateId]">
+                <g:message code="${template.name}" />
+              </g:link>
+            </g:else>
+            </g:hasContentItemForTemplate>
+          </li>
           </g:each>
         </ul>
       </div>
