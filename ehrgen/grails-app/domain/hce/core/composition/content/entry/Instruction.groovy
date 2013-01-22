@@ -16,9 +16,9 @@ class Instruction extends CareEntry {
     DvDateTime expiryTime
     DvParsable wfDefinition
     
-    String codedNarrative;
-    String codedExpirityTime;
-    String codedWfDefinition;
+    String codedNarrative
+    String codedExpirityTime
+    String codedWfDefinition
     
     static transients = ['narrative', 'expiryTime', 'wfDefinition']
     

@@ -1,4 +1,3 @@
-/*
 Copyright 2013 CaboLabs.com
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,18 +25,3 @@ http://jdbc.postgresql.org/
 
 This software uses XStream library developed by Jörg Schaible
 http://xstream.codehaus.org/
-*/
-package hce.core.composition.content
-
-import hce.core.common.archetyped.Locatable
-import hce.core.common.archetyped.Pathable
-
-class ContentItem extends Locatable {
-
-    static constraints = {
-    }
-    
-    //static mapping = {
-    //   table 'content_item'
-    //}
-}
