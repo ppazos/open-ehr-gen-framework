@@ -1,4 +1,7 @@
 <g:set var="formatter" value="${new java.text.SimpleDateFormat('yyyy-MM-dd')}" />
+
+<div class="admissions">
+
 <g:each in="${admissions}" status="i" var="admission">
   <%-- TODO: usar un template, ver views/demographic/_Person --%>
   <g:set var="person" value="${admission.patient}" />
@@ -21,11 +24,11 @@
       print formatter.format(person.fechaNacimiento)
     }
     %>
-    
-    [${domain.name}]
     </g:link>
   </div>
 </g:each>
+
+</div>
 
 <g:javascript>
   $(document).ready(function() {
