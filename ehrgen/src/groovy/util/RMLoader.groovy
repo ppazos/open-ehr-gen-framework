@@ -101,7 +101,7 @@ class RMLoader {
         {
             new_a.archetypeId = (a.archetypeId)
             new_a.templateId = (a.templateId)
-            new_a.rmVersion = (a.rmVersion)
+            //new_a.rmVersion = (a.rmVersion)
         }
     }
 

@@ -30,9 +30,8 @@ class EHRSession implements Serializable {
    //Long pacienteId // Identificador del paciente (uno de sus Ids), no es el id en la base.
    Long episodioId   // Identificador en la base de la composition que modela el registro del episodio.
    
-   
+   // TODO: cambiar por loginId y que userId sea la persona logueada
    Long userId       // Identificador en la base del Login del usuario logueado en este momento.
-   //Person user       // Persona logueada
    
    // FIXME: no puedo poner domain objects en session: http://grails.1312388.n4.nabble.com/Best-way-to-cache-some-domain-objects-in-a-user-session-td3820978.html
    //LoginAuth login // antes userId == login.id
