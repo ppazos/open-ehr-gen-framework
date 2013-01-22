@@ -9,9 +9,9 @@ class AuthorizationFilters {
       loginCheck(controller:'*', action:'*')
       {
          before = {
-            
-            if( !session?.ehrSession?.userId &&
-               !openActions.contains(controllerName+"-"+actionName) )
+
+            if(!session?.ehrSession?.userId &&
+               !openActions.contains(controllerName+"-"+actionName))
             {
                redirect(controller:'authorization', action:'login')
                return false
