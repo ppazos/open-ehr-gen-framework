@@ -1,4 +1,4 @@
-<%@ page import="demographic.role.Role" %>
+<%@ page import="demographic.role.Role" %><%@ page import="domain.Domain" %>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -43,10 +43,10 @@
             TODO: el id del template deberia traer el nombre y descripcion del template, que esta definido adentro del propio template.
             -->
             
-            <g:each in="${domainPermits.domain.unique()}" var="domain" status="i">
+            <g:each in="${domainPermits.domain.unique()}" var="domainId" status="i">
               <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                 <td class="title">
-                  ${message(code:domain)}                
+                  ${message(code:Domain.get(domainId).name)}                
                 </td>
               </tr>
               <g:each in="${domainPermits.findAll{ it.domain == domain }}" var="permit">
@@ -60,7 +60,7 @@
             </g:each>
           </tbody>
         </table>
-        
+        <%--
         <h2>Permisos de bajo nivel</h2>
         <table>
           <tbody>
@@ -86,6 +86,7 @@
             </g:each>
           </tbody>
         </table>
+        --%>
       </div>
       
       <div class="buttons">
