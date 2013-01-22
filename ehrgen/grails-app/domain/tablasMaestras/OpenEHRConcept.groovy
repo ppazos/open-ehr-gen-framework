@@ -25,18 +25,37 @@ class OpenEHRConcept {
         def res = []
         
         res << new OpenEHRConcept(group:'attestation reason',conceptId:'240',rubric:'firmado',lang:'es')
+        res << new OpenEHRConcept(group:'attestation reason',conceptId:'240',rubric:'signed',lang:'en')
+        
         res << new OpenEHRConcept(group:'attestation reason',conceptId:'648',rubric:'testigo',lang:'es')
+        res << new OpenEHRConcept(group:'attestation reason',conceptId:'648',rubric:'witnessed',lang:'en')
+        
         
         res << new OpenEHRConcept(group:'audit change type',conceptId:'249',rubric:'creacion',lang:'es')
-        res << new OpenEHRConcept(group:'audit change type',conceptId:'250',rubric:'correccion',lang:'es')
-        res << new OpenEHRConcept(group:'audit change type',conceptId:'251',rubric:'modificacion',lang:'es')
-        res << new OpenEHRConcept(group:'audit change type',conceptId:'252',rubric:'sintesis',lang:'es') // podria ser resumen
-        res << new OpenEHRConcept(group:'audit change type',conceptId:'523',rubric:'eliminacion',lang:'es')
-        res << new OpenEHRConcept(group:'audit change type',conceptId:'666',rubric:'certificacion',lang:'es')
-        res << new OpenEHRConcept(group:'audit change type',conceptId:'253',rubric:'desconocido',lang:'es')
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'249',rubric:'creation',lang:'en')
         
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'250',rubric:'correccion',lang:'es')
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'250',rubric:'amendment',lang:'en')
+        
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'251',rubric:'modificacion',lang:'es')
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'251',rubric:'modification',lang:'en')
+        
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'252',rubric:'sintesis',lang:'es') // podria ser resumen
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'252',rubric:'synthesis',lang:'en')
+
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'253',rubric:'desconocido',lang:'es')
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'253',rubric:'unknown',lang:'en')
+        
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'523',rubric:'eliminacion',lang:'es')
+        res << new OpenEHRConcept(group:'audit change type',conceptId:'523',rubric:'deleted',lang:'en')
+
+
         res << new OpenEHRConcept(group:'composition category',conceptId:'431',rubric:'persistente',lang:'es')
+        res << new OpenEHRConcept(group:'composition category',conceptId:'431',rubric:'persistent',lang:'en')
+        
         res << new OpenEHRConcept(group:'composition category',conceptId:'433',rubric:'evento',lang:'es')
+        res << new OpenEHRConcept(group:'composition category',conceptId:'433',rubric:'event',lang:'en')
+        
         
         res << new OpenEHRConcept(group:'MultiMedia',conceptId:'387',rubric:'audio/DVI4',lang:'es')
         res << new OpenEHRConcept(group:'MultiMedia',conceptId:'388',rubric:'audio/G722',lang:'es')
@@ -85,10 +104,62 @@ class OpenEHRConcept {
         res << new OpenEHRConcept(group:'MultiMedia',conceptId:'518',rubric:'application/pdf',lang:'es')
         res << new OpenEHRConcept(group:'MultiMedia',conceptId:'519',rubric:'application/rtf',lang:'es')
         res << new OpenEHRConcept(group:'MultiMedia',conceptId:'637',rubric:'application/dicom',lang:'es')
+        
+        // igual en ingles
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'387',rubric:'audio/DVI4',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'388',rubric:'audio/G722',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'389',rubric:'audio/G723',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'390',rubric:'audio/G726-16',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'391',rubric:'audio/G726-24',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'392',rubric:'audio/G726-32',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'393',rubric:'audio/G726-40',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'394',rubric:'audio/G728',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'395',rubric:'audio/L8',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'396',rubric:'audio/L16',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'397',rubric:'audio/LPC',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'398',rubric:'audio/G729',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'399',rubric:'audio/G729D',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'400',rubric:'audio/G729E',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'401',rubric:'video/BT656',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'402',rubric:'video/CelB',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'403',rubric:'video/JPEG',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'404',rubric:'video/H261',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'405',rubric:'video/H263',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'406',rubric:'video/H263-1998',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'407',rubric:'video/H263-2000',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'408',rubric:'video/MPV',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'409',rubric:'audio/mpeg',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'410',rubric:'audio/mpeg4-generic',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'411',rubric:'audio/L20',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'412',rubric:'audio/L24',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'413',rubric:'audio/telephone-event',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'414',rubric:'video/quicktime',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'415',rubric:'text/calendar',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'416',rubric:'text/directory',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'417',rubric:'text/html',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'418',rubric:'text/plain',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'419',rubric:'text/rtf',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'420',rubric:'text/sgml',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'421',rubric:'text/tab-separated-values',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'422',rubric:'text/uri-list',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'423',rubric:'text/xml',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'424',rubric:'text/xml-external-parsed-entity',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'425',rubric:'image/cgm',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'426',rubric:'image/gif',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'427',rubric:'image/png',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'428',rubric:'image/tiff',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'429',rubric:'image/jpeg',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'517',rubric:'application/msword',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'518',rubric:'application/pdf',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'519',rubric:'application/rtf',lang:'en')
+        res << new OpenEHRConcept(group:'MultiMedia',conceptId:'637',rubric:'application/dicom',lang:'en')
 
         
         res << new OpenEHRConcept(group:'property',conceptId:'339',rubric:'Aceleracion',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'339',rubric:'Acceleration',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'342',rubric:'Aceleracion angular',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'342',rubric:'Acceleration, Angular',lang:'en')
         /*
          * <concept id="381" rubric="Amount (Eq)"/>
            <concept id="384" rubric="Amount (mole)"/>
@@ -96,8 +167,13 @@ class OpenEHRConcept {
            <concept id="500" rubric="Angle, solid"/>
          */
         res << new OpenEHRConcept(group:'property',conceptId:'335',rubric:'Area',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'335',rubric:'Area',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'119',rubric:'Concentracion',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'119',rubric:'Concentration',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'350',rubric:'Densidad',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'350',rubric:'Density',lang:'en')
          /*
           * <concept id="362" rubric="Diffusion coefficient"/>
             <concept id="501" rubric="Electrical capacitance"/>
@@ -108,6 +184,7 @@ class OpenEHRConcept {
             <concept id="655" rubric="Electrical potential time"/>
           */
         res << new OpenEHRConcept(group:'property',conceptId:'121',rubric:'Energia',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'121',rubric:'Energy',lang:'en')
           /*
            * <concept id="366" rubric="Energy density"/>
             <concept id="508" rubric="Energy dose"/>
@@ -120,17 +197,24 @@ class OpenEHRConcept {
             <concept id="348" rubric="Flux, mass"/>
            */
         res << new OpenEHRConcept(group:'property',conceptId:'355',rubric:'Fuerza',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'355',rubric:'Force',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'358',rubric:'Fuerza por masa',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'358',rubric:'Force per Mass',lang:'en')
         //<concept id="357" rubric="Force, body"/>
         
         res << new OpenEHRConcept(group:'property',conceptId:'382',rubric:'Frecuencia',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'382',rubric:'Frequency',lang:'en')
         /*
          * <concept id="586" rubric="Glomerular filtration rate"/>
             <concept id="373" rubric="Heat transfer coefficient"/>
             <concept id="505" rubric="Illuminance"/>
          */
         res << new OpenEHRConcept(group:'property',conceptId:'379',rubric:'Inductancia',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'379',rubric:'Inductance',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'122',rubric:'Largo',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'122',rubric:'Length',lang:'en')
          /*
           * <concept id="499" rubric="Light intensity"/>
             <concept id="123" rubric="Loudness"/>
@@ -139,6 +223,7 @@ class OpenEHRConcept {
             <concept id="503" rubric="Magnetic flux density"/>
           */
         res << new OpenEHRConcept(group:'property',conceptId:'124',rubric:'Masa',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'124',rubric:'Mass',lang:'en')
           /*
            * concept id="385" rubric="Mass (IU)"/>
             <concept id="445" rubric="Mass (Units)"/>
@@ -154,10 +239,16 @@ class OpenEHRConcept {
             <concept id="367" rubric="Power, linear"/>
            */
         res << new OpenEHRConcept(group:'property',conceptId:'125',rubric:'Presion',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'125',rubric:'Pressure',lang:'en')
+
         res << new OpenEHRConcept(group:'property',conceptId:'507',rubric:'Proporcion',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'507',rubric:'Proportion',lang:'en')
            //<concept id="380" rubric="Qualified real"/>
         res << new OpenEHRConcept(group:'property',conceptId:'506',rubric:'Radioactividad',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'506',rubric:'Radioactivity',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'375',rubric:'Resistencia',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'375',rubric:'Resistance',lang:'en')
         /*
          * <concept id="370" rubric="Specific energy"/>
             <concept id="371" rubric="Specific heat, gas constant"/>
@@ -167,10 +258,19 @@ class OpenEHRConcept {
             <concept id="356" rubric="Surface tension"/>
          */
         res << new OpenEHRConcept(group:'property',conceptId:'127',rubric:'Temperatura',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'127',rubric:'Temperature',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'372',rubric:'Conductividad termica',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'372',rubric:'Thermal conductivity',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'128',rubric:'Tiempo',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'128',rubric:'Time',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'359',rubric:'Torque',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'359',rubric:'Torque',lang:'en')
+        
         res << new OpenEHRConcept(group:'property',conceptId:'338',rubric:'Velocidad',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'338',rubric:'Velocity',lang:'en')
          /*
           * <concept id="341" rubric="Velocity, angular"/>
         <concept id="360" rubric="Velocity, dynamic"/>
@@ -178,19 +278,34 @@ class OpenEHRConcept {
         <concept id="374" rubric="Voltage, electrical"/>
           */
         res << new OpenEHRConcept(group:'property',conceptId:'129',rubric:'Volumen',lang:'es')
-        res << new OpenEHRConcept(group:'property',conceptId:'130',rubric:'Trabajo',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'129',rubric:'Volume',lang:'en')
         
+        res << new OpenEHRConcept(group:'property',conceptId:'130',rubric:'Trabajo',lang:'es')
+        res << new OpenEHRConcept(group:'property',conceptId:'130',rubric:'Work',lang:'en')
+        
+        // FIXME: version lifecycle state no aparece en la terminologia xml del archetype editor, talvez esta solo en el Terminology.pdf
         res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'532',rubric:'Completo',lang:'es')
+        res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'532',rubric:'Completed',lang:'en')
+        
         res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'553',rubric:'Incompleto',lang:'es')
+        res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'553',rubric:'Incomplete',lang:'en')
+        
         res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'523.1',rubric:'Eliminado',lang:'es') // hay un 523 en 'audit change type',conceptId:'523',rubric:'eliminacion'
+        res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'523.1',rubric:'Deleted',lang:'en') // hay un 523 en 'audit change type',conceptId:'523',rubric:'eliminacion'
         
         res << new OpenEHRConcept(group:'participation function',conceptId:'253.1',rubric:'desconocido',lang:'es') // se repite 'audit change type',conceptId:'253',rubric:'desconocido'
+        res << new OpenEHRConcept(group:'participation function',conceptId:'253.1',rubric:'Unknown',lang:'en')
         // TODO: poner las funciones de participacon de HL7 y las que sean necesarias para la HCE
         
         res << new OpenEHRConcept(group:'null flavours',conceptId:'271',rubric:'No hay informacion',lang:'es')
         res << new OpenEHRConcept(group:'null flavours',conceptId:'253.2',rubric:'Desconocido',lang:'es') // se repite 'audit change type',conceptId:'253',rubric:'desconocido'
         res << new OpenEHRConcept(group:'null flavours',conceptId:'272',rubric:'Oculto',lang:'es')
         res << new OpenEHRConcept(group:'null flavours',conceptId:'273',rubric:'No aplicable',lang:'es')
+        
+        res << new OpenEHRConcept(group:'null flavours',conceptId:'271',rubric:'No information',lang:'en')
+        res << new OpenEHRConcept(group:'null flavours',conceptId:'253.2',rubric:'Unknown',lang:'en') // se repite 'audit change type',conceptId:'253',rubric:'desconocido'
+        res << new OpenEHRConcept(group:'null flavours',conceptId:'272',rubric:'Hidden',lang:'en')
+        res << new OpenEHRConcept(group:'null flavours',conceptId:'273',rubric:'Not applicable',lang:'en')
         
         /*
         <group name="participation mode">
@@ -333,6 +448,24 @@ class OpenEHRConcept {
     
     // Value of the datum was the value indicated during the entire time of the event, i.e. it is not an averaged or other computed value
     res << new OpenEHRConcept(group:'event math function',conceptId:'640',rubric:'actual',lang:'es')
+
+    
+    res << new OpenEHRConcept(group:'event math function',conceptId:'145',rubric:'minimum',lang:'en')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'144',rubric:'maximum',lang:'en')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'267',rubric:'mode',lang:'en')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'268',rubric:'median',lang:'en')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'146',rubric:'mean',lang:'en')
+    
+    // Value of the interval-event is the net change over the period which the interval-event summarises.
+    res << new OpenEHRConcept(group:'event math function',conceptId:'147',rubric:'change',lang:'en')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'148',rubric:'total',lang:'en')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'149',rubric:'variation',lang:'en')
+    
+    res << new OpenEHRConcept(group:'event math function',conceptId:'521',rubric:'decrease',lang:'en')
+    res << new OpenEHRConcept(group:'event math function',conceptId:'522',rubric:'increase',lang:'en')
+    
+    // Value of the datum was the value indicated during the entire time of the event, i.e. it is not an averaged or other computed value
+    res << new OpenEHRConcept(group:'event math function',conceptId:'640',rubric:'actual',lang:'en')
 
     /*  
     <group name="setting">
