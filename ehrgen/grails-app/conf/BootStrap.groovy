@@ -79,12 +79,12 @@ class BootStrap {
       archetypeManager.loadAll()
         
         
-        // Parece que no puedo definir el locale sin estar en una sesion de verdad
-        // Una SOLUCION podria ser que no se genere la GUI desde el bootstrap, sino que se genere desde una GUI de administracion.
-        // ===================================================
-        // MOCK del request temporal para usar el locale seleccionado que puede ser distinto al del sistema.
-        //servletContext  = ServletContextHolder.getServletContext()
-        /*
+      // Parece que no puedo definir el locale sin estar en una sesion de verdad
+      // Una SOLUCION podria ser que no se genere la GUI desde el bootstrap, sino que se genere desde una GUI de administracion.
+      // ===================================================
+      // MOCK del request temporal para usar el locale seleccionado que puede ser distinto al del sistema.
+      //servletContext  = ServletContextHolder.getServletContext()
+      /*
         def applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext)
         def requestAttributes = grails.util.GrailsWebUtil.bindMockWebRequest(applicationContext)
         
@@ -99,93 +99,259 @@ class BootStrap {
         
         // getLocaleResolver tira null
         RCU.getLocaleResolver(requestAttributes.request).setLocale(requestAttributes.request, requestAttributes.response, new Locale('es'))
-        */
-        //
-        // ===================================================
+      */
+      //
+      // ===================================================
         
-        // ==============
-        // FIXME: aqui se crean folders por defecto, pero se debe permitir
-        //        crear folders desde pantallas de config del framework.
-        //        para los folders creados desde UI el nombre va a ser
-        //        ingresado pero tambien se necesita ingresar un codigo
-        //        unico para el dominio porque se usa para verificar autorizacion.
-        // --------------
+      // ==============
+      // FIXME: aqui se crean folders por defecto, pero se debe permitir
+      //        crear folders desde pantallas de config del framework.
+      //        para los folders creados desde UI el nombre va a ser
+      //        ingresado pero tambien se necesita ingresar un codigo
+      //        unico para el dominio porque se usa para verificar autorizacion.
+      // --------------
         
 		
-        // Dominios y compositions por defecto
-        //def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
-        //def appContext = WebApplicationContextUtils.getWebApplicationContext( servletContext )
-        //def messageSource = appContext.getBean( 'messageSource' )
-
-        def config_domains = grailsApplication.config.domains
-
-        if (Domain.count() == 0) // Si no se crearon los folders...
-        {
-           config_domains.each { config_domain ->
-              
-              def domain = new Domain(
-                 name: config_domain,
-                 userDefined: true
-              )
-              
-              /*
-                 folder = new Folder(
-                    // para verificar seguridad necesito tambien el codigo en el folder.
-                    name: new DvCodedText(
-                      value: messageSource.getMessage(domain, new Object[2], new Locale('es')), // FIXME: I18N
-                      definingCode: new CodePhrase(
-                        codeString: domain,
-                        terminologyId: TerminologyID.create('ehrgen', null) // Deberia haber alguna terminologia identificado con ehrgen en el CtrlTerminologia al cual pueda pedir codigos y este codigo este incluido.
-                      )
-                    ),
-                    path: domain,
-                    archetypeNodeId: "at0001",        // FIXME: Inventado. Consultar si sirve de algo arquetipar un Folder... (no tiene estructura)
-                    archetypeDetails: new Archetyped( // FIXME: Inventado
-                      archetypeId: 'ehr.domain',
-                      templateId: 'ehr.domain',
-                      rmVersion: '1.0.2' // FIXME: deberia ser variable global de config
-                    )
-                 )
-              */
-                 
-              if (!domain.save(flush:true))
-              {
-                 println domain.errors
-              }
-                 
-              // =====================================================================================
-              // Crea registro de prueba para cada dominio
-              def startDate = DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
-              def composition = hceService.createComposition( startDate, "bla bla bla" )
-                 
-              // ============================================================================
-              // FIXME: no se usa la referencia desde el domain a la composition? VERIFICAR.
-              // ============================================================================
-              
-              // Set parent
-              composition.padre = domain           
+      // Dominios y compositions por defecto
+      //def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
+      //def appContext = WebApplicationContextUtils.getWebApplicationContext( servletContext )
+      //def messageSource = appContext.getBean( 'messageSource' )
       
-              if (!composition.save())
-              {
-                  println "Error: " + composition.errors
-              }
+      
+      // ====================================================================================
+      // Crea dominios
+      //
+      def config_domains = grailsApplication.config.domains
+
+      println " - Creacion de dominios"
+      
+      if (Domain.count() == 0) // Si no se crearon los folders...
+      {
+         config_domains.each { config_domain ->
+            
+            println "   - $config_domain"
+            
+            def domain = new Domain(
+               name: config_domain,
+               userDefined: true
+            )
                  
-              // Crea la version inicial
-              def version = new Version(
-                data: composition,
-                timeCommited: new DvDateTime(
-                  value: DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
-                )
-              )
-                 
-              if (!version.save())
-              {
-                     println "ERROR: " + version.errors
-              }
-              // =====================================================================================
-           }
+            if (!domain.save(flush:true))
+            {
+               println domain.errors
+            }
+         }
+      }
+      //
+      // /Crea dominios
+      // ====================================================================================
+      
+      
+      // TODO: no crear si ya existen
+      // ---------------------------  PERSONAS Y ROLES  ----------------------
+      println " - Creacion de personas de prueba"
+        
+      //
+      //Permit.createDefault() // controler/action
+      //
+      DomainPermit.createDefault() // domain/templateId
+      //
+        
+      // ROLES: se crea una instancia por cada rol existente.
+      // Luego el admin puede crear otros roles y asignar permisos.
+      // TODO: crear un usuario para el rol GODLIKE
+      def rGodLike = new Role(type: Role.GODLIKE)
+      if (!rGodLike.save()) println rGodLike.errors
+        
+      def rAdmin = new Role(type: Role.ADMIN)
+      if (!rAdmin.save()) println rAdmin.errors
+        
+      def rPaciente = new Role(type: Role.PACIENTE)
+      if (!rPaciente.save()) println rPaciente.errors
+        
+      def rMedico = new Role(type: Role.MEDICO)
+      if (!rMedico.save()) println rMedico.errors
+        
+      def rEnfermeria = new Role(type: Role.ENFERMERIA)
+      if (!rEnfermeria.save()) println rEnfermeria.errors
+        
+      def rAdministrativo = new Role(type: Role.ADMINISTRATIVO)
+      if (!rAdministrativo.save()) println rAdministrativo.errors
+
+        
+      // Los roleValidity se guardan al guardar las personas
+        
+      // 24/10/1981
+      def paciente = createPerson('Pablo','Pazos',
+                                  '2.16.840.1.113883.2.14.2.1::1234567',
+                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::6677',
+                                  new Date(81, 9, 24), 'M', rPaciente)
+        
+      def pac2 = createPerson('Leandro','Carrasco',
+                              '2.16.840.1.113883.2.14.2.1::2345678',
+                              '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::3366',
+                              new Date(82, 10, 25), 'M', rPaciente)
+      // 24/10/1985
+      def persona4 = createPerson('Pablo','Cardozo',
+                                  '2.16.840.1.113883.2.14.2.1::1234888',
+                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::44556',
+                                  new Date(85, 9, 24), 'M', rPaciente)
+        
+      def persona5 = createPerson('Marcos','Carisma',
+                                  '2.16.840.1.113883.2.14.2.1::45687543',
+                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::2233445',
+                                  new Date(80, 11, 26), 'M', rPaciente)
+        
+      // Paciente con estudios imagenologicos en el CCServer local
+      // id en el CCServer
+      def persona6 = createPerson('CT','Mister',
+                                  '2.16.840.1.113883.4.330.666::2178309',
+                                  null,
+                                  null, 'M', rPaciente)
+        
+      // ex persona3
+      def doctor1 = createPerson('Marta','Doctora',
+                                   '2.16.840.1.113883.4.330.858::6667778',
+                                   null,
+                                   new Date(83, 11, 26), 'F', rMedico)
+
+      def persona_administrativo = createPerson('Charles','Administrativo',
+                                    '2.16.840.1.113883.2.14.2.1::3334442',
+                                    null,
+                                    null, 'M', rAdministrativo)
+
+      def persona_enfermera = createPerson('Juana','Enfermera',
+                                    '2.16.840.1.113883.2.14.2.1::9876456',
+                                    null,
+                                    null, 'F', rEnfermeria)
+        
+      def persona_admin = createPerson('Joe','Admin',
+                                    '2.16.840.1.113883.2.14.2.1::98607521',
+                                    null,
+                                    null, 'M', rAdmin)
+
+        
+        
+      // =============================================================
+      // CREA ADMISION DE LOS PACIENTES AL DOMINIO DE TRAUMA
+      def admissions = []
+      def trauma_domain = Domain.findByName('Emergencia de Trauma') // CUIDADO: nombre en Config.groovy puede cambiar!
+        
+      // Personas con rol paciente
+      def rvs = RoleValidity.withCriteria {
+        role {
+          eq('type', Role.PACIENTE)
         }
-        // /Dominios y compositions por defecto
+      }
+        
+      // Para cada persona con rol paciente
+      rvs.performer.each { person ->
+        
+         admissions << new Admission(
+           patientId: person.id,
+           physicianId: doctor1.id,
+           domainId: trauma_domain.id
+         )
+      }
+        
+      // Guarda admisiones
+      admissions.each { admission ->
+         if (!admission.save()) println admission.errors
+      }
+        
+      //
+      // =============================================================
+        
+      // =============================================================
+      // ASIGNACION DE PERMISOS POR DEFECTO
+        
+      // ROL MEDICO, ACCESO A TODOS LOS DOMINIOS y todos los templates
+      // -------------------------------------------------------------
+      DomainPermit.findAllByTemplateId("*").each {
+        
+           rMedico.addToDomainPermits(it)
+      }
+      rMedico.save()
+
+      
+      // ====================================================================================
+      // LOGINS
+      //
+      // Login para el medico   
+        def login = new LoginAuth(user:'med', pass:'med', person: doctor1)
+        if (!login.save()) println login.errors
+        
+        // Login para el administrativo
+        def login_adm = new LoginAuth(user:'adm', pass:'adm', person: persona_administrativo)
+        if (!login_adm.save()) println login_adm.errors
+        
+        def login_enf = new LoginAuth(user:'enf', pass:'enf', person: persona_enfermera)
+        if (!login_enf.save()) println login_enf.errors
+        
+        def login_admin = new LoginAuth(user:'admin', pass:'admin', person: persona_admin)
+        if (!login_admin.save()) println login_admin.errors
+        
+      // /Creacion de personas
+      // ====================================================================================
+        
+      // ====================================================================================
+      // Crea compositions
+      //
+
+      def partySelf
+      def participation
+      def startDate
+      def composition
+      
+      Domain.list().each { domain ->
+
+         // =====================================================================================
+         // Crea N registros por dominio, la mitad los asigna a un paciente
+              
+         (1..30).each { i ->
+                 
+            println " - Crea COMPOSITION $i"
+              
+            // Crea registro de prueba para cada dominio
+            startDate = DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
+            composition = hceService.createComposition( startDate, "bla bla bla" )
+                 
+            // ============================================================================
+            // TODO: no se usa la referencia desde el domain a la composition? VERIFICAR.
+            // ============================================================================
+              
+            composition.padre = domain           
+      
+            if (!composition.save())
+            {
+               println "Error: " + composition.errors
+            }
+              
+            // La mitad de los registros los asigna a un paciente
+            if (i % 2 == 0)
+            {
+               // paciente es una Person
+               partySelf = hceService.createPatientPartysSelf(paciente.ids[0].root, paciente.ids[0].extension)
+               participation = hceService.createParticipationToPerformer( partySelf )
+               composition.context.addToParticipations( participation )
+            }
+              
+            // Crea la version inicial
+            def version = new Version(
+               data: composition,
+               timeCommited: new DvDateTime(
+                  value: DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
+               )
+            )
+                 
+            if (!version.save())
+            {
+               println "ERROR: " + version.errors
+            }
+            // /Crear registro
+         }
+      }
+      // /Dominios y compositions por defecto
         
      
         println " - START: Carga catalogos maestros"
@@ -276,247 +442,9 @@ class BootStrap {
         
         println " - END: Carga tablas maestras"
         
-        // TODO: no crear si ya existen
-        
-        // ----------------------------------------------------------------------------
-        
-        println " - Creacion de personas de prueba"
-        
-        
-        //
-        //Permit.createDefault() // controler/action
-        //
-        DomainPermit.createDefault() // domain/templateId
-        //
-        
-        // ROLES: se crea una instancia por cada rol existente.
-        // Luego el admin puede crear otros roles y asignar permisos.
-        // TODO: crear un usuario para el rol GODLIKE
-        def rGodLike = new Role(type: Role.GODLIKE)
-        if (!rGodLike.save()) println rGodLike.errors
-        
-        def rAdmin = new Role(type: Role.ADMIN)
-        if (!rAdmin.save()) println rAdmin.errors
-        
-        def rPaciente = new Role(type: Role.PACIENTE)
-        if (!rPaciente.save()) println rPaciente.errors
-        
-        def rMedico = new Role(type: Role.MEDICO)
-        if (!rMedico.save()) println rMedico.errors
-        
-        def rEnfermeria = new Role(type: Role.ENFERMERIA)
-        if (!rEnfermeria.save()) println rEnfermeria.errors
-        
-        def rAdministrativo = new Role(type: Role.ADMINISTRATIVO)
-        if (!rAdministrativo.save()) println rAdministrativo.errors
 
-        
-        // Los roleValidity se guardan al guardar las personas
-        
-        /*
-        def paciente = new Person(primerNombre:'Pablo', primerApellido:'Pazos')
-        paciente.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::1234567') )
-        paciente.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::6677') )
-        paciente.fechaNacimiento = new Date(81, 9, 24) // 24/10/1981
-        paciente.type = "Persona" // FIXME: el type no se setea solo con el nombre de la clase? (Person)
-        paciente.sexo = "M"
-        def validityPac1 = new RoleValidity(performer: paciente, role: rPaciente)
-        paciente.addToRoles(validityPac1)
-        if (!paciente.save()) println paciente.errors
-        
-        def pac2 = new Person(primerNombre:'Leandro', primerApellido:'Carrasco')
-        pac2.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.4::2345678') )
-        pac2.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::3366') )
-        pac2.fechaNacimiento = new Date(82, 10, 25)
-        pac2.type = "Persona"
-        pac2.sexo = "M"
-        def validityPac2 = new RoleValidity(performer: pac2, role: rPaciente)
-        pac2.addToRoles(validityPac2)
-        if (!pac2.save()) println pac2.errors
-        
-        def persona3 = new Person(primerNombre:'Marta', primerApellido:'Doctora')
-        persona3.addToIds( new UIDBasedID(value:'2.16.840.1.113883.4.330.858::6667778') )
-        //persona3.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::444') ) // este es un id de paciente, si fuera paciente tambien deberia asociarle el rol
-        persona3.fechaNacimiento = new Date(83, 11, 26)
-        persona3.type = "Persona"
-        persona3.sexo = "F"
-        def validityMed1 = new RoleValidity(performer: persona3, role: rMedico)
-        persona3.addToRoles(validityMed1)
-        if (!persona3.save()) println persona3.errors
-        
-        def persona4 = new Person(primerNombre:'Pablo', primerApellido:'Cardozo')
-        persona4.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::1234888') )
-        persona4.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::44556') )
-        persona4.fechaNacimiento = new Date(85, 9, 24) // 24/10/1981
-        persona4.type = "Persona"
-        persona4.sexo = "M"
-        def validityPac3 = new RoleValidity(performer: persona4, role: rPaciente)
-        persona4.addToRoles(validityPac3)
-        if (!persona4.save()) println persona4.errors
-        
-        def persona5 = new Person(primerNombre:'Marcos', primerApellido:'Carisma')
-        persona5.addToIds( new UIDBasedID(value:'2.16.840.1.113883.4.330.858::45687543') )
-        persona5.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.1.1.1.3.1.5.1::2233445') )
-        persona5.fechaNacimiento = new Date(80, 11, 26)
-        persona5.type = "Persona"
-        persona5.sexo = "M"
-        def validityPac4 = new RoleValidity(performer: persona5, role: rPaciente)
-        persona5.addToRoles(validityPac4)
-        if (!persona5.save()) println persona5.errors
-        
-        // Paciente con estudios imagenologicos en el CCServer local
-        def persona6 = new Person(primerNombre:'CT', primerApellido:'Mister')
-        persona6.addToIds( new UIDBasedID(value:'2.16.840.1.113883.4.330.666::2178309') ) // id en el CCServer
-        persona6.type = "Persona"
-        def validityPac5 = new RoleValidity(performer: persona6, role: rPaciente)
-        persona6.addToRoles(validityPac5)
-        if (!persona6.save()) println persona6.errors
-        
-        def persona_administrativo = new Person(primerNombre:'Charles', primerApellido:'Administrativo')
-        persona_administrativo.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::3334442') )
-        persona_administrativo.type = "Persona"
-        persona_administrativo.sexo = "M"
-        def validityPac9 = new RoleValidity(performer: persona_administrativo, role: rAdministrativo)
-        persona_administrativo.addToRoles(validityPac9)
-        if (!persona_administrativo.save()) println persona_administrativo.errors
-        
-        def persona_enfermera = new Person(primerNombre:'Juana', primerApellido:'Enfermera')
-        persona_enfermera.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::9876456') )
-        persona_enfermera.type = "Persona"
-        persona_enfermera.sexo = "F"
-        def validityPac7 = new RoleValidity(performer: persona_enfermera, role: rEnfermeria)
-        persona_enfermera.addToRoles(validityPac7)
-        if (!persona_enfermera.save()) println persona_enfermera.errors
-        
-        def persona_admin = new Person(primerNombre:'The', primerApellido:'Admin')
-        persona_admin.addToIds( new UIDBasedID(value:'2.16.840.1.113883.2.14.2.1::98607521') )
-        persona_admin.type = "Persona"
-        persona_admin.sexo = "M"
-        def validityPac8 = new RoleValidity(performer: persona_admin, role: rAdmin)
-        persona_admin.addToRoles(validityPac8)
-        if (!persona_admin.save()) println persona_admin.errors
-        */
-        
-        // 24/10/1981
-        def paciente = createPerson('Pablo','Pazos',
-                                    '2.16.840.1.113883.2.14.2.1::1234567',
-                                    '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::6677',
-                                    new Date(81, 9, 24), 'M', rPaciente)
-        
-        def pac2 = createPerson('Leandro','Carrasco',
-                                    '2.16.840.1.113883.2.14.2.1::2345678',
-                                    '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::3366',
-                                    new Date(82, 10, 25), 'M', rPaciente)
-        // 24/10/1985
-        def persona4 = createPerson('Pablo','Cardozo',
-                                    '2.16.840.1.113883.2.14.2.1::1234888',
-                                    '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::44556',
-                                    new Date(85, 9, 24), 'M', rPaciente)
-        
-        def persona5 = createPerson('Marcos','Carisma',
-                                    '2.16.840.1.113883.2.14.2.1::45687543',
-                                    '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::2233445',
-                                    new Date(80, 11, 26), 'M', rPaciente)
-        
-        // Paciente con estudios imagenologicos en el CCServer local
-        // id en el CCServer
-        def persona6 = createPerson('CT','Mister',
-                                    '2.16.840.1.113883.4.330.666::2178309',
-                                    null,
-                                    null, 'M', rPaciente)
-        
-        // ex persona3
-        def doctor1 = createPerson('Marta','Doctora',
-                                   '2.16.840.1.113883.4.330.858::6667778',
-                                   null,
-                                   new Date(83, 11, 26), 'F', rMedico)
 
-        def persona_administrativo = createPerson('Charles','Administrativo',
-                                    '2.16.840.1.113883.2.14.2.1::3334442',
-                                    null,
-                                    null, 'M', rAdministrativo)
-
-        def persona_enfermera = createPerson('Juana','Enfermera',
-                                    '2.16.840.1.113883.2.14.2.1::9876456',
-                                    null,
-                                    null, 'F', rEnfermeria)
-        
-        def persona_admin = createPerson('Joe','Admin',
-                                    '2.16.840.1.113883.2.14.2.1::98607521',
-                                    null,
-                                    null, 'M', rAdmin)
-
-        
-        
-        // =============================================================
-        // CREA ADMISION DE LOS PACIENTES AL DOMINIO DE TRAUMA
-        def admissions = []
-        def trauma_domain = Domain.findByName('Emergencia de Trauma') // CUIDADO: nombre en Config.groovy puede cambiar!
-        
-        // Personas con rol paciente
-        def rvs = RoleValidity.withCriteria {
-          role {
-            eq('type', Role.PACIENTE)
-          }
-        }
-        
-        // Para cada persona con rol paciente
-        rvs.performer.each { person ->
-        
-           admissions << new Admission(
-             patientId: person.id,
-             physicianId: doctor1.id,
-             domainId: trauma_domain.id
-           )
-        }
-        
-        // Guarda admisiones
-        admissions.each { admission ->
-           if (!admission.save()) println admission.errors
-        }
-        
-        //
-        // =============================================================
-        
-        // =============================================================
-        // ASIGNACION DE PERMISOS POR DEFECTO
-        
-        // ROL MEDICO, ACCESO A TODOS LOS DOMINIOS y todos los templates
-        // -------------------------------------------------------------
-        DomainPermit.findAllByTemplateId("*").each {
-        
-           rMedico.addToDomainPermits(it)
-        }
-        
-        rMedico.save()
-        //
-        // =============================================================
-      
-        // ====================================================================================
-        // LOGINS
-        //
-        // Login para el medico   
-        def login = new LoginAuth(user:'med', pass:'med', person: doctor1)
-        if (!login.save()) println login.errors
-        
-        // Login para el administrativo
-        def login_adm = new LoginAuth(user:'adm', pass:'adm', person: persona_administrativo)
-        if (!login_adm.save()) println login_adm.errors
-        
-        def login_enf = new LoginAuth(user:'enf', pass:'enf', person: persona_enfermera)
-        if (!login_enf.save()) println login_enf.errors
-        
-        def login_admin = new LoginAuth(user:'admin', pass:'admin', person: persona_admin)
-        if (!login_admin.save()) println login_admin.errors
-        
-        // /Creacion de personas
-        // ====================================================================================
-
-        
-        //List domains = grailsApplication.config.domains // Ya esta definida mas arriba
-        //String PS = System.getProperty("file.separator")
-        
-        
+        // =====================================================================
         // Arma workflows para cada domain
         Template template
         WorkFlow workflow
