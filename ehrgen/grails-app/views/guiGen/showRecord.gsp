@@ -40,7 +40,7 @@
     }
 --%>
 
-    .INSTRUCTION_narrative{
+    .INSTRUCTION_narrative{ /* ----->>>> esto ya esta en generarShow.css */
       padding: 3px;
       display: block;
       font-weight: normal;

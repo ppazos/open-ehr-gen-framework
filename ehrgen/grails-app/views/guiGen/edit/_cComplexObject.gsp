@@ -1,7 +1,5 @@
 <%@ page import="util.UniqueIdIssuer" %><%@ page import="util.FieldNames" %>
-
 <g:set var="fields" value="${FieldNames.getInstance()}" />
-
 <%--
 in: cComplexObject (${cComplexObject.rmTypeName})<br/>
 in: refPath path del internal ref a este nodo si es que hay.
@@ -41,11 +39,9 @@ if (refPath) _refPath = refPath
     <!-- PATH: ${archetype.archetypeId.value +_refPath+ cComplexObject.path()} -->
     <g:if test="${cComplexObject.nodeID}">
       <!-- Si es item structure no muestra el titulo -->
-        
       <span class="label">
         <g:displayTerm archetype="${archetype}" code="${cComplexObject.nodeID}" locale="${locale}" />:
       </span>
-      
     </g:if>
     <g:else><%-- si no tengo nodeID, busco por path --%>
 
@@ -72,10 +68,8 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
 }
 --%>
     <g:if test="${cComplexObject.rmTypeName.startsWith('DV_INTERVAL')}"><%-- DV_INTERVAL<DV_COUNT> --%>
-      <%-- TODO?? ver lower y upper 
-      es el mismo codigo que abajo...
-      --%>
       <g:if test="${cComplexObject.attributes}">
+        <%-- esto hace lo mismo que _cAttribute.gsp --%>
         <g:render template="../guiGen/edit/cAttribute"
                   var="cAttribute"
                   collection="${cComplexObject.attributes}"
@@ -92,16 +86,11 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
       <%-- Verifico que no sea null porque puede serlo. --%>
       <g:if test="${cComplexObject.attributes}">
         <%-- ${cComplexObject.attributes.size()} --%>
-        <%--
-        <g:render template="../guiGen/edit/cAttribute"
-                  var="cAttribute"
-                  collection="${cComplexObject.attributes}"
-                  model="[archetype: archetype,
-                          archetypeService: archetypeService,
-                          refPath: refPath,
-                          params: params, lang: lang, locale: locale, template: template]" />
-        --%>
-                          
+        
+        <%-- Para las instrucciones, sino esta el narrative en el arquetipo, hay que generarlo igual --%>
+        <g:if test="${cComplexObject.rmTypeName == 'INSTRUCTION'}">
+          <g:set var="hasNarrative" value="${false}" />
+        </g:if>
         <g:each in="${cComplexObject.attributes}" var="cAttribute">
         
           <%--
@@ -119,7 +108,13 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
             <span class="label datavalue"><g:message code="math_function" /></span>
           </g:if>
           
-          <g:render template="../guiGen/create/cObject"
+          <%-- Para las instrucciones, sino esta el narrative en el arquetipo, hay que generarlo igual --%>
+          <g:if test="${cComplexObject.rmTypeName == 'INSTRUCTION' && cAttribute.rmAttributeName == 'narrative'}">
+            <g:set var="hasNarrative" value="${true}" />
+          </g:if>
+          
+          <%-- esto hace lo mismo que _cAttribute.gsp --%>
+          <g:render template="../guiGen/edit/cObject"
             var="cObject"
             collection="${cAttribute.children}"
             model="[archetype: archetype,
@@ -127,6 +122,15 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
                     refPath: refPath,
                     params: params, lang: lang, locale: locale, template: template]" />
         </g:each>
+        
+        <%-- Para las instrucciones, sino esta el narrative en el arquetipo, hay que generarlo igual
+        narrative va sin / al inicio porque la path ya lo tiene.
+        --%>
+        <g:if test="${cComplexObject.rmTypeName == 'INSTRUCTION' && !hasNarrative}">
+          <g:message code="instruction.narrative" /><br/>
+          <textarea name="${fields.getField(archetype.archetypeId.value+_refPath+cComplexObject.path()+'narrative')}">x</textarea>
+        </g:if>
+        
       </g:if>
       <g:else><%-- muestra nodos sin restriccion, solo si no tiene atributos para seguir navegando --%>
       

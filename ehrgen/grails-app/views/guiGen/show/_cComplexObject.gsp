@@ -31,27 +31,10 @@ if (refPath) _refPath = refPath
   </g:if>
   <div class="${cComplexObject.rmTypeName} ${elementValueRmType} ${((cComplexObject.occurrences.isUpperUnbounded())?'multiple':'')}"><%-- FIXME: no quiero mostrar esto para campos simples, solo para sections, clusters y elements --%>
     <g:if test="${cComplexObject.nodeID}">
-      <!-- Si es item structure no pone el titulo -->
-      <%--
-      <g:set var="archetypeTerm" value="${archetype.ontology.termDefinition(lang, cComplexObject.nodeID)}" />
-      <g:if test="${!archetypeTerm}">
-         < % - - Si es un nodo hoja, siempre cae aca porque no tiene ID - - % >
-         El termino con codigo [${cComplexObject.nodeID}] no esta definido en el arquetipo, 
-         posiblemente el termino no esta definido para el lenguaje ${lang}.
-         <br/><br/>
-         Puedo hacer Term Bindings a terminilogias externas, usando path based bindins (adl.pdf pag 100).
-      </g:if>
-      <g:else>
-         <span class="label">
-           ${archetypeTerm.text}:
-         </span>
-      </g:else>
-      --%>
-        
+      <!-- Si es item structure no pone el titulo -->        
       <span class="label">
         <g:displayTerm archetype="${archetype}" code="${cComplexObject.nodeID}" locale="${locale}" />:
       </span>
-
     </g:if>
     <g:else><%-- si no tengo nodeID, busco por path --%>
 
@@ -78,9 +61,6 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
 }
 --%>
     <g:if test="${cComplexObject.rmTypeName.startsWith('DV_INTERVAL')}"><%-- DV_INTERVAL<DV_COUNT> --%>
-      <%-- TODO?? ver lower y upper 
-      es el mismo codigo que abajo...
-      --%>
       <g:if test="${cComplexObject.attributes}">
         <g:render template="../guiGen/show/cAttribute"
                   var="cAttribute"
@@ -99,16 +79,12 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
     <g:else>
       <%-- Verifico que no sea null porque puede serlo. --%>
       <g:if test="${cComplexObject.attributes}">
-          <%-- ${cComplexObject.attributes.size()} --%>
-          <%--
-          <g:render template="../guiGen/show/cAttribute"
-                    var="cAttribute"
-                    collection="${cComplexObject.attributes}"
-                    model="[archetype: archetype,
-                            archetypeService: archetypeService,
-                            refPath: refPath,
-                            params: params, lang: lang, locale: locale, template: template]" />
-          --%>
+        <%-- ${cComplexObject.attributes.size()} --%>
+
+        <%-- Para las instrucciones, sino esta el narrative en el arquetipo, hay que generarlo igual --%>
+        <g:if test="${cComplexObject.rmTypeName == 'INSTRUCTION'}">
+          <g:set var="hasNarrative" value="${false}" />
+        </g:if>
         
         <g:each in="${cComplexObject.attributes}" var="cAttribute">
         
@@ -127,6 +103,11 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
             <span class="label datavalue"><g:message code="math_function" /></span>
           </g:if>
           
+          <%-- Para las instrucciones, sino esta el narrative en el arquetipo, hay que generarlo igual --%>
+          <g:if test="${cComplexObject.rmTypeName == 'INSTRUCTION' && cAttribute.rmAttributeName == 'narrative'}">
+            <g:set var="hasNarrative" value="${true}" />
+          </g:if>
+          
           <g:render template="../guiGen/show/cObject"
             var="cObject"
             collection="${cAttribute.children}"
@@ -135,6 +116,15 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
                     refPath: refPath,
                     params: params, lang: lang, locale: locale, template: template]" />
         </g:each>
+        
+        <%-- Para las instrucciones, sino esta el narrative en el arquetipo, hay que generarlo igual
+        narrative va sin / al inicio porque la path ya lo tiene.
+        --%>
+        <g:if test="${cComplexObject.rmTypeName == 'INSTRUCTION' && !hasNarrative}">
+          <g:message code="instruction.narrative" /><br/>
+          <label class="${fields.getField(archetype.archetypeId.value+_refPath+cComplexObject.path()+'narrative')}"></label>
+        </g:if>
+        
       </g:if>
       <g:else><%-- muestra nodos sin restriccion, solo si no tiene atributos para seguir navegando --%>
       

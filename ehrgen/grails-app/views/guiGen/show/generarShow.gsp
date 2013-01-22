@@ -159,7 +159,7 @@
         $('div.POINT_EVENT').each( function(i, e) { events.push(e) } );
         $('div.INTERVAL_EVENT').each( function(i, e) { events.push(e) } );
         
-        console.log( 'events', events );
+        //console.log( 'events', events );
         
         // reverse porque agrega los elementos al reves en el prepend
         $(events.reverse()).each( function(i, e) {

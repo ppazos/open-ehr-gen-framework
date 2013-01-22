@@ -5,9 +5,10 @@
     
   <%-- se crea el episodio para una persona seleccionada por admision --%>
   <g:if test="${params.root && params.extension}">
-    Se crea episodio para la persona con identificador: ${params.root}::${params.extension}<br/>
+    Crear registro para la persona con identificador: ${params.root}::${params.extension}<br/>
     <input type="hidden" name="root" value="${params.root}" />
     <input type="hidden" name="extension" value="${params.extension}" />
+    <br/>
   </g:if>
 
   <g:message code="trauma.create.label.fechaIngreso" /><br/>   
@@ -26,5 +27,8 @@
 <style>
 textarea {
   height: 100px;
+}
+h1 {
+  margin-top: 0;
 }
 </style>
