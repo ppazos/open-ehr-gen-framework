@@ -1,3 +1,32 @@
+/*
+Copyright 2013 CaboLabs.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+This software was developed by Pablo Pazos at CaboLabs.com
+
+This software uses the openEHR Java Ref Impl developed by Rong Chen
+http://www.openehr.org/wiki/display/projects/Java+Project+Download
+
+This software uses MySQL Connector for Java developed by Oracle
+http://dev.mysql.com/downloads/connector/j/
+
+This software uses PostgreSQL JDBC Connector developed by Posrgresql.org
+http://jdbc.postgresql.org/
+
+This software uses XStream library developed by Jörg Schaible
+http://xstream.codehaus.org/
+*/
 import hce.core.common.change_control.Version
 import hce.core.composition.* // Composition y EventContext
 import data_types.quantity.date_time.*
@@ -30,12 +59,46 @@ class RecordsController {
        redirect(action:'list')
     }
     
+    /**
+     * Lista instrucciones para alguno de los roles del usuario logueado, dentro del dominio seleccionado.
+     * Esta accion por ahora se llama desde la vista de list con "include".
+     */
+    def listInstructions = {
+       
+       // FIXME: a la consulta le falta verificar si las instrucciones que lista son para
+       //        alguno de mis roles y puede mostrar instrucciones que no sean para mi.
+       
+       
+       // Obtener los InstExec mas nueva para la misma Instruction
+       // ESTO NO SE PUEDE HACER CON withCriteria!!!
+       // > InstExec, que no hay otro con mismo instructionId y mayor dateCreated (obtengo el que tiene mayor dateCreated)
+       def instructionExecs = workflow.InstructionExecution.findAll( 
+         "FROM InstructionExecution ie " +
+         "WHERE ie.domainId = ? AND " +
+         "      NOT EXISTS( " +
+         "        SELECT ie2.id " +
+         "        FROM InstructionExecution ie2 " +
+         "        WHERE ie2.instructionId = ie.instructionId AND ie2.dateCreated > ie.dateCreated " +
+         "      )",
+         [session.ehrSession.domainId]
+       )
+       
+       println instructionExecs
+       
+       // TODOs:
+       // - crear metodo en InstrExec para obtener la Instruction y la Activity
+       // - obtener los arquetipos de accion para cada actividad en ejecucion,
+       //   para ver que careflow_steps se pueden ejecutar desde el estado actual de la activity.
+    
+       render(template: 'listInstructions',
+              model: [instructionExecs: instructionExecs])
+    }
     
     // TODO: vista
     // Pantalla 2.1- Escritorio Medico-Administrativo
     def list = {
-        
-       def compos = []
+       
+       //println session.ehrSession.patientId
        
        // FIXME: esto deberia hacerse con filters?
        if (!session.ehrSession || !session.ehrSession.domainId) // puede pasar si caduca la session
@@ -47,17 +110,64 @@ class RecordsController {
          
        // ==========================================================================
        // TODO: filtrar registros por dominio (session.ehrSession.domainId)
-       println "dominio: " + session.ehrSession.domainId
+       //println "dominio: " + session.ehrSession.domainId
        def domain = Domain.get( session.ehrSession.domainId )
          
-       
        // domain.compositions equivale a folder.items
        //println "domain compositions: " + domain.compositions
-         
+       
+       
        // FIXME: si no coincide ningun criterio, devuelve todas las compos.
        // esto se resuelve teniendo la referencia inversa desde las compos
        // al parent Folder.
-       compos = Composition.withCriteria {
+       def compos = Composition.withCriteria {
+            
+            // TODO: filtrar registros por paciente, si hay un paciente en session.ehrSession.patientId
+            // Ver issue #22
+            /*
+             def partySelf = hceService.createPatientPartysSelf(params.root, params.extension)
+             def participation = hceService.createParticipationToPerformer( partySelf )
+             composition.context.addToParticipations( participation )
+            */
+            // Si hay paciente seleccionado
+            if (session.ehrSession.patientId)
+            {
+               def patient = demographic.party.Person.get(session.ehrSession.patientId)
+               
+               def xstream = new com.thoughtworks.xstream.XStream()
+               
+               def codedExternalRef = xstream.toXML(
+                  new support.identification.PartyRef(
+                     namespace: "demographic", // FIXME: ver valores correctos
+                     type: "PERSON", // FIXME: ver valores correctos
+                     objectId: support.identification.UIDBasedID.create(patient.ids[0].root, patient.ids[0].extension)
+                  )
+               )
+               
+               //println codedExternalRef
+               /*
+               <support.identification.PartyRef>
+                 <namespace>demographic</namespace>
+                 <type>PERSON</type>
+                 <objectId class="support.identification.UIDBasedID">
+                   <value>2.16.840.1.113883.2.14.2.1::1234567</value>
+                 </objectId>
+               </support.identification.PartyRef>
+               */
+               
+               //println patient + " " + session.ehrSession.patientId
+               
+               // context.participations<List<Participation>>.performer<PartySelf>
+               context {
+                  participations {
+                     performer {
+                        //eq('root', patient.ids[0].root)
+                        //eq('extension', patient.ids[0].extension)
+                        eq('codedExternalRef', codedExternalRef)
+                     }
+                  }
+               }
+            }
             
             // La lista de items podria ser larguisima,
             // una solucion mas performante es que cada
@@ -83,7 +193,7 @@ class RecordsController {
             // TODO: paginacion
             // TODO: orden por fecha descendente
             // TODO: poner cantidad en config
-            maxResults(15)
+            maxResults(10)
             
             if (params.offset)
               firstResult( Integer.parseInt(params.offset) )
@@ -91,20 +201,58 @@ class RecordsController {
             order("id", "desc") // 
             //order("context.startTime.value", "desc") // no funca
        }
-         
+      
+       // para paginacion
+       def total = Composition.withCriteria {
+            
+          projections {
+           count('id')
+          }
+            
+          // Si hay paciente seleccionado
+          if (session.ehrSession.patientId)
+          {
+               def patient = demographic.party.Person.get(session.ehrSession.patientId)
+               
+               def xstream = new com.thoughtworks.xstream.XStream()
+               
+               def codedExternalRef = xstream.toXML(
+                  new support.identification.PartyRef(
+                     namespace: "demographic", // FIXME: ver valores correctos
+                     type: "PERSON", // FIXME: ver valores correctos
+                     objectId: support.identification.UIDBasedID.create(patient.ids[0].root, patient.ids[0].extension)
+                  )
+               )
+               
+               // context.participations<List<Participation>>.performer<PartySelf>
+               context {
+                  participations {
+                     performer {
+                        //eq('root', patient.ids[0].root)
+                        //eq('extension', patient.ids[0].extension)
+                        eq('codedExternalRef', codedExternalRef)
+                     }
+                  }
+               }
+          }
+            
+          // Uso la referencia desde los hijos al padre, asi me ahorro el loop
+          eq('rmParentId', domain.id)
+
+       }
        // ==========================================================================
-         
-       // TODO: filtrar registros por paciente, si hay un paciente en session.ehrSession.patientId
+       
        
        // deselecciona el episodio y el paciente que este seleccionado
        session.ehrSession.episodioId = null
-       //session.ehrSession.patient = null // FIXME: todavia no lo puedo hacer porque no puedo poner domain objects en session
        
        
        // Antes se devolvian todas las compositions, ahora se filtra por dominio.
        return [compositions: compos,
                //userId: session.ehrSession.userId, // no se usa
-               domain: domain ]
+               domain: domain,
+               total: total[0]
+              ]
     }
     
     
@@ -127,12 +275,23 @@ class RecordsController {
             
             // FIXME: si hay un paciente seleccionado no deberia venir en params,
             //        deberia estar en EHRSession.
-            if (params.root && params.extension) // si viene el id del paciente
+            if (params.root && params.extension) // si viene el id del paciente desde la seccion demografica
             {
-                println "Se crea un registro para el paciente seleccionado"
+                // FIXME: hacer como en el caso de abajo: si se selecciona un paciente en el
+                // demografico, poner su id en session.
+                
+                //println "Se crea un registro para el paciente seleccionado"
                 def partySelf = hceService.createPatientPartysSelf(params.root, params.extension)
                 def participation = hceService.createParticipationToPerformer( partySelf )
                 composition.context.addToParticipations( participation )
+            }
+            else if (session.ehrSession.patientId) // si viene el id del paciente desde la lista de admisiones (en el listado de dominios)
+            {
+               def patient = demographic.party.Person.get(session.ehrSession.patientId)
+
+               def partySelf = hceService.createPatientPartysSelf(patient.ids[0].root, patient.ids[0].extension)
+               def participation = hceService.createParticipationToPerformer( partySelf )
+               composition.context.addToParticipations( participation )
             }
             
             
