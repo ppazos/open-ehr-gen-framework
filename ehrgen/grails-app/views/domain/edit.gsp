@@ -135,7 +135,8 @@
           <g:each in="${domain.workflows}" var="wf">
           
             <%-- TODO: i18n --%>
-            <h3>Flujo para los roles ${wf.forRoles.type}</h3>
+            <%-- forRoles son instancias, pueden haber 2 roles con el mismo tipo, por eso el unique --%>
+            <h3>Flujo para los roles ${wf.forRoles.type.unique()}</h3>
             
             <!--
             <a href="javascript:alert('No implementado');">Editar flujo</a>
