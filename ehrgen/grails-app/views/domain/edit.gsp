@@ -29,6 +29,19 @@
       width: 100%;
       height: 100%;
     }
+    li.stage_template {
+      list-style: none;
+      padding: 5px;
+    }
+    img {
+      vertical-align: middle;
+    }
+    a.button {
+      border: 1px solid #ddd;
+      padding: 3px 7px;
+      display: inline-block;
+      margin: 5px 0px;
+    }
     </style>
     <g:javascript library="jquery-1.8.2.min" />
     <g:javascript src="jquery.blockUI.js" />
@@ -61,7 +74,8 @@
             top:  (viewportHeight - 300) /2 + 'px', 
             padding: '10px'
           },
-          onOverlayClick: $.unblockUI
+          onOverlayClick: $.unblockUI,
+          onUnblock: function() { window.location.reload(true); }
         });
       });
       
@@ -85,7 +99,8 @@
             left: ($(window).width() - 500) /2 + 'px', 
             padding: '10px'
           },
-          onOverlayClick: $.unblockUI
+          onOverlayClick: $.unblockUI,
+          onUnblock: function() { window.location.reload(true); }
         });
       });
       
@@ -110,7 +125,11 @@
     </div>
     
     <div class="body">
-      <h1><g:message code="domain.edit.title" /></h1>
+      <h1>
+        <img src="${createLinkTo(dir: 'images', file: 'domain_icon_64.png')}" width="48" height="48"  />
+        <g:message code="domain.edit.title" />
+      </h1>
+      
       <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
       </g:if>
@@ -126,8 +145,13 @@
 		  --%>
 		  <br/><br/>
         
+        <h2>
+          <img src="${createLinkTo(dir: 'images', file: 'workflow_icon_64.png')}" width="32" height="32" />
+          Flujos de trabajo
+        </h2>
         
-        <h2>Flujos de trabajo</h2>
+        <input type="button" name="add_wf" value="Agregar flujo de trabajo" />
+        <br/><br/>
         
         <%-- Es wf por conjunto de roles --%>
         <%-- TODO: cambiar el orden de las etapas con drag and drop --%>
@@ -141,7 +165,8 @@
             <!--
             <a href="javascript:alert('No implementado');">Editar flujo</a>
             -->
-            <g:link action="createStage" params="[workflowId:wf.id]" class="add_stage">Agregar etapa</g:link>
+            <g:link action="createStage" params="[workflowId:wf.id]" class="add_stage button">Agregar etapa</g:link>
+            <g:link action="removeWorkflow" params="[id:wf.id]" class="button">Remover flujo de trabajo</g:link>
             
             <table>
               <tr>
@@ -152,21 +177,29 @@
               <g:if test="${wf.stages.size() > 0}">
                 <g:each in="${wf.stages}" var="stage">
                   <tr>
-                    <td>${stage.name}</td>
+                    <td>
+                      <img src="${createLinkTo(dir: 'images', file: 'stage_icon_64.png')}" width="16" height="16" />
+                      ${stage.name}
+                    </td>
                     <td>
                       <ol>
                         <g:each in="${stage.recordDefinitions}" var="template">
-                          <li>${template.name}</li>
+                          <li class="stage_template">
+                            <img src="${createLinkTo(dir: 'images', file: 'template_icon_64.png')}" width="16" height="16" />
+                            ${template.name}
+                          </li>
                         </g:each>
                       </ol>
                     </td>
-                    <td>[remover etapa]</td>
+                    <td>
+                      <g:link action="removeStage" params="[id:stage.id]" class="button">Remover etapa</g:link>
+                    </td>
                   </tr>
                 </g:each>
               </g:if>
               <g:else>
                 <td colspan="3">
-                  No se han definido las etapas del flijo de trabajo
+                  No se han definido las etapas del flujo de trabajo
                 </td>
               </g:else>
             </table>
@@ -177,12 +210,6 @@
         <g:else>
           No se han definido flujos de trabajo para el dominio.
         </g:else>
-        <br/>
-        
-        <input type="button" name="add_wf" value="Agregar flujo de trabajo" />
-        
-        <br/><br/>
-		
 		  <input type="submit" name="doit" value="Guardar cambios" />
 	    </g:form>
 		

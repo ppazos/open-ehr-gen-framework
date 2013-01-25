@@ -387,6 +387,38 @@ class DomainController {
       }
       
       return [domain: domain, roles: roles]
+      
+   } // createWorkflow
+   
+   /**
+    * id identificador del wf
+    */
+   def removeWorkflow = {
+   
+      def wf = WorkFlow.get(params.id)
+      
+      // Con el toList parece que no da concurrent modification en la coleccion
+      // y hace bien el remove de todos los elementos.
+      wf.stages.toList().each { stg ->
+      
+         stg.recordDefinitions.toList().each { template ->
+         
+            stg.removeFromRecordDefinitions(template)
+         }
+      
+         wf.removeFromStages(stg)
+         
+         stg.delete(flush:true) // cuidado, esto esta eliminando los templates...
+      }
+      
+      def domain = wf.owner
+      
+      domain.removeFromWorkflows(wf)
+      wf.delete(flush:true)
+      
+      flash.message = 'Flujo de trabajo eliminado con éxito'
+      
+      redirect (action: 'edit', id: domain.id)
    }
    
    /**
@@ -428,6 +460,28 @@ class DomainController {
       }
       
       return [workflow:wf, templates:templates]
+   }
+   
+   /**
+    * id identificador de la etapa
+    */
+   def removeStage = {
+   
+      def stage = Stage.get(params.id)
+      def wf = stage.owner
+      
+      wf.removeFromStages(stage)
+      
+      stage.recordDefinitions.toList().each { template ->
+         
+         stage.removeFromRecordDefinitions(template)
+      }
+      
+      stage.delete(flush:true) // cuidado, esto esta eliminando los templates...
+      
+      flash.message = 'Etapa '+ stage.name +' eliminada con éxito'
+      
+      redirect (action: 'edit', id: wf.owner.id)
    }
    
    /**
