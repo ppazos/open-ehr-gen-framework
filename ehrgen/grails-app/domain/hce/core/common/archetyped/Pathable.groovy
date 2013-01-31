@@ -76,10 +76,17 @@ class Pathable { // Abstracta
    Object getPadre()
    {
      if (!this.rmParentId) return null
-     return Pathable.get(this.rmParentId)
+     
+     // para v0.8 parent es Domain y no es pathable...
+     //return Pathable.get(this.rmParentId)
+     
+     //println "getPadre this.class: "+ this.class.simpleName // Composition
+     
+     // FIXME: esto se usa solo para composition -> domain, pero este metodo esta disponible para cualquier clase del RM...
+     return domain.Domain.get(this.rmParentId)
    }
    
-   void setPadre(Object parent) // Object debe ser Pathable!
+   void setPadre(Object parent) // Object debe ser Pathable! para v0.8 parent es Domain y no es pathable...
    {
      if (!parent) throw new Exception("parent no puede ser nulo")
      if (!parent.id) throw new Exception("parent debe tener id (debe guardarse previamente en la base)")
