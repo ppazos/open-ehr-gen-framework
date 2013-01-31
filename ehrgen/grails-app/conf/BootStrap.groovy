@@ -1,4 +1,32 @@
+/*
+Copyright 2013 CaboLabs.com
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+This software was developed by Pablo Pazos at CaboLabs.com
+
+This software uses the openEHR Java Ref Impl developed by Rong Chen
+http://www.openehr.org/wiki/display/projects/Java+Project+Download
+
+This software uses MySQL Connector for Java developed by Oracle
+http://dev.mysql.com/downloads/connector/j/
+
+This software uses PostgreSQL JDBC Connector developed by Posrgresql.org
+http://jdbc.postgresql.org/
+
+This software uses XStream library developed by Jörg Schaible
+http://xstream.codehaus.org/
+*/
 import javax.management.relation.RoleInfo
 
 import demographic.*
@@ -211,9 +239,9 @@ class BootStrap {
         
       // ex persona3
       def doctor1 = createPerson('Marta','Doctora',
-                                   '2.16.840.1.113883.4.330.858::6667778',
-                                   null,
-                                   new Date(83, 11, 26), 'F', rMedico)
+                                 '2.16.840.1.113883.4.330.858::6667778',
+                                 null,
+                                 new Date(83, 11, 26), 'F', rMedico)
 
       def persona_administrativo = createPerson('Charles','Administrativo',
                                     '2.16.840.1.113883.2.14.2.1::3334442',
@@ -264,7 +292,6 @@ class BootStrap {
         
       // =============================================================
       // ASIGNACION DE PERMISOS POR DEFECTO
-        
       // ROL MEDICO, ACCESO A TODOS LOS DOMINIOS y todos los templates
       // -------------------------------------------------------------
       DomainPermit.findAllByTemplateId("*").each {
@@ -272,28 +299,130 @@ class BootStrap {
            rMedico.addToDomainPermits(it)
       }
       rMedico.save()
-
       
       // ====================================================================================
       // LOGINS
       //
       // Login para el medico   
-        def login = new LoginAuth(user:'med', pass:'med', person: doctor1)
-        if (!login.save()) println login.errors
-        
-        // Login para el administrativo
-        def login_adm = new LoginAuth(user:'adm', pass:'adm', person: persona_administrativo)
-        if (!login_adm.save()) println login_adm.errors
-        
-        def login_enf = new LoginAuth(user:'enf', pass:'enf', person: persona_enfermera)
-        if (!login_enf.save()) println login_enf.errors
-        
-        def login_admin = new LoginAuth(user:'admin', pass:'admin', person: persona_admin)
-        if (!login_admin.save()) println login_admin.errors
+      def login = new LoginAuth(user:'med', pass:'med', person: doctor1)
+      if (!login.save()) println login.errors
+      
+      // Login para el administrativo
+      def login_adm = new LoginAuth(user:'adm', pass:'adm', person: persona_administrativo)
+      if (!login_adm.save()) println login_adm.errors
+      
+      def login_enf = new LoginAuth(user:'enf', pass:'enf', person: persona_enfermera)
+      if (!login_enf.save()) println login_enf.errors
+      
+      def login_admin = new LoginAuth(user:'admin', pass:'admin', person: persona_admin)
+      if (!login_admin.save()) println login_admin.errors
         
       // /Creacion de personas
       // ====================================================================================
+      
+      // =====================================================================
+      // Crea workflows para cada domain
+      
+      Template template
+      WorkFlow workflow
+      Stage stage
         
+      // Auxiliares para la generacion del HTML
+      String templateId
+        
+      // Carga del repo todos los templates
+      // Se usan para generar todas las guis de todos los dominios
+      templateManager.loadAll()
+        
+      // ====================================================================
+      // Generacion de gui
+      guiCachingService.generateGUI( templateManager.getLoadedTemplates().values() as List )
+      
+      // Stage ->* Templates
+      Map domainTemplates
+      
+      Domain.list().each { domain ->
+         
+         // Por defecto todo domain tiene un workflow y el
+         //medico tiene acceso a ese workflow en todos los domains
+         workflow = new WorkFlow(
+            forRoles: [rMedico], // Cuidado, este es el rol medico de UN usuario, si se crea mas de un usuario medico aca, se deberian poner todos los roles medicos de cada usuario (el rol es por instancia!)
+            owner: domain
+         )
+         
+         // Agrego el workflow al domain
+         domain.addToWorkflows( workflow )
+         
+         // Falta agregar las stages al workflow
+         // y los templates a cada stage
+         
+         //println "Domain: $domain"
+         domainTemplates = grailsApplication.config.templates2."$domain.name"
+         
+         println "Domain: "+ domain.name
+         //println "domainTemplates: " + domainTemplates
+         
+         domainTemplates.each{ entry ->
+         
+            // entry.key es stage.name
+            //println " - "+ entry.key
+            //println " - entry.value: "+ entry.value // ['prehospitalario.v1', 'contexto_del_evento.v1']
+            
+            // Crea stages en el workflow por defecto del domain
+            stage = new Stage(
+               owner: workflow,
+               name: entry.key // EVALUACION_PRIMARIA
+            )
+            // Agrego la stage al workflow
+            workflow.addToStages( stage )
+            
+            // Falta agregar los templates de cada stage
+
+
+            // Cada template dentro de una stage
+            entry.value.each { subsection -> // via_aerea
+
+                 templateId = "EHRGen-EHR-" + subsection // 'EHRGen-EHR-via_aerea.v1'
+                 //println "templateId: " + templateId
+
+                 template = templateManager.getTemplate( templateId )
+                
+                 if (!template)
+                 {
+                    println "ERROR: Verifique que el template $templateId esta en el repositorio"
+                    return
+                 }
+                
+                 // TEST
+                 //def xstream = new XStream()
+                 //def tlog = new File('template.log')
+                 //tlog.append( xstream.toXML(template) + "\n\n" )
+                 
+                 
+                 // Agrega el template a la stage actual del workflow
+                 stage.addToRecordDefinitions( template )
+            }
+         }
+           
+         // Guarda en cascada workflow, stages y templates del domain
+         if (!domain.save())
+         {
+              println domain.errors
+              domain.workflows.each { wf ->
+                 println wf.errors
+                 wf.stages.each { stg ->
+                    println stg.errors
+                    stg.recordDefinitions.each { tpl ->
+                       println tpl.errors
+                    }
+                 }
+              }
+         }
+      } // each domain
+        
+      // /Crea workflows para cada domain
+      // ====================================================================================
+      
       // ====================================================================================
       // Crea compositions
       //
@@ -310,32 +439,26 @@ class BootStrap {
               
          (1..30).each { i ->
                  
-            println " - Crea COMPOSITION $i"
+            //println " - Crea COMPOSITION $i"
               
             // Crea registro de prueba para cada dominio
-            startDate = DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
-            composition = hceService.createComposition( startDate, "bla bla bla" )
-                 
+            //startDate = DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
+            
+            // TODO: usar textos medicos para la descripcion, ver lista de evoluciones
+            //composition = hceService.createComposition( startDate, "bla bla bla", domain.workflows[0].id )
+            composition = hceService.createComposition( new Date(), "bla bla bla", domain.workflows[0].id )
+            
             // ============================================================================
             // TODO: no se usa la referencia desde el domain a la composition? VERIFICAR.
             // ============================================================================
               
-            composition.padre = domain           
+            composition.padre = domain
       
             if (!composition.save())
             {
                println "Error: " + composition.errors
             }
-              
-            // La mitad de los registros los asigna a un paciente
-            if (i % 2 == 0)
-            {
-               // paciente es una Person
-               partySelf = hceService.createPatientPartysSelf(paciente.ids[0].root, paciente.ids[0].extension)
-               participation = hceService.createParticipationToPerformer( partySelf )
-               composition.context.addToParticipations( participation )
-            }
-              
+            
             // Crea la version inicial
             def version = new Version(
                data: composition,
@@ -348,6 +471,45 @@ class BootStrap {
             {
                println "ERROR: " + version.errors
             }
+            
+            
+            // TODO: crear un generador de contenido basado en los arquetipos de los templates
+            //       del wf que se usa para crear la composition, asi las compositions cerradas
+            //       tienen algo de informacion.
+            //       deberia crear path/values basados en las restricciones del arquetipo
+            //       y enviarselas al binder.
+            
+            
+            // Se pone aca porque necesita que la composition este guardada, tambien necesita la version...
+            // Los registros creados aqui estan cerrados
+            // idem records.signRecord
+            // login es la Authorization del medico
+            def person = login.person
+            def id = person.ids[0]
+            //if ( !hceService.closeComposition(composition, DateConverter.toIso8601ExtendedDateTimeFormat(new Date())) )
+            if ( !hceService.closeComposition(composition, new Date()) )
+            {
+               println "error: no se pudo cerrar la composition"
+            }
+            if (!hceService.setCompositionComposer(composition, id.root, id.extension))
+            {
+               println "error: no se pudo setear el composer"
+            }
+            //def version = Version.findByData( composition )
+            version.lifecycleState = Version.STATE_SIGNED
+            version.save()
+         
+              
+            // La mitad de los registros los asigna a un paciente
+            if (i % 2 == 0)
+            {
+               // paciente es una Person
+               partySelf = hceService.createPatientPartysSelf(paciente.ids[0].root, paciente.ids[0].extension)
+               participation = hceService.createParticipationToPerformer( partySelf )
+               composition.context.addToParticipations( participation )
+            }
+              
+            
             // /Crear registro
          }
       }
@@ -444,112 +606,7 @@ class BootStrap {
         
 
 
-        // =====================================================================
-        // Arma workflows para cada domain
-        Template template
-        WorkFlow workflow
-        Stage stage
         
-        // Auxiliares para la generacion del HTML
-        String templateId
-        
-        
-        
-        // Carga del repo todos los templates
-        // Se usan para generar todas las guis de todos los dominios
-        templateManager.loadAll()
-        
-        // ====================================================================
-        // Generacion de gui
-        guiCachingService.generateGUI( templateManager.getLoadedTemplates().values() as List )
-        //
-        // ====================================================================
-        
-        
-        // Stage ->* Templates
-        Map domainTemplates
-        
-        Domain.list().each { domain ->
-           
-           // Por defecto todo domain tiene un workflow y el
-           //medico tiene acceso a ese workflow en todos los domains
-           workflow = new WorkFlow(
-              forRoles: [rMedico], // Cuidado, este es el rol medico de UN usuario, si se crea mas de un usuario medico aca, se deberian poner todos los roles medicos de cada usuario (el rol es por instancia!)
-              owner: domain
-           )
-           
-           // Agrego el workflow al domain
-           domain.addToWorkflows( workflow )
-           
-           // Falta agregar las stages al workflow
-           // y los templates a cada stage
-           
-           
-           
-           //println "Domain: $domain"
-           domainTemplates = grailsApplication.config.templates2."$domain.name"
-           
-           println "Domain: "+ domain.name
-           //println "domainTemplates: " + domainTemplates
-           
-           domainTemplates.each{ entry ->
-              
-              // entry.key es stage.name
-              //println " - "+ entry.key
-              //println " - entry.value: "+ entry.value // ['prehospitalario.v1', 'contexto_del_evento.v1']
-              
-              // Crea stages en el workflow por defecto del domain
-              stage = new Stage(
-                 owner: workflow,
-                 name: entry.key // EVALUACION_PRIMARIA
-              )
-              // Agrego la stage al workflow
-              workflow.addToStages( stage )
-              
-              // Falta agregar los templates de cada stage
-
-
-              // Cada template dentro de una stage
-              entry.value.each { subsection -> // via_aerea
-
-                 templateId = "EHRGen-EHR-" + subsection // 'EHRGen-EHR-via_aerea.v1'
-                 //println "templateId: " + templateId
-
-                 template = templateManager.getTemplate( templateId )
-                
-                 if (!template)
-                 {
-                    println "ERROR: Verifique que el template $templateId esta en el repositorio"
-                    return
-                 }
-                
-                 // TEST
-                 //def xstream = new XStream()
-                 //def tlog = new File('template.log')
-                 //tlog.append( xstream.toXML(template) + "\n\n" )
-                 
-                 
-                 // Agrega el template a la stage actual del workflow
-                 stage.addToRecordDefinitions( template )
-              }
-           }
-           
-           
-           // Guarda en cascada workflow, stages y templates del domain
-           if (!domain.save())
-           {
-              println domain.errors
-              domain.workflows.each { wf ->
-                 println wf.errors
-                 wf.stages.each { stg ->
-                    println stg.errors
-                    stg.recordDefinitions.each { tpl ->
-                       println tpl.errors
-                    }
-                 }
-              }
-           }
-        }
         
         
         
