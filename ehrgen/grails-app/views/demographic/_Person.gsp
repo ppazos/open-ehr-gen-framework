@@ -2,18 +2,19 @@
 
 <%-- in: person:Person --%>
 
+<%-- Muestra todos los ids
 <g:render template="../demographic/UIDBasedID" collection="${person.ids}" var="id" />
+--%>
+<%-- Solo muestra un id --%>
+<g:render template="../demographic/UIDBasedID" model="[id:person.ids[0]]" />
 
+<b>
 ${person.primerNombre}
 ${person.segundoNombre}
 ${person.primerApellido}
 ${person.segundoApellido}
 ( ${person.sexo} )
-<br/>
-
-<%--
-${person.fechaNacimiento.getClass()}
---%>
+</b>
 
 <%
 if (person.fechaNacimiento)
