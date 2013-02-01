@@ -1,4 +1,32 @@
+/*
+Copyright 2013 CaboLabs.com
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+This software was developed by Pablo Pazos at CaboLabs.com
+
+This software uses the openEHR Java Ref Impl developed by Rong Chen
+http://www.openehr.org/wiki/display/projects/Java+Project+Download
+
+This software uses MySQL Connector for Java developed by Oracle
+http://dev.mysql.com/downloads/connector/j/
+
+This software uses PostgreSQL JDBC Connector developed by Posrgresql.org
+http://jdbc.postgresql.org/
+
+This software uses XStream library developed by Jörg Schaible
+http://xstream.codehaus.org/
+*/
 import hce.core.composition.Composition
 import hce.HceService 
 import hce.CustomQueriesService
@@ -88,7 +116,13 @@ class TraumaTagLib {
           
           if (person)
           {
-             out << render(template:'../demographic/Person', model:[person:person])
+             // No es necesario mostrar identificadores ni sexo para el medico
+             //out << render(template:'../demographic/Person', model:[person:person])
+             
+             // FIXME: el composer podria ser enfermera o tecnico y no corresponde Dr. o Dra.
+             //        deberia depender de si tiene el rol medico u otro rol.
+             out << ((person.sexo == 'M') ? 'Dr. ' : 'Dra. ')
+             out << person.primerNombre +' '+ person.primerApellido
           }
        }
     }
@@ -133,22 +167,22 @@ class TraumaTagLib {
 
         out << '<div id="resumen_episodio">'
         
-        out <<   '<div>'
-        out <<     '<h2>' + message(code:'trauma.label.resumenEpisodio') + '</h2>'
-        out <<   '</div>'
+        out <<   '<div><h2>' + message(code:'records.label.resumenEpisodio') + '</h2></div>'
         
         out <<   '<div style="width:90%; float: left;">' // comienzo-fin-observaciones-responsable
         out <<     '<div style="padding: 4px;">'
-        out <<       '<span>' +  message(code:'trauma.list.label.startTime') +' / '+ message(code:'trauma.list.label.endTime') +': </span>'
-        out <<       '<span>' + g.format( date: composition.context.startTime?.toDate() ) + ' / '
-        out <<                  g.format( date: composition.context.endTime?.toDate() ) + '</span>'
+        out <<       '<span>' +  message(code:'records.list.label.startTime') +' / '+ message(code:'records.list.label.endTime') +': </span>'
+        //out <<       '<span>' + g.format( date: composition.context.startTime?.toDate() ) + ' / '
+        //out <<                  g.format( date: composition.context.endTime?.toDate() ) + '</span>'
+        out <<       '<span>' + g.format( date: composition.startTime ) + ' / '
+        out <<                  g.format( date: composition.endTime ) + '</span>'
         out <<     '</div>'
 
         //out << '</div>' // /comienzo-fin
         
         //out << '<div>' // observaciones-responsable
         out <<     '<div style="padding: 4px;">'
-        out <<       '<span>'+ message(code:'trauma.list.label.observations') + '</span>: ' + composition.context.otherContext.item.value.value
+        out <<       '<span>'+ message(code:'records.list.label.observations') + '</span>: ' + composition.context.otherContext.item.value.value
         out <<     '</div>'
         
         

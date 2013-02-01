@@ -62,15 +62,18 @@ class ArchetypeTagLib {
     
     // Muestra el texto para un arquetipo, nodeid/codigo y locale.
     // Escala en el locale si no encuentra el termino.
+    // Si viene archetype, terminologyId puede ser null ya que se supone que es "local".
+    // Si no viene archetype, debe venir terminologyId y no ser local.
     //
     // archetype
     // code
     // locale
+    // terminologyId
     //
     def displayTerm = { attrs ->
        
        def archetype = attrs.archetype
-       if (!archetype) throw new Exception("Parametro 'archetype' es obligatorio")
+       if (!archetype && !attrs.terminologyId) throw new Exception("Parametro 'archetype' es obligatorio sino viene terminologyId")
        
        def code = attrs.code
        if (!code) throw new Exception("Parametro 'code' es obligatorio")
@@ -78,9 +81,10 @@ class ArchetypeTagLib {
        def locale = attrs.locale
        if (!locale) throw new Exception("Parametro 'locale' es obligatorio")
        
+       def terminologyId = attrs.terminologyId ?: 'local'
        
        // Ya escala, si no encuentra devuelve un texto
-       out << CtrlTerminologia.getInstance().getTermino(TerminologyID.create('local', null), code, archetype, locale)
+       out << CtrlTerminologia.getInstance().getTermino(TerminologyID.create(terminologyId, null), code, archetype, locale)
     }
     
     

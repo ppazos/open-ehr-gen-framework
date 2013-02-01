@@ -49,7 +49,8 @@ class VerificarCondicionCierreEventHandler extends EventHandler
                     fechaFin = e.value
                 }
             }
-            hceService.closeComposition( context.composition, DateConverter.toIso8601ExtendedDateTimeFormat( fechaFin.toDate() ) )
+            //hceService.closeComposition( context.composition, DateConverter.toIso8601ExtendedDateTimeFormat( fechaFin.toDate() ) )
+            hceService.closeComposition( context.composition, fechaFin )
         }
     }
 }

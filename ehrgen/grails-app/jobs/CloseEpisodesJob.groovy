@@ -24,7 +24,7 @@ class CloseEpisodesJob {
          versions.each { version ->
             
             def composition = version.data
-            def startDate = composition.context.startTime.toDate()
+            def startDate = composition.startTime //composition.context.startTime.toDate()
    
             // FIXME: hacerlo con DateDiference porque esto cuenta que cambie la fecha no que hayan pasadon 24hs...
             def difDias = DateDifference.numberOfDays(startDate, new Date()) 
@@ -37,7 +37,8 @@ class CloseEpisodesJob {
             if ( difDias > 0 )
             {
                // Cerrar
-               hceService.closeComposition( composition, DateConverter.toIso8601ExtendedDateTimeFormat( new Date() ) )
+               //hceService.closeComposition( composition, DateConverter.toIso8601ExtendedDateTimeFormat( new Date() ) )
+               hceService.closeComposition( composition, new Date() )
             }
          }
       }

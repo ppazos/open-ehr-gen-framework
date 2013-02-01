@@ -394,10 +394,16 @@ class ArchetypeManagerController {
                    
                    // FIXME: cuando no se use mas datatypes en XML, aqui no se usará más el XStream
                    // Necesario para comparar el dato codificado como XML en la base
+                   /*
                    def startTimeFilter = new data_types.quantity.date_time.DvDateTime(value: ((params.fromDate)?params.fromDate:'1900-01-01 00:00:00') )
                    com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream()
                    xstream.omitField(data_types.basic.DataValue.class, "errors");
                    def codedStartTimeFilter = xstream.toXML(startTimeFilter)
+                   */
+                   
+                   // Si viene la fecha, se usa el mismo formato que se utilizo en la vista para parsear el string
+                   def startTimeFilter = ((params.fromDate) ? Date.parse(ApplicationHolder.application.config.app.l10n.date_format, params.fromDate) : new Date(0, 0, 1)) // 1900/01/01
+      
                    
                    //println pth
                    //println codedStartTimeFilter
@@ -411,8 +417,10 @@ class ArchetypeManagerController {
                    
                    // OK! usando nested query: http://www.felixgers.de/teaching/sql/sql_nested_queries.html
                    // Falta que pueda ingresar las fechas como filtro en la gui.
-                   data1 = hce.core.common.archetyped.Locatable.findAll( "FROM Locatable p WHERE p.archetypeDetails.archetypeId = ? AND p.path = ? AND EXISTS( SELECT c.id FROM Composition c WHERE c.id = p.parentCompositionId AND c.context.codedStartTime > ?)",
-                                                                         [params.archetypeId, pth, codedStartTimeFilter] )
+                   //data1 = hce.core.common.archetyped.Locatable.findAll( "FROM Locatable p WHERE p.archetypeDetails.archetypeId = ? AND p.path = ? AND EXISTS( SELECT c.id FROM Composition c WHERE c.id = p.parentCompositionId AND c.context.codedStartTime > ?)",
+                   //                                                      [params.archetypeId, pth, codedStartTimeFilter] )
+                   data1 = hce.core.common.archetyped.Locatable.findAll( "FROM Locatable p WHERE p.archetypeDetails.archetypeId = ? AND p.path = ? AND EXISTS( SELECT c.id FROM Composition c WHERE c.id = p.parentCompositionId AND c.startTime > ?)",
+                                                                         [params.archetypeId, pth, startTimeFilter] )
                    
                    
                    /* Hasta cierto punto la consulta podria hacerse con withCriteria, no se como hacer la consulta anidada con el EXISTS para filtrar por fecha de la composition!
@@ -471,7 +479,8 @@ class ArchetypeManagerController {
        }
        
        return [clinicalConcepts: clinicalConcepts, archetype: archetype, paths: paths, data: data, dataByComposition: dataByComposition]
-    }
+       
+    } // query
     
     /**
      * 
@@ -680,14 +689,20 @@ class ArchetypeManagerController {
       def elemPath = params.chart_path.split("::")[0]
       def constraintPath = params.chart_path.split("::")[1]
        
-       
+       /*
       def startTimeFilter = new data_types.quantity.date_time.DvDateTime(value: ((params.fromDate)?params.fromDate:'1900-01-01 00:00:00') )
       com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream()
       xstream.omitField(data_types.basic.DataValue.class, "errors");
       def codedStartTimeFilter = xstream.toXML(startTimeFilter)
+      */
+      
+      // Si viene la fecha, se usa el mismo formato que se utilizo en la vista para parsear el string
+      def startTimeFilter = ((params.fromDate) ? Date.parse(ApplicationHolder.application.config.app.l10n.date_format, params.fromDate) : new Date(0, 0, 1)) // 1900/01/01
+      
       
       // Esta consulta se podria hacer igual con withCriteria
-      data = hce.core.common.archetyped.Locatable.findAll( "FROM Locatable p WHERE p.archetypeDetails.archetypeId = ? AND p.path = ? AND EXISTS( SELECT c.id FROM Composition c WHERE c.id = p.parentCompositionId AND c.context.codedStartTime > ?)", [params.archetypeId, elemPath, codedStartTimeFilter] )
+      //data = hce.core.common.archetyped.Locatable.findAll( "FROM Locatable p WHERE p.archetypeDetails.archetypeId = ? AND p.path = ? AND EXISTS( SELECT c.id FROM Composition c WHERE c.id = p.parentCompositionId AND c.context.codedStartTime > ?)", [params.archetypeId, elemPath, codedStartTimeFilter] )
+      data = hce.core.common.archetyped.Locatable.findAll("FROM Locatable p WHERE p.archetypeDetails.archetypeId = ? AND p.path = ? AND EXISTS( SELECT c.id FROM Composition c WHERE c.id = p.parentCompositionId AND c.startTime > ?)", [params.archetypeId, elemPath, startTimeFilter])
        
 
       // Valores para clasificar

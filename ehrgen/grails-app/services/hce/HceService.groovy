@@ -1,3 +1,32 @@
+/*
+Copyright 2013 CaboLabs.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+This software was developed by Pablo Pazos at CaboLabs.com
+
+This software uses the openEHR Java Ref Impl developed by Rong Chen
+http://www.openehr.org/wiki/display/projects/Java+Project+Download
+
+This software uses MySQL Connector for Java developed by Oracle
+http://dev.mysql.com/downloads/connector/j/
+
+This software uses PostgreSQL JDBC Connector developed by Posrgresql.org
+http://jdbc.postgresql.org/
+
+This software uses XStream library developed by Jörg Schaible
+http://xstream.codehaus.org/
+*/
 /**
  * @todo implementar el EventContext.otherContext<ItemStructure>
  * @todo implementar el Composition.composer<PartyProxy>
@@ -48,13 +77,14 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
     /**
      * Crea la composition para el formulario de trauma.
      * No usa arquetipos.
+     * @param workflowId identificador del wf donde se creó la composition.
      */
-    def Composition createComposition( String _startTime, String _otherContext )
+    //def Composition createComposition( String _startTime, String _otherContext, Long workflowId )
+    def Composition createComposition( Date _startTime, String _otherContext, Long workflowId )
     {
         // TODO: falta implementacion Coposition.otherContext
-        // TODO: verificar formato de fecha aaaa-MM-dd
-        
-        def compo = new Composition(path:"/") // El formulario de trauma!
+
+        def compo = new Composition(path:"/", workflowId:workflowId, startTime: _startTime) // El formulario de trauma!
         
         // ========================================================
         // Contenido de la HCE, se setea a medida que se va ingresando.
@@ -66,26 +96,30 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
         // Es el medico responsable de la atencion del paciente
         // ========================================================
         
+        // FIXME: estos valores deben ser de configuracion de la aplicacion
+        //        y ser utilizados solo para comunicacion de datos al exterior
+        //        no para ser guardados en la DB.
+        
         // Sacado de openehr terms en codeset languages
         compo.language = new CodePhrase(
-                codeString: 'es-uy',
-                terminologyId: TerminologyID.create('ISO_639-1', null)
-          )
+           codeString: 'es-uy',
+           terminologyId: TerminologyID.create('ISO_639-1', null)
+        )
         // sacado de openehr terms en codeset countries
         compo.territory = new CodePhrase(
-                codeString: 'UY',
-                terminologyId: TerminologyID.create('ISO_3166-1', null)
-          )
+           codeString: 'UY',
+           terminologyId: TerminologyID.create('ISO_3166-1', null)
+        )
         
         // el registro de trauma es de tipo eventual, definido en el grupo
         // de conceptos "composition category" de la terminologia openehr.
         compo.category = new DvCodedText(
-                value: "event",
-                definingCode: new CodePhrase(
-                     codeString: '433',
-                     terminologyId: TerminologyID.create('openehr', null)
-                )
+           value: "event",
+           definingCode: new CodePhrase(
+              codeString: '433',
+              terminologyId: TerminologyID.create('openehr', null)
            )
+        )
         
         // Se usa para marcar el inicio y fin de la atencion de trauma.
         // Tambien tiene "participations" que sirven para decir quien ingreso los datos.
@@ -94,7 +128,7 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
         
           path: "/context",
           
-          startTime: new DvDateTime(value:_startTime),
+          //startTime: new DvDateTime(value:_startTime),
           //startTime: RMExamples.getDvDateTime1('2009-11-23 23:14:00'), // Se tendria que poner al iniciar un nuevo episodio
           //endTime: RMExamples.getDvDateTime1('2009-11-24 06:37:00'), // Se tendira que poner al cerra el episodio
           //location: 'cama 5', // es el "point of care" con granularidad maxima, por ejemplo "cama 5", es opcional y no lo vamos a usar
@@ -171,12 +205,14 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
     /**
      * Cierra el registro, es una accion en la maquina de estados del registro.
      */
-    def boolean closeComposition( Composition composition, String endTime )
+    //def boolean closeComposition( Composition composition, String endTime )
+    def boolean closeComposition( Composition composition, Date endTime )
     {
         if (!endTime)
         {
-            def now = new Date()
-            endTime = DateConverter.toIso8601ExtendedDateTimeFormat( now )
+           //def now = new Date()
+           //endTime = DateConverter.toIso8601ExtendedDateTimeFormat( now )
+           endTime = new Date()
         }
         
         // TODO: cambiar el estado creando un VERSION
@@ -186,7 +222,8 @@ class HceService implements serviceinterfaces.HceServiceInterface  {
         version.lifecycleState = Version.STATE_COMPLETE
         version.save()
         
-        composition.context.endTime = new DvDateTime(value:endTime)
+        //composition.context.endTime = new DvDateTime(value:endTime)
+        composition.endTime = endTime
         
         // true o false
         return composition.save()

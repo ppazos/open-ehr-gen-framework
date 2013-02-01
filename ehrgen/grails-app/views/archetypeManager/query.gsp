@@ -1,46 +1,61 @@
-<%@ page import="hce.core.composition.Composition" %>
+<%@ page import="hce.core.composition.Composition" %><%@ page import="org.codehaus.groovy.grails.commons.ApplicationHolder" %>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
     <meta name="layout" content="main" />
     <title>Archetype based query</title>
     
-    <!--  YUI CALENDAR -->
-    <!--CSS file-->
-    <link rel="stylesheet" type="text/css" href="${createLinkTo(dir:'css/yui/calendar',file:'calendar.css')}"></link>
-    
-    <!-- Dependencies -->
-    <g:javascript library="yui/yahoo/yahoo-min" />
-    <g:javascript library="yui/dom/dom-min" />
-    <g:javascript library="yui/event/event-min" />
-    
-    <!-- Source file and calendar css -->
-    <g:javascript library="yui/calendar/calendar-min" />
+    <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
+    <style>
+    /* ============================>>> Achica imagen depickdate */
+    img.ui-datepicker-trigger {
+      height: 2em;
+      vertical-align: top;
+    }
+    </style>
     
     <g:javascript library="jquery-1.8.2.min" />
+    <g:javascript src="jquery.blockUI.js" />
+    <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
+    
     <script type="text/javascript" src="${createLinkTo(dir:'js', file:'jquery.form.2_43.js')}"></script>
     <g:javascript library="jquery.scrollTo-1.4.2-min" />
     <g:javascript library="jquery.tableFilter-1.0.0" />
+    
+    <g:javascript>
+      $(document).ready(function() {
+      
+        <g:if test="${archetype}">
+        
+        /* ===================================================================================== 
+         * Calendar para filtro de la query
+         */
+        $("input[name=fromDate]").datepicker({
+            // Icono para mostrar el calendar 
+            showOn: "button",
+            buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
+            buttonImageOnly: true,
+            buttonText: 'pick a date',
+            // Formato
+            dateFormat: '${ApplicationHolder.application.config.app.l10n.date_format.replace("yyyy","yy").replace("MM","mm")}', // poner yy hace salir yyyy y MM hace salir el nombre del mes
+            // Menus para cambiar mes y anio 
+            changeMonth: true,
+            changeYear: true,
+            // La fecha maxima es la que esta seleccionada en toDate si la hay
+            //onClose: function( selectedDate ) {
+            //  $( "input[name=toDate]" ).datepicker( "option", "minDate", selectedDate );
+           // }
+        });
+        
+        </g:if>
+        
+      });
+    </g:javascript>
+    
     <script type="text/javascript">
-    
-    var calendar1;
-    
+       
     $(document).ready(function() {
-    
-      <g:if test="${archetype}">
-        calendar1 = new YAHOO.widget.Calendar("calendar1", "calendarDiv1", { title:"${message(code:'label.chooseDate')}", close:true} );
-
-        // clic en las imagenes de calendario muestra el calendario
-        YAHOO.util.Event.addListener ("showCalendarDiv1", "click", calendar1.show, calendar1, true); // Muestra calendario
-        YAHOO.util.Event.addListener ("showCalendarDiv1", "click", showCalendar1EventHandler); // Setea posicion del calendario
-    
-        YAHOO.util.Event.addListener ("showCalendarDiv2", "click", calendar1.show, calendar1, true); // Muestra calendario
-        YAHOO.util.Event.addListener ("showCalendarDiv2", "click", showCalendar1EventHandler); // Setea posicion del calendario
-    
-        calendar1.selectEvent.subscribe(setDate);
-        calendar1.render();
-      </g:if>
-    
+      
       // Clic en checkbox name="chart_path", de los que hay varios, apaga el resto y prende solo el que se cliquea
       $('input[name=chart_path]').click( function(evt) {
       
@@ -108,145 +123,7 @@
       // Ojo que input es un evento nuevo de HTML5
       //
       $('input[name=archetype_filter]').tableFilter( $('#concepts'), 1 );
-      /*
-      $('input[name=archetype_filter]').bind('input', function(evt) {
-        
-        //console.log(this.value); // OK! idem a evt.target.value
-        
-        // Filtro por nombre del concepto en la primer columna de la tabla de conceptos
-        //$('#concepts > tbody > tr > td:nth-child(1)').css('background-color', 'red');
-        //trs = $('#concepts > tbody > tr');
-        $.each( $('#concepts > tbody > tr > td:nth-child(1)'), function (i, td) {
-        
-           //console.log($(td).text());
-           // Filtra por el texto ingresado en el input (evt.target.value), contra el
-           // texto de la primer columna (nombre del concepto), comparados en lowercase.
-           if ( $(td).text().toLowerCase().indexOf( evt.target.value.toLowerCase() ) == -1 )
-           {
-              $(td).parent().hide();
-           }
-           else
-           {
-              $(td).parent().show();
-           }
-        });
-      });
-      */
-
     });
-    
-    
-    // Implementacion con jQuery
-    // FIXME: esto deberia ser una clase js afuera, incluso se podria implementar como plugin jQuery.
-    
-    
-    function showCalendar1EventHandler(evt)
-    {
-      if ( $(evt.target).hasClass('_cal1') )
-      {
-        currentInputDate = "fromDate";
-      }
-
-      var mousePosition = getMouseXY(evt);
-      var width = $('#calendarDiv1').width();
-  
-      // Aparece a la izquierda del mouse.
-      //$('#calendarDiv1').style.left = (mousePosition.x - width) + 'px';
-      
-      // Aparece a la derecha del mouse
-      $('#calendarDiv1').css( 'left', mousePosition.x + 'px' );
-      
-      $('#calendarDiv1').css( 'top', mousePosition.y + 'px' );
-    }
-     
-    function setDate()
-    {
-       console.log('setDate init');
-    
-       var arrDates = calendar1.getSelectedDates();
-       var date = arrDates[0];
-      
-       setInput(currentInputDate, date.getFullYear(), date.getMonth()+1, date.getDate());
-      
-       hideCalendars(); // se esconden al hacer click en una fecha ...
-    
-       console.log('setDate end');
-    }
-     
-    function setInput(id,year,month,day)
-    {
-      console.log('setInput init');
-    
-      // Arma la fecha internacionalizada al locale del servidor.
-      // Las partes son enviadas con el modelo al view, y aca las agarro para ver como armar la fecha.
-      
-      partesFecha = ["yyyy", "MM", "dd"]; // ${partesFecha}.toArray(); // Algo como ["M", "dd", "yy"]
-    
-      vuelta = 0;
-      dateValue = "";
-      $.each( partesFecha, function(i, datePart) {
-      
-        if (datePart == 'MM')
-        {
-           dateValue += ((month<10) ? '0'+month : month);
-           if (vuelta<2) dateValue += '-';
-        }
-        else if (datePart == 'dd')
-        {
-           dateValue += ((day<10) ? '0'+day : day);
-           if (vuelta<2) dateValue += '-';
-        }
-        else if (datePart == 'yyyy')
-        {
-           dateValue += year;
-           if (vuelta<2) dateValue += '-';
-        }
-           
-        vuelta++;
-      });
-      
-      console.log( dateValue );
-           
-      $('#'+id).val( dateValue ); // No funka en IE
-           
-      console.log('setInput init');
-    }
-     
-    function hideCalendars()
-    {
-       currentInputDate = null;
-       $('#calendarDiv1').css( 'display', 'none' );
-    }
-     
-    // Obtener posicion del mouse ...
-    // Detect if the browser is IE or not.
-    // If it is not IE, we assume that the browser is NS.
-    var IE = document.all?true:false
-      
-    // If NS -- that is, !IE -- then set up for mouse capture
-    if (!IE) document.captureEvents(Event.MOUSEMOVE)
-      
-    // Temporary variables to hold mouse x-y pos.s
-    var tempX = 0
-    var tempY = 0
-      
-    // Main function to retrieve mouse x-y pos.s
-    function getMouseXY(e)
-    {
-      if (IE) { // grab the x-y pos.s if browser is IE
-        tempX = event.clientX + document.body.scrollLeft
-        tempY = event.clientY + document.body.scrollTop
-      }
-      else {  // grab the x-y pos.s if browser is NS
-        tempX = e.pageX
-        tempY = e.pageY
-      }  
-      // catch possible negative values in NS4
-      if (tempX < 0){tempX = 0}
-      if (tempY < 0){tempY = 0} 
-      
-      return {x:tempX, y:tempY};
-    }
     
     </script>
   </head>
@@ -297,12 +174,10 @@
             
           <g:form action="query">
       
+            <%--
             <div id="calendarDiv1" style="position:absolute; width:205px; display:none; z-index:100;"></div>
-            
+            --%>
             desde: <input type="text" name="fromDate" id="fromDate" value="${params.fromDate}" />
-            <span id="showCalendarDiv1" style="cursor:pointer">
-              <img src="${createLinkTo(dir:'images',file:'calendar.gif')}" height="30" align="bottom" class="_cal1" />
-            </span>
             
             <input type="hidden" name="archetypeId" value="${params.archetypeId}"  />
             <input type="hidden" name="conceptName" value="${params.conceptName}"  />
@@ -457,7 +332,10 @@
                       ${entry.key}
                     </th>
                     <td>
+                      <%--
                       <g:format date="${Composition.get(entry.key).context.startTime.toDate()}" />
+                      --%>
+                      <g:format date="${Composition.get(entry.key).startTime}" />
                     </td>
                     <g:set var="j" value="${0}" />
                     <g:each in="${entry.value}" var="rmobj">

@@ -88,14 +88,14 @@ class ManagerCDA {
       def clidoc_code_codeSystem = "2.16.858.1.1.1.1.1.4"
       def clidoc_code_code = "11111-1" // Elegido por nositros, todos los docs de trauma tienen el mismo code
       def clidoc_title = "Hospital Maciel - Episodio de Trauma"
-      def clidoc_effectiveTime_value = DateConverter.toHL7DateFormat(comp.context.startTime.toDate())
+      def clidoc_effectiveTime_value = DateConverter.toHL7DateFormat(comp.startTime)
       def clidoc_confidentialityCode_code = "N"
       def clidoc_confidentialityCode_codeSystem = "2.16.858.1.1.1.1.1.5"
       def clidoc_languageCode_code = "es-UY" // Sacar del config cuando se guarde alli.
       def version = Version.findByData(comp) // Ojo. findByData retorna una coleccion. Como hay una sola version con esa composition retorna una instancia (porque al crear una nueva version, pongo null en el atributo data de la version)
       def clidoc_versionNumber_value = version.getNumVersion()
       // AUTOR
-      def autor_time_value = DateConverter.toHL7DateFormat(comp.context.startTime.toDate()) //.value.replace("T", "") // Indica desde cuando el autor ha participado en la creación del documento (usamos esto, pero tambien podria ser el instante en el que se firma el documento)
+      def autor_time_value = DateConverter.toHL7DateFormat(comp.startTime) //.value.replace("T", "") // Indica desde cuando el autor ha participado en la creación del documento (usamos esto, pero tambien podria ser el instante en el que se firma el documento)
       def autor_assignedAuthor_id_extension = comp.composer.externalRef.objectId.value?.split('::')[1]
       def autor_assignedAuthor_id_root = comp.composer.externalRef.objectId.value?.split('::')[0]
       //----------------------------------------------------------------------
