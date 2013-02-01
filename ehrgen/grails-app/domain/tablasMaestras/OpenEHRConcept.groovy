@@ -283,9 +283,6 @@ class OpenEHRConcept {
         res << new OpenEHRConcept(group:'property',conceptId:'130',rubric:'Trabajo',lang:'es')
         res << new OpenEHRConcept(group:'property',conceptId:'130',rubric:'Work',lang:'en')
         
-        // FIXME: version lifecycle state no aparece en la terminologia xml del archetype editor, talvez esta solo en el Terminology.pdf
-        res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'532',rubric:'Completo',lang:'es')
-        res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'532',rubric:'Completed',lang:'en')
         
         res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'553',rubric:'Incompleto',lang:'es')
         res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'553',rubric:'Incomplete',lang:'en')
@@ -354,6 +351,31 @@ class OpenEHRConcept {
         <concept id="532" rubric="completed"/>
         <concept id="533" rubric="expired"/>
     </group>
+    */
+    // FIXME: version lifecycle state no aparece en la terminologia xml del archetype editor, talvez esta solo en el Terminology.pdf
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'524',rubric:'Initial',   lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'526',rubric:'Planned',   lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'527',rubric:'Postponed', lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'528',rubric:'Cancelled', lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'529',rubric:'Scheduled', lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'245',rubric:'Active',    lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'530',rubric:'Suspended', lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'531',rubric:'Aborted',   lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'532',rubric:'Completed', lang:'en')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'533',rubric:'Expired',   lang:'en')
+     
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'524',rubric:'Inicial',   lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'526',rubric:'Planeado',  lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'527',rubric:'Postpuesto',lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'528',rubric:'Cancelado', lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'529',rubric:'Programado',lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'245',rubric:'Activo',    lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'530',rubric:'Suspendido',lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'531',rubric:'Abortadp',  lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'532',rubric:'Completo',  lang:'es')
+     res << new OpenEHRConcept(group:'version lifecycle state',conceptId:'533',rubric:'Expirado',  lang:'es')
+          
+    /*
     <group name="instruction transitions">
         <concept id="535" rubric="initiate"/>
         <concept id="536" rubric="plan step"/>
