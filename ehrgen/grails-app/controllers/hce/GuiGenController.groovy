@@ -42,7 +42,7 @@ import domain.Domain
 import archetype.ArchetypeManager
 import hce.ArchetypeService
 import templates.TemplateManager
-import templates.* // Template
+import templates.*
 
 import events.*
 
@@ -208,19 +208,16 @@ class GuiGenController {
          }
          
          render( view: view,
-                    model: [
-                     patient: patient,
-                     template: template,
-                     sections: sections,
-                     //subsections: subsections,
-                     episodeId: session.ehrSession?.episodioId,
-                     //allSubsections: util.TemplateUtils.getDomainTemplates(session),
-                     form: form,
-                     //completeSections: completeSections,
-					      domain: Domain.get(session.ehrSession.domainId),
-                     workflow: workflow, // nuevo
-                     stage: stage // nuevo: etapa actual
-                    ])
+                 model: [
+                   patient: patient,
+                   template: template,
+                   sections: sections,
+                   episodeId: session.ehrSession?.episodioId,
+                   form: form,
+					    domain: Domain.get(session.ehrSession.domainId),
+                   workflow: workflow, // nuevo
+                   stage: stage // nuevo: etapa actual
+                ])
          return
          
 /*         
@@ -269,7 +266,7 @@ class GuiGenController {
          return
       }
       
-   } // generateTemplate2
+   } // generateTemplate
    
    /**
     * Prueba con vista cacheada.
