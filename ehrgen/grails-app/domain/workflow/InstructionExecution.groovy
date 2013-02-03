@@ -30,4 +30,15 @@ class InstructionExecution {
       instructionCompositionId(nullable:true)
       actionCompositionId(nullable:true)
    }
+   
+   static transients = ['instruction', 'activity']
+   
+   def getInstruction()
+   {
+      return hce.core.composition.content.entry.Instruction.get(this.instructionId)
+   }
+   def getActivity()
+   {
+      return hce.core.composition.content.entry.Activity.get(this.activityId)
+   }
 }
