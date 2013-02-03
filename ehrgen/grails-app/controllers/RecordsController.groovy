@@ -361,7 +361,8 @@ class RecordsController {
       // FIXME: esto deberia hacerse con filters?
       if (!session.ehrSession || !session.ehrSession.domainId) // puede pasar si caduca la session
       {
-        // TODO: flash.message
+        // TODO: i18n
+        flash.message = "Ha caducado la sesion, por favor ingrese de nuevo"
         redirect(controller:'domain', action:'list')
         return
       }
@@ -392,6 +393,15 @@ class RecordsController {
       // al parent Folder.
       def compos = Composition.withCriteria {
          
+         if (qFromDate)
+         {
+            ge('startTime', qFromDate) // startTime >= fromDate
+         }
+         if (qToDate)
+         {
+            le('startTime', qToDate) // startTime <= toDate
+         }
+         
          // TODO: filtrar registros por paciente, si hay un paciente en session.ehrSession.patientId
          // Ver issue #22
          /*
@@ -405,7 +415,6 @@ class RecordsController {
             def patient = demographic.party.Person.get(session.ehrSession.patientId)
             
             def xstream = new com.thoughtworks.xstream.XStream()
-            
             def codedExternalRef = xstream.toXML(
               new support.identification.PartyRef(
                 namespace: "demographic", // FIXME: ver valores correctos
@@ -472,7 +481,9 @@ class RecordsController {
            firstResult( Integer.parseInt(params.offset) )
          
          order("id", "desc") // se que el id es incremental
-         //order("context.startTime.value", "desc") // no funca
+         
+         
+         cache(true)
       }
      
       // para paginacion
@@ -480,6 +491,15 @@ class RecordsController {
          
         projections {
          count('id')
+        }
+        
+        if (qFromDate)
+        {
+           ge('startTime', qFromDate) // startTime >= fromDate
+        }
+        if (qToDate)
+        {
+           le('startTime', qToDate) // startTime <= toDate
         }
          
         // Si hay paciente seleccionado
@@ -516,6 +536,9 @@ class RecordsController {
          // Uso la referencia desde los hijos al padre, asi me ahorro el loop
          eq('rmParentId', domain.id)
         }
+        
+        
+        cache(true)
       }
       // ==========================================================================
       
