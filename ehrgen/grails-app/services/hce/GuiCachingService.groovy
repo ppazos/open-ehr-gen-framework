@@ -45,7 +45,6 @@ class GuiCachingService {
          pathToStaticViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'hce'+ PS + tpl.templateId +'.gsp'
          
          
-         
          // Si no existe la vista estatica, genero create, show y edit.
          // Si existe, solo genero show
          if (!new File(pathToStaticViews).exists())
@@ -114,20 +113,21 @@ class GuiCachingService {
    }
    
    /**
-    * FIXME: template es un strig que tiene la path donde se va a guardar el html, no es el template ni el nombre del template.
+    * @param pathToGspTemplate
+    * @param model [template, lang, locale]
     */
-   String template2String(template, model)
+   String template2String(pathToGspTemplate, model)
    {
       //def tagLib = ctx.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
-      //String out = tagLib.render(template:template, model: model)
+      //String out = tagLib.render(template:pathToGspTemplate, model: model)
       //return out
       
       //No signature of method: GrailsTemplateEngineService.renderWithTemplateEngine()
-      //return grailsTemplateEngineService.renderWithTemplateEngine(template, model)
+      //return grailsTemplateEngineService.renderWithTemplateEngine(pathToGspTemplate, model)
       
-      //return grailsTemplateEngineService.renderView(template, model)
+      //return grailsTemplateEngineService.renderView(pathToGspTemplate, model)
       
-      String xml = grailsTemplateEngineService.renderView(template, model)
+      String xml = grailsTemplateEngineService.renderView(pathToGspTemplate, model)
       
       // Para resolver:
       // org.xml.sax.SAXParseException: The entity "aacute" was referenced, but not declared
