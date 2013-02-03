@@ -78,7 +78,7 @@
                      <g:else>
                        <%-- Si el regsitro no esta incompleto, no se puede editar --%>
                        <g:isIncompleteRecord episodeId="${session.ehrSession?.episodioId}">
-                        <g:if test="${it.answer}">
+                       <g:if test="${it.answer}">
 
                           <g:hasDomainPermit domain="${Domain.get(session.ehrSession.domainId)}" templateIds="${stage.recordDefinitions.templateId}">
                             <g:link controller="records" action="registroClinico2" params="[section:stage.name]"><g:message code="${stage.name}" /></g:link>
@@ -153,7 +153,7 @@
       <g:reabrirEpisodio episodeId="${session.ehrSession?.episodioId}">
         <g:link controller="records" action="reopenRecord" id="${composition.id}"><g:message code="trauma.show.action.reopenRecord" /></g:link>
       </g:reabrirEpisodio>
-      <g:link controller="guiGen" action="showRecord"><g:message code="trauma.list.action.showRecord" /></g:link>
+      <g:link controller="guiGen" action="showRecord"><g:message code="records.list.action.showRecord" /></g:link>
     </div>
   </body>
 </html>
