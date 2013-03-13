@@ -56,11 +56,9 @@ class RoleController {
       return [roleInstance: role, domainPermits: domainPermits]
    }
    
-   /*
    def create = {
       
    }
-   */
    
    def save = {
       
@@ -78,7 +76,7 @@ class RoleController {
       def role = Role.get(params.id)
       //def permits = Permit.list()
       def domainPermits = DomainPermit.list()
-      
+	  
       //return [roleInstance: role, permits: permits, domainPermits: domainPermits]
       return [roleInstance: role, domainPermits: domainPermits]
    }
@@ -124,9 +122,10 @@ class RoleController {
       // DomainPermits
       params.list('dpermits').each { domainTemplateId ->
          
+		 println "dtid: " + domainTemplateId
          partes = domainTemplateId.split("__")
          
-         permit = DomainPermit.findByDomainAndTemplateId(partes[0], partes[1])
+         permit = DomainPermit.findByDomainIdAndTemplateId(Long.parseLong(partes[0]), partes[1])
          role.addToDomainPermits(permit)
       }
       

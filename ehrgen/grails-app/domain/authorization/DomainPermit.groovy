@@ -44,13 +44,20 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
  */
 class DomainPermit {
     
-   long domain // id del Domain en la db
+   long domainId // id del Domain en la db
    String templateId = "*" // Si no se indica lo contrario, se tiene acceso a todos los templates
     
    static constraints = {
       domain(nullable: false)
       templateId(nullable: false)
    }
+   
+   def getDomain()
+   {
+      return Domain.get(this.domainId)
+   }
+   
+   static transients = ["domain"]
     
    static void createDefault()
    {
@@ -58,7 +65,7 @@ class DomainPermit {
       def sections
       def templates
       def p
-	   def domains = Domain.list() // Los dominios se deben haber guardado previamente desde el Boostrap
+      def domains = Domain.list() // Los dominios se deben haber guardado previamente desde el Boostrap
       for (def domain in domains)
       {
          sections = ApplicationHolder.application.config.templates2."${domain.name}"
@@ -71,14 +78,14 @@ class DomainPermit {
             for (def template in templates)
             {
                p = new DomainPermit(
-                             domain: domain.id,
+                             domainId: domain.id,
                              templateId: section.key+'-'+template) // ADMISION-prehospitalario.v1
                p.save()
             }
             
          }
          
-         p = new DomainPermit(domain: domain.id)
+         p = new DomainPermit(domainId: domain.id)
          p.save()
       }
    }

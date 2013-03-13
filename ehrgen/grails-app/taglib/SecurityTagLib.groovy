@@ -51,7 +51,7 @@ class SecurityTagLib {
                 
                 // Se verifica solo si no viene templateId porque me indica si puedo o no
                 // ingresar a ese dominio, luego dentro del dominio se chequean otros permisos.
-                eq('domain', domainId)
+                eq('domainId', domainId)
                 
                 if (attrs.templateId)
                 {

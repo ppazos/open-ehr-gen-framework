@@ -43,10 +43,11 @@
             TODO: el id del template deberia traer el nombre y descripcion del template, que esta definido adentro del propio template.
             -->
             
-            <g:each in="${domainPermits.domain.unique()}" var="domainId" status="i">
+            <g:each in="${domainPermits.domain.unique()}" var="domain" status="i">
               <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                 <td class="title">
-                  ${message(code:Domain.get(domainId).name)}                
+                  <%-- ${message(code:Domain.get(domainId).name)} --%>
+				  ${domain.name}
                 </td>
               </tr>
               <g:each in="${domainPermits.findAll{ it.domain == domain }}" var="permit">
@@ -60,7 +61,8 @@
             </g:each>
           </tbody>
         </table>
-        <%--
+		
+        <%-- No se van a usar mas por ahora...
         <h2>Permisos de bajo nivel</h2>
         <table>
           <tbody>

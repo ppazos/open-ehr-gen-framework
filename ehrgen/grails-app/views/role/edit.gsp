@@ -64,15 +64,15 @@
               <g:each in="${domainPermits.domain.unique()}" var="domain" status="i">
                 <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                   <td class="title">
-                    ${message(code:domain)}                
+                    ${domain.name}                
                   </td>
                 </tr>
-                <g:each in="${domainPermits.findAll{ it.domain == domain }}" var="permit">
+                <g:each in="${domainPermits.findAll{ it.domainId == domain.id }}" var="permit">
                   <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                     <g:set var="checked" value="${roleInstance.domainPermits.find{ p -> p.domain==permit.domain && p.templateId==permit.templateId }}" />
                     <td ${((checked)?'class="permit"':'')} title="${permit.templateId}">
                       <label>
-                        <input type="checkbox" name="dpermits" value="${permit.domain}__${permit.templateId}" ${((checked)?'checked="true"':'')} />
+                        <input type="checkbox" name="dpermits" value="${permit.domainId}__${permit.templateId}" ${((checked)?'checked="true"':'')} />
                         ${permit.templateId} <g:if test="${permit.templateId == '*'}">(todas)</g:if>
                       </label>
                     </td>
@@ -82,6 +82,7 @@
             </tbody>
           </table>
         
+		  <%-- No se van a usar mas por ahora...
           <h2>Permisos de bajo nivel</h2>
           <table>
             <tbody>
@@ -113,6 +114,8 @@
 
             </tbody>
           </table>
+		  --%>
+		  
         </div>
         <div class="buttons">
           <span class="button"><g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" /></span>

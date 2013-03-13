@@ -296,7 +296,7 @@ class BootStrap {
       // -------------------------------------------------------------
       DomainPermit.findAllByTemplateId("*").each {
         
-           rMedico.addToDomainPermits(it)
+         rMedico.addToDomainPermits(it)
       }
       rMedico.save()
       
