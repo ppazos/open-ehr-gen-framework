@@ -34,7 +34,7 @@
         <a href="http://code.google.com/p/open-ehr-gen-framework/" target="_blank"><img src="${resource(dir:'images', file:'ehr-gen_logo.png')}" alt="Open EHR-Gen Framework" /></a>
 		
 		<div class="user_info">
-		  <g:datosUsuario />
+	      ${session.ehrSession.userData}
 		  <g:link controller="authorization" action="logout"><g:message code="authorization.action.logout" /></g:link>
 		</div>
       </div>

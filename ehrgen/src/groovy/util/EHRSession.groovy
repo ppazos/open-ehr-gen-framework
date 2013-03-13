@@ -64,7 +64,9 @@ class EHRSession implements Serializable {
    
    // FIXME: no puedo poner domain objects en session: http://grails.1312388.n4.nabble.com/Best-way-to-cache-some-domain-objects-in-a-user-session-td3820978.html
    //LoginAuth login // antes userId == login.id
-    
+   
+   String userData // Cuando el usuario se loguea, muestra "Bienvenido Juan Perez"
+   
    /**
     * Devuelve la persona logueada a partir del id del login.
     * @return

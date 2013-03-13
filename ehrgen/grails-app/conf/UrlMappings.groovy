@@ -5,13 +5,11 @@ class UrlMappings {
 			 // apply constraints here
 		  }
 	   }
-      "/"(view:"/index")
-      /*
+      //"/"(view:"/index")
       "/"(
-          controller: 'records',
+          controller: 'domain',
           action: 'list'
       )
-      */
-	   "500"(view:'/error')
-	}
+	  "500"(view:'/error')
+   }
 }

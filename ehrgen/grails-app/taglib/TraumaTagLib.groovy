@@ -267,43 +267,6 @@ class TraumaTagLib {
         out << '</div>' // resumen_episodio
     }
     
-    
-    /**
-     * Muestra los datos del usuario logueado.
-     */
-    def datosUsuario = { attrs, body ->    
-        
-        def login = LoginAuth.get( session.ehrSession.userId )
-       
-        // FIXME: no puedo poner domain objects en session: http://grails.1312388.n4.nabble.com/Best-way-to-cache-some-domain-objects-in-a-user-session-td3820978.html
-        //LoginAuth login = session.ehrSession.login
-        // TODO: if !login
-        
-        // FIXME:
-        // Falla porque me dice que la identity que tiene adentro tiene clase PartyIdentity_$$_javassist_123
-        //def personName = login.person.identities.find{ it instanceof PersonName }
-
-        // FIX rapido, se que tiene una sola identidad y es PersonName, quiero esa...
-        //def personName = login.person.identities.find{ true }
-        // Si no seria: def nombres = person.identities.find{ it.purpose == 'PersonName' }
-        
-        //println "xxxxxxxxxxxxxxxxxxxxx"
-        //login.person.identities.each { println it.getClass() }
-        //println "xxxxxxxxxxxxxxxxxxxxx"
-        
-        // FIXME: i18n
-        // FIXME: usar un template para mostrar el Person Name
-        if (login.person.sexo == Person.SEXO_FEMENINO)
-        {
-            out << "Bienvenida "
-        }
-        else
-        {
-            out << "Bienvenido "
-        }
-        out << login.person.primerNombre + " " + login.person.primerApellido
-    }
-    
     /**
      * TagLib condicional, si el component tiene el item para el template, ertorna el body.
      * in: templateId 'EVALUACION_PRIMARIA-via_aerea.v1' (la verificacion deberia hacerse sin considerar la version, para poder mostrar registros viejos hechos con templates en otras versiones).

@@ -29,7 +29,9 @@
   <body>
     <div id="user_bar">
       <b>Open-EHRGen</b> v${ApplicationHolder.application.metadata['app.version']} | 
-      <g:datosUsuario />
+      
+	  ${session.ehrSession.userData}
+	  
       <span class="user_actions">
         
         <span class="currentDate">

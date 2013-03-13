@@ -31,7 +31,7 @@ package auth
 
 import auth.AuthorizationService
 import util.EHRSession
-
+import demographic.party.Person
 
 class AuthorizationController {
    
@@ -46,11 +46,24 @@ class AuthorizationController {
          {
             // Pone al usuario en session
             session.ehrSession = new EHRSession( userId: login.id )
+         
+         
+            // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=120
+            // FIXME: i18n
+            if (login.person.sexo == Person.SEXO_FEMENINO)
+            {
+               session.ehrSession.userData = "Bienvenida "
+            }
+            else
+            {
+               session.ehrSession.userData = "Bienvenido "
+            }
+            session.ehrSession.userData += login.person.primerNombre + " " + login.person.primerApellido
             
+         
             // FIXME: no puedo poner domain objects en session: http://grails.1312388.n4.nabble.com/Best-way-to-cache-some-domain-objects-in-a-user-session-td3820978.html
             //session.ehrSession = new EHRSession( login: login )
             
-            //redirect(controller:'records', action:'list')
             redirect(controller:'domain', action:'list')
             return
          }
