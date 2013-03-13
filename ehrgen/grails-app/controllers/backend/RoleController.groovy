@@ -122,7 +122,6 @@ class RoleController {
       // DomainPermits
       params.list('dpermits').each { domainTemplateId ->
          
-		 println "dtid: " + domainTemplateId
          partes = domainTemplateId.split("__")
          
          permit = DomainPermit.findByDomainIdAndTemplateId(Long.parseLong(partes[0]), partes[1])
