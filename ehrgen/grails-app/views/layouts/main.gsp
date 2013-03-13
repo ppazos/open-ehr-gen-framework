@@ -9,6 +9,10 @@
     .logo img {
        border: 0px;
     }
+	.user_info {
+	  display: inline-block;
+	  float: right;
+	}
     div.wrapper {
       position:relative;
       height: 100%;
@@ -28,6 +32,11 @@
       </div>	
       <div class="logo">
         <a href="http://code.google.com/p/open-ehr-gen-framework/" target="_blank"><img src="${resource(dir:'images', file:'ehr-gen_logo.png')}" alt="Open EHR-Gen Framework" /></a>
+		
+		<div class="user_info">
+		  <g:datosUsuario />
+		  <g:link controller="authorization" action="logout"><g:message code="authorization.action.logout" /></g:link>
+		</div>
       </div>
       <g:layoutBody />
     </div>

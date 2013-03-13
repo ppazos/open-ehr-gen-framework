@@ -27,7 +27,7 @@
   <body>
     <div class="nav">
       <span class="menuButton">
-        <a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+		<g:link controller="domain" class="home"><g:message code="default.home.label"/></g:link>
       </span>
       <span class="menuButton">
         <g:link action="create" class="create">Crear</g:link>

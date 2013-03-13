@@ -277,8 +277,6 @@ class TraumaTagLib {
        
         // FIXME: no puedo poner domain objects en session: http://grails.1312388.n4.nabble.com/Best-way-to-cache-some-domain-objects-in-a-user-session-td3820978.html
         //LoginAuth login = session.ehrSession.login
-        //println login
-        //println login.person
         // TODO: if !login
         
         // FIXME:

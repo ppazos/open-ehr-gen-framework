@@ -48,7 +48,7 @@ class EHRSession implements Serializable {
    Long domainId
 	
    // Identificador en la DB del workflow seleccionado segun el rol del usuario
-	Long workflowId
+   Long workflowId
     
    // Id del paciente seleccionado
    Long patientId // parece que no se usa... la idea era: si habia un paciente seleccionado, que en el listado se mostraran solo los registros de este paciente.

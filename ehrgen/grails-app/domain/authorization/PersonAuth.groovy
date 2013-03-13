@@ -42,7 +42,8 @@ class PersonAuth extends Authorization {
        person(nullable: false)
     }
     static mapping = {
-       person lazy:true // lazily fetch the person
+       //person lazy:true // lazily fetch the person
+	   person lazy:false
+	   // tira el error descrito aqui: https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=76
     }
- 
 }
