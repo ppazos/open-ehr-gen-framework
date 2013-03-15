@@ -37,7 +37,8 @@ class DemographicService {
         else
         {
             println "DemographicService - PA REMOTO"
-            demographicAccess = new PixPdqDemographicAccess()
+            //demographicAccess = new PixPdqDemographicAccess()
+			throw new Exception("Debe definir una implementacion de la clase DemographicAccess para acceder a respositorios remotos de pacientes")
         }
     }
     

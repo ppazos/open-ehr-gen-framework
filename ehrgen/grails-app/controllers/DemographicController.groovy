@@ -30,20 +30,11 @@ http://xstream.codehaus.org/
 import demographic.party.*
 import demographic.role.*
 import support.identification.UIDBasedID
-
 import hce.HceService
-
 import tablasMaestras.TipoIdentificador
-
 import hce.core.composition.*
-
 import com.thoughtworks.xstream.XStream
-
 import converters.DateConverter
-
-// TEST
-import demographic.PixPdqDemographicAccess
-
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 // Para manejar eventos
@@ -79,24 +70,6 @@ class DemographicController{
         
         println "PARAMS: " + params + "\n"
 
-    //    def pixpdq = new PixPdqDemographicAccess()
-        //pixpdq.findIdsById( new UIDBasedID(value:params.identificador) )
-        //pixpdq.findPersonById( new UIDBasedID(value:params.identificador) )
-        
-        //def person = new Person()
-        //person.properties = params
-        //bindData(person, params, 'person')
-        //println "Person: " + person
-        
-        //if (!params.identificador)
-        /*
-        if (!params.('person.ids[0].value'))
-        {
-            flash.message = "Identificador requerido"
-            redirect(action:'admisionPaciente')
-            return
-        }
-        */
         
         // TODO: aca va la consulta PIX al maciel.
         // Deberia hacerse como un strategy, definiendo una interfaz comun,
