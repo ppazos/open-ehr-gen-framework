@@ -11,6 +11,10 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
  */
 class TemplateManager {
     
+	// Ruta independiente del SO
+    // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
+    String PS = System.getProperty("file.separator")
+	
     // FIXME> puede ser necesario sincronizar las estructuras porque son compartidas...
     // Cache: templateId => template
     private static Map<String, Template> cache = [:]
@@ -126,7 +130,7 @@ class TemplateManager {
 
              // Asociaciones constraint->field
              field.fieldConstraints.each { constraint ->
-			 
+          
                 constraint.owner = field
              }
 
@@ -204,10 +208,6 @@ class TemplateManager {
    public Template getTemplate( String templateId )
    {
       //println "getTemplate: " + templateId
-    
-      // Ruta independiente del SO
-      // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
-      String PS = System.getProperty("file.separator")
        
       // Si no esta cargado, lo intenta cargar
       if (!this.cache[templateId])
@@ -292,6 +292,51 @@ class TemplateManager {
       return this.cache[templateId]
    }
    
+   /**
+    * Serializa un template a XML y lo guarda en el repo local de templates.
+   */
+   public void saveTemplateToRepo( Template template )
+   {
+      String path = ApplicationHolder.application.config.hce.template_repo
+      path += getTypePath( template.rootArchetype.type.toString() )
+     
+      println " - save template to: " + path
+     
+      def writer = new StringWriter()
+      def xml = new groovy.xml.MarkupBuilder(writer)
+     
+      xml.template() {
+         id(template.templateId + ".v1")
+         name(template.name)
+         root_archetype {
+            archetype(type: template.rootArchetype.type.toString(),
+                      id: template.rootArchetype.refId,
+                      pageZone: template.rootArchetype.pageZone,
+                      includeAll: template.rootArchetype.includeAll) {
+               // TODO: serializar referencias a fields
+            }
+         }
+         if (template.includedArchetypes.size() > 0)
+         {
+            included_archetypes {
+               template.includedArchetypes.each { archRef ->
+                  archetype(type: archRef.type.toString(),
+                            id: archRef.refId,
+                            pageZone: archRef.pageZone,
+                            includeAll: archRef.includeAll) {
+                    // TODO: serializar referencias a fields
+                  }
+               }
+            }
+         }
+      }
+	  
+	  println " - Template guardado en repo local: " + path + PS + template.templateId + ".xml"
+	  File file = new File(path + PS + template.templateId + ".xml")
+	  file << writer.toString()
+	  
+   }
+   
    
    private String getTypePath( String type )
    {
@@ -331,7 +376,6 @@ class TemplateManager {
       //println " --- loadAllRecursive: " + path
       def root = new File( path )
       
-      //String templateId
       Template template
       
       // Filtra solo archivos xml

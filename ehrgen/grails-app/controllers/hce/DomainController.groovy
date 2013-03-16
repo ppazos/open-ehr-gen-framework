@@ -561,7 +561,6 @@ class DomainController {
             template.addToIncludedArchetypes( aref )
          }
          
-         
          if (!template.save())
          {
             println template.errors
@@ -569,16 +568,22 @@ class DomainController {
             return [archetypes: archetypes]
          }
          
-         // TODO: serializar a XML
-         
+		 
+
          // Genera GUI para el nuevo template
          guiCachingService.generateGUI([template])
          
+		 
+		 def tman = templates.TemplateManager.getInstance()
+		 
          // Agrega el template al cache
          // Permite tener toda la estructura del template en memoria y
          // no tener que cargarlo en cada request desde la base
-         templates.TemplateManager.getInstance().cacheTemplate(template)
+         tman.cacheTemplate(template)
          
+		 // Serializa y guarda el XML en disco
+		 tman.saveTemplateToRepo(template)
+		 
          
          flash.message = "Se ha creado el template con éxito"
          redirect(action:'list')

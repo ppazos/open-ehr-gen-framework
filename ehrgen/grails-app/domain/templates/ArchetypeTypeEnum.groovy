@@ -40,10 +40,10 @@ public enum ArchetypeTypeEnum {
             case "action": return ACTION
             case "admin_entry": return ADMIN_ENTRY
             
-            case 'item_tree': return ITEM_TREE
-            case 'item_list': return ITEM_LIST
-            case 'item_single': return ITEM_SINGLE
-            case 'item_table': return ITEM_TABLE
+            case "item_tree": return ITEM_TREE
+            case "item_list": return ITEM_LIST
+            case "item_single": return ITEM_SINGLE
+            case "item_table": return ITEM_TABLE
             
             case "cluster": return CLUSTER
             case "element": return ELEMENT
@@ -68,5 +68,11 @@ public enum ArchetypeTypeEnum {
       CLUSTER,
       ELEMENT
      ]
+   }
+   
+   @Override
+   public String toString()
+   {
+      return this.name
    }
 }
