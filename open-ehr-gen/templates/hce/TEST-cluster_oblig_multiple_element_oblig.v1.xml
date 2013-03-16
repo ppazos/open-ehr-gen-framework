@@ -1,7 +1,0 @@
-<template>
-  <id>TEST-cluster_oblig_multiple_element_oblig</id>
-  <name>Test de validacion de cluster obligatorio multiple y con un element obligatorio</name>
-  <root_archetype>
-    <archetype type="observation" id="openEHR-EHR-OBSERVATION.test_cluster_oblig_multiple_element_oblig.v1" pageZone="content" includeAll="true" />
-  </root_archetype>
-</template>
