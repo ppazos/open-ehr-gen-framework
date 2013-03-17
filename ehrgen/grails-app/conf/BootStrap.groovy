@@ -81,7 +81,12 @@ class BootStrap {
    
    // Reference to Grails application. Lo inyecta.
    def grailsApplication
-    
+   
+   
+   def archetypeManager = ArchetypeManager.getInstance()
+   def templateManager = TemplateManager.getInstance()
+   
+   
    def init = { servletContext ->
      
       println ""
@@ -91,22 +96,40 @@ class BootStrap {
       println ""
         
         
-      println "- correccion de la TimeZone a la de Montevideo/Buenos Aires"
+      println "- Cambio de TimeZone a la de Montevideo/Buenos Aires"
+      
       // Correccion de reloj segun uso horario
       // http://groovy.codehaus.org/JN0545-Dates
-      // Esto si lo corrige!!!!
-      //TimeZone.'default' = TimeZone.getTimeZone('GMT-03:00') //set the default time zone
-      TimeZone.'default' = TimeZone.getTimeZone('America/Montevideo') // Con este considera daylight savings (cambios de +/- una hora por anio)
+      //TimeZone.'default' = TimeZone.getTimeZone('GMT-03:00') // No funciona
+      TimeZone.'default' = TimeZone.getTimeZone('America/Montevideo') // Funciona y considera daylight savings (cambios de +/- una hora por anio)
         
         
-        
-      def templateManager = TemplateManager.getInstance()
-      def archetypeManager = ArchetypeManager.getInstance()
+      // =======================================================================
+      // Carga artefactos de la base de conocimiento local
+      // =======================================================================
       
-      // Para crear los ArchetypeIndex necesito todos los arquetipos cargados
+      // Se usan para crear los ArchetypeIndex necesito todos los arquetipos cargados
+      println "- Carga arquetipos en memoria"
       archetypeManager.loadAll()
-        
-        
+      
+      println "- Carga templates en memoria"
+      // Se usan para generar todas las guis de todos los dominios
+      templateManager.loadAll()
+      
+      
+      // Guarda todos los templates del repo local en la base de datos
+      // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=122
+      Map templates = templateManager.getLoadedTemplates()
+      
+      templates.each { entry ->
+      
+         if (!entry.value.save()) // value es Template
+         {
+            println entry.value.errors
+         }
+      }
+      
+      
       // Parece que no puedo definir el locale sin estar en una sesion de verdad
       // Una SOLUCION podria ser que no se genere la GUI desde el bootstrap, sino que se genere desde una GUI de administracion.
       // ===================================================
@@ -139,7 +162,7 @@ class BootStrap {
       //        unico para el dominio porque se usa para verificar autorizacion.
       // --------------
         
-		
+        
       // Dominios y compositions por defecto
       //def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
       //def appContext = WebApplicationContextUtils.getWebApplicationContext( servletContext )
@@ -149,6 +172,8 @@ class BootStrap {
       // ====================================================================================
       // Crea dominios
       //
+	  createDomains()
+	  /*
       def config_domains = grailsApplication.config.domains
 
       println " - Creacion de dominios"
@@ -170,155 +195,46 @@ class BootStrap {
             }
          }
       }
+	  */
       //
       // /Crea dominios
       // ====================================================================================
       
       
       // TODO: no crear si ya existen
-      // ---------------------------  PERSONAS Y ROLES  ----------------------
-      println " - Creacion de personas de prueba"
+      // --------------------- PERSONAS, ROLES Y LOGINS ----------------------
+      
+      createRolesAndPersons()
         
-      //
-      //Permit.createDefault() // controler/action
-      //
-      DomainPermit.createDefault() // domain/templateId
-      //
-        
-      // ROLES: se crea una instancia por cada rol existente.
-      // Luego el admin puede crear otros roles y asignar permisos.
-      // TODO: crear un usuario para el rol GODLIKE
-      def rGodLike = new Role(type: Role.GODLIKE)
-      if (!rGodLike.save()) println rGodLike.errors
-        
-      def rAdmin = new Role(type: Role.ADMIN)
-      if (!rAdmin.save()) println rAdmin.errors
-        
-      def rPaciente = new Role(type: Role.PACIENTE)
-      if (!rPaciente.save()) println rPaciente.errors
-        
-      def rMedico = new Role(type: Role.MEDICO)
-      if (!rMedico.save()) println rMedico.errors
-        
-      def rEnfermeria = new Role(type: Role.ENFERMERIA)
-      if (!rEnfermeria.save()) println rEnfermeria.errors
-        
-      def rAdministrativo = new Role(type: Role.ADMINISTRATIVO)
-      if (!rAdministrativo.save()) println rAdministrativo.errors
-
-        
-      // Los roleValidity se guardan al guardar las personas
-        
-      // 24/10/1981
-      def paciente = createPerson('Pablo','Pazos',
-                                  '2.16.840.1.113883.2.14.2.1::1234567',
-                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::6677',
-                                  new Date(81, 9, 24), 'M', rPaciente)
-        
-      def pac2 = createPerson('Leandro','Carrasco',
-                              '2.16.840.1.113883.2.14.2.1::2345678',
-                              '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::3366',
-                              new Date(82, 10, 25), 'M', rPaciente)
-      // 24/10/1985
-      def persona4 = createPerson('Pablo','Cardozo',
-                                  '2.16.840.1.113883.2.14.2.1::1234888',
-                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::44556',
-                                  new Date(85, 9, 24), 'M', rPaciente)
-        
-      def persona5 = createPerson('Marcos','Carisma',
-                                  '2.16.840.1.113883.2.14.2.1::45687543',
-                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::2233445',
-                                  new Date(80, 11, 26), 'M', rPaciente)
-        
-      // Paciente con estudios imagenologicos en el CCServer local
-      // id en el CCServer
-      def persona6 = createPerson('CT','Mister',
-                                  '2.16.840.1.113883.4.330.666::2178309',
-                                  null,
-                                  null, 'M', rPaciente)
-        
-      // ex persona3
-      def doctor1 = createPerson('Marta','Doctora',
-                                 '2.16.840.1.113883.4.330.858::6667778',
-                                 null,
-                                 new Date(83, 11, 26), 'F', rMedico)
-
-      def persona_administrativo = createPerson('Charles','Administrativo',
-                                    '2.16.840.1.113883.2.14.2.1::3334442',
-                                    null,
-                                    null, 'M', rAdministrativo)
-
-      def persona_enfermera = createPerson('Juana','Enfermera',
-                                    '2.16.840.1.113883.2.14.2.1::9876456',
-                                    null,
-                                    null, 'F', rEnfermeria)
-        
-      def persona_admin = createPerson('Joe','Admin',
-                                    '2.16.840.1.113883.2.14.2.1::98607521',
-                                    null,
-                                    null, 'M', rAdmin)
-
-        
-        
-      // =============================================================
       // CREA ADMISION DE LOS PACIENTES AL DOMINIO DE TRAUMA
-      def admissions = []
-      def trauma_domain = Domain.findByName('Emergencia de Trauma') // CUIDADO: nombre en Config.groovy puede cambiar!
-        
-      // Personas con rol paciente
-      def rvs = RoleValidity.withCriteria {
-        role {
-          eq('type', Role.PACIENTE)
-        }
-      }
-        
-      // Para cada persona con rol paciente
-      rvs.performer.each { person ->
-        
-         admissions << new Admission(
-           patientId: person.id,
-           physicianId: doctor1.id,
-           domainId: trauma_domain.id
-         )
-      }
-        
-      // Guarda admisiones
-      admissions.each { admission ->
-         if (!admission.save()) println admission.errors
-      }
-        
+      createSampleAdmissions()
+      
+      
+      //Permit.createDefault() // controler/action (no se usan)
       //
-      // =============================================================
-        
-      // =============================================================
+	   println "   - crea permisos por defecto"
+      DomainPermit.createDefault() // domain/templateId
+
+      
       // ASIGNACION DE PERMISOS POR DEFECTO
-      // ROL MEDICO, ACCESO A TODOS LOS DOMINIOS y todos los templates
+      // ROL GODLIKE, ACCESO A TODOS LOS DOMINIOS y todos los templates.
+      //
+      // TODO: ADEMAS DEBERIA TENER PERMISOS PARA LAS ACCIONES DE GESTION,
+      // el MEDICO NO.
+      // FIXME: no se estan verificando permisos para las acciones de gestion.
       // -------------------------------------------------------------
+      def godlike = Role.findByType(Role.GODLIKE)
+      def medico = Role.findByType(Role.MEDICO)
       DomainPermit.findAllByTemplateId("*").each {
         
-         rMedico.addToDomainPermits(it)
+         medico.addToDomainPermits(it)
+         godlike.addToDomainPermits(it)
       }
-      rMedico.save()
+      godlike.save()
+      medico.save()
       
-      // ====================================================================================
-      // LOGINS
-      //
-      // Login para el medico   
-      def login = new LoginAuth(user:'med', pass:'med', person: doctor1)
-      if (!login.save()) println login.errors
+      // --------------------- /PERSONAS, ROLES Y LOGINS ----------------------
       
-      // Login para el administrativo
-      def login_adm = new LoginAuth(user:'adm', pass:'adm', person: persona_administrativo)
-      if (!login_adm.save()) println login_adm.errors
-      
-      def login_enf = new LoginAuth(user:'enf', pass:'enf', person: persona_enfermera)
-      if (!login_enf.save()) println login_enf.errors
-      
-      def login_admin = new LoginAuth(user:'admin', pass:'admin', person: persona_admin)
-      if (!login_admin.save()) println login_admin.errors
-        
-      // /Creacion de personas
-      // ====================================================================================
       
       // =====================================================================
       // Crea workflows para cada domain
@@ -330,10 +246,6 @@ class BootStrap {
       // Auxiliares para la generacion del HTML
       String templateId
         
-      // Carga del repo todos los templates
-      // Se usan para generar todas las guis de todos los dominios
-      templateManager.loadAll()
-        
       // ====================================================================
       // Generacion de gui
       guiCachingService.generateGUI( templateManager.getLoadedTemplates().values() as List )
@@ -341,12 +253,19 @@ class BootStrap {
       // Stage ->* Templates
       Map domainTemplates
       
+      // Personas con rol medico
+      def rvsm = RoleValidity.withCriteria {
+        role {
+          eq('type', Role.MEDICO)
+        }
+      }
+      
       Domain.list().each { domain ->
          
          // Por defecto todo domain tiene un workflow y el
          //medico tiene acceso a ese workflow en todos los domains
          workflow = new WorkFlow(
-            forRoles: [rMedico], // Cuidado, este es el rol medico de UN usuario, si se crea mas de un usuario medico aca, se deberian poner todos los roles medicos de cada usuario (el rol es por instancia!)
+            forRoles: rvsm.role, //[rMedico], // Cuidado, este es el rol medico de UN usuario, si se crea mas de un usuario medico aca, se deberian poner todos los roles medicos de cada usuario (el rol es por instancia!)
             owner: domain
          )
          
@@ -379,6 +298,13 @@ class BootStrap {
             // Falta agregar los templates de cada stage
 
 
+            /*
+            ESTO SOLO GUARDA EN LA BASE DE DATOS LOS TEMPLATES LEVANTADOS DEL REPO LOCAL QUE SON REFERENCIADOS DESDE UNA STAGE EN EL CONFIG,
+            PERO DEBERIAN GUARDARSE TODOS LOS TEMPLATES DEL REPO LOCAL EN LA BASE PARA QUE QUEDEN DISPONIBLES CUANDO SE CREA UNA NUEVA STAGE DESDE LA GUI.
+            
+            EL GUARDADO DE TODOS LOS TEMPLATES EN LA BD SE HACE AL INICIO DEL BOOTSTRAP.
+            */
+            
             // Cada template dentro de una stage
             entry.value.each { subsection -> // via_aerea
 
@@ -407,16 +333,16 @@ class BootStrap {
          // Guarda en cascada workflow, stages y templates del domain
          if (!domain.save())
          {
-              println domain.errors
-              domain.workflows.each { wf ->
-                 println wf.errors
-                 wf.stages.each { stg ->
-                    println stg.errors
-                    stg.recordDefinitions.each { tpl ->
-                       println tpl.errors
-                    }
-                 }
-              }
+            println domain.errors
+            domain.workflows.each { wf ->
+               println wf.errors
+               wf.stages.each { stg ->
+                  println stg.errors
+                  stg.recordDefinitions.each { tpl ->
+                     println tpl.errors
+                  }
+               }
+            }
          }
       } // each domain
         
@@ -426,7 +352,9 @@ class BootStrap {
       // ====================================================================================
       // Crea compositions
       //
+      createSampleCompositions()
 
+      /*
       def partySelf
       def participation
       def startDate
@@ -514,12 +442,12 @@ class BootStrap {
          }
       }
       // /Dominios y compositions por defecto
-        
+      */
      
-        println " - START: Carga catalogos maestros"
+      println " - START: Carga catalogos maestros"
         
-        // saco para acelerar la carga
-        /*
+      // saco para acelerar la carga
+      /*
         println "   - CIE 10..."
         if (Cie10Trauma.count() == 0)
         {
@@ -532,49 +460,49 @@ class BootStrap {
         {
            println "      ya estan cargados"
         }
-        */
+      */
         
-        println "   - OpenEHR Concepts..."
-        if (OpenEHRConcept.count() == 0)
-        {
-           def oehr_concepts = OpenEHRConcept.getConcepts()
-           oehr_concepts.each { concept ->
-              if (!concept.save()) println concept.errors
-           }
-        }
-        else
-        {
-           println "      ya estan cargados"
-        }
+      println "   - OpenEHR Concepts..."
+      if (OpenEHRConcept.count() == 0)
+      {
+         def oehr_concepts = OpenEHRConcept.getConcepts()
+         oehr_concepts.each { concept ->
+            if (!concept.save()) println concept.errors
+         }
+      }
+      else
+      {
+         println "      ya estan cargados"
+      }
         
-        println "   - Tipos de identificadores..."
-        if (TipoIdentificador.count() == 0)
-        {
-           def identificadores = TipoIdentificador.getTipos()
-           identificadores.each { id ->
-              if (!id.save()) println id.errors
-           }
-        }
-        else
-        {
-           println "      ya estan cargados"
-        }
+      println "   - Tipos de identificadores..."
+      if (TipoIdentificador.count() == 0)
+      {
+         def identificadores = TipoIdentificador.getTipos()
+         identificadores.each { id ->
+            if (!id.save()) println id.errors
+         }
+      }
+      else
+      {
+         println "      ya estan cargados"
+      }
         
-        if (MotivoConsulta.count() == 0)
-        {
-           println "   - Motivos de consulta (idem tipos de evento)..."
-           def eventos = MotivoConsulta.getTipos()
-           eventos.each { evento ->
-              if (!evento.save()) println evento.errors
-           }
-        }
-        else
-        {
-           println "      ya estan cargados"
-        }
+      if (MotivoConsulta.count() == 0)
+      {
+         println "   - Motivos de consulta (idem tipos de evento)..."
+         def eventos = MotivoConsulta.getTipos()
+         eventos.each { evento ->
+            if (!evento.save()) println evento.errors
+         }
+      }
+      else
+      {
+         println "      ya estan cargados"
+      }
         
-        /*
-		  // TODO: Se usa?
+      /*
+          // TODO: Se usa?
         if (EmergenciaMovil.count() == 0)
         {
            println "   - Empresas emergencia movil..."
@@ -587,31 +515,25 @@ class BootStrap {
         {
            println "      ya estan cargados"
         }
-        */
+      */
         
-        if (DepartamentoUY.count() == 0)
-        {
-           println "   - Departamentos UY..."
-           def departamentos = DepartamentoUY.getDepartamentos()
-           departamentos.each { dpto ->
-              if (!dpto.save()) println dpto.errors
-           }
-        }
-        else
-        {
-           println "      ya estan cargados"
-        }
+      if (DepartamentoUY.count() == 0)
+      {
+         println "   - Departamentos UY..."
+         def departamentos = DepartamentoUY.getDepartamentos()
+         departamentos.each { dpto ->
+            if (!dpto.save()) println dpto.errors
+         }
+      }
+      else
+      {
+         println "      ya estan cargados"
+      }
         
-        println " - END: Carga tablas maestras"
+      println " - END: Carga tablas maestras"
         
 
-
-        
-        
-        
-        
-        
-        /* saco episodio de prueba para no generar problemas...
+      /* saco episodio de prueba para no generar problemas...
         
         println " - Creacion de episodio de prueba"
         
@@ -641,21 +563,142 @@ class BootStrap {
         {
             println "ERROR: " + version.errors
         }
+      */
         
-        // /Creacion de episodio
-        */
+      println "Create Archetype Indexes"
+      archetypeManager.createArchetypeIndexes()
         
-        println "Create Archetype Indexes"
-        archetypeManager.createArchetypeIndexes()
-        
-        println ""
-        println "======= +++++++++ ======="
-        println "======= /Bootstrap ======="
-        println "======= +++++++++ ======="
-        println ""
-        
+      println ""
+      println "======= +++++++++ ======="
+      println "======= /Bootstrap ======="
+      println "======= +++++++++ ======="
+      println ""
    }
    def destroy = {
+   }
+   
+   /**
+    * Crea los dominios en la BD a partir de los dominios por defecto
+	* especificados en Config.groovy.
+    */
+   def createDomains()
+   {
+      println " - Creacion de dominios"
+      
+      def config_domains = grailsApplication.config.domains
+      
+      // Si ya se crearon los dominios, no los crea.
+      if (Domain.count() > 0) return
+      
+      config_domains.each { config_domain ->
+        
+         println "   - $config_domain"
+        
+         def domain = new Domain(
+            name: config_domain,
+            userDefined: true
+         )
+             
+         if (!domain.save(flush:true))
+         {
+            println domain.errors
+         }
+      }
+   }
+   
+   /**
+    * Crea roles, personas y logins por defecto.
+    */
+   def createRolesAndPersons()
+   {
+      println " - Creacion de personas de prueba"
+      
+      // ROLES: se crea una instancia por cada rol existente.
+      // Luego el admin puede crear otros roles y asignar permisos.
+      // TODO: crear un usuario para el rol GODLIKE
+      def rGodLike = new Role(type: Role.GODLIKE)
+      if (!rGodLike.save()) println rGodLike.errors
+        
+      def rAdmin = new Role(type: Role.ADMIN)
+      if (!rAdmin.save()) println rAdmin.errors
+        
+      def rPaciente = new Role(type: Role.PACIENTE)
+      if (!rPaciente.save()) println rPaciente.errors
+        
+      def rMedico = new Role(type: Role.MEDICO)
+      if (!rMedico.save()) println rMedico.errors
+        
+      def rEnfermeria = new Role(type: Role.ENFERMERIA)
+      if (!rEnfermeria.save()) println rEnfermeria.errors
+        
+      def rAdministrativo = new Role(type: Role.ADMINISTRATIVO)
+      if (!rAdministrativo.save()) println rAdministrativo.errors
+
+        
+      // Los roleValidity se guardan al guardar las personas
+        
+      // 24/10/1981
+      def paciente = createPerson('Pablo','Pazos',
+                                  '2.16.840.1.113883.2.14.2.1::1234567',
+                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::6677',
+                                  new Date(81, 9, 24), 'M', rPaciente)
+        
+      def pac2 = createPerson('Leandro','Carrasco',
+                              '2.16.840.1.113883.2.14.2.1::2345678',
+                              '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::3366',
+                              new Date(82, 10, 25), 'M', rPaciente)
+      // 24/10/1985
+      def persona4 = createPerson('Pablo','Cardozo',
+                                  '2.16.840.1.113883.2.14.2.1::1234888',
+                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::44556',
+                                  new Date(85, 9, 24), 'M', rPaciente)
+        
+      def persona5 = createPerson('Marcos','Carisma',
+                                  '2.16.840.1.113883.2.14.2.1::45687543',
+                                  '2.16.840.1.113883.2.14.1.1.1.3.1.5.1::2233445',
+                                  new Date(80, 11, 26), 'M', rPaciente)
+        
+      // Paciente con estudios imagenologicos en el CCServer local
+      // id en el CCServer
+      def persona6 = createPerson('CT','Mister',
+                                  '2.16.840.1.113883.4.330.666::2178309',
+                                  null,
+                                  null, 'M', rPaciente)
+        
+      // ex persona3
+      def doctor1 = createPerson('Marta','Doctora',
+                                 '2.16.840.1.113883.4.330.858::6667778',
+                                 null,
+                                 new Date(83, 11, 26), 'F', rMedico)
+
+      def persona_administrativo = createPerson('Charles','Administrativo',
+                                    '2.16.840.1.113883.2.14.2.1::3334442',
+                                    null,
+                                    null, 'M', rAdministrativo)
+
+      def persona_enfermera = createPerson('Juana','Enfermera',
+                                    '2.16.840.1.113883.2.14.2.1::9876456',
+                                    null,
+                                    null, 'F', rEnfermeria)
+        
+      def persona_admin = createPerson('Joe','Admin',
+                                    '2.16.840.1.113883.2.14.2.1::98607521',
+                                    null,
+                                    null, 'M', rAdmin)
+      
+      // Login para el medico   
+      def login = new LoginAuth(user:'med', pass:'med', person: doctor1)
+      if (!login.save()) println login.errors
+      
+      // Login para el administrativo
+      def login_adm = new LoginAuth(user:'adm', pass:'adm', person: persona_administrativo)
+      if (!login_adm.save()) println login_adm.errors
+      
+      def login_enf = new LoginAuth(user:'enf', pass:'enf', person: persona_enfermera)
+      if (!login_enf.save()) println login_enf.errors
+      
+      def login_admin = new LoginAuth(user:'admin', pass:'admin', person: persona_admin)
+      if (!login_admin.save()) println login_admin.errors
    }
    
    def createPerson(String pn, String pa, String id1, String id2, Date dob, String sexo, Role role)
@@ -676,6 +719,149 @@ class BootStrap {
       if (!p.save()) println p.errors
       
       return p
+   }
+   
+   def createSampleAdmissions()
+   {
+      println "   - Crea admisiones por defecto"
+   
+      def admissions = []
+      def trauma_domain = Domain.findByName('Emergencia de Trauma') // FIXME: nombre en Config.groovy puede cambiar! (crear codigos unicos para cada dominio, ej. un md5)
+        
+      // Personas con rol paciente
+      def rvs = RoleValidity.withCriteria {
+        role {
+          eq('type', Role.PACIENTE)
+        }
+      }
+      
+      // Personas con rol medico, deberia haber una sola
+      def rvsm = RoleValidity.withCriteria {
+        role {
+          eq('type', Role.MEDICO)
+        }
+      }
+        
+      // Para cada persona con rol paciente
+      rvs.performer.each { person ->
+        
+         admissions << new Admission(
+           patientId: person.id,
+           physicianId: rvsm[0].performer.id, //doctor1.id,
+           domainId: trauma_domain.id
+         )
+      }
+        
+      // Guarda admisiones
+      admissions.each { admission ->
+         if (!admission.save()) println admission.errors
+      }
+   }
+   
+   
+   def createSampleCompositions()
+   {
+      def partySelf
+      def participation
+      def startDate
+      def composition
+      
+      
+      // --------------------------------------------------
+      // Quiero la persona con rol medico
+      
+      // Personas con rol medico
+      def rvsm = RoleValidity.withCriteria {
+        role {
+          eq('type', Role.MEDICO)
+        }
+      }
+      def medico = rvsm[0].performer // Hay un solo medico
+      
+      // --------------------------------------------------
+      // Quiero una persona con rol paciente
+      def rvsp = RoleValidity.withCriteria {
+        role {
+          eq('type', Role.PACIENTE)
+        }
+      }
+      def paciente = rvsp[0].performer
+      
+      Domain.list().each { domain ->
+
+         // =====================================================================================
+         // Crea N registros por dominio, la mitad los asigna a un paciente
+              
+         (1..30).each { i ->
+                 
+            //println " - Crea COMPOSITION $i"
+              
+            // Crea registro de prueba para cada dominio
+            // TODO: usar textos medicos para la descripcion, ver lista de evoluciones
+            composition = hceService.createComposition( new Date(), "bla bla bla", domain.workflows[0].id )
+            
+            // ============================================================================
+            // TODO: no se usa la referencia desde el domain a la composition? VERIFICAR.
+            // ============================================================================
+              
+            composition.padre = domain
+      
+            if (!composition.save())
+            {
+               println "Error: " + composition.errors
+            }
+            
+            // Crea la version inicial
+            def version = new Version(
+               data: composition,
+               timeCommited: new DvDateTime(
+                  value: DateConverter.toIso8601ExtendedDateTimeFormat( new Date() )
+               )
+            )
+                 
+            if (!version.save())
+            {
+               println "ERROR: " + version.errors
+            }
+            
+            
+            // TODO: crear un generador de contenido basado en los arquetipos de los templates
+            //       del wf que se usa para crear la composition, asi las compositions cerradas
+            //       tienen algo de informacion.
+            //       deberia crear path/values basados en las restricciones del arquetipo
+            //       y enviarselas al binder.
+            
+            
+            // Se pone aca porque necesita que la composition este guardada, tambien necesita la version...
+            // Los registros creados aqui estan cerrados
+            // idem records.signRecord
+
+            def id = medico.ids[0]
+            //if ( !hceService.closeComposition(composition, DateConverter.toIso8601ExtendedDateTimeFormat(new Date())) )
+            if ( !hceService.closeComposition(composition, new Date()) )
+            {
+               println "error: no se pudo cerrar la composition"
+            }
+            if (!hceService.setCompositionComposer(composition, id.root, id.extension))
+            {
+               println "error: no se pudo setear el composer"
+            }
+            //def version = Version.findByData( composition )
+            version.lifecycleState = Version.STATE_SIGNED
+            version.save()
+         
+              
+            // La mitad de los registros los asigna a un paciente
+            if (i % 2 == 0)
+            {
+               // paciente es una Person
+               partySelf = hceService.createPatientPartysSelf(paciente.ids[0].root, paciente.ids[0].extension)
+               participation = hceService.createParticipationToPerformer( partySelf )
+               composition.context.addToParticipations( participation )
+            }
+            // /Crear registro
+         }
+      }
    }
    
    /**
