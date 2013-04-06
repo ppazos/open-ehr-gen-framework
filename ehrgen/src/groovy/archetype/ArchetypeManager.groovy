@@ -412,13 +412,16 @@ class ArchetypeManager {
     * Carga indices para el archetypeId, o si es null carga
     * para todos los arquetipos en el repo local.
     */
-   public void createArchetypeIndexes(String rootArchId = null)
+   public boolean createArchetypeIndexes(String rootArchId = null)
    {
       def index
       def slot_index
       def walk
       def result
       def archetypes
+      
+      // Retorno true sino hubo error
+      boolean ok = true
       
       if (!rootArchId) archetypes = this.getLoadedArchetypes() // Map archetypeId -> archetype
       else archetypes = [(rootArchId): this.getArchetype(rootArchId)]
@@ -470,7 +473,17 @@ class ArchetypeManager {
                   )
                }
                
-               index.addToSlots( slot_index )
+               // Verifica que el slot_index sea de un tipo soportado (entry o section)
+               // Ver ArchetypeIndex.constraints.type.inList
+               if (slot_index.validate())
+               {
+                  index.addToSlots( slot_index )
+               }
+               else
+               {
+                  ok = false
+                  println "No se pudo agregar el slot a $archId por no ser SECTION o ENTRY, es "+ slot_index.type
+               }
             }
          }
          
@@ -481,9 +494,13 @@ class ArchetypeManager {
          }
          else
          {
-            //println index.errors
+            ok = false
+            println "No se puede crear el indice para el arquetipo " + index.archetypeId + " porque el tipo " + index.type + " no es soportado, solo se soportan SECTION o ENTRY"
          }
       }
+      
+      return ok
+      
    } // createArchetypeIndexes
    
    

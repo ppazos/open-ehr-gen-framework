@@ -175,7 +175,11 @@ class ArchetypeManagerController {
          
          // ----------------------------------------------------
          // Crea indices
-         manager.createArchetypeIndexes( archetype.archetypeId.value )
+         if (!manager.createArchetypeIndexes( archetype.archetypeId.value ))
+         {
+            flash.message = "Ocurrio un error al crear los indices para el arquetipo, verifique que el mismo es de clase SECTION o ENTRY y que no contienen slots a arquetipos de otras clases como ITEM_STRUCTURE o CLUSTER"
+            return
+         }
          
          
          // ============================================================================

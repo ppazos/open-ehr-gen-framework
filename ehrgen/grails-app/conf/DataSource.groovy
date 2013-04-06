@@ -30,7 +30,7 @@ environments {
          driverClassName = "com.mysql.jdbc.Driver"
          url = "jdbc:mysql://localhost:3306/oehr_dev?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
          username = "root"
-         password = "vertrigo"
+         password = "" //"vertrigo"
          
          
          // Configuracion para utilizar PostgreSQL

@@ -566,7 +566,10 @@ class BootStrap {
       */
         
       println "Create Archetype Indexes"
-      archetypeManager.createArchetypeIndexes()
+      if (!archetypeManager.createArchetypeIndexes())
+      {
+         println " == Ocurrieron errores al crear indices para algunos arquetipos, verifiquelos en la linea de comandos"
+      }
         
       println ""
       println "======= +++++++++ ======="
