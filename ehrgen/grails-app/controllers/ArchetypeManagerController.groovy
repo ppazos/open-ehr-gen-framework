@@ -86,6 +86,9 @@ class ArchetypeManagerController {
          // TODO: mover el archivo del repo temporal al repo de arquetipos de la aplicacion
          // TODO: log de la subida y resultado del procesamiento (me sirve para listar, ver que errores se dieron y corregirlos)
       
+         // =====================================================================================
+         // 1. Intenta guardar el archivo subido en el directorio temporal
+         
          // CommonsMultipartFile
          def upAdlFile = request.getFile('adl')
          
@@ -104,11 +107,11 @@ class ArchetypeManagerController {
          
          //def sctx = org.codehaus.groovy.grails.web.context.ServletContextHolder.servletContext
          //def storagePath = sctx.getRealPath( tmp_destination )
+         //
+         // el getRealPath me da adentro de web-app ... pruebo usar solo el uploaded_archetypes_repo
+         // (en dev funciona pero en prod no se...)
          
-         
-         // el getRealPath me da adentro de web-app ... pruebo usar solo el uploaded_archetypes_repo (en dev funciona pero en prod no se...)
          def storagePath = tmp_destination
-         
          def storagePathDir = new File(storagePath)
          if (!storagePathDir.exists())
          {
@@ -120,8 +123,9 @@ class ArchetypeManagerController {
          upAdlFile.transferTo( adlFile )
          
          
-         // ----------------------------------------------------
-         // Intenta parsear el ADL
+         // =====================================================================================
+         // 2. Intenta parsear el ADL desde el directorio temporal
+         
          ADLParser parser = null;
          try { parser = new ADLParser( adlFile ) }
          catch (IOException e)
@@ -142,42 +146,71 @@ class ArchetypeManagerController {
          
          if (!archetype)
          {
-            flash.message = "No se pudo abrir el archivo ADL "+ e.message
+            flash.message = "No se pudo abrir el archivo ADL"
             println e.message
             return
          }
          
-         // ----------------------------------------------------
-         // Mover el archivo al repo local
+         
+         // =====================================================================================
+         // 3. Mueve el adl desde el directorio temporal al repo local de arquetipos
+         
          def type = archetype.archetypeId.rmEntity.toLowerCase()
          def path = manager.getTypePath( type ) // path destino definitivo del arquetipo (repo local)
          def repo_path = ApplicationHolder.application.config.hce.archetype_repo + path + System.getProperty("file.separator")
          
          //println "repo_path "+ repo_path + adlFile.getName()
          
-         def dest = new File(repo_path + adlFile.getName())
+         def adlFileInRepo = new File(repo_path + adlFile.getName())
          
-         if (dest.exists())
+         
+         // TODO: dar la opcion de sobre escribir si existe y avisarle si se sobreescribió algún arquetipo en el flash.message
+         // Para que la sobreescritura funcione se deben regenerar las UIs para los templates que referencian al arquetipo
+         // En DEV esto no sería problema para probar cosas, pero en PROD NO SE PUEDE generar una GUI para un arquetipo distinto pero con el mismo id porque no se puede garantizar la compatibilidad de los datos ya registrados, entonces SIEMPRE se deben cargar nuevas versiones de los arquetipos.
+         // La otra forma es que la responsabilidad sea del adminsitrador, y que este borre el arquetipo existente antes de cargar otro con el mismo ID y él mismo lance el proceso de generación de GUI.
+         if (adlFileInRepo.exists())
          {
-            flash.message = "Ya existe el arquetipo en el repositorio"
+            flash.message = "Ya existe el arquetipo en el repositorio, intente cargar el nuevo arquetipo con un numero de version distinto al existente: "+ archetype.archetypeId.value
             return
          }
 
-         if (!adlFile.renameTo( dest ))
+         if (!adlFile.renameTo( adlFileInRepo )) // Mueve el archivo
          {
             flash.message = "No se pudo guardar el archivo ADL en el repositorio local, verifique que tiene permisos de escritura"
+            
+            // Intenta borrar el archivo del dir temporal porque
+            // no se pudo hacer el move.
+            adlFile.delete()
+            
             return
          }
          
-         // ----------------------------------------------------
-         // Cachea el nuevo arquetipo
-         manager.getArchetype( archetype.archetypeId.value )
          
-         // ----------------------------------------------------
-         // Crea indices
+         // =====================================================================================
+         // 4. Cachea el nuevo arquetipo en memoria del manager (ya cachea el createArchetypeIndexes)
+         //manager.getArchetype( archetype.archetypeId.value )
+         
+         
+         // Si alguna de las tareas de abajo falla, se debe borrar el archivo del repo
+         // para permitirle al usuario subirlo de nuevo, sino se queda en un loop por
+         // no poder subir el mismo adl o lo debe eliminar a mano, lo que lleva mas tiempo.
+         
+         
+         // =====================================================================================
+         // 5. Crea indices de las partes del arquetipo y los guarda en la DB
          if (!manager.createArchetypeIndexes( archetype.archetypeId.value ))
          {
             flash.message = "Ocurrio un error al crear los indices para el arquetipo, verifique que el mismo es de clase SECTION o ENTRY y que no contienen slots a arquetipos de otras clases como ITEM_STRUCTURE o CLUSTER"
+            
+            println adlFileInRepo.canonicalPath + ".delete()"
+            
+            // Intenta borrar el archivo adl del repo para dejar cargarlo de nuevo
+            adlFileInRepo.delete()
+            
+            // Quita del cache la referencia al arquetipo que se creó en
+            // createArchetypeIndexes para el arquetipo que no se pudo cargar. 
+            manager.unload(archetype.archetypeId.value)
+            
             return
          }
          
