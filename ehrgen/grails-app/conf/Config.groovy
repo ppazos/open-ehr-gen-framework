@@ -120,7 +120,7 @@ hce {
     
     template_repo = 'templates'+ PS   // luego se pone la path del tipo y el templateId
     archetype_repo = 'archetypes'+ PS +'ehr'+ PS // luego se pone la path del tipo y el archetypeId
-    uploaded_archetypes_repo = 'archetypes'+ PS +'uploaded'+ PS
+    uploaded_archetypes_repo = 'archetypes'+ PS +'uploaded'+ PS // directorio temporal donde se suben los arquetipos desde la web
 }
 
 openEHR.RMVersion = '1.0.2'
