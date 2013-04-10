@@ -422,12 +422,15 @@ class ArchetypeManager {
       
       // Retorno true sino hubo error
       boolean ok = true
+      boolean loopOk = true // para detectar errores en cada loop, se reinicia en cada vuelta
       
       if (!rootArchId) archetypes = this.getLoadedArchetypes() // Map archetypeId -> archetype
       else archetypes = [(rootArchId): this.getArchetype(rootArchId)]
       
       archetypes.each { archetypeId, archetype ->
 
+         //println " createIndexes archetypeId: "+ archetypeId
+         
          // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=100
          // Garantiza que hay un index por arquetipo
          index = ArchetypeIndex.findByArchetypeId(archetypeId)
@@ -439,6 +442,8 @@ class ArchetypeManager {
                type: archetype.archetypeId.rmEntity.toLowerCase()
             )
          }
+         
+         //println " createIndexes: type "+ archetype.archetypeId.rmEntity.toLowerCase()
          
          
          // Busca slots usando el archetype walkthrough
@@ -471,6 +476,8 @@ class ArchetypeManager {
                      archetypeId: archId,
                      type: arch.archetypeId.rmEntity.toLowerCase()
                   )
+                  
+                  //println " createIndexes: slot type "+ arch.archetypeId.rmEntity.toLowerCase()
                }
                
                // Verifica que el slot_index sea de un tipo soportado (entry o section)
@@ -481,29 +488,81 @@ class ArchetypeManager {
                }
                else
                {
-                  ok = false
+                  loopOk = false
                   println "No se pudo agregar el slot a $archId por no ser SECTION o ENTRY, es "+ slot_index.type
                }
             }
          }
          
-         // Guardo solo si valida, ej. no guarda indices de tipos structure o item
-         if (index.validate())
+         
+         // Guardo solo si valida, ej. no guarda indices de tipos structure o item,
+         // y si no dio un error previamente por tener un slot a un arquetipo de tipo no soportado.
+         if (index.validate() && loopOk)
          {
             index.save()
          }
          else
          {
-            ok = false
+            //println " errs: "+ index.errors
+            loopOk = false
             println "No se puede crear el indice para el arquetipo " + index.archetypeId + " porque el tipo " + index.type + " no es soportado, solo se soportan SECTION o ENTRY"
          }
+         
+         if (!loopOk) ok = false
+         
+         loopOk = true // resetea el ok del loop
       }
       
       return ok
       
    } // createArchetypeIndexes
    
-   
+   /**
+    * Da de baja el indice del arquteipo archetypeId o si archetypeId es null, de todos los arquetipos.
+    * Para cada indice, da de baja los indices de slot referenciados.
+    * @return
+    */
+   public void deleteArchetypeIndexes(String archetypeId = null)
+   {
+      // Elimina el indice para un arquetipo y los slots referenciados
+      // sino estan referenciados desde otro index.
+      if (archetypeId)
+      {
+         def index = ArchetypeIndex.findByArchetypeId(archetypeId)
+         
+         // Se fija si los slots del index son referenciados desde otro index
+         // FIXME: esto se puede hacer con delete-orphan en el mapping ... PROBAR!
+         index.slots.each { slot ->
+            
+            // si hay algun index que apunte al slot, no lo elimino
+            def count = ArchetypeIndex.withCriteria {
+               projections {
+                  count('id')
+               }
+               slots {
+                  idEq(slot.id)
+               }
+            }
+            if (count == 0)
+            {
+               slot.delete()
+            }
+         }
+         
+         index.delete()
+         
+         return
+      }
+
+      
+      // Elimina todos los indices, por ejemplo para reindizar.
+      def indexes = ArchetypeIndex.list()
+      
+      indexes.each { index ->
+         
+         index.delete()
+      }
+   }
    
    /**
     * La path incluye el id del arquetipo:
@@ -540,6 +599,12 @@ class ArchetypeManager {
       // FIXME: debe estar sincronizada
       this.cache.clear()
       this.timestamps.clear()
+   }
+   
+   public void unload(String archetypeId)
+   {
+      this.cache.remove(archetypeId)
+      this.timestamps.remove(archetypeId)
    }
    
    /**
