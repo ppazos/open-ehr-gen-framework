@@ -123,7 +123,7 @@ class RecordsController {
       def state_codes = [
        'planned':   '526',
        'scheduled': '529',
-       'active':   '245',
+       'active':    '245',
        'completed': '532',
        'postponed': '527',
        'cancelled': '528',
@@ -976,14 +976,6 @@ class RecordsController {
          // -----------------------------------------------------------------
          // FIXME: esta tira una except si hay mas de un pac con el mismo id, hacer catch
          def patient = hceService.getPatientFromComposition( composition )
-         
-         /*
-         def sections = [] // NECESARIO PARA EL MENU
-         def subsections = [] // No hay porque estoy firmando el registro
-         grailsApplication.config.hce.emergencia.sections.trauma.keySet().each { sectionPrefix ->
-            sections << sectionPrefix
-         }
-         */
          def sections = util.TemplateUtils.getSections(session)
          def subsections = [] // No hay porque estoy firmando el registro
 
@@ -1001,13 +993,13 @@ class RecordsController {
             {
                // TODO: i18n
                flash.error = "Firma erronea, verifique sus datos"
-               return [//episodeId: session.ehrSession?.episodioId,
-                     //userId: session.ehrSession.userId, // no se usa
+               return [
                      composition: composition,
                      patient: patient,
                      sections: sections,
                      subsections: subsections,
-                     allSubsections: util.TemplateUtils.getDomainTemplates(session)
+                     allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                     workflow: WorkFlow.get( session.ehrSession.workflowId )
                      ]
             }
 
@@ -1025,13 +1017,13 @@ class RecordsController {
             if ( !roleKeys.contains(Role.MEDICO) )
             {
                flash.error = "Firma erronea, la persona firmante no es medico"
-               return [//episodeId: session.ehrSession?.episodioId,
-                     //userId: session.ehrSession.userId, // no se usa
+               return [
                      composition: composition,
                      patient: patient,
                      sections: sections,
                      subsections: subsections,
-                     allSubsections: util.TemplateUtils.getDomainTemplates(session)
+                     allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                     workflow: WorkFlow.get( session.ehrSession.workflowId )
                      ]
             }
 
@@ -1043,13 +1035,13 @@ class RecordsController {
             {
                // TODO: i18n
                flash.error = "Ocurrio un error al intentar firmar el registro clinico, intente de nuevo"
-               return [//episodeId: session.ehrSession?.episodioId,
-                     //userId: session.ehrSession.userId, // no se usa
+               return [
                      composition: composition,
                      patient: patient,
                      sections: sections,
                      subsections: subsections,
-                     allSubsections: util.TemplateUtils.getDomainTemplates(session)
+                     allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                     workflow: WorkFlow.get( session.ehrSession.workflowId )
                      ]
             }
 
@@ -1081,20 +1073,12 @@ class RecordsController {
             ////composition.content.each{e ->
             ////   new_composition.addToContent(e)
             ////}
-            //RMLoader.recorrerComposition(composition, new_composition)
 
             // Elimino movimiento y firma de la composition (de la copia)
             def composerAux = composition.composer
             def contentAux = composition.content
             composition.composer = null
             
-            // Esto no es mas necesario en la reapertura, porque cerrar el registro ya
-            // no implica que se movio al paciente.
-            //hceService.eliminarMovimientoComposition(composition)
-
-            
-            //composition.save()
-
             // Creo nueva versión (con motivo, firma, nombre Arch CDA, composition)
             def new_version = new Version(
               //data: composition,
@@ -1109,8 +1093,9 @@ class RecordsController {
             new_version.timeCommited = new DvDateTime(value: DateConverter.toIso8601ExtendedDateTimeFormat(new Date()))
             new_version.lifecycleState = Version.STATE_INCOMPLETE
             new_version.numeroVers = version.getNumVersion() + 1
-            println "XXXXXXXXXXXXXX------>>>> V0:" + version.getNumVersion()
-            println "XXXXXXXXXXXXXX------>>>> V1:" + new_version.getNumVersion()
+            
+            //println "XXXXXXXXXXXXXX------>>>> V0:" + version.getNumVersion()
+            //println "XXXXXXXXXXXXXX------>>>> V1:" + new_version.getNumVersion()
 
             if (new_version.save())
             {
@@ -1132,23 +1117,22 @@ class RecordsController {
                flash.error = "Ocurrio un error al intentar firmar el registro clinico, intente de nuevo"
             }
             
-            return [//episodeId: session.ehrSession?.episodioId,
-                  //userId: session.ehrSession.userId, // no se usa
+            return [
                   composition: composition,
                   patient: patient,
                   sections: sections,
                   subsections: subsections,
-                  allSubsections: util.TemplateUtils.getDomainTemplates(session)
+                  allSubsections: util.TemplateUtils.getDomainTemplates(session),
+                  workflow: WorkFlow.get( session.ehrSession.workflowId )
                   ]
          }
 
          return [composition: composition,
                patient: patient,
-               //episodeId: session.ehrSession?.episodioId,
-               //userId: session.ehrSession.userId, // no se usa
                sections: sections, // necesario para el menu
                subsections: subsections, // necesario para el menu
-               allSubsections: util.TemplateUtils.getDomainTemplates(session)
+               allSubsections: util.TemplateUtils.getDomainTemplates(session),
+               workflow: WorkFlow.get( session.ehrSession.workflowId )
                ]
       }
       else
