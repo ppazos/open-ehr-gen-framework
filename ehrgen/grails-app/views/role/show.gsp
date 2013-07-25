@@ -47,7 +47,7 @@
               <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                 <td class="title">
                   <%-- ${message(code:Domain.get(domainId).name)} --%>
-				  ${domain.name}
+				  ${domain?.name}
                 </td>
               </tr>
               <g:each in="${domainPermits.findAll{ it.domain == domain }}" var="permit">

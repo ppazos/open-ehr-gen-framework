@@ -265,6 +265,8 @@ class DomainController {
           println folder.errors
           //println folder.name.errors
           //println folder.archetypeDetails.errors
+		  flash.message = "Ocurrio un error al crear el nuevo dominio"
+		  return
        }
        
        
@@ -273,7 +275,7 @@ class DomainController {
        //
        // Permiso * para todos los templates del dominio
        // (ahora el dominio NO tiene templates, recien se crea)
-       def perm = new DomainPermit(domain: domain.id) // Los permisos se verifican contra el codeString
+       def perm = new DomainPermit(domainId: domain.id) // Los permisos se verifican contra el codeString
        perm.save()
        
        // El rol medico tiene acceso a todos los dominios
