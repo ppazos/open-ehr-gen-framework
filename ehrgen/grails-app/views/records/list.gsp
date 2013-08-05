@@ -154,15 +154,18 @@
       <li>
         <g:link action="create" class="create"><g:message code="records.list.action.crearEpisodio" /></g:link>
       </li>
-      <%-- Si hay un paciente en session, se pueden ver sus registros para el dominio actual o para cualquier dominio --%>
-      <g:if test="${session.ehrSession.patientId}">
+      <%--
+	  Si hay un paciente en session, se pueden ver sus registros para el dominio actual o para cualquier dominio.
+	  FIX: aunque no tenga paciente, quiero filtrar por dominio actual o por todos los dominios.
+	  --%>
+      <%-- <g:if test="${session.ehrSession.patientId}"> --%>
         <li ${(!params.anyDomain)?'class="active"':''}>
           <g:link action="list" class="list"><g:message code="records.list.action.currentDomain" args="[domain.Domain.get(session.ehrSession.domainId).name]" /></g:link>
         </li>
         <li ${(params.anyDomain)?'class="active"':''}>
           <g:link action="list" class="list" params="[anyDomain:true]"><g:message code="records.list.action.anyDomain" /></g:link>
         </li>
-      </g:if>
+      <%-- </g:if> --%>
       <li>
         <g:form action="list" class="filter">
           Filtros:

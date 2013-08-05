@@ -466,9 +466,8 @@ class RecordsController {
          }
          */
          
-         // Si hay un paciente seleccionado y 
-         // no es un listado de cualquier dominio para el mismo paciente
-         if (session.ehrSession.patientId && !params.anyDomain)
+         // SI no es un listado de cualquier dominio
+         if (!params.anyDomain)
          {
             // Uso la referencia desde los hijos al padre, asi me ahorro el loop
             eq('rmParentId', domain.id)
@@ -529,14 +528,12 @@ class RecordsController {
             }
         }
         
-        // Si hay un paciente seleccionado y 
-        // no es un listado de cualquier dominio para el mismo paciente
-        if (session.ehrSession.patientId && !params.anyDomain)
+        // Si no es un listado de cualquier dominio
+        if (!params.anyDomain)
         {
-         // Uso la referencia desde los hijos al padre, asi me ahorro el loop
-         eq('rmParentId', domain.id)
+           // Uso la referencia desde los hijos al padre, asi me ahorro el loop
+           eq('rmParentId', domain.id)
         }
-        
         
         cache(true)
       }
@@ -548,11 +545,7 @@ class RecordsController {
       
       
       // Antes se devolvian todas las compositions, ahora se filtra por dominio.
-      return [compositions: compos,
-            //userId: session.ehrSession.userId, // no se usa
-            domain: domain,
-            total: total[0]
-           ]
+      return [ compositions: compos, domain: domain, total: total[0] ]
    }
    
    
