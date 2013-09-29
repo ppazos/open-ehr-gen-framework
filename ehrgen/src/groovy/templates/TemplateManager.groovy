@@ -54,6 +54,7 @@ class TemplateManager {
         template.rootArchetype.type       = ArchetypeTypeEnum.fromValue( xmlTemplate.root_archetype.archetype.'@type'.text() )
         template.rootArchetype.refId      = xmlTemplate.root_archetype.archetype.'@id'.text()
         template.rootArchetype.includeAll = (xmlTemplate.root_archetype.archetype.'@includeAll'.text() == "true")
+        template.rootArchetype.owner = template
         
         // TEST
         //println "-----"
@@ -105,6 +106,7 @@ class TemplateManager {
            ref.type       = ArchetypeTypeEnum.fromValue( xmlArchetypeNode.'@type'.text() )
            ref.refId      = xmlArchetypeNode.'@id'.text()
            ref.includeAll = (xmlArchetypeNode.'@includeAll'.text() == "true")
+           ref.owner      = template
            
            pageZone = xmlArchetypeNode.'@pageZone'.text()
            if (pageZone) ref.pageZone = pageZone

@@ -17,6 +17,8 @@ class ArchetypeReference {
     // una vista y poder mostrar el contenido donde debe estar.
     String pageZone = "content" // Valor por defecto por si no se le asigna zona en el template.
     
+    Template owner
+    
     // RNE:
     // if (includeAll) fields.size==0
     // else fields.size > 0
