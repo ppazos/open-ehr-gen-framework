@@ -1,0 +1,7 @@
+<template>
+  <id>EHRGen-EHR-test_ordenes.v1</id>
+  <name>werwer</name>
+  <root_archetype>
+    <archetype type='instruction' id='openEHR-EHR-INSTRUCTION.test_ordenes2.v1' pageZone='content' includeAll='true' />
+  </root_archetype>
+</template>

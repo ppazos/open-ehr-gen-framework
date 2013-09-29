@@ -1,0 +1,7 @@
+<template>
+  <id>EHRGen-EHR-cumplimiento de ordenes.v1</id>
+  <name>cumplimiento de ordenes</name>
+  <root_archetype>
+    <archetype type='action' id='openEHR-EHR-ACTION.test_ordenes.v1' pageZone='content' includeAll='true' />
+  </root_archetype>
+</template>
