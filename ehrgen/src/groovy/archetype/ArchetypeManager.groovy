@@ -494,7 +494,6 @@ class ArchetypeManager {
             }
          }
          
-         
          // Guardo solo si valida, ej. no guarda indices de tipos structure o item,
          // y si no dio un error previamente por tener un slot a un arquetipo de tipo no soportado.
          if (index.validate() && loopOk)
@@ -505,7 +504,23 @@ class ArchetypeManager {
          {
             //println " errs: "+ index.errors
             loopOk = false
-            println "No se puede crear el indice para el arquetipo " + index.archetypeId + " porque el tipo " + index.type + " no es soportado, solo se soportan SECTION o ENTRY"
+            println "No se puede crear el indice para el arquetipo " + index.archetypeId + " porque el tipo " +
+                    index.type + " no es soportado (solo se soportan SECTION o ENTRY) o porque contiene algun slot a un tipo no soportado "+
+                    index.errors.getFieldValue("type")
+            
+            /*
+            println index.errors
+            Field error in object 'archetype.ArchetypeIndex' on field 'type': rejected value [item_tree]; codes [archetype.ArchetypeIndex.type
+            .inList.error.archetype.ArchetypeIndex.type,archetype.ArchetypeIndex.type.inList.error.type,archetype.ArchetypeIndex.type.inList.e
+            rror.java.lang.String,archetype.ArchetypeIndex.type.inList.error,archetypeIndex.type.inList.error.archetype.ArchetypeIndex.type,ar
+            chetypeIndex.type.inList.error.type,archetypeIndex.type.inList.error.java.lang.String,archetypeIndex.type.inList.error,archetype.A
+            rchetypeIndex.type.not.inList.archetype.ArchetypeIndex.type,archetype.ArchetypeIndex.type.not.inList.type,archetype.ArchetypeIndex
+            .type.not.inList.java.lang.String,archetype.ArchetypeIndex.type.not.inList,archetypeIndex.type.not.inList.archetype.ArchetypeIndex
+            .type,archetypeIndex.type.not.inList.type,archetypeIndex.type.not.inList.java.lang.String,archetypeIndex.type.not.inList,not.inLis
+            t.archetype.ArchetypeIndex.type,not.inList.type,not.inList.java.lang.String,not.inList]; arguments [type,class archetype.Archetype
+            Index,item_tree,[section, action, evaluation, instruction, observation, admin_entry]]; default message [La propiedad [{0}] de la c
+            lase [{1}] con valor [{2}] no esta contenido dentro de la lista [{3}]]
+            */
          }
          
          if (!loopOk) ok = false
