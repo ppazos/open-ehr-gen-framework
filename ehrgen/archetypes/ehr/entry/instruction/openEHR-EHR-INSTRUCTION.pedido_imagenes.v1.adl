@@ -28,6 +28,7 @@ definition
 	INSTRUCTION[at0000] matches {	-- Pedido de examenes imagenologicos
 		activities cardinality matches {0..*; unordered} matches {
 			ACTIVITY[at0001] occurrences matches {0..1} matches {	-- Current Activity
+            action_archetype_id matches {/imagenes\.v1/}
 				description matches {
 					ITEM_TREE[at0002] matches {	-- Arbol
 						items cardinality matches {0..*; unordered} matches {

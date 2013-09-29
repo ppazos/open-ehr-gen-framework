@@ -53,8 +53,10 @@
           <g:set var="careflow_step_data" value="${activityActions[instruction.id]}" />
           <g:each in="${careflow_step_data}" var="arch_id_careflow_steps">
             <g:each in="${arch_id_careflow_steps['careflow_steps']}" var="careflow_step">
-            
+              <%--
               <g:link action="recordAction" params="[archetypeId: arch_id_careflow_steps.archetype.archetypeId.value, instructionId: instruction.id, careflowStep: careflow_step]">
+              --%>
+              <g:link action="recordAction" params="[instructionExecId: instruction.id, careflowStep: careflow_step]">
                 <g:displayTerm code="${careflow_step}" locale="${session.locale}" archetype="${arch_id_careflow_steps.archetype}" />
               </g:link>
               <br/>

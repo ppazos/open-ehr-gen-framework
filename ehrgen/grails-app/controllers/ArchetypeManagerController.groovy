@@ -222,6 +222,7 @@ class ArchetypeManagerController {
          def hayInstruction = false
          if (index.type == 'instruction')
          {
+            // FIXME: podria ser una SECTION con un slot INSTRUCTION
             hayInstruction = true
          }
          else if ( index.slots.find{ it.type == 'instruction' } != null )
@@ -234,6 +235,23 @@ class ArchetypeManagerController {
          // Los roles los guardo mismo en el archetype index, igual como se guardan los roles en el workflow.
          if (hayInstruction)
          {
+            // Necesito guardar los Instruction.activities.action_archetype_id
+            // para luego en selectTemplateWithAction poder buscar los templates
+            // que tienen referencia a ese arquetipo de ACTION (o a los varios
+            // que matcheen cno la regex).
+            def activitiesAttr = archetype.node("/").attributes.findAll{ it.rmAttributeName == "activities" }
+            
+            // TEST
+            //println activitiesAttr.size()
+            println activitiesAttr[0].members().nodeID
+            //println "++++ " + activitiesAttr
+            
+            def activityCObject
+            activitiesAttr[0].members().nodeID.each { activityNodeID ->
+            
+               println activityCObject = archetype.node("/activities["+ activityNodeID +"]")
+            }
+         
             flash.message = "Archivo adl guardado en $repo_path"
             redirect(action:'selectInstructionRoles', id:index.id)
             return
@@ -257,6 +275,7 @@ class ArchetypeManagerController {
    
       if (!params.id)
       {
+         // FIXME: devolver error
          println "id de index es obligatorio"
       }
       
@@ -288,6 +307,33 @@ class ArchetypeManagerController {
       }
       
       return [index: index, roles:Role.list()]
+   }
+   
+   /*
+    * https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=106
+    * Accion que se ejecuta luego de selectInstructionRoles para seleccionar y
+    * asociar un template que genere la GUI que se usa para registrar el
+    * cumplimiento (ACTION) de una orden (INSTRUCTION), tal que la ACTIVITY
+    * de la INSTRUCTON referencie al arquetipo de ACTION que es referenciado
+    * desde el template.
+    * FIXME: en un arquetipo de ISNTRUCTION puedo tener varias ACTIVITY que
+    *        referencien a distintas ACTION, y una referencia puede matchear
+    *        varias ACTION porque ACTIVITY.action_archetype_id es una regex.
+    */
+   def selectTemplateWithAction = {
+   
+      if (!params.id)
+      {
+         // FIXME: devolver error
+         println "id de index es obligatorio"
+      }
+      
+      def index = ArchetypeIndex.get(params.id)
+      def instructionArchetypeId = index.archetypeId
+      
+      if (params.doit)
+      {
+      }
    }
    
    /**

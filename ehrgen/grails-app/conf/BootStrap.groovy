@@ -130,6 +130,31 @@ class BootStrap {
       }
       
       
+      // ==========================================
+      // DATOS DE PRUEBA PARA EJECUCION DE ORDENES
+      // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=106
+      
+      // Esto NO es generico, yo se que: 
+      //  1. la INSTRUCTION tiene una sola ACTIVITY en el arquetipo
+      //  2. la ACTIVITY referencia a la ACTION en el arquetipo
+      //  3. los templates usados referencian a los arquetipos correctos
+      
+      def tInstructionActivity = templateManager.getTemplate('EHRGen-EHR-test_ordenes.v1')
+      def tAction = templateManager.getTemplate('EHRGen-EHR-cumplimiento de ordenes.v1')
+      if (tInstructionActivity && tAction) // Pueden no estar
+      {
+         def tplref = new workflow.ActivityActionTemplateRef(
+            activityTemplateId: tInstructionActivity.templateId,
+            instructionArchetypeId: 'openEHR-EHR-INSTRUCTION.test_ordenes2.v1',
+            activityPath: '/activities[at0002]', // El template de INSTRUCTION puede tener varias ACTIVITY y diferentes templates de ACTION para cada ACTIVITY, la path me dice cual ACTIVITY es dentro del arquetipo
+            actionTemplateId: tAction.templateId
+         )
+         tplref.save()
+      }
+      //
+      // ==========================================
+      
+      
       // Parece que no puedo definir el locale sin estar en una sesion de verdad
       // Una SOLUCION podria ser que no se genere la GUI desde el bootstrap, sino que se genere desde una GUI de administracion.
       // ===================================================

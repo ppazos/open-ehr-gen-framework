@@ -116,45 +116,23 @@
     </g:javascript>
   </head>
   <body>
-    <%-- Tabs: SUBMENU DE REGISTROS SI HAY MAS DE UN TEMPLATE EN LA STAGE ACTUAL --%>
-    <g:if test="${stage.recordDefinitions.size()>1}">
-      <div id="navbar">
-        <ul>
-          <g:each in="${stage.recordDefinitions}" var="template">
-            <li ${((params.templateId==template.templateId)?'class="active"':'')}>
-	          <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${template.templateId}">
-	            <g:if test="${it.hasItem}">
-	              <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${template.name}" /> (*)</g:link>
-	            </g:if>
-	            <g:else>
-
-		          <g:hasDomainPermit domain="${domain}" templateId="${template.templateId}">
-                   <g:link controller="guiGen" action="generarTemplate" params="[templateId:template.templateId]">
-                     <g:message code="${template.name}" />
-                   </g:link>
-                 </g:hasDomainPermit>
-                 <g:dontHasDomainPermit>
-                   <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${template.name}" /></a>
-                 </g:dontHasDomainPermit>
-		          
-		        </g:else>
-	          </g:hasContentItemForTemplate>
-	        </li>
-          </g:each>
-        </ul>
-      </div>
-    </g:if>
+    <g:render template="navbar" model="[domain:domain, stage:stage, template:template]" />
+    
     <g:if test="${flash.message}">
       <div class="message"><g:message code="${flash.message}" /></div>   
     </g:if>
+    
     <%-- Form cacheado --%>
-   <g:form url="[controller:'guiGen', action:'save']" class="ehrform" method="post" enctype="multipart/form-data">
-     <input type="hidden" name="templateId" value="${params.templateId}" />
-     ${form}
-     <br/>
-     <div class="bottom_actions">
-       <g:submitButton name="doit" value="Guardar" />
-     </div>
-   </g:form>
+    <g:form url="[controller:'guiGen', action:'save']" class="ehrform" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="templateId" value="${template.templateId}" />
+     
+      <%-- Si esta presente, el registro es de cumplimiento de una orden --%>
+      <input type="hidden" name="instructionExecId" value="${params.instructionExecId}" />
+     
+      ${form}<br/>
+      <div class="bottom_actions">
+        <g:submitButton name="doit" value="Guardar" />
+      </div>
+    </g:form>
   </body>
 </html>

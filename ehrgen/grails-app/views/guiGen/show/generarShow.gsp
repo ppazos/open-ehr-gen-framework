@@ -248,39 +248,8 @@
     </script>
   </head>
   <body>
-    <%-- SUBMENU DE SECCIONES SI EXISTEn --%>
-    <g:if test="${stage.recordDefinitions.size()>1}">
-      <div id="navbar">
-        <ul>
-          <g:each in="${stage.recordDefinitions}" var="template">
-            <li ${((templateId==template.templateId)?'class="active"':'')}>
-              <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${template.templateId}">
-                <g:if test="${it.hasItem}">
-                  <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${template.name}" /> (*)</g:link>
-                </g:if>
-                <g:else>
-                  <%--
-                  <g:link controller="guiGen" action="generarTemplate" params="[templateId:template.templateId]">
-                    <g:message code="${templateId}" />
-                  </g:link>
-                  --%>
-                  
-                  <g:hasDomainPermit domain="${domain}" templateId="${template.templateId}">
-                    <g:link controller="guiGen" action="generarTemplate" params="[templateId:template.templateId]">
-                      <g:message code="${template.name}" />
-                    </g:link>
-                  </g:hasDomainPermit>
-                  <g:dontHasDomainPermit>
-                    <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${template.name}" /></a>
-                  </g:dontHasDomainPermit>
-                  
-                </g:else>
-              </g:hasContentItemForTemplate>
-            </li>
-          </g:each>
-        </ul>
-      </div>
-    </g:if>
+    <g:render template="navbar" model="[domain:domain, stage:stage, template:template]" />
+    
     <div class="ehrform">
       <%-- Contenido cacheado --%>
       ${content}

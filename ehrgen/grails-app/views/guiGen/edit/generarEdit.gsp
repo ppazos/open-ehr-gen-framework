@@ -423,33 +423,13 @@
     </g:javascript>
   </head>
   <body>
-    <%-- SUBMENU DE SECCIONES SI EXISTEn --%>
-    <g:if test="${stage.recordDefinitions.size()>1}">
-      <div id="navbar">
-        <ul>
-          <g:each in="${stage.recordDefinitions}" var="template">
-            <li ${((params.templateId==template.templateId)?'class="active"':'')}>
-            <g:hasContentItemForTemplate episodeId="${session.ehrSession?.episodioId}" templateId="${template.templateId}">
-              <g:if test="${it.hasItem}">
-                <g:link controller="guiGen" action="generarShow" id="${it.itemId}"><g:message code="${template.name}" /> (*)</g:link>
-              </g:if>
-              <g:else>
-              <g:link controller="guiGen" action="generarTemplate" params="[templateId:template.templateId]">
-                <g:message code="${template.name}" />
-              </g:link>
-            </g:else>
-            </g:hasContentItemForTemplate>
-          </li>
-          </g:each>
-        </ul>
-      </div>
-    </g:if>
+    <g:render template="navbar" model="[domain:domain, stage:stage, template:template]" />
+    
     <%-- Form cacheado --%>
     <g:form url="[controller:'guiGen', action:'save']" class="ehrform" method="post" enctype="multipart/form-data">
       <input type="hidden" name="templateId" value="${template.templateId}" />
       <input type="hidden" name="mode" value="edit" />
-      ${form}
-      <br/>
+      ${form}<br/>
       <div class="bottom_actions">
         <g:submitButton name="doit" value="Guardar" />
       </div>

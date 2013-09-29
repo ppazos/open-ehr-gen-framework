@@ -278,8 +278,8 @@
      / Por ahora se muestra aca
     
      Terminar esto para v0.9
-    
-    <g:include action="listInstructions" />
     --%>
+    <g:include action="listInstructions" />
+    
   </body>
 </html>

@@ -184,6 +184,24 @@ class RecordsController {
           // estados puedo ir, y obtener del arquetipo las ISM_T de esos estados a los que puedo ir.
           attr = arch.definition.attributes.find{ cattr -> cattr.rmAttributeName == "ism_transition"}
           
+          if (!attr)
+          {
+             println "El arquetipo "+ arch.archetypeId.value +" no define transiciones, por lo que el registro de la accion lo llevara por defecto al estado final"
+             
+             // TODO: agregar tansicion por defecto a COMPLETED
+             
+             // FIXME: en realidad es el codigo a la ontologia donde se define el texto para el estado, no es el texto en si mismo.
+             // Pero en este caso, el arquetipo NO define las transiciones entonces hay nodeID para ese nodo y no esta su texto en la ontologia.
+             arch_careflow_steps << 'Completed'
+             
+             activityActions[instExec.id]  << [
+               archetype: arch,
+               careflow_steps: arch_careflow_steps // map<archId, List<careflow step>>
+             ]
+             
+             return // no sigue procesando el arquetipo actual
+          }
+          
           println attr.rmAttributeName
           println "Tiene " + attr.children.size() + " ISM_TRANSITIONs"
           
@@ -284,16 +302,16 @@ class RecordsController {
     * 3. Se muestran los datos ingresados y puede editar.
     * 4. Firma para cerrar.
     *
-    * @param archetypeId identificador del arquetipo de accion
     * @param instructionId identificador del InstructionExecution
     * @param careflowStep codigo del careflow_step dentro del arquetipo de ACTION que se quiere ejecutar
     */
    def recordAction = {
    
-      def instExec = workflow.InstructionExecution.get(params.instructionId)
+      def instExec = workflow.InstructionExecution.get(params.instructionExecId)
    
       // 1. Generar GUI para la accion
       
+      /*
       // template dinamico con ref al archetypeId para generar la GUI
       // FIXME: todas las acciones usaran el mismo template ¿porque no persistirlo?
       // ademas en los datos de archetyped se tendria el mismo templateId
@@ -301,10 +319,12 @@ class RecordsController {
       // archId en el root
       def dinTemplate = new Template(
        templateId: (java.util.UUID.randomUUID() as String),
-       name: 'template dinamico por recordAction',
-       rootArchetype: new ArchetypeReference(
+       name: 'template dinamico por recordAction')
+       
+      dinTemplate.rootArchetype = new ArchetypeReference(
          refId: params.archetypeId,
-         type:ArchetypeTypeEnum.ACTION))
+         type:ArchetypeTypeEnum.ACTION,
+         owner: dinTemplate)
       
       // genera GUI
       guiCachingService.generateGUI( [dinTemplate] )
@@ -312,6 +332,29 @@ class RecordsController {
       // muestra gui
       def view = '/guiGen/create/generarCreate' // dinamica
       def form = gui.GuiManager.getInstance().get(dinTemplate.templateId, 'create', session.locale.toString())
+      */
+      
+      def instruction = hce.core.composition.content.entry.Instruction.get(instExec.instructionId)
+      def activity = hce.core.composition.content.entry.Activity.get(instExec.activityId)
+      
+      // Si quisiera el arquetipo de action, esta en el template tplref.actionTemplateId y matchea con ACTIVITY.action_archetype_id
+      
+      // Para el template, arquetipo de instruction y path a actividad especificos, tengo un solo template
+      // que referencia a la ACTION que matchea ACTIVITY.action_archetype_id.
+      def tplref = workflow.ActivityActionTemplateRef.withCriteria {
+         eq('activityTemplateId', instruction.archetypeDetails.templateId)
+         eq('instructionArchetypeId', instExec.instructionArchetypeId)
+         eq('activityPath', activity.path)
+      }
+      
+      // Verificar si existe el tplref y que no hay mas de uno
+      if (tplref.size() > 1) throw new Exception('Hay mas de un ActivityActionTemplateRef')
+      if (tplref.size() == 0) throw new Exception('No hay ningun ActivityActionTemplateRef')
+      
+      def actionTemplateId = tplref[0].actionTemplateId
+      
+      // GUI existente
+      def form = gui.GuiManager.getInstance().get(actionTemplateId, 'create', session.locale.toString())
       
       
       // ============================================================
@@ -328,16 +371,13 @@ class RecordsController {
       session.ehrSession.episodioId = composition.id
       // ============================================================
       
-      render( view: view,
+      render( view: '/guiGen/create/generarCreate',
             model: [
-              //patient: patient,
-              template: dinTemplate,
-              //sections: sections,
+              template: Template.findByTemplateId(actionTemplateId),
               episodeId: composition.id, //session.ehrSession?.episodioId,
               form: form,
               domain: Domain.get(session.ehrSession.domainId),
-              //workflow: workflow,
-              //stage: stage
+              instructionExecId: params.instructionExecId // Para que el save sepa que se esta registrando el cumplimiento de una orden
             ])
        return
    

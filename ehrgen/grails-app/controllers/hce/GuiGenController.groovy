@@ -220,43 +220,6 @@ class GuiGenController {
                 ])
          return
          
-/*         
-            println 'vista generada'
-            
-            render( view: 'create/generarCreate',
-                    model: [
-                     patient: patient,
-                     template: template,
-                     sections: sections,
-                     subsections: subsections,
-                     episodeId: session.ehrSession?.episodioId,
-                     //allSubsections: util.TemplateUtils.getDomainTemplates(session),
-                     form: guiManager.get(templateId, 'create', session.locale.toString()),
-                     //completeSections: completeSections,
-					      domain: Domain.get(session.ehrSession.domainId),
-                     workflow: workflow // nuevo
-                    ])
-            return
-         }
-         else // Si no existe la vista generada, deberia ser una vista estatica
-         {
-            println 'vista estatica'
-            
-            render( view: '../hce/'+templateId,
-                    model: [
-                     patient: patient,
-                     template: template,
-                     sections: sections,
-                     subsections: subsections,
-                     episodeId: session.ehrSession?.episodioId,
-                     //allSubsections: util.TemplateUtils.getDomainTemplates(session),
-                     //completeSections: completeSections,
-					      domain: Domain.get(session.ehrSession.domainId),
-                     workflow: workflow // nuevo
-                    ])
-            return
-         }
-*/
          //   println 'dice que no es un recurso valido: '+ path
       }
       else
@@ -443,7 +406,6 @@ class GuiGenController {
       [
          patient:    patient,
          template:   template,
-         templateId: templateId, // FIXME: este incluye la version y el id del template no, deberian ser iguales.
          sections: sections,
          //subsections: subsections,
          //completeSections: completeSections,
@@ -997,54 +959,83 @@ class GuiGenController {
       
       //println "SALVADA COMPOSITION OK y muestra show"
       
-      
+
       // ==============================================================
       // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=106
       // Soporte para cumplimiento de instrucciones
       //
-      // 1. Buscar si se registro alguna instruction
-      def instructions = []
-      if (rmobj instanceof hce.core.composition.content.entry.Instruction)
+      // 0. Si el registro es de cumplimiento de una instruccion que se estaba ejecutando
+      if (params.instructionExecId)
       {
-         instructions << rmobj
-      }
-      else if (rmobj instanceof hce.core.composition.content.navigation.Section)
-      {
-         // Hay que buscar en sus items si hay una instruction
-         // FIXME: esto se podria obviar viendo los nodos bindeados en el binder
+         def instExec = workflow.InstructionExecution.get(params.instructionExecId)
          
-         // FIXME: esto solo funciona si la section no tiene otra section adentro
-         rmobj.items.each { section_item ->
-            if (section_item instanceof hce.core.composition.content.entry.Instruction)
-            {
-               instructions << section_item
-            }
+         def newInstExec = new workflow.InstructionExecution(
+               domainId: session.ehrSession.domainId,
+               instructionId: instExec.instructionId,
+               activityId: instExec.activityId,
+               instructionCompositionId: instExec.instructionCompositionId,
+               instructionArchetypeId: instExec.instructionArchetypeId,
+               actionCompositionId: comp.id,
+               actionId: rmobj.id,
+               actionArchetypeId: rmobj.archetypeDetails.archetypeId)
+               
+         // FIXME: deberia cambiar el 'state' de InstructionExecution
+         
+         if (!newInstExec.save())
+         {
+            println newInstExec.errors
          }
       }
+      else
+      {
+         // Pueden quedar instrucciones sin completar para siempre, cuando no se tiene
+         // conexion con el sistema externo que cumple la instruccion/actividad.
+         // TODO: deberian definirse interfaces para cumplir externamente.
       
-      println "INSTRUCTIONS en rmobj: "+ instructions
-      
-      // 2. Para las instrucciones encontradas, se crea InstructionExecution
-      def instExec
-      instructions.each { instruction ->
-      
-         println "INSTRUCTION activities: " + instruction.activities
-      
-         // La ejecucion es por activity, se puede tener mas de una por instruction
-         instruction.activities.each { activity ->
+         // 1. Buscar si se registro alguna instruction
+         def instructions = []
+         if (rmobj instanceof hce.core.composition.content.entry.Instruction)
+         {
+            instructions << rmobj
+         }
+         else if (rmobj instanceof hce.core.composition.content.navigation.Section)
+         {
+            // Hay que buscar en sus items si hay una instruction
+            // FIXME: esto se podria obviar viendo los nodos bindeados en el binder
             
-            println "action_archetype_id: " + activity.action_archetype_id
-            
-            instExec = new workflow.InstructionExecution(
-               domainId: session.ehrSession.domainId,
-               instructionId: instruction.id,
-               activityId: activity.id,
-               instructionCompositionId: comp.id,
-               instructionArchetypeId: instruction.archetypeDetails.archetypeId
-            )
-            if (!instExec.save())
-            {
-               println instExec.errors
+            // FIXME: esto solo funciona si la section no tiene otra section adentro
+            rmobj.items.each { section_item ->
+               if (section_item instanceof hce.core.composition.content.entry.Instruction)
+               {
+                  instructions << section_item
+               }
+            }
+         }
+         
+         println "INSTRUCTIONS en rmobj: "+ instructions
+         
+         // 2. Para las instrucciones encontradas, se crea InstructionExecution
+         def instExec
+         instructions.each { instruction ->
+         
+            println "INSTRUCTION activities: " + instruction.activities
+         
+            // La ejecucion es por activity, se puede tener mas de una por instruction
+            instruction.activities.each { activity ->
+               
+               println "action_archetype_id: " + activity.action_archetype_id
+               
+               instExec = new workflow.InstructionExecution(
+                  domainId: session.ehrSession.domainId,
+                  instructionId: instruction.id,
+                  activityId: activity.id,
+                  instructionCompositionId: comp.id,
+                  instructionArchetypeId: instruction.archetypeDetails.archetypeId
+               )
+               if (!instExec.save())
+               {
+                  println instExec.errors
+               }
             }
          }
       }

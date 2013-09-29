@@ -536,8 +536,8 @@ class DomainController {
          def aref = new templates.ArchetypeReference(
             refId: params.archetypeId,
             type: type,
-            pageZone: pageZone
-            
+            pageZone: pageZone,
+            owner: template
             // includeAll
             // fields
          )
@@ -553,8 +553,8 @@ class DomainController {
             
             aref = new templates.ArchetypeReference(
                refId: slot_index.archetypeId,
-               type: type
-               
+               type: type,
+               owner: template
                // pageZone content por defecto // TODO: dejar especificar desde la gui
                // includeAll
                // fields

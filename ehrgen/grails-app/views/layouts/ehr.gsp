@@ -28,10 +28,8 @@
   </head>
   <body>
     <div id="user_bar">
-      <b>Open-EHRGen</b> v${ApplicationHolder.application.metadata['app.version']} | 
+      <b>Open-EHRGen</b> v${ApplicationHolder.application.metadata['app.version']} | ${session.ehrSession.userData}
       
-	  ${session.ehrSession.userData}
-	  
       <span class="user_actions">
         
         <span class="currentDate">
@@ -120,50 +118,55 @@
                   TODO: desde lo estudios img hasta el registro clinico no puede ser visto por un administrativo.
                   --%>
                   
-                  <%-- Puede ser null sino hay un template --%>
-                  <g:set var="currentStage" value="${workflow.getStage(template)}" />
+                  <g:if test="${workflow}"><%-- Para cumplir ordenes no hay workflow y se usa el mismo render, sin esto necesita el workflow --%>
                   
-                  <g:if test="${( ['guiGen','records','ajaxApi'].contains(controllerName) && ['generarShow','generarTemplate','show','saveDiagnostico','showRecord','signRecord'].contains(actionName) )}">
-                    <%-- nombres de stages dek workflow actual --%>
-                    <g:each in="${workflow.stages}" var="stage">
-                      
-                      <%-- template puede ser null sino estoy en una seccion de registro --%>
-                      <li ${( (currentStage?.name == stage.name) ? 'class="active"' : '')}>
-                      
-                        <%
-                        def templateId = stage?.recordDefinitions?.getAt(0)?.templateId // allSubsections[stage.name][0]
-                        if (!templateId) templateId = " " // para que no sea null o vacia en la llamada a g:hasContentItemForTemplate
-                                                          // que espera no null y no vacio el templateId.
-                        %>
-                        
-                        <%-- se fija si el registro ya fue hecho --%>
-                        <%-- templateId: ${templateId}<br/> --%>
-                        <g:hasContentItemForStage episodeId="${session.ehrSession?.episodioId}" stage="${stage}">
+                     <%-- Puede ser null sino hay un template --%>
+                     <g:set var="currentStage" value="${workflow.getStage(template)}" />
+                     
+                     <g:if test="${( ['guiGen','records','ajaxApi'].contains(controllerName) && ['generarShow','generarTemplate','show','saveDiagnostico','showRecord','signRecord'].contains(actionName) )}">
+                       <%-- nombres de stages dek workflow actual --%>
+                       <g:each in="${workflow.stages}" var="stage">
+                         
+                         <%-- template puede ser null sino estoy en una seccion de registro --%>
+                         <li ${( (currentStage?.name == stage.name) ? 'class="active"' : '')}>
+                         
+                           <%
+                           def templateId = stage?.recordDefinitions?.getAt(0)?.templateId // allSubsections[stage.name][0]
+                           if (!templateId) templateId = " " // para que no sea null o vacia en la llamada a g:hasContentItemForTemplate
+                                                             // que espera no null y no vacio el templateId.
+                           %>
+                           
+                           <%-- se fija si el registro ya fue hecho --%>
+                           <%-- templateId: ${templateId}<br/> --%>
+                           <g:hasContentItemForStage episodeId="${session.ehrSession?.episodioId}" stage="${stage}">
 
-                          <g:if test="${it.hasItem}">
-                            <g:link controller="guiGen" action="generarShow" id="${it.itemId}">
-                              <g:message code="${stage.name}" /> (+) <%-- + es que se hizo algun registro en la seccion --%>
-                            </g:link>
-                          </g:if>
-                          <g:else>
-                            
-                            <g:set var="stage" value="${Stage.findByNameAndOwner(stage.name, workflow)}" />
-                            
-                            <%-- Se verifica que el item tenga algun permiso para los templates contenidos en la seccion --%>
-                            <g:hasDomainPermit domain="${domain}" templateIds="${stage.recordDefinitions.templateId}">
-                              <g:link controller="records" action="registroClinico2" params="[section:stage.name]">
-                                <g:message code="${stage.name}" />
-                              </g:link>
-                            </g:hasDomainPermit>
-                            <g:dontHasDomainPermit><%-- Si no tiene permisos, se muestra el boton sin link --%>
-                              <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${stage.name}" /></a>
-                            </g:dontHasDomainPermit>
-                            
-                          </g:else>
-                        </g:hasContentItemForStage>
-                      </li>
-                    </g:each>
+                             <g:if test="${it.hasItem}">
+                               <g:link controller="guiGen" action="generarShow" id="${it.itemId}">
+                                 <g:message code="${stage.name}" /> (+) <%-- + es que se hizo algun registro en la seccion --%>
+                               </g:link>
+                             </g:if>
+                             <g:else>
+                               
+                               <g:set var="stage" value="${Stage.findByNameAndOwner(stage.name, workflow)}" />
+                               
+                               <%-- Se verifica que el item tenga algun permiso para los templates contenidos en la seccion --%>
+                               <g:hasDomainPermit domain="${domain}" templateIds="${stage.recordDefinitions.templateId}">
+                                 <g:link controller="records" action="registroClinico2" params="[section:stage.name]">
+                                   <g:message code="${stage.name}" />
+                                 </g:link>
+                               </g:hasDomainPermit>
+                               <g:dontHasDomainPermit><%-- Si no tiene permisos, se muestra el boton sin link --%>
+                                 <a href="javascript:alert('No tiene permisos para ingresar a esta seccion');" class="unavailable"><g:message code="${stage.name}" /></a>
+                               </g:dontHasDomainPermit>
+                               
+                             </g:else>
+                           </g:hasContentItemForStage>
+                         </li>
+                       </g:each>
+                     </g:if>
+                     
                   </g:if>
+                     
                   <li ${((controllerName=='records'&&['signRecord'].contains(actionName)) ? 'class="active"' : '')}>
                     <g:link controller="records" action="signRecord" id="${session.ehrSession?.episodioId}">
                       <g:message code="registro.menu.close" />
