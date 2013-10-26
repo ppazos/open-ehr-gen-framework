@@ -431,7 +431,7 @@ class GuiGenController {
     */
    def save = {
       
-      //println "GuiGen save params: " + params
+      println "GuiGen save params: " + params
       
       if (!session.ehrSession?.episodioId)
       {
@@ -742,6 +742,8 @@ class GuiGenController {
       // FIXME: esto lo podria hacer en el loop previo sobre params para optimizar
       // Resolucion de fieldNames a path
       List resolverDates = []
+      List resolverDurations = []
+      
       FieldNames fields = FieldNames.getInstance()
       Map pathValue = [:]
       pathValue2.each { entry ->
@@ -760,24 +762,43 @@ class GuiGenController {
             // Para resolverlo en otro loop abajo
             resolverDates << entry.key // field_xxx
          }
-         
-         if (path) pathValue[path] = entry.value
+         else if (entry.value == 'duration.struct')
+         {
+            resolverDurations << entry.key
+         }
+         else if (path)
+         {
+            pathValue[path] = entry.value
+         }
+         else { // Todos los demas valores submiteados se descartan para el binder
+            log.info "Valor descartado para el binder: "+ entry.key +" ("+ path +"): "+ entry.value
+         }
       }
       
       resolverDates.each { fieldName ->
-         
-         def partesFecha = pathValue2.findAll{ e2 -> e2.key.startsWith(fieldName) }
+         // Las partes podrian venir ya agrupadas del loop anterior por todas las pathValues
+         def partesFecha = pathValue2.findAll { e2 -> e2.key.startsWith(fieldName) }
          partesFecha.each{ p ->
             // pathValue[path]_year
             // _year = field_xxx_year - field_xxx
             pathValue[fields.getPath(fieldName)+(p.key-fieldName)] = pathValue2[p.key]
          }
       }
+      resolverDurations.each { fieldName ->
+         // Las partes podrian venir ya agrupadas del loop anterior por todas las pathValues
+         def partesDuration = pathValue2.findAll { e3 -> e3.key.startsWith(fieldName) }
+         partesDuration.each{ pdur ->
+            // pathValue[path]_year
+            // _year = field_xxx_year - field_xxx
+            pathValue[fields.getPath(fieldName)+(pdur.key-fieldName)] = pathValue2[pdur.key]
+         }
+      }
       
       //println "mapping: " + fields.getMapping()
       //println "inverso: " + fields.getInverseMapping()
       //println "##############################################################"
-//      println "pathValue (lo que se bindea): " + pathValue
+      //println "pathValue (lo que se bindea): " + pathValue
+      //println "_____________________________________________________"
       //println ""
       
       

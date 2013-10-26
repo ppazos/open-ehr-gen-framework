@@ -121,11 +121,22 @@ class BootStrap {
       // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=122
       Map templates = templateManager.getLoadedTemplates()
       
-      templates.each { entry ->
+      templates.each { templateId, template ->
       
-         if (!entry.value.save()) // value es Template
+         //log.error templateId
+         
+         //def _xstream = new XStream()
+         //println _xstream.toXML(template)
+         //println ""
+      
+         // Guarda las referencias antes del template porque las referencias tienen
+         // una asociacion owner al template y el template no esta guardado aun.
+
+         
+
+         if (!template.save()) // value es Template
          {
-            println entry.value.errors
+            println template.errors
          }
       }
       

@@ -31,11 +31,29 @@ class GrailsTemplateEngineService {
       def requestAttributes = RequestContextHolder.getRequestAttributes()
       boolean unbindRequest = false
 
+      def servletContext
+      
+      
       // outside of an executing request, establish a mock version
       if(!requestAttributes)
       {
-         def servletContext  = ServletContextHolder.getServletContext()
+         /* dice que servletContext es null...
+         servletContext = ServletContextHolder.servletContext //getServletContext()
          def applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext)
+         requestAttributes = grails.util.GrailsWebUtil.bindMockWebRequest(applicationContext)
+         unbindRequest = true
+        */
+         
+         def grailsApp = org.codehaus.groovy.grails.commons.ApplicationHolder.application
+         
+         //println "grailsApp: "+ grailsApp
+         // grailsApp: org.codehaus.groovy.grails.commons.DefaultGrailsApplication@525d3
+
+         def applicationContext = grailsApp.mainContext
+         
+         //println applicationContext.class
+         //class org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext
+         
          requestAttributes = grails.util.GrailsWebUtil.bindMockWebRequest(applicationContext)
          unbindRequest = true
          
@@ -53,6 +71,13 @@ class GrailsTemplateEngineService {
          println requestAttributes.request.servletContext.class
          */
       }
+      else
+      {
+         servletContext = requestAttributes.request.servletContext
+      }
+      
+      
+      def request = requestAttributes.request // org.springframework.mock.web.MockHttpServletRequest
       
       
       // En el contexto de un request, permite guardar el locale actual para reestablecerlo
@@ -63,9 +88,6 @@ class GrailsTemplateEngineService {
       
       // Donde se setea el locale en el contexto de un request y donde se reestablece el actual.
       def localeResolver
-      
-      def servletContext = requestAttributes.request.servletContext
-      def request = requestAttributes.request // org.springframework.mock.web.MockHttpServletRequest
       
       // Si es mock (no esta en el contexto de un request, ej. ejecucion desde el bootstrap)
       if (request instanceof org.springframework.mock.web.MockHttpServletRequest)
@@ -88,7 +110,7 @@ class GrailsTemplateEngineService {
       }
 
       
-      def grailsAttributes = new DefaultGrailsApplicationAttributes(servletContext)
+      //def grailsAttributes = new DefaultGrailsApplicationAttributes(servletContext)
       
       //println "path 0: " + templateName
       

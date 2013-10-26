@@ -70,6 +70,7 @@ class EventContext extends Locatable {
       //setting (nullable: false)
       //codedStartTime(nullable: true, maxSize:4096) // nullable para que valide
       //codedEndTime(nullable: true, maxSize:4096) // nullable para que valide
+      location(nullable:true)
       codedSetting(nullable: true, maxSize:4096) // nullable para que valide
    }
 }

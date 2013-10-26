@@ -42,7 +42,9 @@ class Template {
    String name
     
    ArchetypeReference rootArchetype
-   List includedArchetypes = []
+   //List includedArchetypes = [] // con esto daba BUG de grails: ValueException: not-null property references a null or
+                                  // transient value: templates.ArchetypeReference._Template_includedArchetypesBackref
+
     
    static hasMany = [includedArchetypes:ArchetypeReference]
 	

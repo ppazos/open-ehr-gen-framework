@@ -1184,14 +1184,24 @@ class FactoryObjectRM {
    }*/
 
    // DV_DURATION
-   def createDV_DURATION(pathValor, Archetype arquetipo, String archNodeId, String tempId, CObject co)
+   def createDV_DURATION(int years, int months, int days, int hours, int minutes, int seconds,
+                         Archetype arquetipo, String archNodeId, String tempId, CObject co)
    {
-      // TODO
-      DvDuration d = new DvDuration()
+      println "FactoryObjectRM.createDV_DURATION" 
+   
+      String value = "P"
       
-      // println "Duration: " + pathValor
-      // viene vacio porque no se generan los campos en la UI
-      // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=70
+      if (years)   value += years + "Y"
+      if (months)  value += months + "M"
+      if (days)    value += days + "D"
+      
+      if (hours || minutes || seconds) value += "Ts"
+      
+      if (hours)   value += hours + "H"
+      if (minutes) value += minutes + "M"
+      if (seconds) value += seconds + "S"
+      
+      DvDuration d = new DvDuration(value: value)
       
       return d
    }

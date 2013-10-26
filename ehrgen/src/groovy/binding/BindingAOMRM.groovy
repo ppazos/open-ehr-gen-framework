@@ -197,7 +197,8 @@ class BindingAOMRM {
                 'DV_CODED_TEXT', // LO AGREGO ACA DE FORMA TEMPORARIA hasra resolver porque no es un DomainType en la instancia del AOM.
                 'DV_DATE',
                 'DV_DATE_TIME',
-                'DV_TIME'
+                'DV_TIME',
+                'DV_DURATION'
                 ].contains(rmTypeName)
     }
     
@@ -541,13 +542,13 @@ class BindingAOMRM {
         //        
         //println "bindCObject = bindMethod: " + bindMethod + " rmTypeName: " + co.rmTypeName
         
-        /*
+        
         println "==== bindCObject"
         println "   = bindMethod: " + bindMethod
         println "   = typeName: " + co.rmTypeName
-        println "   = co: " + co
+        //println "   = co: " + co
         println "======================================================="
-        */
+        
         
         //println "========== bindCObject -> " + bindMethod
         
@@ -646,13 +647,13 @@ class BindingAOMRM {
      */
     def bindCComplexObject(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
-        //println "====== bindCComplexObject " + cco.rmTypeName
+        println "====== bindCComplexObject " + cco.rmTypeName
         //println "====== bindCComplexObject " + pathValor        
        
 //         println "==== bindCComplexObject"
         //println "   = pathValor: " + pathValor
         //println "   = attributes: " + cco.getAttributes()
-//         println "   = typeName: " + cco.rmTypeName
+        println "   = typeName: " + cco.rmTypeName
         // println "======================================================="
         
         def rmTypeName = cco.rmTypeName
@@ -727,6 +728,10 @@ class BindingAOMRM {
         // el mismo, hasta que no se deban generar nodos multiples o bindear nodos estructurados.
         
         String factoryRMMethod = 'create' + rmTypeName
+        
+        println ""
+        println "FactoryRMMethod: "+ factoryRMMethod
+        println ""
         
         // Tipos que llegan aca:
         // SECTION
@@ -1013,7 +1018,7 @@ class BindingAOMRM {
             LinkedHashMap<String, Object> pathValorCObject = pathValorAttribute.findAll{it.key.startsWith(co.path())}
             
              //println "======== bindAttribute -> bindCObject"
-             //println "  bindAttribute children "+ co.rmTypeName + " pathValor: "+ pathValorCObject
+             println "  bindAttribute children "+ co.rmTypeName + " pathValor: "+ pathValorCObject
              def rmObject = bindCObject(co, pathValorCObject, arquetipo, tempId)
  
              //------------------------------------
@@ -1080,9 +1085,9 @@ class BindingAOMRM {
      */
     def bindCPrimitiveObject(CPrimitiveObject cpo, LinkedHashMap<String, Object> pathValor, arquetipo, tempId)
     {
-        //println "==== bindCPrimitiveObject "+ pathValor
+        println "==== bindCPrimitiveObject "+ pathValor
         //println "   = pathValor: " + pathValor
-        //println "   = rmType: " + cpo.rmTypeName
+        println "   = rmType: " + cpo.rmTypeName
         //println "=========================================="
         
         // PAB:
@@ -1261,6 +1266,8 @@ class BindingAOMRM {
         String type
         String idMatchingKey
         
+        def cantBind = false
+        
         Set<Assertion> conjAssertion = cdt.includes
         conjAssertion.each{eachAssertion ->
 
@@ -1269,6 +1276,13 @@ class BindingAOMRM {
             if (item.type == "String")
             {
                 idMatchingKey = ((CString)(item)).pattern
+                
+                println ""
+                println "idMatchingKey: "+ idMatchingKey
+                println ""
+                
+                // Sino se definen que arquetipos se pueden cargar, no se puede bindear.
+                cantBind = (idMatchingKey == '.*')
                 
                 //  CLUSTER\.level_of_exertion(-[a-zA-Z0-9_]+)*\.v1
                 //println "  xxx> "+ (((CString)(item)).pattern - "openEHR-EHR-")
@@ -1282,6 +1296,12 @@ class BindingAOMRM {
                 // .replace("\\", "") porque hay caracteres escapados, el . esta como \.
                 // A esto le hago un split por el "." y me quedo con el primer string: OBSERVATION
             }
+        }
+        
+        if (cantBind)
+        {
+           log.error 'idMatchingKey es la regex .*, se necesita una regex especifica para saber que arquetipos cargar'
+           return null
         }
 
         // FIXME: Que pasa si no encuentra type y matchingKey?
@@ -2228,7 +2248,7 @@ class BindingAOMRM {
     def bindELEMENT(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
        //println '=============================================='
-       //println 'bindELEMENT pathValor: ' + pathValor
+       println 'bindELEMENT pathValor: ' + pathValor
        
               
        // Un Element debe tener un CAttribute para su atributo value
@@ -2369,8 +2389,6 @@ class BindingAOMRM {
             {
                 //println "==== bindedElementValue: " + bindedElementValue.getClass()
                 
-                // rmFactory.createELEMENT
-                //elements << rmFactory."$factoryRMMethod"(bindedElementValue, arquetipo, arquetipo.node(cco.path()).nodeID, tempId)
                 def bindedElem = rmFactory.createELEMENT(bindedElementValue, arquetipo, arquetipo.node(cco.path()).nodeID, tempId, cco)
 
                 //println "====>>>> bindedElem: " + bindedElem
@@ -2884,64 +2902,64 @@ class BindingAOMRM {
     } // bindDV_DATE
 
 
-    def bindDV_DATE_TIME(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
-    {
-        //println "== bindDV_DATE_TIME"
-        //println "==== pathValor: " + pathValor
-        //println "=============================================="
+   def bindDV_DATE_TIME(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
+   {
+      println "== bindDV_DATE_TIME"
+      println "==== pathValor: " + pathValor
+      println "=============================================="
 
-        def result = []
+      def result = []
 
-        if (pathValor.size()==0) // Si no hay path ni valores
-        {
-            return result
-        }
-        // FIXME: implementar la validacion en el validate de la clase.
-        if (pathValor.size() >= 4) // Si viene una path
-        {
-            String year = pathValor.find{it.key.endsWith("year")}?.value
-            String month = pathValor.find{it.key.endsWith("month")}?.value
-            String day = pathValor.find{it.key.endsWith("day")}?.value
-            String hour = pathValor.find{it.key.endsWith("hour")}?.value
-            String minute = pathValor.find{it.key.endsWith("minute")}?.value
-            String seg = pathValor.find{it.key.endsWith("seg")}?.value
+      if (pathValor.size()==0) // Si no hay path ni valores
+      {
+         return result
+      }
+      // FIXME: implementar la validacion en el validate de la clase.
+      if (pathValor.size() >= 4) // Si viene una path
+      {
+         String year = pathValor.find{it.key.endsWith("year")}?.value
+         String month = pathValor.find{it.key.endsWith("month")}?.value
+         String day = pathValor.find{it.key.endsWith("day")}?.value
+         String hour = pathValor.find{it.key.endsWith("hour")}?.value
+         String minute = pathValor.find{it.key.endsWith("minute")}?.value
+         String seg = pathValor.find{it.key.endsWith("seg")}?.value
 
 
-            if ((year != null) && (month != null) && (day != null) && (hour != null))
-            {
-                try
-                {
-                    // TODO: que estas transformaciones las haga el propio constructor
-                    //       del DV_DATE, que si se le pasa strings los trata de convertir
-                    //       a int y valida e inyecta los errores en el objeto del GORM.
-                    int y = Integer.parseInt(year)
-                    int m = Integer.parseInt(month)
-                    int d = Integer.parseInt(day)
-                    int h = Integer.parseInt(hour)
-                    int min = Integer.parseInt(minute)
+         if ((year != null) && (month != null) && (day != null) && (hour != null))
+         {
+             try
+             {
+                 // TODO: que estas transformaciones las haga el propio constructor
+                 //       del DV_DATE, que si se le pasa strings los trata de convertir
+                 //       a int y valida e inyecta los errores en el objeto del GORM.
+                 int y = Integer.parseInt(year)
+                 int m = Integer.parseInt(month)
+                 int d = Integer.parseInt(day)
+                 int h = Integer.parseInt(hour)
+                 int min = Integer.parseInt(minute)
 
-                    if ((seg != null) && (seg != "")){
-                        int s = Integer.parseInt(seg)
-                    }
+                 if ((seg != null) && (seg != "")){
+                     int s = Integer.parseInt(seg)
+                 }
 
-                    result << rmFactory.createDV_DATE_TIME(year, month, day, hour, minute, seg, arquetipo, cco.nodeID, tempId, cco)
-                }
-                catch(Exception e)
-                {
-                    // FIXME: no se usa mas poner errores en errors2
+                 result << rmFactory.createDV_DATE_TIME(year, month, day, hour, minute, seg, arquetipo, cco.nodeID, tempId, cco)
+             }
+             catch(Exception e)
+             {
+                 // FIXME: no se usa mas poner errores en errors2
 //                   def path = pathValor.keySet().toArray()[0]
 //                   def fullPath = arquetipo.archetypeId.value + path // No puede llamar a fullPath() porque ci no es ArchetypeConstraint!
 //                   if ( !errors2[fullPath] ) errors2[fullPath] = [] // Creo lista de errores para esta path si no estaba creada
 //                   errors2[fullPath] << ERROR_BAD_FORMAT
-                }
-            }
+             }
+         }
 
-            return result // puede ser vacia
-        }
-        // por ahora no hay un caso donde venga el valor y otro dato.
-        throw new Exception("No hay al menos 4 path para bindDV_DATE_TIME, hay: " + pathValor.size() )
+         return result // puede ser vacia
+      }
+      // por ahora no hay un caso donde venga el valor y otro dato.
+      throw new Exception("No hay al menos 4 path para bindDV_DATE_TIME, hay: " + pathValor.size() )
 
-    } // bindDV_DATE_TIME
+   } // bindDV_DATE_TIME
 
     def bindDV_TIME(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
@@ -2992,4 +3010,38 @@ class BindingAOMRM {
         throw new Exception("No hay 3 path para bindDV_DATE_TIME, hay: " + pathValor.size())
 
     } // bindDV_TIME
+    
+    
+   def bindDV_DURATION(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
+   {
+      println "== bindDV_DURATION"
+      println "==== pathValor: " + pathValor
+      println "=============================================="
+
+      def result = []
+
+      if (pathValor.size()==0) // Si no hay path ni valores
+      {
+         return result
+      }
+
+      String years   = pathValor.find{it.key.endsWith("years")}?.value
+      String months  = pathValor.find{it.key.endsWith("months")}?.value
+      String days    = pathValor.find{it.key.endsWith("days")}?.value
+      String hours   = pathValor.find{it.key.endsWith("hours")}?.value
+      String minutes = pathValor.find{it.key.endsWith("minutes")}?.value
+      String seconds = pathValor.find{it.key.endsWith("seconds")}?.value
+
+      int iyears   = (years) ? Integer.parseInt(years) : null
+      int imonths  = (months) ? Integer.parseInt(months) : null
+      int idays    = (days) ? Integer.parseInt(days) : null
+      int ihours   = (hours) ? Integer.parseInt(hours) : null
+      int iminutes = (minutes) ? Integer.parseInt(minutes) : null
+      int iseconds = (seconds) ? Integer.parseInt(seconds) : null
+
+      result << rmFactory.createDV_DURATION(iyears, imonths, idays, ihours, iminutes, iseconds, arquetipo, cco.nodeID, tempId, cco)
+
+      return result // puede ser vacia
+        
+   } // bindDV_DURATION
 }

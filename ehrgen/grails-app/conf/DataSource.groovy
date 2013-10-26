@@ -77,7 +77,7 @@ environments {
          url = "jdbc:mysql://localhost:3306/oehr_dev?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
          dbCreate = "update"
          username = "root"
-         password = "vertrigo"
+         password = ""
          
          // Reutilizar conecciones existentes con la base de datos
          pooled = true

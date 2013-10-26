@@ -25,18 +25,22 @@ class ArchetypeReference {
     boolean includeAll = true // por defectoincluyo todos los nodos "hojas" del arquetipo
     List fields // nodos particulares del arquetipo que quiero incluir en el template
 
-	static hasMany = [fields: ArchetypeField]
-	
-	static transients = ['fieldPaths', 'referencedConstraints', 'referencedArchetype']
-	
-	static mapping = {
+    static hasMany = [fields: ArchetypeField]
+    
+    static transients = ['fieldPaths', 'referencedConstraints', 'referencedArchetype']
+   
+    static constraints = {
+       owner(nullable: true)
+    }
+    
+    static mapping = {
       table 'archetype_ref'
       type column: 'arch_ref_type' // reserved DB2
       type cascade:'save-update'
    }
    
    static belongsTo = [Template]
-	
+    
     List<String> getFieldPaths()
     {
         def ret = fields.path

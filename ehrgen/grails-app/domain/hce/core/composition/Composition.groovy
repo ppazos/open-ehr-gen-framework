@@ -80,6 +80,7 @@ class Composition extends Locatable {
    
    // Nuevo para calcular codedValue
    def beforeInsert() {
+   
       // Para generar XML en una sola linea sin pretty print: http://stackoverflow.com/questions/894625/how-to-disable-pretty-printingwhite-space-newline-in-xstream
       // Interesante: http://www.xml.com/pub/a/2001/06/20/databases.html
       XStream xstream = new XStream()

@@ -23,7 +23,7 @@ if (refPath) _refPath = refPath
   for (i in 1..max) {
 %>
 <%-- Agrego DV_CODED_TEXT y DV_COUNT porque genera un contenedor mas dentro del contenedor ELEMENT porque es modelado con CComplexObject y no es necesario ese contenedor extra (jode el estilo) --%>
-<g:if test="${!['ACTIVITY','HISTORY','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE','DV_CODED_TEXT','DV_TEXT','DV_COUNT','DV_BOOLEAN','DV_DATE_TIME'].contains( cComplexObject.rmTypeName )}">
+<g:if test="${!['ACTIVITY','HISTORY','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE','DV_CODED_TEXT','DV_TEXT','DV_COUNT','DV_BOOLEAN','DV_DATE_TIME', 'DV_DURATION'].contains( cComplexObject.rmTypeName )}">
 
   <%-- Si es ELEMENT, quiero el tipo de su value para poder ponerlo en el class de la div, y asi poder ajustar la vista con CSS --%>
   <g:if test="${cComplexObject.rmTypeName == 'ELEMENT'}">
@@ -148,31 +148,47 @@ if ( errors && errors.hasErrorsForPath(archetype.archetypeId.value, cComplexObje
             <textarea name="${fields.getField(archetype.archetypeId.value+_refPath+cComplexObject.path())}">x</textarea>
           </g:else>
         </g:if>
-        
-        <g:if test="${cComplexObject.rmTypeName == 'DV_DATE_TIME'}">
-          <%-- Si datetime se muestra desde CComplexObject, no tiene restricciones sobre la forma de la fecha o las fechas posibles. --%>
-          <g:datePicker name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}" value="${new Date()}" precision="minute" />
-        </g:if>
-        <g:if test="${cComplexObject.rmTypeName == 'DV_DATE'}">
-          <%-- Si date se muestra desde CComplexObject, no tiene restricciones sobre la forma de la fecha o las fechas posibles. --%>
-          <g:datePicker name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}" value="${new Date()}" precision="day" />
-        </g:if>
-        
-        <%-- TODO: tipo DV_TIME --%>
-        
-        <%-- FIXME: nunca muestra DvCount aca, entra a mostrar los atrivutes... --%>
-        <g:if test="${cComplexObject.rmTypeName == 'DV_COUNT'}">
+        <g:else>
+           <g:if test="${cComplexObject.rmTypeName == 'DV_DATE_TIME'}">
+             <%-- Si datetime se muestra desde CComplexObject, no tiene restricciones sobre la forma de la fecha o las fechas posibles. --%>
+             <g:datePicker name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}" value="${new Date()}" precision="minute" />
+           </g:if>
+           <g:else>
+             <g:if test="${cComplexObject.rmTypeName == 'DV_DATE'}">
+               <%-- Si date se muestra desde CComplexObject, no tiene restricciones sobre la forma de la fecha o las fechas posibles. --%>
+               <g:datePicker name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}" value="${new Date()}" precision="day" />
+             </g:if>
+             <g:else>
+               <%-- TODO: tipo DV_TIME --%>
+               <%-- FIXME: nunca muestra DvCount aca, entra a mostrar los atrivutes... --%>
+               <g:if test="${cComplexObject.rmTypeName == 'DV_COUNT'}">
 
-          <%-- Si count se muestra desde complexObject es que no tiene restricciones. --%>
-          (*..*) <input type="text" name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}" />
-        </g:if>
+                 <%-- Si count se muestra desde complexObject es que no tiene restricciones. --%>
+                 (*..*) <input type="text" name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}" />
+               </g:if>
+               <g:else>
+                 <g:if test="${cComplexObject.rmTypeName == 'DV_DURATION'}">
+                   <input type="hidden" name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())}" value="duration.struct" />
+                   <g:select name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())+'_years'}" from="${0..10}" /> Y
+                   <g:select name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())+'_months'}" from="${0..24}" /> M
+                   <g:select name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())+'_days'}" from="${0..100}" /> D
+                   <g:select name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())+'_hours'}" from="${0..72}" /> h
+                   <g:select name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())+'_minutes'}" from="${0..59}" /> m
+                   <g:select name="${fields.getField(archetype.archetypeId.value +_refPath+ cComplexObject.path())+'_seconds'}" from="${0..60}" /> s
+                 </g:if>
+                 <g:else>
+                   Tipo no soportado: ${cComplexObject.rmTypeName}
+                 </g:else>
+               </g:else>
+             </g:else>
+           </g:else>
+         </g:else>
       </g:else>
     </g:else>
 
-<g:if test="${ ! ['ACTIVITY','HISTORY','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE','DV_CODED_TEXT','DV_TEXT','DV_COUNT','DV_BOOLEAN','DV_DATE_TIME'].contains( cComplexObject.rmTypeName )}">
+<g:if test="${ ! ['ACTIVITY','HISTORY','ITEM_TREE','ITEM_TABLE','ITEM_LIST','ITEM_SINGLE','DV_CODED_TEXT','DV_TEXT','DV_COUNT','DV_BOOLEAN','DV_DATE_TIME', 'DV_DURATION'].contains( cComplexObject.rmTypeName )}">
 
     </span>
   </div>
 </g:if>
-
 <% } // si occurrences.upper >1 y no es * repito el nodo %>

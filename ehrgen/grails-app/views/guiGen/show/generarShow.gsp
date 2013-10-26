@@ -242,6 +242,23 @@
           return;
         }
         
+        if (value == "duration.struct")
+        {
+          var value = "P";
+          if (data[path+'_years']>0)   value += data[path+'_years']+"Y";
+          if (data[path+'_months']>0)  value += data[path+'_months']+"M";
+          if (data[path+'_days']>0)    value += data[path+'_days']+"D";
+          
+          if (data[path+'_hours']>0 || data[path+'_minutes']>0 || data[path+'_seconds']>0) value += "T";
+          
+          if (data[path+'_hours']>0)   value += data[path+'_hours']+"H";
+          if (data[path+'_minutes']>0) value += data[path+'_minutes']+"M";
+          if (data[path+'_seconds']>0) value += data[path+'_seconds']+"S";
+          
+          field.text(value);
+          return;
+        }
+        
         // Por defecto
         field.text(value);
       }

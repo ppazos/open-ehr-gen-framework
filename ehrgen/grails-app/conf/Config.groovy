@@ -103,6 +103,7 @@ templates2 {
               'blood_pressure_liotta.v1' // Tiene INTERVAL_EVENT
              ]
       DEMO = ['demo.v1']
+      SINERGIS = ['problemas.v1']
    }
 }
 
