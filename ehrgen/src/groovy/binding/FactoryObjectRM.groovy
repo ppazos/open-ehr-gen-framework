@@ -1144,25 +1144,6 @@ class FactoryObjectRM {
       String fechaISO8601 = crearFechaISO8601(year, month, day, hour, minute, seg)
       //println "---->" + fechaISO8601
       return new DvDateTime(value: fechaISO8601)
-      /*
-      // Encuentro los valores en la coleccion de path valor
-      String year = pathValor.find{it.key.endsWith("year")}?.value
-      String month = pathValor.find{it.key.endsWith("month")}?.value
-      String day = pathValor.find{it.key.endsWith("day")}?.value
-      String hour = pathValor.find{it.key.endsWith("hour")}?.value
-      String minute = pathValor.find{it.key.endsWith("minute")}?.value
-      String seg = pathValor.find{it.key.endsWith("seg")}?.value
-
-      if ((year != null) && (month != null) && (day != null) && (hour != null)){
-         // Creo un string con formato ISO 8601
-         String fechaISO8601 = crearFechaISO8601(year, month, day, hour, minute, seg)
-         return new DvDateTime(value: fechaISO8601)
-      }
-      else{
-         return null
-         //throw new Exception("createDV_DATE_TIME: Colección de pathValor no tiene path a 'year' o 'month' o 'day' u 'hour'.")
-      }
-      */
    }
 
    /*def createDV_DATE_TIME(List<Object> listaListRMO, Archetype arquetipo, String archNodeId, String tempId){
@@ -1187,7 +1168,7 @@ class FactoryObjectRM {
    def createDV_DURATION(int years, int months, int days, int hours, int minutes, int seconds,
                          Archetype arquetipo, String archNodeId, String tempId, CObject co)
    {
-      println "FactoryObjectRM.createDV_DURATION" 
+      //println "FactoryObjectRM.createDV_DURATION" 
    
       String value = "P"
       

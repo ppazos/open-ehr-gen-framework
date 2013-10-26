@@ -543,11 +543,11 @@ class BindingAOMRM {
         //println "bindCObject = bindMethod: " + bindMethod + " rmTypeName: " + co.rmTypeName
         
         
-        println "==== bindCObject"
-        println "   = bindMethod: " + bindMethod
-        println "   = typeName: " + co.rmTypeName
+        //println "==== bindCObject"
+        //println "   = bindMethod: " + bindMethod
+        //println "   = typeName: " + co.rmTypeName
         //println "   = co: " + co
-        println "======================================================="
+        //println "======================================================="
         
         
         //println "========== bindCObject -> " + bindMethod
@@ -647,7 +647,7 @@ class BindingAOMRM {
      */
     def bindCComplexObject(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
-        println "====== bindCComplexObject " + cco.rmTypeName
+        //println "====== bindCComplexObject " + cco.rmTypeName
         //println "====== bindCComplexObject " + pathValor        
        
 //         println "==== bindCComplexObject"
@@ -729,9 +729,9 @@ class BindingAOMRM {
         
         String factoryRMMethod = 'create' + rmTypeName
         
-        println ""
-        println "FactoryRMMethod: "+ factoryRMMethod
-        println ""
+        //println ""
+        //println "FactoryRMMethod: "+ factoryRMMethod
+        //println ""
         
         // Tipos que llegan aca:
         // SECTION
@@ -1018,7 +1018,7 @@ class BindingAOMRM {
             LinkedHashMap<String, Object> pathValorCObject = pathValorAttribute.findAll{it.key.startsWith(co.path())}
             
              //println "======== bindAttribute -> bindCObject"
-             println "  bindAttribute children "+ co.rmTypeName + " pathValor: "+ pathValorCObject
+             //println "  bindAttribute children "+ co.rmTypeName + " pathValor: "+ pathValorCObject
              def rmObject = bindCObject(co, pathValorCObject, arquetipo, tempId)
  
              //------------------------------------
@@ -2248,7 +2248,7 @@ class BindingAOMRM {
     def bindELEMENT(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
        //println '=============================================='
-       println 'bindELEMENT pathValor: ' + pathValor
+       //println 'bindELEMENT pathValor: ' + pathValor
        
               
        // Un Element debe tener un CAttribute para su atributo value
@@ -2904,9 +2904,9 @@ class BindingAOMRM {
 
    def bindDV_DATE_TIME(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
    {
-      println "== bindDV_DATE_TIME"
-      println "==== pathValor: " + pathValor
-      println "=============================================="
+      //println "== bindDV_DATE_TIME"
+      //println "==== pathValor: " + pathValor
+      //println "=============================================="
 
       def result = []
 
@@ -2922,7 +2922,7 @@ class BindingAOMRM {
          String day = pathValor.find{it.key.endsWith("day")}?.value
          String hour = pathValor.find{it.key.endsWith("hour")}?.value
          String minute = pathValor.find{it.key.endsWith("minute")}?.value
-         String seg = pathValor.find{it.key.endsWith("seg")}?.value
+         String seg = pathValor.find{it.key.endsWith("seg")}?.value // FIXME: no vienen los segundos, pero si vinieran seguro que no termina con "seg"
 
 
          if ((year != null) && (month != null) && (day != null) && (hour != null))
@@ -3014,9 +3014,9 @@ class BindingAOMRM {
     
    def bindDV_DURATION(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
    {
-      println "== bindDV_DURATION"
-      println "==== pathValor: " + pathValor
-      println "=============================================="
+      //println "== bindDV_DURATION"
+      //println "==== pathValor: " + pathValor
+      //println "=============================================="
 
       def result = []
 
