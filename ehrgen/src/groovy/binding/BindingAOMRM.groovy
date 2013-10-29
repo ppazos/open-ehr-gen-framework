@@ -653,7 +653,7 @@ class BindingAOMRM {
 //         println "==== bindCComplexObject"
         //println "   = pathValor: " + pathValor
         //println "   = attributes: " + cco.getAttributes()
-        println "   = typeName: " + cco.rmTypeName
+        //println "   = typeName: " + cco.rmTypeName
         // println "======================================================="
         
         def rmTypeName = cco.rmTypeName
@@ -793,6 +793,9 @@ class BindingAOMRM {
                 listaListRMO.add(listRMO)
             }
             
+            println ""
+            println "listaListRMO: "+ listaListRMO
+            println ""
             
             // ==============================================================
             // El atributo INSTRUCTION.narrative no esta en el arquetipo, debo crear la path a mano para que bindee.
@@ -1087,7 +1090,7 @@ class BindingAOMRM {
     {
         println "==== bindCPrimitiveObject "+ pathValor
         //println "   = pathValor: " + pathValor
-        println "   = rmType: " + cpo.rmTypeName
+        //println "   = rmType: " + cpo.rmTypeName
         //println "=========================================="
         
         // PAB:
