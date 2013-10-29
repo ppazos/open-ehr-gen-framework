@@ -280,7 +280,7 @@ class ArchetypeManager {
          }
       }
        
-      if (!adlFile) println "   ERROR: No se encuentra el archivo que matchee con " + "[.*"+type+".*"+idMatchingKey+".*]" + " desde " + root.path
+      if (!adlFile) println "   ERROR: No se encuentra el archivo que matchee con [.*"+ idMatchingKey +".*\\.adl] desde " + root.path
       else
       {
          println "   Carga desde: " + adlFile.path
