@@ -718,7 +718,7 @@ class FactoryObjectRM {
 
    def createINSTRUCTION(List<Object> listaListRMO, Archetype arquetipo, String archNodeId, String tempId, CObject co)
    {
-      println "== createINSTRUCTION " + listaListRMO
+      println "== createINSTRUCTION " + listaListRMO + " size: "+ listaListRMO.size()
       
       // En listaListRMO viene:
       // - Siempre: un DvText que es el narrative
@@ -732,8 +732,23 @@ class FactoryObjectRM {
       //println "~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~~+~+~+~+~"
       //println "~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~~+~+~+~+~"
       
+      /*
+      == createINSTRUCTION [
+        [Activity-> [at0001] name: Request], 
+        [ItemTree-> [at0008] name: Tree], 
+        [DvText dfh dfhd dfgh ff]
+      ]
+      
+      == createINSTRUCTION [
+        [Activity-> [at0001] name: Current Activity], 
+        [DvText fhfghfhfhfhfghf], 
+        [DvText fhfghfhfhfhfghf]]
+      */
+      
       DvText narrative
       List activities = []
+      ItemStructure protocol // puede no venir
+      
       if (listaListRMO.size()==1) // viene solo el narrative
       {
          if (listaListRMO[0][0] instanceof DvText)
@@ -744,6 +759,27 @@ class FactoryObjectRM {
       }
       else // viene narrative y activities
       {
+         listaListRMO.each { dataList ->
+         
+            if (dataList[0] instanceof DvText)
+            {
+               narrative = dataList[0]
+            }
+            else if (dataList[0] instanceof Activity)
+            {
+               activities = dataList
+            }
+            else if (dataList[0] instanceof ItemStructure)
+            {
+               protocol = dataList[0]
+            }
+            else
+            {
+               throw Exception("El item "+ dataList[0] +" no es ItemStructure, DvText o Activity")
+            }
+         }
+         
+         /*
          if (listaListRMO[0] instanceof List) // el primer elemento son las activities
          {
             activities = listaListRMO[0]
@@ -754,10 +790,13 @@ class FactoryObjectRM {
             activities = listaListRMO[1]
             narrative  = listaListRMO[0][0] // el narrative es el primer elemento de la primer lista
          }
+         */
       }
       // No tengo otro caso posible
       
+      
       instruction.narrative = narrative
+      instruction.protocol  = protocol
       
       activities.each{ activity ->
       
