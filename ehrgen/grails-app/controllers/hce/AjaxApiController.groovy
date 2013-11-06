@@ -33,6 +33,7 @@ import tablasMaestras.Cie10Trauma
 
 import grails.converters.* // as JSON
 import com.thoughtworks.xstream.XStream
+import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 // TEST BINDER
 import binding.BindingAOMRM
@@ -73,6 +74,22 @@ class AjaxApiController {
       render PathValores.list(params).params as JSON
    }
 
+   
+   // Generalizar la vista de búsqueda de términos codificados
+   // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=23
+   //
+   // archetypeId
+   // constraintCode
+   // q
+   def findTerm = {
+   
+      println params
+      
+      println ApplicationHolder.application.config.hce.terminologyServicesMapping
+      
+      render "ok"
+   
+   } // findTerm
    
    
    // Prueba

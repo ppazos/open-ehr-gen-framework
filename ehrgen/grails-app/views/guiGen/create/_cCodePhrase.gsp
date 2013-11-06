@@ -15,6 +15,7 @@ def _refPath = ''
 if (refPath) _refPath = refPath
 
 %>
+
 <!-- armo lista de valores con textos -->
 <g:set var="values" value="${[]}" />
 <g:set var="codes" value="${[]}" />

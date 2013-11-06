@@ -7,6 +7,27 @@
     <g:javascript library="jquery.scrollTo-1.4.2-min" />
     <g:javascript>
       $(document).ready( function() {
+      
+        // Buscar en el servidor por AJAX, para obtener codigos
+        $('input.find_in_terminology').on('input', function() {
+        
+          console.log(this.value, this.value.length);
+          
+          //{bind: "ac0001", archetypeid: "openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1"}
+          console.log( $(this).data() );
+          
+          data = $(this).data();
+          data.q = this.value;
+          
+          $.get( '${g.createLink(controller:'ajaxApi', action:'findTerm')}',
+                 data,
+                 function(res) {
+          
+            console.log(res);
+          });
+          
+        });
+        
         
         // Disable submit button on submit
         // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=47

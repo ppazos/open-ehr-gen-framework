@@ -191,15 +191,7 @@ public class ArchetypeWalkthrough {
    // =================================================================================
    // Inicio de la recorrida definition
    private void wt(CComplexObject c, Object parent, Archetype archetype)
-   {
-      //if (c.rmTypeName == "DV_CODED_TEXT")
-      //   println "DV_CODED_TEXT " + c
-//      if (c.rmTypeName == "ISM_TRANSITION")
-//      {
-//         println c
-//         println ""
-//      }
-      
+   {      
       this.observers[EVENT_CCOMPLEXOBJECT].each { actions ->
          actions.each { action ->
             action.execute([archetype:archetype, node:c, result:this.result, walk:this]) // result es in/out

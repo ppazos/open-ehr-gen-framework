@@ -1,6 +1,7 @@
 dataSource {
    pooled = true
-   driverClassName = "org.hsqldb.jdbcDriver"
+   //driverClassName = "org.h2.Driver"
+   driverClassName = "com.mysql.jdbc.Driver"
    username = "sa"
    password = ""
 }
@@ -19,15 +20,15 @@ environments {
          // Conexiones
          // ====================================================================
          
-         // Configuracion para utilizar HSQL en memoria
+         // Configuracion para utilizar h2 en memoria
          // Selecciona la base de datos 'devDB'
          // dbCreate = "create-drop" // one of 'create', 'create-drop','update'
-         // url = "jdbc:hsqldb:mem:devDB"
+         // url = "jdbc:h2db:mem:devDB"
          
          
          // Configuracion para utilizar MySQL
          // Selecciona la base de datos oehr_dev
-         driverClassName = "com.mysql.jdbc.Driver"
+         //driverClassName = "com.mysql.jdbc.Driver"
          url = "jdbc:mysql://localhost:3306/oehr_dev?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
          username = "root"
          password = "" //"vertrigo"
@@ -58,24 +59,28 @@ environments {
    test {
       dataSource {
          
-         // Configuracion para utilizar HSQL en memoria
-         url = "jdbc:hsqldb:mem:testDb"
+         // Configuracion para utilizar h2 en memoria
+         //url = "jdbc:h2db:mem:testDb"
          
+         //driverClassName = "com.mysql.jdbc.Driver"
+         url = "jdbc:mysql://localhost:3306/oehr_test?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
          dbCreate = "update"
+         username = "root"
+         password = ""
       }
    }
    production {
       dataSource {
          
-         // Configuracion para utilizar HSQL en archivo
+         // Configuracion para utilizar h2 en archivo
          // Selecciona la base de datos prodDb
-         //url = "jdbc:hsqldb:file:prodDb;shutdown=true"
+         //url = "jdbc:h2db:file:prodDb;shutdown=true"
          
          // Configuracion para utilizar MySQL
          // Selecciona la base de datos oehr_dev (por simplicidad "prod" utiliza la misma base que en "dev")
-         driverClassName = "com.mysql.jdbc.Driver"
+         //driverClassName = "com.mysql.jdbc.Driver"
          url = "jdbc:mysql://localhost:3306/oehr_dev?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
-         dbCreate = "update"
+         
          username = "root"
          password = ""
          

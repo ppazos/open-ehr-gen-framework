@@ -93,6 +93,7 @@ templates2 {
       DIAGNOSTICO = ['diagnosticos.v1']
    }
    'Tests' {
+      /*
       TEST = [
               //'cluster_obligatorio.v1',
               'cluster_obligatorio.v2',
@@ -103,7 +104,8 @@ templates2 {
               'blood_pressure_liotta.v1' // Tiene INTERVAL_EVENT
              ]
       DEMO = ['demo.v1']
-      SINERGIS = ['problemas.v1']
+      */
+      SINERGIS = ['problemas.v1', 'derivacion.v1', 'resumen.v1', 'fallecimiento.v1', 'test_sts.v1']
    }
 }
 
@@ -122,6 +124,13 @@ hce {
     template_repo = 'templates'+ PS   // luego se pone la path del tipo y el templateId
     archetype_repo = 'archetypes'+ PS +'ehr'+ PS // luego se pone la path del tipo y el archetypeId
     uploaded_archetypes_repo = 'archetypes'+ PS +'uploaded'+ PS // directorio temporal donde se suben los arquetipos desde la web
+    
+    // Generalizar la vista de búsqueda de términos codificados
+    // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=23
+    terminologyServicesMapping = [
+      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0001': '/ajaxApi/findTerm', // no puedo usar g.createLink
+      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0002': 'local'
+    ]
 }
 
 openEHR.RMVersion = '1.0.2'

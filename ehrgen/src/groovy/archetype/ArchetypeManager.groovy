@@ -55,7 +55,7 @@ import archetype.walkthrough.actions.SlotResolution
  */
 class ArchetypeManager {
 
-   private Logger log = Logger.getLogger(getClass()) 
+   private Logger log = Logger.getLogger(getClass())
    
    // Ruta independiente del SO
    // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
@@ -63,9 +63,8 @@ class ArchetypeManager {
    
    /**
     * Directorio donde estan los arquetipos.
-    * FIXME: deberia ser un parametro de la aplicacion en un .properties
     */
-   //private String archetypeRepositoryPath = "archetypes"+ PS +"ehr"
+   private String archetypeRepositoryPath
     
    // Cache: archetypeId => Archetype
    private static Map<String, Archetype> cache = [:]
@@ -77,11 +76,32 @@ class ArchetypeManager {
    // SINGLETON: FIXME usar singleton de groovy
    private static ArchetypeManager instance = null
     
-   private ArchetypeManager() {}
+   private ArchetypeManager(String repoPath)
+   {
+      if (repoPath)
+         this.archetypeRepositoryPath = repoPath
+      else
+         this.archetypeRepositoryPath = ApplicationHolder.application.config.hce.archetype_repo
+      
+      if (!this.archetypeRepositoryPath)
+         throw new Exception('Archetype repo path is null')
+      
+      // Asegurar que termine con PS siempre
+      if (!this.archetypeRepositoryPath.endsWith(PS)) this.archetypeRepositoryPath += PS
+      
+      if (!new File(this.archetypeRepositoryPath).exists() || !new File(this.archetypeRepositoryPath).canRead())
+         throw new Exception(this.archetypeRepositoryPath + " doesn't exists or can't be read")
+   }
     
    public static ArchetypeManager getInstance()
    {
-      if (!instance) instance = new ArchetypeManager()
+      if (!instance) instance = new ArchetypeManager(null)
+      return instance
+   }
+   
+   public static ArchetypeManager getInstance(String repoPath)
+   {
+      if (!instance) instance = new ArchetypeManager(repoPath)
       return instance
    }
     
@@ -92,7 +112,7 @@ class ArchetypeManager {
    public void loadAll()
    {
       //def path = ApplicationHolder.application.config.hce.archetype_repo
-      loadAllRecursive( ApplicationHolder.application.config.hce.archetype_repo )
+      loadAllRecursive( archetypeRepositoryPath )
    }
     
    private loadAllRecursive( String path )
@@ -167,8 +187,8 @@ class ArchetypeManager {
          // archetypes/ehr/type/archId.adl
          //println "Carga desde: " + ApplicationHolder.application.config.hce.archetype_repo+ PS +getTypePath(type)+ PS +archetypeId+".adl"
          //def adlFile = new File( ApplicationHolder.application.config.hce.archetype_repo+ PS +getTypePath(type)+ PS +archetypeId+".adl" )
-         println "Carga desde: " + ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) + PS + archetypeId +".adl"
-         def adlFile = new File( ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) + PS + archetypeId +".adl" )
+         println "Carga desde: " + archetypeRepositoryPath + getTypePath(type) + PS + archetypeId +".adl"
+         def adlFile = new File( archetypeRepositoryPath + getTypePath(type) + PS + archetypeId +".adl" )
            
          // PARSEAR ARQUETIPO
          ADLParser parser = null
@@ -267,7 +287,7 @@ class ArchetypeManager {
        
       // archetypes/ehr/type/archId.adl
       // Abre el directorio donde supuestamente esta el arquetipo
-      def root = new File( ApplicationHolder.application.config.hce.archetype_repo + getTypePath(type) )
+      def root = new File( archetypeRepositoryPath + getTypePath(type) )
        
        
       // FIXME: varios pueden matchear!
@@ -353,7 +373,7 @@ class ArchetypeManager {
        // FIXME: ojo que si es un subtipo la ruta no es directa (action esta en /ehr/entry/action no es /ehr/action!)
        
        // archetypes/ehr/type/archId.adl
-       def root = new File( ApplicationHolder.application.config.hce.archetype_repo + PS + getTypePath(type) ) // Abre el directorio donde supuestamente esta el arquetipo
+       def root = new File( archetypeRepositoryPath + getTypePath(type) ) // Abre el directorio donde supuestamente esta el arquetipo
        
        // FIXME: varios pueden matchear!
        def adlFiles = []
@@ -635,7 +655,7 @@ class ArchetypeManager {
 
       // Transformo el substring en una regex
       def pattern = Pattern.compile( ".*"+substring+".*", Pattern.CASE_INSENSITIVE )
-      def dir = new File( ApplicationHolder.application.config.hce.archetype_repo )
+      def dir = new File( archetypeRepositoryPath )
  
       fingArchetypeIdsRecursive(pattern, dir, ret)
       
