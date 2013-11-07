@@ -128,8 +128,8 @@ hce {
     // Generalizar la vista de búsqueda de términos codificados
     // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=23
     terminologyServicesMapping = [
-      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0001': '/ajaxApi/findTerm', // no puedo usar g.createLink
-      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0002': 'local'
+      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0001': util.terminology.CIE10LocalAccess,
+      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0002': util.terminology.SnomedITServerAccess
     ]
 }
 

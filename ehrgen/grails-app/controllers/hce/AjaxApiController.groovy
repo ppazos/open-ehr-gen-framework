@@ -84,10 +84,13 @@ class AjaxApiController {
    def findTerm = {
    
       println params
+      println ApplicationHolder.application.config.hce.terminologyServicesMapping[params.archetypeId+'_'+params.constraintCode]
       
-      println ApplicationHolder.application.config.hce.terminologyServicesMapping
+      def accessClass = ApplicationHolder.application.config.hce.terminologyServicesMapping[params.archetypeId+'_'+params.constraintCode]
+      def access = accessClass.newInstance()
+      def candidates = access.suggestTerms(params.q)
       
-      render "ok"
+      render candidates as JSON
    
    } // findTerm
    
