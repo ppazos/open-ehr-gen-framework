@@ -482,8 +482,9 @@ class BootStrap {
      
       println " - START: Carga catalogos maestros"
         
+        
       // saco para acelerar la carga
-      /*
+      
         println "   - CIE 10..."
         if (Cie10Trauma.count() == 0)
         {
@@ -496,7 +497,8 @@ class BootStrap {
         {
            println "      ya estan cargados"
         }
-      */
+      
+      
         
       println "   - OpenEHR Concepts..."
       if (OpenEHRConcept.count() == 0)

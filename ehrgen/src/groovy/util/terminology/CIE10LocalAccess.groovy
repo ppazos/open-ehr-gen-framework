@@ -15,6 +15,7 @@ class CIE10LocalAccess implements ITerminologyAccess {
    
    public List<Term> suggestTerms(String text, String language)
    {
+      def partes = text.split(" ") // saco palabras por espacios
       def codigos = Cie10Trauma.withCriteria {
          and {
             partes.each { parte ->
@@ -47,6 +48,6 @@ class CIE10LocalAccess implements ITerminologyAccess {
    
    public List<Term> findCandidates( String text, String terminologyId, String subsetId, String language )
    {
-      return suggestTerms(text, 'es')s
+      return suggestTerms(text, 'es')
    }
 }

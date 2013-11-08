@@ -13,19 +13,25 @@
         
           console.log(this.value, this.value.length);
           
-          //{bind: "ac0001", archetypeid: "openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1"}
-          console.log( $(this).data() );
-          
-          data = $(this).data();
-          data.q = this.value;
-          
-          $.get( '${g.createLink(controller:'ajaxApi', action:'findTerm')}',
-                 data,
-                 function(res) {
-          
-            console.log(res);
-          });
-          
+          if (this.value.length > 3)
+          {
+             // Cuidado: archetypeid es todo minusculas!
+             //{bind: "ac0001", archetypeid: "openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1"}
+             console.log( $(this).data() );
+             
+             data = $(this).data();
+             data.q = this.value;
+             
+             $.get(
+               '${g.createLink(controller:'ajaxApi', action:'findTerm')}',
+               data,
+               function(res) {
+             
+                 console.log(res);
+               },
+               'json'
+             );
+          }
         });
         
         

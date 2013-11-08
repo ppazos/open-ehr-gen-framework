@@ -79,14 +79,17 @@ class AjaxApiController {
    // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=23
    //
    // archetypeId
-   // constraintCode
+   // bind es un constraintCode acNNNN
    // q
    def findTerm = {
    
+      // Cuidado: archetypeid es todo minusculas!
+      println "----------"
       println params
-      println ApplicationHolder.application.config.hce.terminologyServicesMapping[params.archetypeId+'_'+params.constraintCode]
+      println params.archetypeid+'_'+params.bind
+      println ApplicationHolder.application.config.hce.terminologyServicesMapping[params.archetypeid+'_'+params.bind]
       
-      def accessClass = ApplicationHolder.application.config.hce.terminologyServicesMapping[params.archetypeId+'_'+params.constraintCode]
+      def accessClass = ApplicationHolder.application.config.hce.terminologyServicesMapping[params.archetypeid+'_'+params.bind]
       def access = accessClass.newInstance()
       def candidates = access.suggestTerms(params.q)
       

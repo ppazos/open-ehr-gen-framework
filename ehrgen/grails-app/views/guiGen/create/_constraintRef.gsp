@@ -13,6 +13,6 @@ if (refPath) _refPath = refPath
 
 <input type="text" value="" name="${fields.getField(path)}"
        placeholder="Ingrese texto a buscar" class="find_in_terminology"
-       data-bind="${constraintRef.reference}" data-archetypeId="${archetype.archetypeId.value}" />
+       data-bind="${constraintRef.reference}" data-archetypeid="${archetype.archetypeId.value}" />
 
 <!-- path: ${path} -->

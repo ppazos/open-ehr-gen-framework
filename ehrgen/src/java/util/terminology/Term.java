@@ -16,4 +16,13 @@ public class Term {
    String qualifier;     // Califica al termino, por ejemplo si es un termino final que se utiliza directamente para codificar o si es un contenedor o clasificador y puede contener refinamientos expresados como subcodigos.
    
    float match;          // 0.0 no match, 1.0 exact match
+   
+   
+   public String getText() { return this.text; }
+   public String getDescription() { return this.description; }
+   public String getLanguage() { return this.language; }
+   public String getCode() { return this.code; }
+   public String getTerminologyId() { return this.terminologyId; }
+   public String getQualifier() { return this.qualifier; }
+   public float getMatch() { return this.match; }
 }
