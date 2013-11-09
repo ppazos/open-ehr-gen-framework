@@ -8,6 +8,11 @@
   width: 50%;
 }
 
+.label {
+  display: block;
+}
+
+
 /* >>>>>>>>>>>>>>>>>>>>>>> Seleccion de terminos en servicios terminologicos */
 #term_list {
   width: 400px;
@@ -15,26 +20,34 @@
   overflow-y: scroll;
   background-color: #f1f1f1;
   /*padding: 10px;*/
+  position: absolute;
+}
+a.term_list_close {
+  width: 10px;
+  height: 14px;
+  font-size: 1em;
+  text-decoration: none;
+  background-color: #f1f1f1;
+  padding: 6px;
+  
+  position: absolute;
 }
 #term_list > div > div {
   display: table-cell;
   vertical-align: middle;
 }
 #term_list > div:hover {
-  background-color: #ebebeb;
+  background-color: #BDCDF5;
 }
-#term_list > div.active {
-  background-color: #3498db;
-}
-#term_list > div.active a {
-  color: #fff;
-}
-
 #term_list > div a {
   padding: 5px 10px;
   display: block;
   text-decoration: none;
 }
+div.selectedCode {
+  display: inline;
+}
+/* >>>>>>>>>>>>>>>>>>>>>>> Seleccion de terminos en servicios terminologicos */
 
 span.label.datavalue { /* Para las labels de campos simples de las clases del RM (INTERVAL_EVENT.math_function) */
   font-size:1em;
@@ -81,17 +94,19 @@ span.label.datavalue { /* Para las labels de campos simples de las clases del RM
   border: 1px solid #6B90DA;
   overflow: hidden; /* para que el height de la label no se salga del contenedor div.ELEMENT */
 }
-.ELEMENT .label {
+.ELEMENT > span.label {
   padding: 9px;
   font-size: 12px;
   margin-bottom: 0px;
   background-color: #BDCDF5;
   float: left;
   height: 100%;
+  display: inline-block !important;
 }
-.ELEMENT .content {
+.ELEMENT > span.content {
   padding: 4px;
   background-color: transparent;
+  display: table-cell;
 }
 
 /* mejor aprovechamiento del espacio para DvOrdinal poniendo el titulo del ELEMENT a la izquierda del contenido */
@@ -102,11 +117,12 @@ span.label.datavalue { /* Para las labels de campos simples de las clases del RM
   vertical-align: middle;
   margin-bottom: 0px;
   font-weight: normal;
-  width: 160px;
+  /*width: 160px;*/
+  width: 20%;
 }
 /* Si pongo .ELEMENT_DvOrdinal .content se ve mal el triage. FIXME: deberia definir reglas particulares para el triage que lo corrijan. */
 .ELEMENT_DvOrdinal .content, .ELEMENT_DV_CODED_TEXT .content, .ELEMENT_DV_COUNT .content, .ELEMENT_DvQuantity .content, .ELEMENT_DV_BOOLEAN .content {
-  display: inline-block;
+  /*display: inline-block;*/
   vertical-align: middle;
 }
  
@@ -142,9 +158,8 @@ span.label.datavalue { /* Para las labels de campos simples de las clases del RM
 .ELEMENT img {
   max-width: 385px;
 }
-.label {
-  display: block;
-}
+
+
 
 select {
   width: 120px;

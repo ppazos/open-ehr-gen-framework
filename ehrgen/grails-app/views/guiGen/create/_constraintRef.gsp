@@ -11,7 +11,8 @@ if (refPath) _refPath = refPath
 
 <g:set var="path" value="${archetype.archetypeId.value +_refPath+ constraintRef.path()}" />
 
-<input type="text" value="" name="${fields.getField(path)}"
+<!-- El nombre lo tiene en data-name, este campo no necesita nombre porque no se submitea -->
+<input type="text" value="" data-name="${fields.getField(path)}"
        placeholder="Ingrese texto a buscar" class="find_in_terminology"
        data-bind="${constraintRef.reference}" data-archetypeid="${archetype.archetypeId.value}" />
 

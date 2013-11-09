@@ -8,6 +8,26 @@
     <g:javascript>
       $(document).ready( function() {
       
+        // ===================================================================================
+        // Busqueda en servicios terminologicos
+      
+        // Si hay un texto en el input ya hice una busqueda y pude haber escondido
+        // el term_list muestro el term_list si estaba escondido.
+        $('input.find_in_terminology').click(function(e) {
+        
+          term_list = $('#term_list')[0];
+          term_list_close = $('a.term_list_close')[0];
+          if (term_list)
+          {
+            term_list = $(term_list);
+            term_list_close = $(term_list_close);
+
+            term_list.show();
+            term_list_close.show();
+          }
+        });
+        
+      
         // Buscar en el servidor por AJAX, para obtener codigos
         $('input.find_in_terminology').on('input', function() {
         
@@ -15,6 +35,7 @@
           
           input = $(this);
           
+          // TODO: esperar de hacer el request cuando para de escribir
           if (this.value.length > 3)
           {
              // Cuidado: archetypeid es todo minusculas!
@@ -29,34 +50,71 @@
                data,
                function(res) {
              
-                 console.log(res);
+                 //console.log(res);
                  
                  term_list = $('#term_list')[0];
+                 term_list_close = $('a.term_list_close')[0];
                  if (!term_list)
                  {
-                    term_list = $('<div id="term_list" style="position: absolute"></div>')
-                    $('body').append( term_list );
+                    term_list = $('<div id="term_list"></div>');
+                    term_list_close = $('<a href="#" class="term_list_close">X</a>');
                     
-                    // ============================================================
+                    $('body').append( term_list );
+                    $('body').append( term_list_close );
+                    
+                    // ===================================================================
+                    // Close term list
+                    //
+                    term_list_close.click(function(e) {
+                      //console.log('close');
+                      e.preventDefault();
+                      term_list.hide();
+                      term_list_close.hide();
+                    });
+                    
+                    // ===================================================================
+                    // Remover codigo seleccionado
+                    $('body').on('click', 'a.removeCode', function(e) {
+                    
+                      $(this).parent().remove();
+                    });
+                    
+                    // ===================================================================
                     // Select a term
                     //
-                    //$('#term_list > div a').on('click', function() {
                     term_list.on('click', 'a.selectCode', function(e) {
                     
                       e.preventDefault();
-                      //console.log(this); // anchor
-                      $(this).parent().parent().toggleClass('active');
                       
-                      // Crear campo con el mismo nombre que el del busqueda con el codigo seleccionado
-                      // En el submit el campo de busqueda NO debe considerarse como con valor!!!
-                      // - se le puede cambiar el nombre para que no lo considere como campo de dato
+                      //console.log(this); // anchor
+                      container = $(this).parent().parent();
+                      
+                      //container.toggleClass('active');
+                      
+                      
+                      // El nombre de los campos generados para submitear se sacan de data-name del input generado.
+                      text = $('div.text', container).text();
+                      code = $('div.code', container).text();
+                      
+                      console.log(input);
+                      
+                      input.after('<div><div class="selectedCode">'+ text +' ('+ code +')</div> <input type="hidden" name="'+ input.data('name') +'" value="'+ code +'||'+ text +'" /><a href="#" class="removeCode">X</a></div>');
+                      
+                      term_list.css({top: term_list.position().top + 26});
+                      term_list_close.css({top: term_list_close.position().top + 26});
                     });
                  }
-                 else
+                 else // Muestra term_list y term_list_close que ya estan en el DOM
                  {
                     term_list = $(term_list);
+                    term_list_close = $(term_list_close);
+                    
+                    term_list.show();
+                    term_list_close.show();
                  }
                  
+                 // Quita codigos actuales
+                 //$('div', term_list).remove();
                  term_list.html('');
                  
                  $(res).each(function(index) {
@@ -65,13 +123,16 @@
                    term_list.append( '<div><div class="text"><a href="#" class="selectCode">'+ this.text +'</a></div><div class="code"><a href="#" class="selectCode">'+ this.code +'</a></div></div>' );
                  });
                  
-                 term_list.css({top: input.position().top + 24, left: input.position().left + 22});
+                 term_list.css({top: input.position().top + 26, left: input.position().left + 44});
+                 term_list_close.css({top: input.position().top + 26, left: input.position().left + 22});
                },
                'json'
              );
           }
         });
         
+        // / Busqueda en servicios terminologicos
+        // ===================================================================================
         
         
         
