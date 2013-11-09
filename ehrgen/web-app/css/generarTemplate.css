@@ -8,6 +8,34 @@
   width: 50%;
 }
 
+/* >>>>>>>>>>>>>>>>>>>>>>> Seleccion de terminos en servicios terminologicos */
+#term_list {
+  width: 400px;
+  height: 300px;
+  overflow-y: scroll;
+  background-color: #f1f1f1;
+  /*padding: 10px;*/
+}
+#term_list > div > div {
+  display: table-cell;
+  vertical-align: middle;
+}
+#term_list > div:hover {
+  background-color: #ebebeb;
+}
+#term_list > div.active {
+  background-color: #3498db;
+}
+#term_list > div.active a {
+  color: #fff;
+}
+
+#term_list > div a {
+  padding: 5px 10px;
+  display: block;
+  text-decoration: none;
+}
+
 span.label.datavalue { /* Para las labels de campos simples de las clases del RM (INTERVAL_EVENT.math_function) */
   font-size:1em;
   font-weight: normal;

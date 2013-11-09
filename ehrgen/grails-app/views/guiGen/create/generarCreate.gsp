@@ -13,6 +13,8 @@
         
           console.log(this.value, this.value.length);
           
+          input = $(this);
+          
           if (this.value.length > 3)
           {
              // Cuidado: archetypeid es todo minusculas!
@@ -28,11 +30,50 @@
                function(res) {
              
                  console.log(res);
+                 
+                 term_list = $('#term_list')[0];
+                 if (!term_list)
+                 {
+                    term_list = $('<div id="term_list" style="position: absolute"></div>')
+                    $('body').append( term_list );
+                    
+                    // ============================================================
+                    // Select a term
+                    //
+                    //$('#term_list > div a').on('click', function() {
+                    term_list.on('click', 'a.selectCode', function(e) {
+                    
+                      e.preventDefault();
+                      //console.log(this); // anchor
+                      $(this).parent().parent().toggleClass('active');
+                      
+                      // Crear campo con el mismo nombre que el del busqueda con el codigo seleccionado
+                      // En el submit el campo de busqueda NO debe considerarse como con valor!!!
+                      // - se le puede cambiar el nombre para que no lo considere como campo de dato
+                    });
+                 }
+                 else
+                 {
+                    term_list = $(term_list);
+                 }
+                 
+                 term_list.html('');
+                 
+                 $(res).each(function(index) {
+                 
+                   //console.log( this );
+                   term_list.append( '<div><div class="text"><a href="#" class="selectCode">'+ this.text +'</a></div><div class="code"><a href="#" class="selectCode">'+ this.code +'</a></div></div>' );
+                 });
+                 
+                 term_list.css({top: input.position().top + 24, left: input.position().left + 22});
                },
                'json'
              );
           }
         });
+        
+        
+        
         
         
         // Disable submit button on submit
