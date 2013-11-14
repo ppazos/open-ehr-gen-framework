@@ -18,8 +18,11 @@
     
     <title><g:layoutTitle/> | Open-EHRGen | v${ApplicationHolder.application.metadata['app.version']}</title>
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'ehr.css')}" />
-    <g:layoutHead />
     
+    <g:javascript library="application" />
+    <g:javascript library="jquery" plugin="jquery" />
+    <g:layoutHead />
+    <r:layoutResources/>
     <style>
       #body_table {
         background-color: #efefff;
@@ -89,5 +92,6 @@
         </tr>
       </table>
     </div>
+    <r:layoutResources/>
   </body>
 </html>

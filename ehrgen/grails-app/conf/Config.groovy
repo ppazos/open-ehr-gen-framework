@@ -1,6 +1,46 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
+grails.views.javascript.library="jquery"
+
+// resources plugin
+
+grails.resources.modules = {
+  application {
+     resource url:'/js/application.js', disposition: 'head'
+  }
+  blockUI {
+     dependsOn 'jquery' // jquery plugin is installed, no need to declare jquery resource
+     resource url:'/js/jquery.blockUI.js' 
+  }
+  datepickerUI {
+     dependsOn 'jquery' // jquery plugin is installed, no need to declare jquery resource
+     resource url:'/js/jquery-ui-1.9.2.datepicker.min.js' 
+  }
+  scrollTo {
+     dependsOn 'jquery' // jquery plugin is installed, no need to declare jquery resource
+     resource url:'/js/jquery.scrollTo.min.js' 
+  }
+  form {
+     dependsOn 'jquery' // jquery plugin is installed, no need to declare jquery resource
+     resource url:'/js/jquery.form.2_43.js' 
+  }
+  tableFilter {
+     dependsOn 'jquery' // jquery plugin is installed, no need to declare jquery resource
+     resource url:'/js/jquery.tableFilter-1.0.0.js' 
+  }
+  /*
+  images {
+     resource url:'images/ehr-gen_logo.png', attrs:[alt:'Our logo'], disposition:'inline'
+  }
+  */
+  /*
+  jquery {
+     resource url:'/js/jquery-1.10.2.min.js', disposition: 'head'
+  }
+  */
+}
+
 
 // Ruta independiente del SO
 // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
@@ -105,7 +145,7 @@ templates2 {
              ]
       DEMO = ['demo.v1']
       */
-      SINERGIS = ['problemas.v1', 'derivacion.v1', 'resumen.v1', 'fallecimiento.v1', 'test_sts.v1']
+      SINERGIS = ['consulta_evolucion.v1', 'problemas.v1', 'derivacion.v1', 'resumen.v1', 'fallecimiento.v1', 'test_sts.v1']
    }
 }
 
@@ -129,7 +169,8 @@ hce {
     // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=23
     terminologyServicesMapping = [
       'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0001': util.terminology.CIE10LocalAccess,
-      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0002': util.terminology.SnomedITServerAccess
+      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0002': util.terminology.SnomedITServerAccess,
+      'openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1_ac0003': util.terminology.SnomedITServerAccess
     ]
 }
 

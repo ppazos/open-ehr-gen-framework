@@ -86,9 +86,8 @@
       background-color: #f9f9f9;
     }
     </style>
-    
-    <g:javascript library="jquery-1.8.2.min" />
-    <g:javascript src="jquery.blockUI.js" />
+    <g:javascript library="jquery"/>
+    <r:require module="blockUI" />
     <g:javascript>
     
     // Formulario del dominio donde hice click y tengo que seleccionar un rol.

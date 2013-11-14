@@ -3,17 +3,23 @@
   <head>
     <meta name="layout" content="ehr" />
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'generarTemplate.css')}" />
-    <g:javascript library="jquery-1.8.2.min" />
-    <g:javascript library="jquery.scrollTo-1.4.2-min" />
+    <g:javascript library="jquery"/>
+    <r:require module="scrollTo" />
     <g:javascript>
       $(document).ready( function() {
       
         // ===================================================================================
         // Busqueda en servicios terminologicos
       
+        /* Mostrar la busqueda anterior no funciona bien si hay 2 campos de busqueda en la misma pantalla>
+         * si el click se hace en un input disinto para el que se creo la term_list, se deberian borrar
+         * los resultados anteriores porque pueden ser a distintas terminologias.
+         *
         // Si hay un texto en el input ya hice una busqueda y pude haber escondido
         // el term_list muestro el term_list si estaba escondido.
         $('input.find_in_terminology').click(function(e) {
+        
+          $this = $(this);
         
           term_list = $('#term_list')[0];
           term_list_close = $('a.term_list_close')[0];
@@ -21,12 +27,16 @@
           {
             term_list = $(term_list);
             term_list_close = $(term_list_close);
+            
+            // Posiciona
+            term_list.css({top: $this.position().top + 26, left: $this.position().left + 44});
+            term_list_close.css({top: $this.position().top + 26, left: $this.position().left + 22});
 
             term_list.show();
             term_list_close.show();
           }
         });
-        
+        */
       
         // Buscar en el servidor por AJAX, para obtener codigos
         $('input.find_in_terminology').on('input', function() {
@@ -35,13 +45,16 @@
           
           input = $(this);
           
+          // =================================================================
           // TODO: esperar de hacer el request cuando para de escribir
+          //
           if (this.value.length > 3)
           {
              // Cuidado: archetypeid es todo minusculas!
              //{bind: "ac0001", archetypeid: "openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1"}
              console.log( $(this).data() );
              
+
              data = $(this).data();
              data.q = this.value;
              
@@ -98,10 +111,35 @@
                       
                       console.log(input);
                       
-                      input.after('<div><div class="selectedCode">'+ text +' ('+ code +')</div> <input type="hidden" name="'+ input.data('name') +'" value="'+ code +'||'+ text +'" /><a href="#" class="removeCode">X</a></div>');
+                      // =========================================================================================
+                      // Si se esta buscando otro codigo, y ya hay uno seleccionado, y el nodo no es multiple,
+                      // no debe dejar seleccionar otro codigo. Pero deja buscar...
+                      // =========================================================================================
                       
-                      term_list.css({top: term_list.position().top + 26});
-                      term_list_close.css({top: term_list_close.position().top + 26});
+                      // 1. No es multiple?
+                      var container = input.parent().parent(); // DIV que dice si es o no multiple
+                      if (!container.hasClass('multiple'))
+                      {
+                        // 2. Ya hay un codigo seleccionado para el input (puedo tener mas de un input simple y un codigo por input)
+                        selectedCodes = $('input[name='+ input.data('name') +']', input.parent());
+                        if (selectedCodes.length > 0)
+                        {
+                          // No deja seleccionar otro hasta que elimine el actual
+                          alert('Solo puede seleccionar un codigo y ya hay un codigo seleccionado');
+                        }
+                        else // Permite seleccionar multiples
+                        {
+                          input.after('<div><div class="selectedCode">'+ text +' ('+ code +')</div> <input type="hidden" name="'+ input.data('name') +'" value="'+ code +'||'+ text +'" /><a href="#" class="removeCode"> X </a></div>');
+                          term_list.css({top: term_list.position().top + 17});
+                          term_list_close.css({top: term_list_close.position().top + 17});
+                        }
+                      }
+                      else // Permite seleccionar multiples
+                      {
+                        input.after('<div><div class="selectedCode">'+ text +' ('+ code +')</div> <input type="hidden" name="'+ input.data('name') +'" value="'+ code +'||'+ text +'" /><a href="#" class="removeCode"> X </a></div>');
+                        term_list.css({top: term_list.position().top + 17});
+                        term_list_close.css({top: term_list_close.position().top + 17});
+                      }
                     });
                  }
                  else // Muestra term_list y term_list_close que ya estan en el DOM
@@ -120,7 +158,7 @@
                  $(res).each(function(index) {
                  
                    //console.log( this );
-                   term_list.append( '<div><div class="text"><a href="#" class="selectCode">'+ this.text +'</a></div><div class="code"><a href="#" class="selectCode">'+ this.code +'</a></div></div>' );
+                   term_list.append( '<div><div class="text"><a href="#" class="selectCode">'+ this.text +'</a></div><div class="code"><a href="#" class="selectCode">'+ this.terminologyId+'::'+this.code +'</a></div></div>' );
                  });
                  
                  term_list.css({top: input.position().top + 26, left: input.position().left + 44});
@@ -149,10 +187,9 @@
     
         // Agrego links para clonar nodos multiples
         $('.multiple').each( function(i, e) {
-          
-          //$(e).css('border', '3px solid violet');
     
-          // FIXME: i18n
+          // Para controles de find_in_terminology, si es multiple, no debe agregar el link de clonar.
+          if ($('.find_in_terminology', this).length > 0) return;
     
           // Agrega un link en el contenedor (padre) del nodo multiple.
           var link = $('<a href="#" class="cloner">${g.message(code:'guigen.action.addMultiplenode')}</a>');
@@ -160,7 +197,6 @@
           // Inserta luego del nodo que hay que clonar, para saber que el prev() es el nodo a clonar.
           $(e).after(link);
         });
-        
         
         $('.cloner').click( function (evt) {
           

@@ -14,6 +14,10 @@
 
 
 /* >>>>>>>>>>>>>>>>>>>>>>> Seleccion de terminos en servicios terminologicos */
+input.find_in_terminology {
+  padding-left: 22px;
+  background: #fff url(/ehrgen-1.4/images/search.png) 1px 1px no-repeat;
+}
 #term_list {
   width: 400px;
   height: 300px;

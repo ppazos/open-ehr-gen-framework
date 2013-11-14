@@ -3,8 +3,8 @@
   <head>
     <meta name="layout" content="ehr" />
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'generarTemplate.css')}" />
-    <script type="text/javascript" src="${createLinkTo(dir:'js', file:'jquery-1.8.2.min.js')}"></script>
-    <script type="text/javascript">
+    <g:javascript library="jquery"/>
+    <g:javascript>
       var data = ${data};
       var booleans = {'label.boolean.false':'No', 'label.boolean.true':'Si'}; // TODO: Si y No debe ser i18n
       var templateId = '${template.id}';
@@ -262,7 +262,7 @@
         // Por defecto
         field.text(value);
       }
-    </script>
+    </g:javascript>
   </head>
   <body>
     <g:render template="navbar" model="[domain:domain, stage:stage, template:template]" />

@@ -15,7 +15,7 @@ def _refPath = ''
 if (refPath) _refPath = refPath
 
 %>
-<!-- armo lista de valores con textos -->
+<!-- armo lista de valores con textos: FIXME: esto se usa para algo en show? -->
 <g:set var="values" value="${[]}" />
 <g:set var="codes" value="${[]}" />
 <g:if test="${cCodePhrase.codeList != null}">

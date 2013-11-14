@@ -3,7 +3,7 @@
   <head>
     <meta name="layout" content="ehr" />
     <title><g:message code="trauma.sign.title" /></title>
-    <g:javascript library="jquery-1.8.2.min" />
+    <g:javascript library="jquery"/>
     <g:javascript>
       $(document).ready(function()
       {

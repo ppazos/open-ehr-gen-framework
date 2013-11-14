@@ -36,7 +36,7 @@
         font-size: 11px;
       }
     </style>
-    <g:javascript library="jquery-1.8.2.min" />
+    <g:javascript library="jquery"/>
     <g:javascript>
     
       var codigos;

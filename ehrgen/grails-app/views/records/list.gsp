@@ -50,9 +50,9 @@
     </style>
     <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
     
-    <g:javascript library="jquery-1.8.2.min" />
-    <g:javascript src="jquery.blockUI.js" />
-    <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
+    <g:javascript library="jquery"/>
+    <r:require module="blockUI" />
+    <r:require module="datepickerUI" />
     <g:javascript>
     
       var showCreateRecord = function() {

@@ -21,8 +21,10 @@
     </style>
     <link rel="stylesheet" href="${resource(dir:'css',file:'main.css')}" />
     <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon" />
+    <g:javascript library="application" />
+    <g:javascript library="jquery" plugin="jquery" />
     <g:layoutHead />
-    <g:javascript library="application" />				
+    <r:layoutResources/>
   </head>
   <body>
     <!-- para hacer el height to fit the page height -->
@@ -32,13 +34,13 @@
       </div>	
       <div class="logo">
         <a href="http://code.google.com/p/open-ehr-gen-framework/" target="_blank"><img src="${resource(dir:'images', file:'ehr-gen_logo.png')}" alt="Open EHR-Gen Framework" /></a>
-		
-		<div class="user_info">
-	      ${session.ehrSession.userData}
-		  <g:link controller="authorization" action="logout"><g:message code="authorization.action.logout" /></g:link>
-		</div>
+        <div class="user_info">
+           ${session.ehrSession.userData}
+          <g:link controller="authorization" action="logout"><g:message code="authorization.action.logout" /></g:link>
+        </div>
       </div>
       <g:layoutBody />
+      <r:layoutResources/>
     </div>
   </body>	
 </html>

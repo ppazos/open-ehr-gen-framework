@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><g:message code="auth.login.title" /></title>
-    <g:javascript library="jquery-1.8.2.min" />
+    <g:javascript library="jquery" plugin="jquery"/>
     <g:javascript>
     $(document).ready(function() {
       $("#user").focus();
@@ -120,6 +120,7 @@
         }
       </style>
     <![endif]-->
+    <r:layoutResources/>
   </head>
   <body>     
     <div id="wrapper">
@@ -135,7 +136,7 @@
           </ul>
         
           <g:form url="[action:'login']" method="post" id="form1">
-            <a href="http://code.google.com/p/open-ehr-gen-framework/" target="_blank"><img src="${resource(dir:'images', file:'ehr-gen_logo.png')}" alt="Open EHR-Gen Framework" /></a>
+            <a href="http://code.google.com/p/open-ehr-gen-framework/" target="_blank"><g:img dir="images" file="ehr-gen_logo.png" alt="CaboLabs EHRGen Framework"/></a>
             <h3 align="center"><g:message code="auth.login.welcome2" /></h3>
             <g:if test="${flash.message}">
               <div class="error"><g:message code="${flash.message}" /></div>
@@ -166,5 +167,6 @@
         </div>
       </div>
     </div>
+    <r:layoutResources/>
   </body>
 </html>

@@ -2,7 +2,7 @@
 <%-- FIXME: esta vista es un test --%>
 <html>
   <head>
-    <g:javascript src="jquery-1.3.2.min.js" />
+    <g:javascript library="jquery"/>
     <g:javascript>
       $(document).ready(function() {
          $("a.clone").click(function() {

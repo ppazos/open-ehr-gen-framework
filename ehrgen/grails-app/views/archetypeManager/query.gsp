@@ -14,16 +14,83 @@
     }
     </style>
     
-    <g:javascript library="jquery-1.8.2.min" />
-    <g:javascript src="jquery.blockUI.js" />
-    <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
-    
-    <script type="text/javascript" src="${createLinkTo(dir:'js', file:'jquery.form.2_43.js')}"></script>
-    <g:javascript library="jquery.scrollTo-1.4.2-min" />
-    <g:javascript library="jquery.tableFilter-1.0.0" />
+    <g:javascript library="jquery"/>
+    <r:require module="blockUI" />
+    <r:require module="datepickerUI" />
+    <r:require module="form" />
+    <r:require module="scrollTo" />
+    <r:require module="tableFilter" />
     
     <g:javascript>
-      $(document).ready(function() {
+      $(document).ready(function() {        
+      
+         // Clic en checkbox name="chart_path", de los que hay varios, apaga el resto y prende solo el que se cliquea
+         $('input[name=chart_path]').click( function(evt) {
+         
+           $('input[name=chart_path]').attr('checked', false);
+           $(this).attr('checked', true);
+         });
+       
+         // =======================================================================
+         // Trae y muestra la agregacion de datos como una tabla de 2 columnas
+         //
+         // Submit por ajax para agregar datos seleccionados
+         // http://jquery.malsup.com/form/#ajaxForm
+         //
+         $('#aggregate_frm').ajaxForm({
+       
+             // target element(s) to be updated with server response
+             //target:  '#agg_output',
+             
+             // dataType identifies the expected content type of the server response 
+             dataType:  'json', 
+             
+             beforeSubmit: function(formData, jqForm, options) {
+       
+               // TODO: verificar que se selecciono una path
+               var queryString = $.param(formData); 
+    
+             // jqForm is a jQuery object encapsulating the form element.  To access the 
+             // DOM element for the form do this: 
+             // var formElement = jqForm[0]; 
+          
+             //alert('About to submit: \n\n' + queryString); 
+          
+             // here we could return false to prevent the form from being submitted; 
+             // returning anything other than false will allow the form submit to continue 
+             return true; 
+             }, 
+             success: function(responseText, statusText, xhr, $form) {
+       
+               //console.log(responseText.names); // code -> nomnbre
+               //console.log(responseText.aggregator); // code -> cantidad
+       
+               var agg_html = $('<table></table>');
+       
+               $.each( responseText.names, function(i,name) {
+                   
+                 //console.log(i+': '+name+'| '+responseText.aggregator[i]);
+                 count = responseText.aggregator[i]
+                 agg_html.append('<tr><th>'+name+'</th><td>'+count+'</td></tr>');
+               });
+               
+               $('#agg_output').children().remove(); // Quita el contenido actual
+               $('#agg_output').append(agg_html);    // Pone la tabla con cantidades
+               
+               // Scroll hasta la nueva tabla
+               $.scrollTo($('#agg_output'), {duration: 800});
+             }
+         });
+                 
+         
+         // ================================================================================== 
+         // Implementa accion de filtrar por el nombre del concepto cuando escribo en el
+         // input archetype_filter, mostrando solo las trs que tienen nombres que coinciden
+         // con lo que voy escribiendo.
+         // 
+         // Ojo que input es un evento nuevo de HTML5
+         //
+         $('input[name=archetype_filter]').tableFilter( $('#concepts'), 1 );
       
         <g:if test="${archetype}">
         
@@ -51,81 +118,6 @@
         
       });
     </g:javascript>
-    
-    <script type="text/javascript">
-       
-    $(document).ready(function() {
-      
-      // Clic en checkbox name="chart_path", de los que hay varios, apaga el resto y prende solo el que se cliquea
-      $('input[name=chart_path]').click( function(evt) {
-      
-        $('input[name=chart_path]').attr('checked', false);
-        $(this).attr('checked', true);
-      });
-    
-      // =======================================================================
-      // Trae y muestra la agregacion de datos como una tabla de 2 columnas
-      //
-      // Submit por ajax para agregar datos seleccionados
-      // http://jquery.malsup.com/form/#ajaxForm
-      //
-      $('#aggregate_frm').ajaxForm({
-    
-          // target element(s) to be updated with server response
-          //target:  '#agg_output',
-          
-          // dataType identifies the expected content type of the server response 
-          dataType:  'json', 
-          
-          beforeSubmit: function(formData, jqForm, options) {
-    
-            // TODO: verificar que se selecciono una path
-            var queryString = $.param(formData); 
- 
-		    // jqForm is a jQuery object encapsulating the form element.  To access the 
-		    // DOM element for the form do this: 
-		    // var formElement = jqForm[0]; 
-		 
-		    //alert('About to submit: \n\n' + queryString); 
-		 
-		    // here we could return false to prevent the form from being submitted; 
-		    // returning anything other than false will allow the form submit to continue 
-		    return true; 
-          }, 
-          success: function(responseText, statusText, xhr, $form) {
-    
-            //console.log(responseText.names); // code -> nomnbre
-            //console.log(responseText.aggregator); // code -> cantidad
-    
-            var agg_html = $('<table></table>');
-    
-            $.each( responseText.names, function(i,name) {
-                
-              //console.log(i+': '+name+'| '+responseText.aggregator[i]);
-              count = responseText.aggregator[i]
-              agg_html.append('<tr><th>'+name+'</th><td>'+count+'</td></tr>');
-            });
-            
-            $('#agg_output').children().remove(); // Quita el contenido actual
-            $('#agg_output').append(agg_html);    // Pone la tabla con cantidades
-            
-            // Scroll hasta la nueva tabla
-            $.scrollTo($('#agg_output'), {duration: 800});
-          }
-      });
-              
-      
-      // ================================================================================== 
-      // Implementa accion de filtrar por el nombre del concepto cuando escribo en el
-      // input archetype_filter, mostrando solo las trs que tienen nombres que coinciden
-      // con lo que voy escribiendo.
-      // 
-      // Ojo que input es un evento nuevo de HTML5
-      //
-      $('input[name=archetype_filter]').tableFilter( $('#concepts'), 1 );
-    });
-    
-    </script>
   </head>
   <body>
     <div class="nav">

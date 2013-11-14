@@ -17,6 +17,7 @@ public class Term {
    
    float match;          // 0.0 no match, 1.0 exact match
    
+   // TODO: lista de mappings a terminos de otras terminologias
    
    public String getText() { return this.text; }
    public String getDescription() { return this.description; }

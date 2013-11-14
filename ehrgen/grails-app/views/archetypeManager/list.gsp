@@ -14,8 +14,8 @@
       height: 100%;
     }
     </style>
-    <g:javascript library="jquery-1.8.2.min" />
-    <g:javascript src="jquery.blockUI.js" />
+    <g:javascript library="jquery"/>
+    <r:require module="blockUI" />
     <g:javascript>
     
       var modal;

@@ -24,7 +24,10 @@
     
     <title><g:layoutTitle/> | Open-EHRGen | v${ApplicationHolder.application.metadata['app.version']}</title>
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'ehr_contenido_grande.css')}" />
+    <g:javascript library="application" />
+    <g:javascript library="jquery" plugin="jquery" />
     <g:layoutHead />
+    <r:layoutResources/>
   </head>
   <body>
     <div id="user_bar">
@@ -180,5 +183,6 @@
         </tr>
       </table>
     </div>
+    <r:layoutResources/>
   </body>
 </html>

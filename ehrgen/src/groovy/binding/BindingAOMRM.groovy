@@ -1238,17 +1238,90 @@ class BindingAOMRM {
     /**
      * ConstraintRef se usa cuando hay una referencia ed un coded_text a una terminologia externa,
      * como por ejemplo en el caso del arquetipo openEHR-EHR-EVALUATION.alert.v1.adl
-     * @param cdt
-     * @param pathValorCDomainType
+     * @param cref
+     * @param pathValor
      * @param arquetipo
      * @param tempId
      * @return
      */
-    def bindConstraintRef(ConstraintRef cref, LinkedHashMap<String, Object> pathValorCDomainType, Archetype arquetipo, String tempId)
+    def bindConstraintRef(ConstraintRef cref, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
+        /*
+        
+        Esto bindea para estas retricciones del DV_CODED_TEXT.defining_code:
+        
+          - definingCode.terminologyId debe venir en el dato ingresado en la UI para bindear, viene:
+            - terminologyId::code||text
+        
+        DV_CODED_TEXT matches {
+          defining_code matches {[ac0001]}		-- Nueva restricción
+        }
+        
+        
+        Mientras bindCCodePhrase bindea para retricciones del DV_CODED_TEXT.defining_code:
+        
+          - ver que especifica terminologyId (local), y NO viene desde la UI para bindear, viene:
+            - code||text
+        
+        DV_CODED_TEXT matches {
+            defining_code matches {
+               [local::
+               at0007, 	-- aaa
+               at0008]	-- bbb
+            }
+         }
+        
+        */
+        /*
         println "= = = = = = = = = = = = = = = = = = = = = = = = = = = ="
         println "BindingAOMRM: Metodo bindConstraintRef no implementado"
+        println cref
+        println cref.path()
+        println pathValor
+        println pathValor.find{it.key == cref.path()}?.value
+        org.codehaus.groovy.runtime.StackTraceUtils.sanitize(new Exception()).printStackTrace(System.out)
         println "= = = = = = = = = = = = = = = = = = = = = = = = = = = ="
+        */
+        
+        // Unico caso por ahora es que la constraintRef acNNNN este dentro
+        // de un DV_CODED_TEXT para su CodePhrase.
+        if (cref.rmTypeName == 'CodePhrase')
+        {
+           // idem bindCCodePhrase
+           if (pathValor.size() == 0)
+           {
+               return null
+           }
+           
+           // Size puede ser 1 pero puedo tener multiples valores....
+           if (pathValor.size() == 1)
+           {
+               def result = []
+               def values = pathValor.find{it.key == cref.path()}?.value
+               if (values.getClass().isArray()) // Valores multiples
+               {
+                   (values as List).each { value ->
+                   
+                       // FIXME: creo que deberia tirar el objeto con valor null para que valide el
+                       //        GORM y luego el ELEMENT.
+                       if (value)
+                           result << rmFactory.createCodePhrase(cref, value, arquetipo, cref.nodeID, tempId, cref)
+                   }
+               }
+               else // Valor simple
+               {
+                   // FIXME: creo que deberia tirar el objeto con valor null para que valide el
+                   //        GORM y luego el ELEMENT.
+                   if (values)
+                       result << rmFactory.createCodePhrase(cref, values, arquetipo, cref.nodeID, tempId, cref)
+               }
+               
+               return result
+           }
+
+           throw new Exception("bindConstraintRef: Colección de pathValor tiene mas de una path.")
+        }
+        
         return null
     }
 
@@ -2693,6 +2766,10 @@ class BindingAOMRM {
     //        Esto agrega la necesidad de tener un metodo bindDV_CODED_TEXT
     def bindDV_CODED_TEXT(CComplexObject cco, LinkedHashMap<String, Object> pathValor, Archetype arquetipo, String tempId)
     {
+        // Los valores en pathValor vienen con datos para DvCodedText pero tambien para DvCodedText.definition_code
+        // ej. code||text si la restriccion es CCodePhrase
+        // ej. terminologyId::code||text si la restriccion es ConstraintRef
+        
         //println "== bindDV_CODED_TEXT pathValor: " + pathValor
         
         // Hay que bindear los definingCode por el CCodePhrase que tiene el attributes del cco
@@ -2701,7 +2778,7 @@ class BindingAOMRM {
         // Restrivccion sobre el definingCode del DvCodedText
         //println "----------- attributes: " + cco.getAttributes().rmAttributeName
         CAttribute cattr = cco.getAttributes().find{it.rmAttributeName=='defining_code'}
-        definingCodes = bindAttribute(cattr, pathValor, arquetipo, tempId)
+        definingCodes = bindAttribute(cattr, pathValor, arquetipo, tempId) // List<CodePhrase>
         /*
         cco.getAttributes().each { cattr ->
         
@@ -2716,12 +2793,31 @@ class BindingAOMRM {
         
         def result = []
         def rmObj
-        
-        definingCodes.each { dcode ->
+        def text
+        def valueListOrSingleValue
+        definingCodes.eachWithIndex { dcode, i -> // uso el i para saber que texto de pathValor corresponde con que defininCode (porque los definingCode fueron procesados en el mismo orden!)
            
+            // [0] valores para la unica path que recibo
+            // [1] valor i code||text o terminologyId::code||text, quiero el text para DvCodedText.value
+            
+            /*
+            println 'entry '+ pathValor.find { true } // 
+            println 'value list '+ pathValor.find { true }.value // 
+            println 'value i '+ pathValor.find { true }.value[i] // 
+            println pathValor.find { true }.value[i].split(/\|\|/) // 
+            println pathValor.find { true }.value[i].split(/\|\|/)[1] // 
+            */
+            
+            // Si viene un solo valor, es un string, sino una lista
+            valueListOrSingleValue = pathValor.find { true }.value
+            
+            if (valueListOrSingleValue instanceof String) text = valueListOrSingleValue.split(/\|\|/)[1]
+            else text = pathValor.find { true }.value[i].split(/\|\|/)[1]
+            
+            
             // el valor es string, es exacto lo que viene de la web
             // Dejo pasar valores vacios y no chequeo errores, dejo que valide el GORM.
-            rmObj = rmFactory.createDV_CODED_TEXT(dcode, arquetipo, cco.nodeID, tempId, cco)
+            rmObj = rmFactory.createDV_CODED_TEXT(text, dcode, arquetipo, cco.nodeID, tempId, cco)
 
             if (rmObj.errors.hasErrors())
             {

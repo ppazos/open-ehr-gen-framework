@@ -3,8 +3,8 @@
   <head>
     <meta name="layout" content="ehr" />
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'generarTemplate.css')}" />
-    <g:javascript library="jquery-1.8.2.min" />
-    <g:javascript library="jquery.scrollTo-1.4.2-min" />
+    <g:javascript library="jquery"/>
+    <r:require module="scrollTo" />
     <g:javascript>
     
       // ======================================================
@@ -35,7 +35,8 @@
         // Agrego links para clonar nodos multiples
         $('.multiple').each( function(i, e) {
           
-          // FIXME: i18n
+          // Para controles de find_in_terminology, si es multiple, no debe agregar el link de clonar.
+          if ($('.find_in_terminology', this).length > 0) return;
     
           // Agrega un link en el contenedor (padre) del nodo multiple.
           var link = $('<a href="#" class="cloner">${g.message(code:'guigen.action.addMultiplenode')}</a>');
@@ -138,7 +139,7 @@
                   // Como agrego un container, tengo un nuevo elem (label).
                   // Es el que tiene class path dentro del clonedContainer.
                   // Forma de seleccionar la label.path dentro del clonedContainer.
-                  elems.push( $(':input.[name='+path+']', clonedContainer)[0] ); // dentro del cloned container deberia haber un solo elemento con ese name
+                  elems.push( $(':input[name='+path+']', clonedContainer)[0] ); // dentro del cloned container deberia haber un solo elemento con ese name
                 }
                 
                 //console.log('pone valor (%d): %s en el control: ', i, data[path][i]);

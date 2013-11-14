@@ -1,6 +1,3 @@
-/**
- * 
- */
 package tablasMaestras
 
 /**
@@ -306,6 +303,4 @@ class Cie10Trauma {
 
         return ret
     }
-
-    
 }

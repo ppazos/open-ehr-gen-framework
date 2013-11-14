@@ -431,7 +431,8 @@ class GuiGenController {
     */
    def save = {
       
-      println "GuiGen save params: " + params
+      println "--------------------------------------------------------------"
+      println "save params: " + params
       
       if (!session.ehrSession?.episodioId)
       {

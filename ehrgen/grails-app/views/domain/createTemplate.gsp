@@ -18,8 +18,8 @@
         background-color: #f6f6f6;
       }
     </style>
-    <g:javascript library="jquery-1.8.2.min" />
-    <g:javascript library="jquery.tableFilter-1.0.0" />
+    <g:javascript library="jquery"/>
+    <r:require module="tableFilter" />
     <g:javascript>
     $(document).ready(function() {
       

@@ -1333,16 +1333,16 @@ class FactoryObjectRM {
    }
    */
 
-   def createDV_CODED_TEXT(CodePhrase definingCode, Archetype arquetipo, String archNodeId, String tempId, CObject co)
+   def createDV_CODED_TEXT(String val, CodePhrase definingCode, Archetype arquetipo, String archNodeId, String tempId, CObject co)
    {
       //println "createDV_CODED_TEXT: defCode.cs="+definingCode.codeString
       //println ""
 
       // Voy a buscar el termino por el codigo
       Locale locale = this.session.locale
-      String val = null
       
-      if (definingCode) val = CtrlTerminologia.getInstance().getTermino(definingCode.terminologyId, definingCode.codeString, arquetipo, locale)
+      //String val = null
+      //if (definingCode) val = CtrlTerminologia.getInstance().getTermino(definingCode.terminologyId, definingCode.codeString, arquetipo, locale)
 
       // language y encoding para el codedText
       // TODO: deberia salir de la config
@@ -1435,6 +1435,7 @@ class FactoryObjectRM {
    // C_DOMAIN_TYPE
    //-----------------------------------
 
+   // Bindea solo el codigo y la terminologia, del texto se encarga una funcion mas arriba (a nivel del DvCodedText que bindea su defining_code aca.
    def createCodePhrase(CCodePhrase ccp, String cs, Archetype arquetipo, String archNodeId, String tempId, CObject co)
    {
       //println "createCodePhrase: cs="+ cs // at0009||Coloca
@@ -1446,6 +1447,15 @@ class FactoryObjectRM {
       def tid = ccp.getTerminologyId() // TerminologyID del java-ref-impl, lo uso para crear un TerminologyID del GORM.
       return new CodePhrase(codeString: parts[0],
                       terminologyId: TerminologyID.create(tid.name(), tid.versionID()))
+   }
+   
+   // Idem anterior pero con CosntraintRef en lugar de CCodePhrase
+   def createCodePhrase(ConstraintRef cref, String cs, Archetype arquetipo, String archNodeId, String tempId, CObject co)
+   {
+      // TEST con el texto y el codigo viniendo desde la web separeado por ||
+      String[] parts = cs.split(/\|\|/)[0].split(/::/) // terminologyId::code||texto
+      def tid = parts[0] // TerminologyID should come with the code, like: terminologyID::code||text
+      return new CodePhrase(codeString: parts[1], terminologyId: TerminologyID.create(tid, ''))
    }
 
    // Pruebo pasarle en magnitude el valor que recibo de la web para que el GORM valide y reporte errores.

@@ -49,7 +49,7 @@ class GuiCachingService {
          // Si existe, solo genero show
          if (!new File(pathToStaticViews).exists())
          {
-            println "No existe vista estatica: $pathToStaticViews"
+            //println "No existe vista estatica: $pathToStaticViews"
          
             // Se genera cada vista para cada locale disponible
             ApplicationHolder.application.config.langs.eachWithIndex { lang, i ->
