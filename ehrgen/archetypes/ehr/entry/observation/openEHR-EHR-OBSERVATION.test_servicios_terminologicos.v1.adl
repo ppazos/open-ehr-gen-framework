@@ -21,7 +21,7 @@ description
 	lifecycle_state = <"0">
 	other_contributors = <>
 	other_details = <
-		["MD5-CAM-1.0.1"] = <"E613C88E50E04A5B4B98010AF0651DA3">
+		["MD5-CAM-1.0.1"] = <"B4A1915B6AFF547E4D07555C5A490994">
 	>
 
 definition
@@ -47,10 +47,21 @@ definition
 											}
 										}
 									}
-									ELEMENT[at0006] occurrences matches {0..1} matches {	-- Nuevo elemento
+									ELEMENT[at0006] occurrences matches {0..1} matches {	-- Texto codif lista de codigos
 										value matches {
 											DV_CODED_TEXT matches {
-												defining_code matches {[local::]}
+												defining_code matches {
+													[local::
+													at0007, 	-- aaa
+													at0008]	-- bbb
+												}
+											}
+										}
+									}
+									ELEMENT[at0009] occurrences matches {0..*} matches {	-- Texto codif constraing + multiple
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {[ac0003]}		-- Nueva restricción
 											}
 										}
 									}
@@ -93,7 +104,19 @@ ontology
 					description = <"*">
 				>
 				["at0006"] = <
-					text = <"Nuevo elemento">
+					text = <"Texto codif lista de codigos">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"aaa">
+					description = <"daaaa">
+				>
+				["at0008"] = <
+					text = <"bbb">
+					description = <"dbbbb">
+				>
+				["at0009"] = <
+					text = <"Texto codif constraing + multiple">
 					description = <"*">
 				>
 			>
@@ -107,6 +130,10 @@ ontology
 					description = <"*">
 				>
 				["ac0002"] = <
+					text = <"Nueva restricción">
+					description = <"*">
+				>
+				["ac0003"] = <
 					text = <"Nueva restricción">
 					description = <"*">
 				>
