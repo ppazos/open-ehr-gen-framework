@@ -43,7 +43,9 @@
       
       $(document).ready(function() {
 		  
-		  $('#search').submit( function() {
+		  $('#search').submit( function(e) {
+        
+          e.preventDefault();
 		   
 		    //console.log('action: ' + this.action);
 		    //console.log('text: ' + $('input[name=text]').val());
@@ -53,9 +55,11 @@
             {
               text: $('input[name=text]').val()
             },
-		      function(json) { // success
+		      function(_codigos) { // success
 		   
-			     codigos = json.codigos;
+              codigos = _codigos;
+         
+              //console.log(codigos);
 			        
 			     var odd = 0;
 			     html = '';
@@ -94,7 +98,7 @@
 		       
 		    );        // ajax
 	       
-	       return false; // do not submit
+	       //return false; // do not submit
 	       
 	     }); // search submit
 		}); // document ready

@@ -29,6 +29,10 @@ grails.resources.modules = {
      dependsOn 'jquery' // jquery plugin is installed, no need to declare jquery resource
      resource url:'/js/jquery.tableFilter-1.0.0.js' 
   }
+  terminologyServices {
+     dependsOn 'jquery' // jquery plugin is installed, no need to declare jquery resource
+     resource url:'/js/guigen/terminologyServices.js' 
+  }
   /*
   images {
      resource url:'images/ehr-gen_logo.png', attrs:[alt:'Our logo'], disposition:'inline'
@@ -215,7 +219,8 @@ environments {
         grails.serverURL = "http://www.changeme.com"
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        //grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://ppazos.zapto.org:8080/${appName}"
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"

@@ -118,7 +118,7 @@ class AjaxApiController {
       
       def partes = params.text.split(" ") // saco palabras por espacios
       
-      println partes
+      //println partes
       
       def _codigos = Cie10Trauma.withCriteria {
          //like('nombre', '%'+ params.text +'%') // Ok si uso el texto completo
@@ -128,6 +128,8 @@ class AjaxApiController {
             }
          }
       }
+      
+      //println _codigos
       
       // TODO: hacerlo JSON creo que hay un JSON builder
       
@@ -162,10 +164,9 @@ class AjaxApiController {
       render( html )
       */
       
+      def codeList = []
       
-      render(builder:'json') {
-        codigos {
-         _codigos.each { _codigo ->
+      _codigos.each { _codigo ->
          
            // FIXME: hacer el highlight del lado del cliente con js, asi tengo el nombre sin tags html para procesar en la vista
            // a negrita los textos de entrada en el texto de salida
@@ -180,21 +181,24 @@ class AjaxApiController {
            */
            //println "nombre: "+_nombre
          
-           codigo (
+           codeList << [
             id: _codigo.id,
             grupo: _codigo.grupo,
             subgrupo: _codigo.subgrupo,
             codigo: _codigo.codigo,
-            
-            
             nombre: _codigo.nombre
             //nombre: _nombre
-           )
+           ]
          }
+      /*
+      render(builder:'json') {
+        codigos {
+          codeList
         }
       }
+      */
       
-      //render _codigos as JSON // manda class, deleted y demas
+      render codeList as JSON // manda class, deleted y demas
 
    } // findCIE10
    

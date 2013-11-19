@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="${createLinkTo(dir:'css', file:'generarTemplate.css')}" />
     <g:javascript library="jquery"/>
     <r:require module="scrollTo" />
+    <r:require module="terminologyServices" />
     <g:javascript>
     
       // ======================================================
@@ -18,7 +19,7 @@
       // ======================================================
     
       $(document).ready( function() {
-        
+      
         // Disable submit button on submit
         // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=47
         $('.ehrform').submit( function() {

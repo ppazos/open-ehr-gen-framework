@@ -13,6 +13,14 @@ if (refPath) _refPath = refPath
 
 %>
   <%-- TODO: se puede simplificar a una sola llamada en funcion de la clase halla el nombre del template --%>
+  <g:if test="${cObject instanceof ConstraintRef}">
+      <g:render template="../guiGen/edit/constraintRef"
+                model="[constraintRef: cObject,
+                        archetype: archetype,
+                        archetypeService:archetypeService,
+                        refPath: refPath,
+                        params: params, lang: lang, locale: locale, template: template]" />
+  </g:if>
   <g:if test="${cObject instanceof CComplexObject}">
       <g:render template="../guiGen/edit/cComplexObject"
                 model="[cComplexObject: cObject,
