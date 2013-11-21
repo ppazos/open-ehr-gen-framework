@@ -107,7 +107,7 @@ class SecurityTagLib {
     }
    
    /**
-    * Es el else para el haveDomainPermit
+    * Es el else para el hasDomainPermit
     */
    def dontHasDomainPermit = { attrs, body ->
       
