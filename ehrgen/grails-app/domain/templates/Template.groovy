@@ -60,7 +60,9 @@ class Template {
     {
         def ret = []
         ret << rootArchetype.refId
-        if (includedArchetypes.size() > 0)
+        
+        // includedArchetypes puede ser null
+        if (includedArchetypes && includedArchetypes.size() > 0)
            ret.addAll( includedArchetypes.refId )
         
         return ret
@@ -127,7 +129,8 @@ class Template {
         if (rootArchetype.fields && rootArchetype.fields.constraints)
            ret.addAll( rootArchetype.fields.constraints.findAll{ it instanceof Transform } )
         
-        if (includedArchetypes.size() > 0 && includedArchetypes.fields && includedArchetypes.fields.size() > 0 && includedArchetypes.fields.constraints)        
+        // includedArchetypes puede ser null
+        if (includedArchetypes && includedArchetypes.size() > 0 && includedArchetypes.fields && includedArchetypes.fields.size() > 0 && includedArchetypes.fields.constraints)        
            ret.addAll( includedArchetypes.fields.constraints.flatten().findAll{ it instanceof Transform } )
         
         return ret
