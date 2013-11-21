@@ -21,7 +21,9 @@
     <g:compositionHasPatient episodeId="${session.ehrSession.episodioId}">
       <div style="color:red;">
         <g:message code="trauma.show.feedback.patientAlreadySelectedForThisEpisode" />
-      </div><br/>
+      </div>
+      <g:render template="../demographic/Person" model="[person: it.patient]" />
+      <br/><br/>
     </g:compositionHasPatient>
     
     <g:if test="${flash.message}">

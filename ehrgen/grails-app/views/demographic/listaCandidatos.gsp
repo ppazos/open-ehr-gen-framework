@@ -60,10 +60,13 @@
 
         <g:link action="admisionPaciente" class="back" params="${search_params}"><g:message code="demographic.lista_candidatos.action.admisionPaciente" /></g:link>
       </li>
-      <%-- Solo se puede agregar un nuevo paciente si el repositorio es local --%>
-      <g:if test="${ApplicationHolder.application.config.hce.patient_administration.serviceType.local}">
-        <li><g:link action="agregarPaciente" class="create"><g:message code="demographic.lista_candidatos.action.agregarPaciente" /></g:link></li>
-      </g:if>
+      
+      <g:compositionHasNoPatient episodeId="${session.ehrSession.episodioId}">
+        <%-- Solo se puede agregar un nuevo paciente si el repositorio es local --%>
+        <g:if test="${ApplicationHolder.application.config.hce.patient_administration.serviceType.local}">
+          <li><g:link action="agregarPaciente" class="create"><g:message code="demographic.lista_candidatos.action.agregarPaciente" /></g:link></li>
+        </g:if>
+      </g:compositionHasNoPatient>
     </ul>
 
     <g:if test="${flash.message}">
@@ -71,6 +74,14 @@
         <g:message code="${flash.message}" />
       </div>
     </g:if>
+    
+    <g:compositionHasPatient episodeId="${session.ehrSession.episodioId}">
+      <div style="color:red;">
+        <g:message code="trauma.show.feedback.patientAlreadySelectedForThisEpisode" />
+      </div>
+      <g:render template="../demographic/Person" model="[person: it.patient]" />
+      <br/><br/>
+    </g:compositionHasPatient>
     
     <table id="list">
       <tr>
@@ -118,10 +129,12 @@
 	            </g:else>
 	            --%>
 	            
-	            <%-- Guardando al paciente en la base local, aunque el IMP sea remoto --%>
-	            <g:link action="seleccionarPaciente" id="${persona.id}">
-	              <g:message code="demographic.lista_candidatos.action.seleccionarPaciente" />
-	            </g:link>
+               <g:compositionHasNoPatient episodeId="${session.ehrSession.episodioId}">
+                 <%-- Guardando al paciente en la base local, aunque el IMP sea remoto --%>
+                 <g:link action="seleccionarPaciente" id="${persona.id}">
+                   <g:message code="demographic.lista_candidatos.action.seleccionarPaciente" />
+                 </g:link>
+               </g:compositionHasNoPatient>
 	          </td>
 	        </tr>
 	      </g:each>
