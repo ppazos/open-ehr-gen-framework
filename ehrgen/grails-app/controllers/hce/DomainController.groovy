@@ -138,7 +138,7 @@ class DomainController {
          }
       }
         
-      println "workflows: "+ workflows
+      //println "workflows: "+ workflows
         
       session.ehrSession.workflowId = workflows[0].id
       
@@ -265,8 +265,8 @@ class DomainController {
           println folder.errors
           //println folder.name.errors
           //println folder.archetypeDetails.errors
-		  flash.message = "Ocurrio un error al crear el nuevo dominio"
-		  return
+          flash.message = "Ocurrio un error al crear el nuevo dominio"
+          return
        }
        
        
@@ -304,8 +304,8 @@ class DomainController {
      if (!params.id)
      {
         flash.message = 'Debe seleccionar algún dominio para editar'
-       redirect(action:'list')
-       return
+        redirect(action:'list')
+        return
      }
      
      def domain = Domain.get(params.id)
@@ -319,7 +319,7 @@ class DomainController {
      
      if (params.doit)
      {
-        println params
+        //println params
      
         if (params.value)
           domain.name = params.value
@@ -332,6 +332,8 @@ class DomainController {
           println domain.errors
           //println folder.name.errors
           //println folder.archetypeDetails.errors
+          flash.message = "Ocurrio un error al actualizar el dominio"
+          return [domain: domain]
         }
        
         flash.message = 'Dominio '+ domain.name +' actualizado con éxito'
@@ -570,22 +572,22 @@ class DomainController {
             return [archetypes: archetypes]
          }
          
-		 
+       
 
          // Genera GUI para el nuevo template
          guiCachingService.generateGUI([template])
          
-		 
-		 def tman = templates.TemplateManager.getInstance()
-		 
+       
+       def tman = templates.TemplateManager.getInstance()
+       
          // Agrega el template al cache
          // Permite tener toda la estructura del template en memoria y
          // no tener que cargarlo en cada request desde la base
          tman.cacheTemplate(template)
          
-		 // Serializa y guarda el XML en disco
-		 tman.saveTemplateToRepo(template)
-		 
+       // Serializa y guarda el XML en disco
+       tman.saveTemplateToRepo(template)
+       
          
          flash.message = "Se ha creado el template con éxito"
          redirect(action:'list')
