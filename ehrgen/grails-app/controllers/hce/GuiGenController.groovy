@@ -74,27 +74,7 @@ class GuiGenController {
 
    def archetypeService
    def hceService
-   
-   
-   // ============================= GESTION DE GUIS generadas ======================================
-   // TEST
-   def fieldPathlist = {
-      
-      def fn = FieldNames.getInstance()
-      return [mapping: fn.getMapping()]
-   }
-   
-   /* TODO:
-    * quiero listar las guis generadas
-    * ver el html generados
-    * ver solo las de show, solo las de edit o solo las de create
-    * ponerles algunos datos autogenerados para ver algo en las insterfaces
-    * ponerles algo de estilo para verlas como se verian en el registro clinico
-    * volver a generar todas, o solo las vistas de algun template, o solo las de algun locale
-    * 
-    * 
-    */
-   // ============================= GESTION DE GUIS generadas ======================================
+
    
    
    def index = {
