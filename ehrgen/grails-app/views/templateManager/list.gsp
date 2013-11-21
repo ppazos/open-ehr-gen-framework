@@ -10,6 +10,7 @@
          <span class="menuButton"><g:link controller="domain" action="list" class="list">Dominios</g:link></span>
          <span class="menuButton"><g:link action="reload">Reload all</g:link></span>
          <span class="menuButton"><g:link action="unloadAll">Unload all</g:link></span>
+         <span class="menuButton"><g:link action="fieldPathlist" target="_blank">field-path list</g:link></span>
       </div>
       <div class="body">
          <h1>Template list</h1>
