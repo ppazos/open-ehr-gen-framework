@@ -318,7 +318,7 @@ class TemplateManager {
                // TODO: serializar referencias a fields
             }
          }
-         if (template.includedArchetypes.size() > 0)
+         if (template.includedArchetypes?.size() > 0) // Puede no tener includedArchetypes
          {
             included_archetypes {
                template.includedArchetypes.each { archRef ->
