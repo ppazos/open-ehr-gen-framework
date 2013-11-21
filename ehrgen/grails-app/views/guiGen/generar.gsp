@@ -52,6 +52,7 @@
       padding: 2px;
     }
     </style>
+    <r:layoutResources/>
   </head>
   <body>
     <h1>Generar</h1>

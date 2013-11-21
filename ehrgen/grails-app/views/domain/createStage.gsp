@@ -16,6 +16,7 @@
       });
     });
     </g:javascript>
+    <r:layoutResources/>
   </head>
   <body>
     <div class="body">
