@@ -88,11 +88,11 @@ class SnomedITServerAccess implements ITerminologyAccess {
             
             //println req // org.apache.http.client.methods.HttpGet
             //println xstream.toXML(req)
-            println resp.statusLine // Ok 200
+            //println resp.statusLine // Ok 200
             
             if (resp.status == 200)
             {
-               println xml.text() // html es java.io.InputStreamReader
+               //println xml.text() // html es java.io.InputStreamReader
                //println xml.toXmlString()
                /*
                <?xml version='1.0'?>
