@@ -308,7 +308,7 @@ class TemplateManager {
       def xml = new groovy.xml.MarkupBuilder(writer)
      
       xml.template() {
-         id(template.templateId + ".v1")
+         id(template.templateId)
          name(template.name)
          root_archetype {
             archetype(type: template.rootArchetype.type.toString(),

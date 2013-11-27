@@ -504,7 +504,7 @@ class DomainController {
       if (params.doit)
       {
          def template = new templates.Template(
-            templateId: 'EHRGen-EHR-'+ params.templateId, // TODO: soporte para DEMOGRAPHIC
+            templateId: 'EHRGen-EHR-'+ params.templateId +'.v1', // TODO: soporte para DEMOGRAPHIC
             name: params.name
          )
          
@@ -578,15 +578,15 @@ class DomainController {
          guiCachingService.generateGUI([template])
          
        
-       def tman = templates.TemplateManager.getInstance()
+         def tman = templates.TemplateManager.getInstance()
        
          // Agrega el template al cache
          // Permite tener toda la estructura del template en memoria y
          // no tener que cargarlo en cada request desde la base
          tman.cacheTemplate(template)
          
-       // Serializa y guarda el XML en disco
-       tman.saveTemplateToRepo(template)
+         // Serializa y guarda el XML en disco
+         tman.saveTemplateToRepo(template)
        
          
          flash.message = "Se ha creado el template con éxito"
