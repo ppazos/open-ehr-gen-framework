@@ -599,14 +599,41 @@ class ArchetypeManagerController {
        }
     }
     
-	
+	// idem aggregateInteger
+   private void aggregateDV_COUNT(List data, String agg,
+                                 Archetype archetype, Object constraint, CtrlTerminologia terms,
+                                 Map aggregator, Map names)
+   {
+	   // Promedio
+       if (data.size() > 0)
+       {
+          // Hay un solo agregador de promedio (los agregadores de los demas tipos
+          // lo que hacen es contar ocurrencias de un valor, eso para DvQuantity no
+          // tiene mucho sentido).
+          aggregator['promedio'] = 0
+        
+          // Calculo de agregacion AVG en magnitude (sin considerar units distintas!!!)
+          // data es List<Element>
+          data.each {
+          
+             //println it.value.magnitude // it.value ~ DvCount, it.value.magnitude ~ Integer
+             aggregator['promedio'] += it.value.magnitude
+          }
+        
+          aggregator['promedio'] = aggregator['promedio'] / data.size()
+        
+          // labels (hay solo una porque es un promedio)
+          names['promedio'] = 'promedio' // TODO: I18N
+       }
+	}
+   
 	/**
 	 * Agregacion del tipo basico dentro de DvCount.
 	 */
 	private void aggregateInteger(List data, String agg,
-                                     Archetype archetype, Object constraint, CtrlTerminologia terms,
-                                     Map aggregator, Map names)
-    {
+                                 Archetype archetype, Object constraint, CtrlTerminologia terms,
+                                 Map aggregator, Map names)
+   {
 	   // Promedio
        if (data.size() > 0)
        {
@@ -767,7 +794,13 @@ class ArchetypeManagerController {
        
       // Lista de elementos del RM al filtrar por arquetipo y path
       def data
-       
+      
+      // Clic en agregar sin seleccionar una columna.
+      if (!params.chart_path)
+      {
+         render ([ names: [:], aggregator: [:] ]) as JSON
+         return
+      }
        
       def elemPath = params.chart_path.split("::")[0]
       def constraintPath = params.chart_path.split("::")[1]

@@ -27,10 +27,20 @@
          // Clic en checkbox name="chart_path", de los que hay varios, apaga el resto y prende solo el que se cliquea
          $('input[name=chart_path]').click( function(evt) {
          
-           $('input[name=chart_path]').attr('checked', false);
-           $(this).attr('checked', true);
+           $('input[name=chart_path]').prop('checked', false);
+           $(this).prop('checked', true);
          });
-       
+         
+         $('#queryForm').submit(function(e){
+         
+           if ($('[name=paths]:checked').length == 0)
+           {
+             alert('Seleccione alguna path');
+             return false;
+           }
+         });
+         
+
          // =======================================================================
          // Trae y muestra la agregacion de datos como una tabla de 2 columnas
          //
@@ -46,19 +56,26 @@
              dataType:  'json', 
              
              beforeSubmit: function(formData, jqForm, options) {
+             
+               // Una columna debe estar seleccionada para agregar
+               if ($('[name=chart_path]:checked').length == 0)
+               {
+                 alert('Seleccione alguna columna');
+                 return false;
+               }
        
                // TODO: verificar que se selecciono una path
                var queryString = $.param(formData); 
     
-             // jqForm is a jQuery object encapsulating the form element.  To access the 
-             // DOM element for the form do this: 
-             // var formElement = jqForm[0]; 
+               // jqForm is a jQuery object encapsulating the form element.  To access the 
+               // DOM element for the form do this: 
+               // var formElement = jqForm[0]; 
           
-             //alert('About to submit: \n\n' + queryString); 
+               //alert('About to submit: \n\n' + queryString); 
           
-             // here we could return false to prevent the form from being submitted; 
-             // returning anything other than false will allow the form submit to continue 
-             return true; 
+               // here we could return false to prevent the form from being submitted; 
+               // returning anything other than false will allow the form submit to continue 
+               return true; 
              }, 
              success: function(responseText, statusText, xhr, $form) {
        
@@ -164,7 +181,7 @@
           
         <g:if test="${archetype}">
             
-          <g:form action="query">
+          <g:form action="query" name="queryForm">
       
             <%--
             <div id="calendarDiv1" style="position:absolute; width:205px; display:none; z-index:100;"></div>
@@ -283,15 +300,19 @@
                         def path1 = archetype.physicalPaths().findAll{ pt -> pt.startsWith(paths[i]) }.max{ pt -> pt.length() }
                         //print path1
                         %>
-						
-						${archetype.node(path1).rmTypeName}
+            
+                        ${archetype.node(path1).rmTypeName}
                         
                         <g:if test="${archetype.node(path1).rmTypeName == 'DvQuantity'}">
                           <%-- DvOrdinal: valores para clasificacion ${archetype.node(path1).list} --%>
                           <input type="checkbox" name="chart_path" value="${paths[i]+'::'+path1}" />
                         </g:if>
-						<g:if test="${archetype.node(path1).rmTypeName == 'Integer'}">
+                        <g:if test="${archetype.node(path1).rmTypeName == 'Integer'}">
                           <%-- Tipo basico dentro de DvCount --%>
+                          <input type="checkbox" name="chart_path" value="${paths[i]+'::'+path1}" />
+                        </g:if>
+                        <g:if test="${archetype.node(path1).rmTypeName == 'DV_COUNT'}">
+                          <%-- DV_COUNT, hay casos que no aparece el Integer. --%>
                           <input type="checkbox" name="chart_path" value="${paths[i]+'::'+path1}" />
                         </g:if>
                         <g:if test="${archetype.node(path1).rmTypeName == 'DvOrdinal'}">
