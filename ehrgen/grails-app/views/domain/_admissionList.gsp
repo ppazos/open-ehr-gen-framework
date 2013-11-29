@@ -11,8 +11,7 @@
     
     <%-- La class se usa para seleccionar el form del domain en domain/list.gsp
          que se submitea por javascript al hacer click en el link aqui --%>
-    
-    <g:link url="[action:'list']" id="${person.id}" class="admission domain_${domain.id}">
+    <g:link controller="domain" action:="list" elementId="${person.id}" class="admission domain_${domain.id}">
     ${person.primerNombre}
     ${person.segundoNombre}
     ${person.primerApellido}
