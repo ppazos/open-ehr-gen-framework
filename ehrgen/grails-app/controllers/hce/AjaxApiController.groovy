@@ -89,9 +89,13 @@ class AjaxApiController {
       println params.archetypeid+'_'+params.bind
       println ApplicationHolder.application.config.hce.terminologyServicesMapping[params.archetypeid+'_'+params.bind]
       
+      def candidates = []
       def accessClass = ApplicationHolder.application.config.hce.terminologyServicesMapping[params.archetypeid+'_'+params.bind]
-      def access = accessClass.newInstance()
-      def candidates = access.suggestTerms(params.q)
+      
+      if (accessClass)
+      {
+         candidates = accessClass.newInstance().suggestTerms(params.q)
+      }
       
       render candidates as JSON
    
