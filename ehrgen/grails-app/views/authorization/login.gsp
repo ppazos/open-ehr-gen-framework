@@ -38,7 +38,7 @@
         float:left;
       }
       #form1 {
-        border: 1px solid #000;
+        border: 1px solid #aaaaaa;
         padding: 20px 20px;
         margin-top: 5px;
         position: relative;

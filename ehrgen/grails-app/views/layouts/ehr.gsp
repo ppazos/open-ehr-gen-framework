@@ -34,11 +34,11 @@
       <b>Open-EHRGen</b> v${ApplicationHolder.application.metadata['app.version']} | ${session.ehrSession.userData}
       
       <span class="user_actions">
-        
+        <%--
         <span class="currentDate">
           <g:format date="${new Date()}" />
         </span>
-        
+        --%>
         <ul class="userBar lang">
           <g:langSelector>
             <li ${(session.locale.toString()==it.localeString)?'class="active"':''}>

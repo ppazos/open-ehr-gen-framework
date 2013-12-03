@@ -25,8 +25,6 @@
     <r:layoutResources/>
     <style>
       #body_table {
-        background-color: #efefff;
-        border: 1px solid #333399;
         width: 100%;
       }
       #body_td {
@@ -44,11 +42,11 @@
 	  ${session.ehrSession.userData}
 	  
       <span class="user_actions">
-      
+        <%--
         <span class="currentDate">
           <g:format date="${new Date()}" />
         </span>
-        
+        --%>
         <ul class="userBar lang">
           <g:langSelector>
             <li ${(session.locale.toString()==it.localeString)?'class="active"':''}>

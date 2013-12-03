@@ -4,8 +4,12 @@ body {
   margin: 0px;
 }
 #body {
-  padding: 15px;
+  padding: 3px;
   margin-bottom: 25px;
+}
+#body > table { /* Centrado del contenido del layout ehr */
+ margin-right: auto;
+ margin-left: auto;
 }
 #body_table {
   width: 850px;
@@ -120,6 +124,7 @@ ul.userBar {
   display: inline;
   margin: 0px;
   padding: 0px 10px 0px 0px;
+  font-size: 0.8em;
 }
 ul.userBar li {
   display: inline;
@@ -127,10 +132,10 @@ ul.userBar li {
 }
 ul.userBar li a {
   margin-top: 6px;
-  padding: 4px 10px 5px 10px;
+  padding: 3px 10px 5px 10px;
   text-decoration:none;
   color: #597a80;
-  border: solid 1px #000000;
+  border: solid 1px #aaaaaa;
   background-color: #f2f2f2;
 }
 ul.userBar li a:hover {
@@ -139,13 +144,9 @@ ul.userBar li a:hover {
 }
 ul.userBar li.active a {
   color: #000000;
-  border: 1px solid #000000;
+  border: 1px solid #aaaaaa;
   border-bottom: 1px solid #ffffff;
   background-color: #ffffff;
-}
-
-ul.lang li {
-  font-size: 10px;
 }
 
 #menu {
@@ -232,7 +233,7 @@ ul.lang li {
   padding-left: 15px;
   padding-right: 15px;
   margin: 0px;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid #aaaaaa;
 }
 #user_bar .user_actions {
   float: right;

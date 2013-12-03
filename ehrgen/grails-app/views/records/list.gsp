@@ -47,6 +47,12 @@
       form.filter {
         display: inline;
       }
+      [name=fromDate], [name=toDate] {
+        width: 64px;
+      }
+      .paginate {
+        text-align: right;
+      }
     </style>
     <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
     
@@ -266,20 +272,21 @@
       </g:each>
     </table>
     
+    <div class="paginate">
     <g:paginate next="Siguiente" prev="Previo"
                 maxsteps="5" max="${params.max}"
                 controller="records" action="list"
                 total="${total}"
                 params="${params}" />
-    
+    </div>
     
     <%--
      Lista de instrucciones para algun rol del usuario logueado y el dominio seleccionado.
      / Por ahora se muestra aca
     
      Terminar esto para v0.9
-    --%>
-    <g:include action="listInstructions" />
     
+    <g:include action="listInstructions" />
+    --%>
   </body>
 </html>
