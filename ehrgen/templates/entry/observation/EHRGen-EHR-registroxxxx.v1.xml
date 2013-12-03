@@ -1,0 +1,7 @@
+<template>
+  <id>EHRGen-EHR-registroxxxx.v1</id>
+  <name>Registro de concepto clinico</name>
+  <root_archetype>
+    <archetype type='observation' id='openEHR-EHR-OBSERVATION.concepto_clinico.v1' pageZone='content' includeAll='true' />
+  </root_archetype>
+</template>

@@ -1,0 +1,9 @@
+<template>
+  <id>EHRGen-EHR-consulta_evolucion.v1</id>
+  <name>Consulta - Evolucion</name>
+  <root_archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.progress_note.v1" includeAll="true" />
+  </root_archetype>
+  <included_archetypes>
+  </included_archetypes>
+</template>

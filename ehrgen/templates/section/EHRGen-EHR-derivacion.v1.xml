@@ -1,0 +1,12 @@
+<template>
+  <id>EHRGen-EHR-derivacion.v1</id>
+  <name>Derivacion</name>
+  <root_archetype>
+    <archetype type="section" id="openEHR-EHR-SECTION.referral_details.v1" pageZone="none" />
+  </root_archetype>
+  <included_archetypes>
+    <archetype type="instruction" id="openEHR-EHR-INSTRUCTION.request-referral.v1" pageZone="content" includeAll="true">
+      <!--<field path="/data[at0002]/events[at0003]/data[at0001]/items[at0004]"></field>-->
+    </archetype>
+  </included_archetypes>
+</template>

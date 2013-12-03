@@ -1,0 +1,9 @@
+<template>
+  <id>EHRGen-EHR-resumen.v1</id>
+  <name>Resumen</name>
+  <root_archetype>
+    <archetype type="evaluation" id="openEHR-EHR-EVALUATION.clinical_synopsis.v1" includeAll="true" />
+  </root_archetype>
+  <included_archetypes>
+  </included_archetypes>
+</template>

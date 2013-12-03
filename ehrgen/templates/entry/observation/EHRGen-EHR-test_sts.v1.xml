@@ -1,0 +1,10 @@
+<template>
+  <id>EHRGen-EHR-test_sts.v1</id>
+  <name>Test</name>
+
+  <root_archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.test_servicios_terminologicos.v1" includeAll="true" />
+  </root_archetype>
+  <included_archetypes>
+  </included_archetypes>
+</template>

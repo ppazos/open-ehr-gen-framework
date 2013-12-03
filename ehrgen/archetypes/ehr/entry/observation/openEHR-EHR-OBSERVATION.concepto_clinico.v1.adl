@@ -1,0 +1,132 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.concepto_clinico.v1
+
+concept
+	[at0000]	-- Concepto clinico
+language
+	original_language = <[ISO_639-1::es]>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"asdfad">
+			use = <"sdfasd">
+			misuse = <"">
+			copyright = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"9B7E557016BD3F038600A604C7964EFE">
+	>
+
+definition
+	OBSERVATION[at0000] matches {	-- Concepto clinico
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Cualquier evento
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Arbol
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Texto
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- Texto cod
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0006, 	-- aaaa
+													at0007, 	-- bbb
+													at0008]	-- ccc
+												}
+											}
+										}
+									}
+									ELEMENT[at0009] occurrences matches {0..1} matches {	-- Count
+										value matches {
+											DV_COUNT matches {*}
+										}
+									}
+									ELEMENT[at0010] occurrences matches {0..1} matches {	-- Cantidad
+										value matches {
+											C_DV_QUANTITY <
+												property = <[openehr::125]>
+												list = <
+													["1"] = <
+														units = <"mm[Hg]">
+													>
+													["2"] = <
+														units = <"Pa">
+													>
+												>
+											>
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Concepto clinico">
+					description = <"unknown">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Texto">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Texto cod">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"aaaa">
+					description = <"aaaa">
+				>
+				["at0007"] = <
+					text = <"bbb">
+					description = <"bbbb">
+				>
+				["at0008"] = <
+					text = <"ccc">
+					description = <"cccc">
+				>
+				["at0009"] = <
+					text = <"Count">
+					description = <"*">
+				>
+				["at0010"] = <
+					text = <"Cantidad">
+					description = <"*">
+				>
+			>
+		>
+	>

@@ -1,0 +1,9 @@
+<template>
+  <id>EHRGen-EHR-fallecimiento.v1</id>
+  <name>Registro de fallecimiento</name>
+  <root_archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.fallecimiento.v1" includeAll="true" />
+  </root_archetype>
+  <included_archetypes>
+  </included_archetypes>
+</template>

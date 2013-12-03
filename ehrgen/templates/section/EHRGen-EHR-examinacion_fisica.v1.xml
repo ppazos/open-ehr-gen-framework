@@ -1,0 +1,31 @@
+<template>
+  <id>EHRGen-EHR-examinacion_fisica.v1</id>
+  <name>Examinacio fisica</name>
+  <root_archetype>
+    <archetype type="section" id="openEHR-EHR-SECTION.examinacion_fisica.v1" pageZone="none" />
+  </root_archetype>
+  <included_archetypes>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.body_weight.v1" pageZone="content">
+      <field path="/data[at0002]/events[at0003]/data[at0001]/items[at0004]"></field>
+    </archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.height.v1" pageZone="content">
+      <field path="/data[at0001]/events[at0002]/data[at0003]/items[at0004]"></field>
+    </archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.pulse.v1" pageZone="content">
+      <field path="/data[at0002]/events[at0003]/data[at0001]/items[at0004]"></field>
+    </archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.blood_pressure.v1" pageZone="content">
+      <field path="/data[at0001]/events[at0006]/data[at0003]/items[at0004]"></field><!-- sistolica -->
+      <field path="/data[at0001]/events[at0006]/data[at0003]/items[at0005]"></field><!-- diastolica -->
+      <field path="/data[at0001]/events[at0006]/state[at0007]/items[at0008]"></field><!-- posicion -->
+      <field path="/data[at0001]/events[at0006]/data[at0003]/items[at0033]"></field><!-- comment -->
+    </archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.body_mass_index.v1" pageZone="content" includeAll="true">
+    </archetype>
+    <archetype type="observation" id="openEHR-EHR-OBSERVATION.global.v1" pageZone="content">
+      <field path="/data[at0001]/events[at0002]/data[at0003]/items[at0038]"></field><!-- comportamiento CLUSTER -->
+      <field path="/data[at0001]/events[at0002]/data[at0003]/items[at0064]"></field><!-- declaraciones de normalidad -->
+      <field path="/data[at0001]/events[at0002]/data[at0003]/items[at0067]"></field><!-- descripcion clinica -->
+    </archetype>
+  </included_archetypes>
+</template>

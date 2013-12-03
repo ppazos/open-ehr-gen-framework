@@ -1,0 +1,91 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-SECTION.examinacion_fisica.v1
+
+concept
+	[at0000]	-- Examinacion fisica
+language
+	original_language = <[ISO_639-1::es]>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Examinacion fisica">
+			use = <"Examinacion fisica">
+			misuse = <"">
+			copyright = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"DF56322050FC46412E20006635B28208">
+	>
+
+definition
+	SECTION[at0000] matches {	-- Examinacion fisica
+		items cardinality matches {0..*; unordered} matches {
+			allow_archetype OBSERVATION[at0003] occurrences matches {0..*} matches {	-- Peso
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.body_weight\.v1/}
+			}
+			allow_archetype OBSERVATION[at0002] occurrences matches {0..*} matches {	-- Altura
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.height\.v1/}
+			}
+			allow_archetype OBSERVATION[at0001] occurrences matches {0..*} matches {	-- Frecuencia cardiaca
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.pulse\.v1/}
+			}
+			allow_archetype OBSERVATION[at0004] occurrences matches {0..*} matches {	-- Presión arterial
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.blood_pressure\.v1/}
+			}
+			allow_archetype OBSERVATION[at0005] occurrences matches {0..*} matches {	-- Indice de masa corporal
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.body_mass_index\.v1/}
+			}
+			allow_archetype OBSERVATION[at0006] occurrences matches {0..*} matches {	-- Estado general
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.global\.v1/}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Examinacion fisica">
+					description = <"unknown">
+				>
+				["at0001"] = <
+					text = <"Frecuencia cardiaca">
+					description = <"*">
+				>
+				["at0002"] = <
+					text = <"Altura">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Peso">
+					description = <"*">
+				>
+				["at0004"] = <
+					text = <"Presión arterial">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Indice de masa corporal">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"Estado general">
+					description = <"*">
+				>
+			>
+		>
+	>

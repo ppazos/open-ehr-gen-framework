@@ -1,0 +1,18 @@
+<template>
+  <id>EHRGen-EHR-problemas.v1</id>
+  <name>Problemas de salud</name>
+  <root_archetype>
+    <archetype type="evaluation" id="openEHR-EHR-EVALUATION.problem_diagnosis.v1" pageZone="content">
+      <field path="/data[at0001]/items[at0002]"></field><!-- Problem/Diagnosis -->
+      
+      <field path="/data[at0001]/items[at0003]"></field><!-- Date onset -->
+      <field path="/data[at0001]/items[at0004]"></field><!-- Age at onset -->
+      
+      <field path="/data[at0001]/items[at0027]/items[at0044]"></field><!-- Description -->
+      
+      <field path="/data[at0001]/items[at0031]"></field><!-- Age at resolution -->
+    </archetype>
+  </root_archetype>
+  <included_archetypes>
+  </included_archetypes>
+</template>
