@@ -28,7 +28,4 @@
 textarea {
   height: 100px;
 }
-h1 {
-  margin-top: 0;
-}
 </style>
