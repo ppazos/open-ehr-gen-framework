@@ -226,7 +226,7 @@ environments {
         grails.serverURL = "http://localhost:8080/${appName}"
         //grails.serverURL = "http://ppazos.zapto.org:8080/${appName}"
         hce {
-           genviews_repo = '.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
+           genviews_repo = 'gen_views' + PS
         }
     }
     test {

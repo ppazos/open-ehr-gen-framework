@@ -37,6 +37,7 @@ import demographic.role.*
 import support.identification.*
 import authorization.*
 import hce.core.common.change_control.Version
+import hce.core.composition.* // Composition y EventContext
 import hce.HceService
 import tablasMaestras.*
 
@@ -59,7 +60,7 @@ import templates.*
 import templates.constraints.*
 import templates.controls.*
 
-//import archetype.ArchetypeIndex
+import archetype.ArchetypeIndex
 import archetype.ArchetypeManager
 //import archetype.walkthrough.*
 //import archetype.walkthrough.actions.SlotResolution
@@ -110,33 +111,33 @@ class BootStrap {
       
       // Se usan para crear los ArchetypeIndex necesito todos los arquetipos cargados
       println "- Carga arquetipos en memoria"
-      archetypeManager.loadAll()
+      if (archetypeManager.getLoadedArchetypes().size() == 0) archetypeManager.loadAll()
       
       println "- Carga templates en memoria"
       // Se usan para generar todas las guis de todos los dominios
-      templateManager.loadAll()
+      if (templateManager.getLoadedTemplates().size() == 0)
+      {
+         templateManager.loadAll()
       
-      
-      // Guarda todos los templates del repo local en la base de datos
-      // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=122
-      Map templates = templateManager.getLoadedTemplates()
-      
-      templates.each { templateId, template ->
-      
-         //log.error templateId
+         // Guarda todos los templates del repo local en la base de datos
+         // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=122
+         Map templates = templateManager.getLoadedTemplates()
          
-         //def _xstream = new XStream()
-         //println _xstream.toXML(template)
-         //println ""
-      
-         // Guarda las referencias antes del template porque las referencias tienen
-         // una asociacion owner al template y el template no esta guardado aun.
-
+         templates.each { templateId, template ->
          
+            //log.error templateId
+            
+            //def _xstream = new XStream()
+            //println _xstream.toXML(template)
+            //println ""
+         
+            // Guarda las referencias antes del template porque las referencias tienen
+            // una asociacion owner al template y el template no esta guardado aun.
 
-         if (!template.save()) // value es Template
-         {
-            println template.errors
+            if (!template.save()) // value es Template
+            {
+               println template.errors
+            }
          }
       }
       
@@ -150,17 +151,20 @@ class BootStrap {
       //  2. la ACTIVITY referencia a la ACTION en el arquetipo
       //  3. los templates usados referencian a los arquetipos correctos
       
-      def tInstructionActivity = templateManager.getTemplate('EHRGen-EHR-test_ordenes.v1')
-      def tAction = templateManager.getTemplate('EHRGen-EHR-cumplimiento de ordenes.v1')
-      if (tInstructionActivity && tAction) // Pueden no estar
+      if (workflow.ActivityActionTemplateRef.count() == 0)
       {
-         def tplref = new workflow.ActivityActionTemplateRef(
-            activityTemplateId: tInstructionActivity.templateId,
-            instructionArchetypeId: 'openEHR-EHR-INSTRUCTION.test_ordenes2.v1',
-            activityPath: '/activities[at0002]', // El template de INSTRUCTION puede tener varias ACTIVITY y diferentes templates de ACTION para cada ACTIVITY, la path me dice cual ACTIVITY es dentro del arquetipo
-            actionTemplateId: tAction.templateId
-         )
-         tplref.save()
+         def tInstructionActivity = templateManager.getTemplate('EHRGen-EHR-test_ordenes.v1')
+         def tAction = templateManager.getTemplate('EHRGen-EHR-cumplimiento de ordenes.v1')
+         if (tInstructionActivity && tAction) // Pueden no estar
+         {
+            def tplref = new workflow.ActivityActionTemplateRef(
+               activityTemplateId: tInstructionActivity.templateId,
+               instructionArchetypeId: 'openEHR-EHR-INSTRUCTION.test_ordenes2.v1',
+               activityPath: '/activities[at0002]', // El template de INSTRUCTION puede tener varias ACTIVITY y diferentes templates de ACTION para cada ACTIVITY, la path me dice cual ACTIVITY es dentro del arquetipo
+               actionTemplateId: tAction.templateId
+            )
+            tplref.save()
+         }
       }
       //
       // ==========================================
@@ -208,30 +212,7 @@ class BootStrap {
       // ====================================================================================
       // Crea dominios
       //
-	  createDomains()
-	  /*
-      def config_domains = grailsApplication.config.domains
-
-      println " - Creacion de dominios"
-      
-      if (Domain.count() == 0) // Si no se crearon los folders...
-      {
-         config_domains.each { config_domain ->
-            
-            println "   - $config_domain"
-            
-            def domain = new Domain(
-               name: config_domain,
-               userDefined: true
-            )
-                 
-            if (!domain.save(flush:true))
-            {
-               println domain.errors
-            }
-         }
-      }
-	  */
+      createDomains()
       //
       // /Crea dominios
       // ====================================================================================
@@ -249,25 +230,27 @@ class BootStrap {
       //Permit.createDefault() // controler/action (no se usan)
       //
 	   println "   - crea permisos por defecto"
-      DomainPermit.createDefault() // domain/templateId
-
+      if (DomainPermit.count() == 0)
+      {
+         DomainPermit.createDefault() // domain/templateId
       
-      // ASIGNACION DE PERMISOS POR DEFECTO
-      // ROL GODLIKE, ACCESO A TODOS LOS DOMINIOS y todos los templates.
-      //
-      // TODO: ADEMAS DEBERIA TENER PERMISOS PARA LAS ACCIONES DE GESTION,
-      // el MEDICO NO.
-      // FIXME: no se estan verificando permisos para las acciones de gestion.
-      // -------------------------------------------------------------
-      def godlike = Role.findByType(Role.GODLIKE)
-      def medico = Role.findByType(Role.MEDICO)
-      DomainPermit.findAllByTemplateId("*").each {
-        
-         medico.addToDomainPermits(it)
-         godlike.addToDomainPermits(it)
+         // ASIGNACION DE PERMISOS POR DEFECTO
+         // ROL GODLIKE, ACCESO A TODOS LOS DOMINIOS y todos los templates.
+         //
+         // TODO: ADEMAS DEBERIA TENER PERMISOS PARA LAS ACCIONES DE GESTION,
+         // el MEDICO NO.
+         // FIXME: no se estan verificando permisos para las acciones de gestion.
+         // -------------------------------------------------------------
+         def godlike = Role.findByType(Role.GODLIKE)
+         def medico = Role.findByType(Role.MEDICO)
+         DomainPermit.findAllByTemplateId("*").each {
+           
+            medico.addToDomainPermits(it)
+            godlike.addToDomainPermits(it)
+         }
+         godlike.save()
+         medico.save()
       }
-      godlike.save()
-      medico.save()
       
       // --------------------- /PERSONAS, ROLES Y LOGINS ----------------------
       
@@ -289,98 +272,102 @@ class BootStrap {
       // Stage ->* Templates
       Map domainTemplates
       
-      // Personas con rol medico
-      def rvsm = RoleValidity.withCriteria {
-        role {
-          eq('type', Role.MEDICO)
-        }
-      }
       
-      Domain.list().each { domain ->
-         
-         // Por defecto todo domain tiene un workflow y el
-         //medico tiene acceso a ese workflow en todos los domains
-         workflow = new WorkFlow(
-            forRoles: rvsm.role, //[rMedico], // Cuidado, este es el rol medico de UN usuario, si se crea mas de un usuario medico aca, se deberian poner todos los roles medicos de cada usuario (el rol es por instancia!)
-            owner: domain
-         )
-         
-         // Agrego el workflow al domain
-         domain.addToWorkflows( workflow )
-         
-         // Falta agregar las stages al workflow
-         // y los templates a cada stage
-         
-         //println "Domain: $domain"
-         domainTemplates = grailsApplication.config.templates2."$domain.name"
-         
-         println "Domain: "+ domain.name
-         //println "domainTemplates: " + domainTemplates
-         
-         domainTemplates.each{ entry ->
-         
-            // entry.key es stage.name
-            //println " - "+ entry.key
-            //println " - entry.value: "+ entry.value // ['prehospitalario.v1', 'contexto_del_evento.v1']
-            
-            // Crea stages en el workflow por defecto del domain
-            stage = new Stage(
-               owner: workflow,
-               name: entry.key // EVALUACION_PRIMARIA
-            )
-            // Agrego la stage al workflow
-            workflow.addToStages( stage )
-            
-            // Falta agregar los templates de cada stage
-
-
-            /*
-            ESTO SOLO GUARDA EN LA BASE DE DATOS LOS TEMPLATES LEVANTADOS DEL REPO LOCAL QUE SON REFERENCIADOS DESDE UNA STAGE EN EL CONFIG,
-            PERO DEBERIAN GUARDARSE TODOS LOS TEMPLATES DEL REPO LOCAL EN LA BASE PARA QUE QUEDEN DISPONIBLES CUANDO SE CREA UNA NUEVA STAGE DESDE LA GUI.
-            
-            EL GUARDADO DE TODOS LOS TEMPLATES EN LA BD SE HACE AL INICIO DEL BOOTSTRAP.
-            */
-            
-            // Cada template dentro de una stage
-            entry.value.each { subsection -> // via_aerea
-
-                 templateId = "EHRGen-EHR-" + subsection // 'EHRGen-EHR-via_aerea.v1'
-                 //println "templateId: " + templateId
-
-                 template = templateManager.getTemplate( templateId )
-                
-                 if (!template)
-                 {
-                    println "ERROR: Verifique que el template $templateId esta en el repositorio"
-                    return
-                 }
-                
-                 // TEST
-                 //def xstream = new XStream()
-                 //def tlog = new File('template.log')
-                 //tlog.append( xstream.toXML(template) + "\n\n" )
-                 
-                 
-                 // Agrega el template a la stage actual del workflow
-                 stage.addToRecordDefinitions( template )
-            }
+      if (WorkFlow.count() == 0)
+      {
+         // Personas con rol medico
+         def rvsm = RoleValidity.withCriteria {
+           role {
+             eq('type', Role.MEDICO)
+           }
          }
-           
-         // Guarda en cascada workflow, stages y templates del domain
-         if (!domain.save())
-         {
-            println domain.errors
-            domain.workflows.each { wf ->
-               println wf.errors
-               wf.stages.each { stg ->
-                  println stg.errors
-                  stg.recordDefinitions.each { tpl ->
-                     println tpl.errors
+         
+         Domain.list().each { domain ->
+            
+            // Por defecto todo domain tiene un workflow y el
+            //medico tiene acceso a ese workflow en todos los domains
+            workflow = new WorkFlow(
+               forRoles: rvsm.role, //[rMedico], // Cuidado, este es el rol medico de UN usuario, si se crea mas de un usuario medico aca, se deberian poner todos los roles medicos de cada usuario (el rol es por instancia!)
+               owner: domain
+            )
+            
+            // Agrego el workflow al domain
+            domain.addToWorkflows( workflow )
+            
+            // Falta agregar las stages al workflow
+            // y los templates a cada stage
+            
+            //println "Domain: $domain"
+            domainTemplates = grailsApplication.config.templates2."$domain.name"
+            
+            println "Domain: "+ domain.name
+            //println "domainTemplates: " + domainTemplates
+            
+            domainTemplates.each{ entry ->
+            
+               // entry.key es stage.name
+               //println " - "+ entry.key
+               //println " - entry.value: "+ entry.value // ['prehospitalario.v1', 'contexto_del_evento.v1']
+               
+               // Crea stages en el workflow por defecto del domain
+               stage = new Stage(
+                  owner: workflow,
+                  name: entry.key // EVALUACION_PRIMARIA
+               )
+               // Agrego la stage al workflow
+               workflow.addToStages( stage )
+               
+               // Falta agregar los templates de cada stage
+
+
+               /*
+               ESTO SOLO GUARDA EN LA BASE DE DATOS LOS TEMPLATES LEVANTADOS DEL REPO LOCAL QUE SON REFERENCIADOS DESDE UNA STAGE EN EL CONFIG,
+               PERO DEBERIAN GUARDARSE TODOS LOS TEMPLATES DEL REPO LOCAL EN LA BASE PARA QUE QUEDEN DISPONIBLES CUANDO SE CREA UNA NUEVA STAGE DESDE LA GUI.
+               
+               EL GUARDADO DE TODOS LOS TEMPLATES EN LA BD SE HACE AL INICIO DEL BOOTSTRAP.
+               */
+               
+               // Cada template dentro de una stage
+               entry.value.each { subsection -> // via_aerea
+
+                    templateId = "EHRGen-EHR-" + subsection // 'EHRGen-EHR-via_aerea.v1'
+                    //println "templateId: " + templateId
+
+                    template = templateManager.getTemplate( templateId )
+                   
+                    if (!template)
+                    {
+                       println "ERROR: Verifique que el template $templateId esta en el repositorio"
+                       return
+                    }
+                   
+                    // TEST
+                    //def xstream = new XStream()
+                    //def tlog = new File('template.log')
+                    //tlog.append( xstream.toXML(template) + "\n\n" )
+                    
+                    
+                    // Agrega el template a la stage actual del workflow
+                    stage.addToRecordDefinitions( template )
+               }
+            }
+              
+            // Guarda en cascada workflow, stages y templates del domain
+            if (!domain.save())
+            {
+               println domain.errors
+               domain.workflows.each { wf ->
+                  println wf.errors
+                  wf.stages.each { stg ->
+                     println stg.errors
+                     stg.recordDefinitions.each { tpl ->
+                        println tpl.errors
+                     }
                   }
                }
             }
-         }
-      } // each domain
+         } // each domain
+      }
         
       // /Crea workflows para cada domain
       // ====================================================================================
@@ -485,18 +472,18 @@ class BootStrap {
         
       // saco para acelerar la carga
       
-        println "   - CIE 10..."
-        if (Cie10Trauma.count() == 0)
-        {
-           def codigos = Cie10Trauma.getCodigos()
-           codigos.each { codigo ->
-              if (!codigo.save()) println codigo.errors
-           }
-        }
-        else
-        {
-           println "      ya estan cargados"
-        }
+      println "   - CIE 10..."
+      if (Cie10Trauma.count() == 0)
+      {
+         def codigos = Cie10Trauma.getCodigos()
+         codigos.each { codigo ->
+            if (!codigo.save()) println codigo.errors
+         }
+      }
+      else
+      {
+         println "      ya estan cargados"
+      }
       
       
         
@@ -604,9 +591,12 @@ class BootStrap {
       */
         
       println "Create Archetype Indexes"
-      if (!archetypeManager.createArchetypeIndexes())
+      if (ArchetypeIndex.count() == 0)
       {
-         println " == Ocurrieron errores al crear indices para algunos arquetipos, verifiquelos en la linea de comandos"
+         if (!archetypeManager.createArchetypeIndexes())
+         {
+            println " == Ocurrieron errores al crear indices para algunos arquetipos, verifiquelos en la linea de comandos"
+         }
       }
         
       println ""
@@ -629,7 +619,7 @@ class BootStrap {
       def config_domains = grailsApplication.config.domains
       
       // Si ya se crearon los dominios, no los crea.
-      if (Domain.count() > 0) return
+      if (Domain.count() != 0) return
       
       config_domains.each { config_domain ->
         
@@ -653,6 +643,8 @@ class BootStrap {
    def createRolesAndPersons()
    {
       println " - Creacion de personas de prueba"
+      
+      if (Role.count() != 0) return
       
       // ROLES: se crea una instancia por cada rol existente.
       // Luego el admin puede crear otros roles y asignar permisos.
@@ -766,6 +758,8 @@ class BootStrap {
    {
       println "   - Crea admisiones por defecto"
    
+      if (Admission.count() != 0) return
+   
       def admissions = []
       def trauma_domain = Domain.findByName('Emergencia de Trauma') // FIXME: nombre en Config.groovy puede cambiar! (crear codigos unicos para cada dominio, ej. un md5)
         
@@ -802,6 +796,8 @@ class BootStrap {
    
    def createSampleCompositions()
    {
+      if (Composition.count() != 0) return
+   
       def partySelf
       def participation
       def startDate
@@ -981,4 +977,4 @@ class BootStrap {
       }
    }
    */
-} 
+}
