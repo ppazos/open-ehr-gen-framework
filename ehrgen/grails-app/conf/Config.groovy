@@ -161,13 +161,14 @@ hce {
         }
     }
     clinical_record {
-         save_rm_structure = true // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=61
+       save_rm_structure = true // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=61
     }
     close_record_job_on = false
     
     template_repo = 'templates'+ PS   // luego se pone la path del tipo y el templateId
     archetype_repo = 'archetypes'+ PS +'ehr'+ PS // luego se pone la path del tipo y el archetypeId
     uploaded_archetypes_repo = 'archetypes'+ PS +'uploaded'+ PS // directorio temporal donde se suben los arquetipos desde la web
+    
     
     // Generalizar la vista de búsqueda de términos codificados
     // https://code.google.com/p/open-ehr-gen-framework/issues/detail?id=23
@@ -216,11 +217,17 @@ grails.enable.native2ascii = true
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
-        grails.serverURL = "http://www.changeme.com"
+        //grails.serverURL = "http://www.changeme.com"
+        hce {
+           genviews_repo = 'gen_views' + PS
+        }
     }
     development {
-        //grails.serverURL = "http://localhost:8080/${appName}"
-        grails.serverURL = "http://ppazos.zapto.org:8080/${appName}"
+        grails.serverURL = "http://localhost:8080/${appName}"
+        //grails.serverURL = "http://ppazos.zapto.org:8080/${appName}"
+        hce {
+           genviews_repo = '.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
+        }
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"

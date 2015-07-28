@@ -29,9 +29,9 @@ environments {
          // Configuracion para utilizar MySQL
          // Selecciona la base de datos oehr_dev
          //driverClassName = "com.mysql.jdbc.Driver"
-         url = "jdbc:mysql://localhost:3306/oehr_dev?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
+         url = "jdbc:mysql://localhost:3306/ehrgen?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8"
          username = "root"
-         password = "" //"vertrigo"
+         password = ""
          
          
          // Configuracion para utilizar PostgreSQL
@@ -72,10 +72,13 @@ environments {
    production {
       dataSource {
          
+         dbCreate = "update"
+         
          // Configuracion para utilizar h2 en archivo
          // Selecciona la base de datos prodDb
          //url = "jdbc:h2db:file:prodDb;shutdown=true"
          
+         /*
          // Configuracion para utilizar MySQL
          // Selecciona la base de datos oehr_dev (por simplicidad "prod" utiliza la misma base que en "dev")
          //driverClassName = "com.mysql.jdbc.Driver"
@@ -89,7 +92,24 @@ environments {
          
          // update utiliza la base de datos existente actualizando sus datos en el bootstrap cada vez que se ejecuta la aplicacion
          // Ver mas opciones en la seccion 3.3: http://grails.org/doc/1.0/guide/3.%20Configuration.html
-         dbCreate = "update"
+         */
+         
+         // ===========================================================
+         // Config for OpenShift ======================================
+            
+         String host = System.getenv('OPENSHIFT_MYSQL_DB_HOST')
+         String port = System.getenv('OPENSHIFT_MYSQL_DB_PORT')
+         String dbName = System.getenv('OPENSHIFT_APP_NAME')
+         
+         url = "jdbc:mysql://$host:$port/$dbName"
+         
+         println "DataSource"
+         println url
+         
+         username = System.getenv('OPENSHIFT_MYSQL_DB_USERNAME')
+         password = System.getenv('OPENSHIFT_MYSQL_DB_PASSWORD')
+         
+         // ===========================================================
       }
    }
 }

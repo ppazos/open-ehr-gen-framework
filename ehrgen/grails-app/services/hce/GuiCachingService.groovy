@@ -1,6 +1,6 @@
 package hce
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder;
+import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 /**
  * Servicio auxiliar para generar vistas para los templates y guardarlas en strings.
@@ -35,7 +35,7 @@ class GuiCachingService {
       String pathToGuiGenCreate   = 'guiGen'+ PS +'create'+ PS +'_generarCreate' // dentro del directorio /grails-app/views al template _generarCreate.gsp
       String pathToGuiGenShow     = 'guiGen'+ PS +'show'  + PS +'_generarShow'
       String pathToGuiGenEdit     = 'guiGen'+ PS +'edit'  + PS +'_generarEdit'
-      String pathToGeneratedViews = '.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
+      String pathToGeneratedViews = ApplicationHolder.application.config.hce.genviews_repo //'.'+ PS +'grails-app'+ PS +'views'+ PS +'genViews'+ PS
       
         
       templates.each { tpl ->

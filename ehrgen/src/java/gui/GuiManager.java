@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
+import org.codehaus.groovy.grails.commons.ApplicationHolder;
 
 public class GuiManager {
 
@@ -20,7 +21,7 @@ public class GuiManager {
    * Directorio donde estan las guis generadas.
    * FIXME: deberia ser un parametro de la aplicacion en un .properties
    */
-   private static String guiRepositoryPath = "." + PS + "grails-app" + PS + "views" + PS + "genViews" + PS;
+   private static String guiRepositoryPath = (String) ApplicationHolder.getApplication().getConfig().flatten().get("hce.genviews_repo"); //"." + PS + "grails-app" + PS + "views" + PS + "genViews" + PS;
    
    // Cache: templateId_mode => String (html de la gui generada)
    // mode puede ser show, create o edit
@@ -43,6 +44,7 @@ public class GuiManager {
    
    public boolean exists(String templateId, String mode, String locale)
    {
+      System.out.println("GuiManager.exists "+ guiRepositoryPath + templateId +"_"+ mode +"_"+ locale +".htm");
       File f = new File(guiRepositoryPath + templateId +"_"+ mode +"_"+ locale +".htm");
       return f.exists();
    }
