@@ -511,7 +511,6 @@ class DomainController {
          // Included archetypes para slots
          def idx = ArchetypeIndex.findByArchetypeId(params.archetypeId)
         
-        
          // No necesito pedir el arquetipo para tener su archId, creo uno y sacarle el rmEntity...
          //def archetype = archetype.ArchetypeManager.getInstance().getArchetype(params.archetypeId)
          //def type = ArchetypeTypeEnum.fromValue( archetype.archetypeId.rmEntity.toLowerCase() )
@@ -533,8 +532,7 @@ class DomainController {
                return [archetypes: archetypes]
             }
          }
-         
-         
+
          def aref = new templates.ArchetypeReference(
             refId: params.archetypeId,
             type: type,
@@ -545,6 +543,18 @@ class DomainController {
          )
          
          template.rootArchetype = aref
+         
+         
+         
+         def tman = templates.TemplateManager.getInstance()
+         
+         // This check needs the rootArchetype to be in the template
+         if (tman.templateExistsOnRepo(template))
+         {
+            flash.message = 'El template ya existe, elija otro identificador'
+            return [archetypes: archetypes]
+         }
+         
          
          
          // Included archetypes para slots
@@ -578,7 +588,6 @@ class DomainController {
          guiCachingService.generateGUI([template])
          
        
-         def tman = templates.TemplateManager.getInstance()
        
          // Agrega el template al cache
          // Permite tener toda la estructura del template en memoria y

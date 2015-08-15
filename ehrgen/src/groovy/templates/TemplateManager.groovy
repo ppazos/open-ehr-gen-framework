@@ -294,6 +294,16 @@ class TemplateManager {
       return this.cache[templateId]
    }
    
+   
+   public boolean templateExistsOnRepo( Template template )
+   {
+      String path = ApplicationHolder.application.config.hce.template_repo
+      path += getTypePath( template.rootArchetype.type.toString() )
+      File file = new File(path + PS + template.templateId + ".xml")
+      
+      return (file.exists() && file.isFile())
+   }
+   
    /**
     * Serializa un template a XML y lo guarda en el repo local de templates.
    */
@@ -336,7 +346,6 @@ class TemplateManager {
 	  println " - Template guardado en repo local: " + path + PS + template.templateId + ".xml"
 	  File file = new File(path + PS + template.templateId + ".xml")
 	  file << writer.toString()
-	  
    }
    
    
