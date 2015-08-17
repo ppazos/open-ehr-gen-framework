@@ -1,0 +1,1 @@
+h:\putty\pscp -i "C:\Documents and Settings\pab\.ssh\default.ppk" "C:\Documents and Settings\pab\My Documents\GitHub\open-ehr-gen-framework\ehrgen\target\ehrgen-1.4-0.8b3.war" 55b46554e0b8cde13100004b@ehrgen-ehrserver.rhcloud.com:app-root/dependencies/jbossews/webapps
